@@ -1,0 +1,14 @@
+* Root of the WePim project: implementation for SIGMOD12 demo
+
+** Git reminder
+
+*** Get a copy of the project
+#+begin_src sh
+git clone git+ssh://emilien@scm.gforge.inria.fr//gitroot/webdamsystem/code/project_WePim/
+#+end_src
+
+** Project files
+Add here the structure of the project: branch, tags, master, ...
+
+** Miscellenous
+Add here any additional information for the user
