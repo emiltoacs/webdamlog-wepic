@@ -15,7 +15,7 @@ class UserSessionsController < ApplicationController
   # POST /user_sessions.xml
   def create
     @user_session = UserSession.new(params[:user_session])
-
+    init_session
     respond_to do |format|
       if @user_session.save
         format.html { redirect_to(:users, :notice => 'Login Successful') }
@@ -32,7 +32,7 @@ class UserSessionsController < ApplicationController
   def destroy
     @user_session = UserSession.find
     @user_session.destroy
-
+    close_session
     respond_to do |format|
       format.html { redirect_to(:users, :notice => 'Goodbye!') }
       format.xml { head :ok }

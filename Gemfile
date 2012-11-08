@@ -7,6 +7,10 @@ gem 'rails', '3.2.8'
 
 gem 'therubyracer'
 
+gem 'dbm'
+
+gem 'bud', '0.9.1'
+
 gem 'rmagick'
 
 gem 'paperclip', '2.8.0'
