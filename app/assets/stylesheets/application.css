@@ -11,3 +11,17 @@
  *= require_self
  *= require_tree .
  */
+
+ body {
+     background-image: url(/assets/background.png);   
+ }
+ 
+ #nav {
+     width : 80%;
+     position : fixed;
+     left : 10%;
+     background-image: url(/assets/banner_back.jpg);
+     background-repeat: no-repeat;
+     background-position: top;
+     background-size : 100% 40px;
+ }
