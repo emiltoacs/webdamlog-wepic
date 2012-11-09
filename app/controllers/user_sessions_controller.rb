@@ -1,5 +1,5 @@
 class UserSessionsController < ApplicationController
-  include UserSessionsHelper
+  include ApplicationHelper
   # GET /user_sessions/new
   # GET /user_sessions/new.xml
   def new
