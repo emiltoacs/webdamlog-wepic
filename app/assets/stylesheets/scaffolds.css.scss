@@ -3,7 +3,7 @@ body {
   background-position: center top;
   background-size : cover;
   background-repeat : no-repeat;
-  color: #333;
+  color: #222;
   font-family: verdana, arial, helvetica, sans-serif;
   font-size: 13px;
   line-height: 18px;
@@ -22,13 +22,13 @@ pre {
 }
 
 a {
-  color: #000;
+  color: #fff;
   &:visited {
-    color: #666;
+    color: #222;
   }
   &:hover {
-    color: #fff;
-    background-color: #000;
+    color: #aaa;
+    //background-color: transparent;
   }
 }
 

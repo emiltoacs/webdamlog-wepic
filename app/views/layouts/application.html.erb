@@ -8,16 +8,50 @@
 </head>
 <body>
     <div id="nav">
-	<div id="subnav">
+	<div class="opacity"></div>
+	<div class="logos">
+		<div id="webdamlogo"></div>
+		<div id="inrialogo"></div>
+	</div>
+	<div class="content">
+	<div id="title"><h1><a href="/">
+	<% if current_user %>
+	Welcome, <%=current_user.username%>!
+	<% else %>
+          Welcome To Wepic!
+	<% end %>
+	</a></h1>
+	</div>
+	<div id="register_login">
         <% if current_user %>
         <%= link_to "Edit Profile", edit_user_path(current_user.id)%>
         <%= link_to "Logout", :logout%>
         <% else %>
         <%= link_to "Register", new_user_path%> |
         <%= link_to "Login", :login %>
-        <% end %>
+        <% end %>	
+	</div>
 	</div>
     </div>
-<%= yield %>
+	<% if current_user %>	
+	<% if is_admin(current_user.id) %> 
+  <div id="admin-sidebar">
+		<div class="opacity"></div>
+		<div class="content">
+    <%= link_to 'User list', url_for('list')%>
+		</div>
+  </div>
+	<div id="main" style="width:60%;left:15%;">
+	<%else%>
+	<div id="main" style="width:80%;left:10%;">
+<% end %>
+	<%else%>
+<div id="main" style="width:80%;left:10%;">
+<% end %>
+        <div class="opacity"></div>
+        <div class="content">
+           <%= yield %>
+	</div>
+    </div>
 </body>
 </html>
