@@ -10,7 +10,7 @@
       </ul>
     </div>
   <% end %>
-
+<div id="signup">
   <div class="field">
     <%= f.label :username %><br />
     <%= f.text_field :username %>
@@ -28,6 +28,6 @@
       <%= f.password_field :password_confirmation %>
     </div>
   <div class="actions">
-    <%= f.submit %>
-  </div>
+    <%= f.submit "sign up" %>
+  </div></div>
 <% end %>
