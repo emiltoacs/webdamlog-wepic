@@ -1,0 +1,2 @@
+module WepicHelper
+end
