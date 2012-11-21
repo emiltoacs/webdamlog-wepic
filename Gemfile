@@ -13,7 +13,7 @@ gem 'bud', '0.9.1'
 
 gem 'rmagick'
 
-gem 'paperclip', '2.8.0'
+gem 'paperclip', '~> 2.8.0'
 
 gem 'sqlite3'
 
