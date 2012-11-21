@@ -9,11 +9,11 @@
 #
 #   Encoding - UTF-8
 # ####License####
-require '/home/jtesta/projects/svn/WLBud/trunk/src/fr/inria/webdam/webdamlog/wlbud/wlbud'
+#require '/home/jtesta/projects/svn/WLBud/trunk/src/fr/inria/webdam/webdamlog/wlbud/wlbud'
 
 #these are the main running classes to test our program
-class Load_program < WLBud::WL
-end
+#class Load_program < WLBud::WL
+#end
 
 module ApplicationHelper
   def init_session
