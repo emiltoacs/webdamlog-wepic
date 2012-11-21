@@ -1,6 +1,8 @@
 LoginApp::Application.routes.draw do
   
   match 'admin' => 'admin#index', :as => :admin
+  match 'query' => 'query#index', :as => :query
+  match 'program' => 'program#index', :as => :program
   match 'wepic' => 'wepic#index', :as => :wepic
   resources :users, :user_sessions
   match 'login' => 'user_sessions#new', :as => :login

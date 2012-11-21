@@ -154,7 +154,7 @@ DEPENDENCIES
   dbm
   jquery-rails
   json
-  paperclip (= 2.8.0)
+  paperclip (~> 2.8.0)
   rails (= 3.2.8)
   rmagick
   sass-rails (~> 3.2.3)
