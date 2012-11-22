@@ -43,7 +43,7 @@ require 'paperclip/callback_compatibility'
 require 'paperclip/missing_attachment_styles'
 require 'paperclip/railtie'
 require 'logger'
-#require 'cocaine'
+require 'cocaine'
 
 # The base module that gets included in ActiveRecord::Base. See the
 # documentation for Paperclip::ClassMethods for more useful information.

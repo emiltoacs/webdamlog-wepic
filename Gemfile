@@ -9,6 +9,8 @@ gem 'therubyracer'
 
 gem 'dbm'
 
+gem 'cocaine'
+
 gem 'bud', '0.9.1'
 
 gem 'rmagick'
