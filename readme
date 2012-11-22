@@ -1,3 +1,7 @@
+#-*- mode: org; comment-column: 50; fill-column: 65; -*-
+#+STARTUP: content
+#+STARTUP: indent
+
 * Root of the WePim project: implementation for SIGMOD12 demo
 
 ** Git reminder
