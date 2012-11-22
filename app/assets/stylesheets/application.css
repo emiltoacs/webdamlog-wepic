@@ -162,3 +162,31 @@ body {
     opacity:0.85;
     filter:alpha(opacity=85);      
 }
+
+.images {
+    height : 110px;
+    margin-bottom : 20px;
+}
+
+.entry {
+    height : 100px;
+    margin-top : 5px;
+    margin-bottom : 5px;
+    position : relative;
+    float : left;
+    margin-right : 5px;
+    margin-left : 5px;
+    width : 100px;    
+}
+
+.entry .title {
+    display : none;
+}
+
+.entry .image {   
+}
+
+.images img {
+    width : 100px;
+    height : 100px;
+}

@@ -1,6 +1,18 @@
 <div class="opacity">
 </div>
 <div class="content">
-	<h1>Wepic#index</h1>
-	<p>Find me in app/views/wepic/index.html.erb</p>
+	<div class="upload">
+		<%= render 'upload'%>
+	</div>
+	<h1>My Pictures</h1>
+	<div class="images">
+		<% @pictures.each do |picture| %>
+			<a href="<%='/pictures/'+picture.id.to_s%>">
+				<div class="entry">
+					<div class="title"><%=picture.title%></div>
+					<div class="image"><%=image_tag picture.image.url(:thumb)%></div>
+				</div>
+			</a>
+		<% end %>
+	</div>
 </div>

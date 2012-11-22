@@ -4,6 +4,11 @@ LoginApp::Application.routes.draw do
   match 'query' => 'query#index', :as => :query
   match 'program' => 'program#index', :as => :program
   match 'wepic' => 'wepic#index', :as => :wepic
+  resources :pictures do
+    member do
+      get :images
+    end
+  end
   resources :users, :user_sessions
   match 'login' => 'user_sessions#new', :as => :login
   match 'logout' => 'user_sessions#destroy', :as => :logout
