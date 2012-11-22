@@ -41,7 +41,7 @@
 			@query_tab = "tab"
 			@program_tab = "tab"
 			current_path = request.env['PATH_INFO']
-			@wepic_tab = "selected_tab" if current_path=="/wepic"
+			@wepic_tab = "selected_tab" if current_path=="/wepic" || current_path.include?("pictures")
 			@query_tab = "selected_tab" if current_path=="/query"
 			@program_tab = "selected_tab" if current_path=="/program"
 		%>

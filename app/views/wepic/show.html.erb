@@ -1,0 +1,7 @@
+<div class="opacity"></div>
+<div class="content">
+	<p id="notice"><%= notice %></p>
+	<div class="field">Title : <%=@picture.title%></div>
+	<div class="field">Image : <%=image_tag @picture.image.url(:small)%></div>
+<%= link_to 'Back', :wepic %>
+</div>
