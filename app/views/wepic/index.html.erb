@@ -1,18 +1,29 @@
-<div class="opacity">
-</div>
-<div class="content">
-	<div class="upload">
-		<%= render 'upload'%>
+<div id="pictures">
+	<div class="opacity">
 	</div>
-	<h1>My Pictures</h1>
-	<div class="images">
-		<% @pictures.each do |picture| %>
-			<a href="<%='/pictures/'+picture.id.to_s%>">
-				<div class="entry">
-					<div class="title"><%=picture.title%></div>
-					<div class="image"><%=image_tag picture.image.url(:thumb)%></div>
-				</div>
-			</a>
-		<% end %>
+	<div class="content">
+		<div class="upload">
+			<%= render 'upload'%>
+		</div>
+		<h2>My Pictures</h2>
+		<div class="images">
+			<% @pictures.each do |picture| %>
+				<a href="<%='/pictures/'+picture.id.to_s%>">
+					<div class="entry">
+						<div class="title"><%=picture.title%></div>
+						<div class="image"><%=image_tag picture.image.url(:thumb)%></div>
+					</div>
+				</a>
+			<% end %>
+		</div>
+		<h2>Contact Pictures</h2>
+		<div class="images">	
+		</div>
+	</div>
+</div>
+<div id="contacts">
+	<div class="opacity"></div>
+	<div class="content">
+		<h2> Contacts </h2>
 	</div>
 </div>
