@@ -54,8 +54,8 @@ class UsersController < ApplicationController
       if @user.save
         #When user is created, he is automatically logged in, which means 
         #we need to start his webdamlog session.
-        init_session
-        format.html { redirect_to(:user, :notice => 'Registration successfull.') }
+        #init_session
+        format.html { redirect_to(:wepic, :notice => 'Registration successfull.') }
         format.xml { render :xml => @user, :status => :created, :location => @user }
       else
         format.html { render :action => "new" }
@@ -88,7 +88,7 @@ class UsersController < ApplicationController
     @user.destroy
 
     respond_to do |format|
-      format.html { redirect_to users_url }
+      format.html { redirect_to :admin }
       format.json { head :no_content }
     end
   end
