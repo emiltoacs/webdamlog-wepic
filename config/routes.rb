@@ -1,7 +1,7 @@
 LoginApp::Application.routes.draw do
   
   match 'admin' => 'admin#index', :as => :admin
-  match 'query' => 'query#index', :as => :query
+  #match 'query' => 'query#index', :as => :query
   match 'program' => 'program#index', :as => :program
   match 'wepic' => 'wepic#index', :as => :wepic
   resources :pictures do
@@ -9,6 +9,7 @@ LoginApp::Application.routes.draw do
       get :images
     end
   end
+  resources :query
   resources :users, :user_sessions
   match 'login' => 'user_sessions#new', :as => :login
   match 'logout' => 'user_sessions#destroy', :as => :logout

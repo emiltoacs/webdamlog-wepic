@@ -1,4 +1,6 @@
+require 'lib/database'
 class UsersController < ApplicationController
+  include Database
   def list
     @users = User.all
     respond_to do |format|
@@ -54,8 +56,8 @@ class UsersController < ApplicationController
       if @user.save
         #When user is created, he is automatically logged in, which means
         #we need to start his webdamlog session.
-        # init_session
-        format.html { redirect_to(:wepic, :notice => 'Registration successfull.') }
+        database = create_or_connect_db(current_user.id)
+        format.html { redirect_to(:wepic, :notice => "Registration successfull. #{database.inspect}") }
         format.xml { render :xml => @user, :status => :created, :location => @user }
       else
         format.html { render :action => "new" }

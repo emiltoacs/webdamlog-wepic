@@ -1,5 +1,6 @@
+require 'lib/database'
 class UserSessionsController < ApplicationController
-  include ApplicationHelper
+  include Database
   # GET /user_sessions/new
   # GET /user_sessions/new.xml
   def new
@@ -15,10 +16,10 @@ class UserSessionsController < ApplicationController
   # POST /user_sessions.xml
   def create
     @user_session = UserSession.new(params[:user_session])
-    #init_session
     respond_to do |format|
       if @user_session.save
-        format.html { redirect_to(:wepic, :notice => 'Login Successful') }
+        database = create_or_connect_db(current_user.id)
+        format.html { redirect_to(:wepic, :notice => "Login Successful.#{database.inspect}") }
         format.xml { render :xml => @user_session, :status => :created, :location => @user_session }
       else
         format.html { render :action => "new" }

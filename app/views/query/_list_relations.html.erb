@@ -1,0 +1,8 @@
+	<% @schemas.each_pair do |name,fields| %>
+	<div class="relation">
+		<div class="field"> <%= name %> </div>
+		<% fields.each_pair do |col,type| %>
+			<div class="field"><%= col %>, <%= type %></div>
+		<% end %>
+	</div>
+	<% end %>

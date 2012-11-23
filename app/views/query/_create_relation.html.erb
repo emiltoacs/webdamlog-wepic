@@ -1,0 +1,6 @@
+<%=form_tag('/query',:method=>'post') do %>
+	<div class="field"> Relation Name : <%= text_field_tag "relation_name" %> </div>
+	<div class="field"> Column Names : <%= text_field_tag "column_names" %> </div>
+	<div class="field"> Column Types : <%= text_field_tag "column_types" %> </div>
+	<%= submit_tag 'Add relation' %>
+<% end %>
