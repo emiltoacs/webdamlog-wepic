@@ -19,6 +19,6 @@ class ApplicationController < ActionController::Base
   end
   
   def is_admin(user_id)
-    return current_user#@@adminlist.include?(user_id)
+    return current_user.nil?#@@adminlist.include?(user_id)
   end
 end
