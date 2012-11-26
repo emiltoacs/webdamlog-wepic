@@ -6,10 +6,32 @@ class QueryController < ApplicationController
   def index
     @relations = database(current_user.id).relations
     @schemas = database(current_user.id).schemas
+    #flash[:notice]="#{@relations.inspect} : #{@schemas.inspect}"
   end
   
+  #Insert a tuple in the instance database
+  def insert
+    @relations = database(current_user.id).relations
+    @schemas = database(current_user.id).schemas
+    rel_name = params[:relation][:name]
+    values = params[:values].split(";")
+    values_hash = Hash.new
+    @schemas[rel_name].keys.each_index do |i|
+      values_hash[@schemas[rel_name].keys[i]]=values[i] 
+    end
+    respond_to do |format|
+      if @relations[rel_name].insert(values_hash)
+        format.html { redirect_to '/query', :notice => "#{rel_name} : #{values_hash.inspect}"}
+        format.json { head :no_content }
+      else
+        format.html {redirect_to '/query', :notice => "insert did not happen properly"}
+        format.json {head :no_content}
+      end
+    end
+  end
+    
+  #Creates a new relation and adds it to the session database.
   def create
-    puts params.inspect
     schema = Hash.new
     rel_name = params[:relation_name]
     col_names = params[:column_names].split(";")

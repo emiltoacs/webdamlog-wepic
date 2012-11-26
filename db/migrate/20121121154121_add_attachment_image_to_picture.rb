@@ -8,7 +8,7 @@ class AddAttachmentImageToPicture < ActiveRecord::Migration
       t.datetime :image_updated_at
       t.binary :image_file
       t.binary :image_small_file
-      t.binary :image_thumb_file      
+      t.binary :image_thumb_file
     end
   end  
 end
