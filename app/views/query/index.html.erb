@@ -3,5 +3,9 @@
 <div class="content"><%=notice%>
 	<h1>Query#index</h1>
 	<p>Find me in app/views/query/index.html.erb</p>
-	<%= render 'create_relation'%><%= render 'list_relations' %>
+	<div id="query_forms">
+		<div id="create_relation"><%= render 'create_relation'%></div>
+		<div id="insert_tuple"><%= render 'insert_tuple'%></div>
+	</div>
+	<div id="list_relations"><%= render 'list_relations' %></div>
 </div>

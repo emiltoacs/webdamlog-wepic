@@ -1,4 +1,4 @@
-<%=form_tag('/query',:method=>'post') do %>
+<%=form_tag({:controller => "query", :action=>"create"},:method=>'post') do %>
 	<div class="field"> Relation Name : <%= text_field_tag "relation_name" %> </div>
 	<div class="field"> Column Names : <%= text_field_tag "column_names" %> </div>
 	<div class="field"> Column Types : <%= text_field_tag "column_types" %> </div>
