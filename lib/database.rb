@@ -4,17 +4,17 @@ require 'set'
 require 'json'
 require 'pathname'
 
-#TODO Change database_id into database_id
+
 module Database
   @@databases = Hash.new
   
-  #TODO add option to create
   def database(database_id)
     @@databases[database_id]
   end
   
+  #TODO Add namespace to WLSchema relation. The namespace is based on the database_id
   class WLInstanceDatabase
-    attr_accessor :db_name, :relation_classes, :configuration
+    attr_accessor :id, :relation_classes, :configuration
     
     #Creates a new database with a name defined by the user's id. If the database
     #already exists, simply connects to it.
@@ -48,6 +48,7 @@ module Database
     end
     
     def create_or_retrieve_database(database_id)
+      @id = database_id
       @db_name = "db/database_#{database_id}.db"      
       @configuration = {:adapter => 'sqlite3', :database => @db_name}
       create_schema
@@ -60,7 +61,7 @@ module Database
       @relation_classes = Hash.new
       database=self
       relation_name="WLSchema"
-      @wlschema = create_class(relation_name,ActiveRecord::Base) do
+      @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
         @schema = {"name"=>"string","schema"=>"string"}
         @configuration = database.configuration
         establish_connection @configuration
@@ -97,7 +98,7 @@ module Database
     
     def create_relation_class(name,schema)
       database=self
-      create_class("#{name}",ActiveRecord::Base) do
+      create_class("#{name}_#{@id}",ActiveRecord::Base) do
         @schema = schema
         @configuration = database.configuration
         establish_connection @configuration

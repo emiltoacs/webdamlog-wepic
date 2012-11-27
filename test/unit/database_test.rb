@@ -68,8 +68,8 @@ class DatabaseTest < Test::Unit::TestCase
     close_connection(@dbid)    
     @database = create_or_connect_db(@dbid)
     #Schema should contain the Dog table information
-    assert_equal(false,WLSchema.all.empty?)
-    assert_equal("Dog",WLSchema.find(1).name)
+    assert_equal(false,@database.relation_classes["WLSchema"].all.empty?)
+    assert_equal("Dog",@database.relation_classes["WLSchema"].find(1).name)
   end
   
   #You can check that the dog was added to the database with the following commands:
