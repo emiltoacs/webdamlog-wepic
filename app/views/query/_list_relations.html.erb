@@ -1,15 +1,15 @@
-	<% @schemas.each_pair do |name,fields| %>
+	<% @relation_classes.each_pair do |name,rel_class| %>
 	<div class="relation">
 		<div class="name"> <%= name %> </div>
 		<div class="row">
-		<% fields.each_pair do |col,type| %>
+		<% rel_class.schema.each_pair do |col,type| %>
 			<div class="column"><%= col %>,<%= type %></div>
 		<% end %>
 		</div>
-		<%relation_tuples = @relations[name].all%>
+		<%relation_tuples = @relation_classes[name].all%>
 		<%relation_tuples.each do |tuple| %>
 			<div class="row">
-			<%fields.keys.each do |col| %>
+			<%rel_class.schema.keys.each do |col| %>
 				<div class="column">
 					<% if tuple[col].size>22 %>
 						<%= "#{tuple[col][0..21]}..."%> 
