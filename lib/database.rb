@@ -2,6 +2,7 @@
 # and open the template in the editor.
 require 'set'
 require 'json'
+require 'pathname'
 
 #TODO Change database_id into database_id
 module Database
@@ -12,16 +13,47 @@ module Database
     @@databases[database_id]
   end
   
-  class WLInstanceDatabase < ActiveRecord::Base
-    attr_accessor :db_name, :relations, :schemas, :wlschema
+  class WLInstanceDatabase
+    attr_accessor :db_name, :relations, :schemas, :wlschema, :configuration
     
     #Creates a new database with a name defined by the user's id. If the database
     #already exists, simply connects to it.
     def initialize(database_id)
       @database_id = database_id
-      @db_name = "db/database_#{@database_id}.db"      
-      create_schema
+      @db_name = "db/database_#{@database_id}.db"  
+      create_or_retrieve_database
     end
+    
+    #Resets instance schemas and relations attributes.
+    #Remove all generated model classes.
+    def destroy_classes
+      #Remove all generated model classes
+      @relations.values.each do |class_object|
+        delete_class(class_object)
+      end
+      delete_class(@wlschema)
+      @relations = Hash.new
+      @schema = Hash.new
+    end
+    
+    #Removes the database file and generated model classes. Also 
+    #resets instance schemas and relations attributes. 
+    #Use create_or_retrieve_database to reinitialize.
+    def destroy
+      #Remove all generated model classes
+      destroy_classes
+      
+      #Destroy the db
+      path = Pathname.new(@db_name)
+      rails_root = File.expand_path('.')
+      file = path.absolute? ? path.to_s : File.join(rails_root, path)
+      FileUtils.rm(file)
+    end
+    
+    def create_or_retrieve_database
+      @configuration = {:adapter => 'sqlite3', :database => @db_name}
+      create_schema
+    end    
     
     #This method creates a special table that represents the schema of the database.
     #Since database schemas are different for every user, storing them is a quick
@@ -32,8 +64,8 @@ module Database
       database=self
       relation_name="WLSchema"
       @wlschema = create_class(relation_name,ActiveRecord::Base) do
-        @db_name = database.db_name
-        establish_connection :adapter => 'sqlite3', :database => @db_name
+        @configuration = database.configuration
+        establish_connection @configuration
         self.table_name = relation_name
         connection.create_table table_name, :force => true do |t|
           t.string :name
@@ -43,7 +75,7 @@ module Database
       
       @schemas[relation_name]={"name"=>"string","schema"=>"string"}
       @relations[relation_name]=@wlschema
-      @wlschema.establish_connection :adapter => 'sqlite3', :database => @db_name
+      @wlschema.establish_connection @configuration
       #Retrieve all the models
       @wlschema.all.each do |table|
         @schemas[table.name]= JSON.parse(table.schema)
@@ -67,10 +99,9 @@ module Database
     
     def create_relation_class(name,schema)
       database=self
-      #_#{@database_id}"
       create_class("#{name}",ActiveRecord::Base) do
-        @db_name = database.db_name
-        establish_connection :adapter => 'sqlite3', :database => @db_name
+        @configuration = database.configuration
+        establish_connection @configuration
         self.table_name=name
         connection.create_table table_name, :force => true do |t|
           schema.each_pair do |col_name,col_type|
@@ -78,19 +109,19 @@ module Database
           end
         end if !connection.table_exists?(table_name)
         def self.insert(values)
-          establish_connection :adapter => 'sqlite3', :database => @db_name
+          establish_connection @configuration
           self.new(values).save
         end
         def self.find(id)
-          establish_connection :adapter => 'sqlite3', :database => @db_name
+          establish_connection @configuration
           super id
         end
         def self.all
-          establish_connection :adapter => 'sqlite3', :database => @db_name
+          establish_connection @configuration
           super
         end
         def self.inspect
-          establish_connection :adapter => 'sqlite3', :database => @db_name
+          establish_connection @configuration
           super
         end
       end      
@@ -99,6 +130,12 @@ module Database
     def create_class(class_name, superclass, &block)
       klass = Class.new superclass, &block
       Object.const_set class_name, klass
+    end
+    
+    def delete_class(klass)
+      Object.class_eval do
+        remove_const(klass.name.intern) if const_defined?(klass.name.intern)
+      end
     end
   
   end
@@ -110,8 +147,14 @@ module Database
     @@databases[database_id]
   end
   
-  #FIXME Do we want to destroy the object explicitly?
+  #FIXME Do we want to destroy the object explicitly? classes?
   def close_connection(database_id)
+    @@databases[database_id].destroy_classes
     @@databases.delete(database_id)
+  end
+  
+  def destroy(database_id)
+    @@databases[database_id].destroy
+    @@databases[database_id].delete(database_id)
   end
 end

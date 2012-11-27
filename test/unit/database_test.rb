@@ -18,51 +18,58 @@ require 'lib/kernel'
 class DatabaseTest < Test::Unit::TestCase
   include Database
   include Kernel
-  #TODO Remove user id. Need unit tests.
-  @@database_id = 2
+  
+  def setup
+    @dbid = (0...8).map{('a'..'z').to_a[rand(26)]}.join
+    @database = create_or_connect_db(@dbid)
+  end
+  
+  def teardown
+    @database.destroy
+  end
+  
+  test "setup_and_teardown" do
+    assert(true)
+  end
   
   test "connect to db" do
-    database = suppress_warnings {create_or_connect_db(@@database_id)}
-    #Check if database created is of the right class
-    assert_equal(WLInstanceDatabase,database.class)
+    #Check if database was created during the setup
+    assert_equal(WLInstanceDatabase,@database.class)
     #Check if database contains the WLSchema relation
     @wlschema_table_present=false
-    database.schemas.each_pair do |table,table_schema|
+    @database.schemas.each_pair do |table,table_schema|
       if "WLSCHEMA"==table.upcase
         assert_equal({"name"=>"string","schema"=>"string"},table_schema)
         @wlschema_table_present=true
       end
     end
     assert_equal(true,@wlschema_table_present)
-    assert_equal("WLSchema",database.relations["WLSchema"].table_name)
+    assert_equal("WLSchema",@database.relations["WLSchema"].table_name)
   end
   
   #TODO enhance test by adding several relations to the testing.
   test "create relation" do
-    database = suppress_warnings {database(@@database_id)}
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
-    suppress_warnings {database.create_relation(relation_name,relation_schema)}
+    @database.create_relation(relation_name,relation_schema)
     #Assert relations has been added to database schemas and relationclass attributes.
-    assert_equal(true,database.schemas.keys.include?("Dog"))
-    assert_equal("Dog",database.relations["Dog"].table_name)
+    assert_equal(true,@database.schemas.keys.include?("Dog"))
+    assert_equal("Dog",@database.relations["Dog"].table_name)
   end
   
   test "deconnect" do
-    suppress_warnings do
-      create_or_connect_db(@@database_id)
-    end
-    close_connection(@@database_id)
-    assert_equal(nil,database(@@database_id))
-
+    close_connection(@dbid)
+    assert_equal(nil,database(@dbid))
   end
   
   test "reconnection" do
-    suppress_warnings {create_or_connect_db(@@database_id)}
-    close_connection(@@database_id)    
-    database = suppress_warnings {create_or_connect_db(@@database_id)}
-    assert_equal(true,database.schemas.keys.include?("Dog"))
+    relation_name = "Dog"
+    relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
+    @database.create_relation(relation_name,relation_schema)
+    close_connection(@dbid)    
+    @database = create_or_connect_db(@dbid)
     #Schema should contain the Dog table information
+    assert_equal(true,@database.schemas.keys.include?("Dog"))
     assert_equal(false,WLSchema.all.empty?)
     assert_equal("Dog",WLSchema.find(1).name)
   end
@@ -71,10 +78,10 @@ class DatabaseTest < Test::Unit::TestCase
   #sqlite3 db/database_2.db
   #SELECT * FROM DOG;
   test "insert and retrieve" do
-    suppress_warnings {create_or_connect_db(@@database_id)}
-    database = database(@@database_id)
-    puts "error" if database.nil?
-    dog_table = database.relations["Dog"]
+    relation_name = "Dog"
+    relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
+    @database.create_relation(relation_name,relation_schema)
+    dog_table = @database.relations["Dog"]
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
     dog_table.insert(values)
     assert_equal(false,dog_table.all.empty?)
