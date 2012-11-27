@@ -11,8 +11,6 @@ require 'lib/kernel'
 #The suppress warning messages are used to avoid constant reassignment warnings.
 #Constant reassignment should not be used in practice but is useful for purposes
 #of testing.
-#TODO !!! Currently, support for several peers connecting simulatenously with
-#identical table names is not supported!
 #TODO : Avoid duplication of information in the Database module by reducing the 
 #number of variables.
 class DatabaseTest < Test::Unit::TestCase

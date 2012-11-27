@@ -1,4 +1,4 @@
-LoginApp::Application.routes.draw do
+WepimApp::Application.routes.draw do
   
   match 'admin' => 'admin#index', :as => :admin
   match 'program' => 'program#index', :as => :program
@@ -65,6 +65,11 @@ LoginApp::Application.routes.draw do
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
   root :to => 'users#index'
+#  if ApplicationController.current_user
+#    root :to => 'wepic#index'
+#  else
+#    root :to => 'users#index'
+#  end
 
   # See how all your routes lay out with "rake routes"
 
