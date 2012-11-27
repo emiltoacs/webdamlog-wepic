@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-LoginApp::Application.load_tasks
+WepimApp::Application.load_tasks
