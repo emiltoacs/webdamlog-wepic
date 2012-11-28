@@ -1,5 +1,7 @@
 WepimApp::Application.routes.draw do
   
+  get "login_manager/welcome"
+
   match 'admin' => 'admin#index', :as => :admin
   match 'program' => 'program#index', :as => :program
   match 'wepic' => 'wepic#index', :as => :wepic
