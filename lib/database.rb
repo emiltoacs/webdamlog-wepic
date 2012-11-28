@@ -3,7 +3,7 @@
 require 'set'
 require 'json'
 require 'pathname'
-
+require 'fileutils'
 
 module Database
   @@databases = Hash.new
@@ -73,10 +73,13 @@ module Database
         def self.schema
           @schema
         end
+        def self.open_connection
+          establish_connection @configuration
+        end        
       end
       
       @relation_classes[relation_name]=@wlschema
-      @wlschema.establish_connection @configuration
+      @wlschema.establish_connection @configuration 
       #Retrieve all the models
       @wlschema.all.each do |table|
         @relation_classes[table.name] = create_relation_class(table.name,JSON.parse(table.schema))
@@ -109,28 +112,26 @@ module Database
           end
         end if !connection.table_exists?(table_name)
         def self.insert(values)
-          establish_connection @configuration
           self.new(values).save
         end
         def self.find(id)
-          establish_connection @configuration
           super id
         end
         def self.all
-          establish_connection @configuration
           super
         end
         def self.inspect
-          establish_connection @configuration
           super
         end
         def self.delete (id)
           tuple = self.find(id)
-          establish_connection @configuration
           tuple.destroy
         end
         def self.schema
           @schema
+        end
+        def self.open_connection
+          establish_connection @configuration
         end
       end      
     end

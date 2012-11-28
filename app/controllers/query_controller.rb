@@ -5,7 +5,6 @@ class QueryController < ApplicationController
   
   def index
     @relation_classes = database(current_user.id).relation_classes
-    #flash[:notice]="#{@relation_classes.inspect} : #{@schemas.inspect}"
   end
   
   #Insert a tuple in the instance database
@@ -27,6 +26,7 @@ class QueryController < ApplicationController
         values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
       end
       respond_to do |format|
+        @relation_classes[rel_name].open_connection
         if @relation_classes[rel_name].insert(values_hash)
           format.html { redirect_to '/query', :notice => "#{rel_name} : #{values_hash.inspect}"}
           format.json { head :no_content }
@@ -34,6 +34,7 @@ class QueryController < ApplicationController
           format.html {redirect_to '/query', :notice => "insert did not happen properly"}
           format.json {head :no_content}
         end
+        @relation_classes[rel_name].remove_connection
       end
     end
   end

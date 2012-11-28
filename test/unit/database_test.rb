@@ -79,12 +79,14 @@ class DatabaseTest < Test::Unit::TestCase
     @database.create_relation(relation_name,relation_schema)
     dog_table = @database.relation_classes["Dog"]
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
+    dog_table.open_connection
     dog_table.insert(values)
     assert_equal(false,dog_table.all.empty?)
     bobby = dog_table.find(1)
     assert_equal("Bobby",bobby.name)
     assert_equal(2,bobby.age)
     assert_equal("labrador",bobby.race)
+    dog_table.remove_connection
   end
   
   test "delete" do
@@ -93,9 +95,11 @@ class DatabaseTest < Test::Unit::TestCase
     @database.create_relation(relation_name,relation_schema)
     dog_table = @database.relation_classes["Dog"]
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
+    dog_table.open_connection
     dog_table.insert(values)
     assert_equal(false,dog_table.all.empty?)
     dog_table.delete(1)
     assert_equal(true,dog_table.all.empty?)
+    dog_table.remove_connection
   end
 end
