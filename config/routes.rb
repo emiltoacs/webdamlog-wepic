@@ -64,12 +64,13 @@ WepimApp::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  root :to => 'users#index'
-#  if ApplicationController.current_user
-#    root :to => 'wepic#index'
-#  else
-#    root :to => 'users#index'
-#  end
+#  puts "#{ARGV[4]}"
+#  root :to => 'users#index'
+  if ENV['PORT']!="3000"
+    root :to => 'wepic#index'
+  else
+    root :to => 'users#index'
+  end
 
   # See how all your routes lay out with "rake routes"
 
