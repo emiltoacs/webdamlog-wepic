@@ -10,7 +10,9 @@ WepimApp::Application.routes.draw do
       get :images
     end
   end
-  resources :query 
+  resources :query
+  match 'login_manager/retrieve' => 'login_manager#retrieve'
+  match 'login_manager' => 'login_manager#index'
   match 'query/insert' => 'query#insert'
   resources :users, :user_sessions
   match 'login' => 'user_sessions#new', :as => :login
@@ -69,9 +71,9 @@ WepimApp::Application.routes.draw do
 #  puts "#{ARGV[4]}"
 #  root :to => 'users#index'
   if ENV['PORT']!="3000"
-    root :to => 'wepic#index'
-  else
     root :to => 'users#index'
+  else
+    root :to => 'login_manager#index'
   end
 
   # See how all your routes lay out with "rake routes"

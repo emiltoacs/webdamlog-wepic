@@ -1,0 +1,4 @@
+<%=form_tag({:controller => "login_manager", :action=>"retrieve"},:method=>'post') do %>
+	<div class="field"> Username : <%= text_field_tag "username" %> </div>
+	<%= submit_tag 'Access your machine' %>
+<% end %>
