@@ -1,5 +1,8 @@
 class AddAttachmentImageToPicture < ActiveRecord::Migration
   
+  #The name of these fields are required for the custom paperclip plugin to work.
+  #In particular, the image_ prefix correspond to the image attribute of the Picture
+  #model.
   def change
     change_table :pictures do |t|
       t.string :image_file_name
