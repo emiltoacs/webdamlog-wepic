@@ -1,6 +1,14 @@
 WepimApp::Application.routes.draw do
   
-  get "welcome/welcome"
+  if ENV['PORT'].to_i>9999
+    root :to => 'users#index'
+  else
+    root :to => 'welcome#index'
+    match 'welcome/new' => 'welcome#new'
+    match 'welcome/existing' => 'welcome#existing'
+    match 'welcome' => 'welcome#index'    
+    match '/*else' => 'welcome#index'
+  end
 
   match 'admin' => 'admin#index', :as => :admin
   match 'program' => 'program#index', :as => :program
@@ -11,10 +19,6 @@ WepimApp::Application.routes.draw do
     end
   end
   resources :query
-  match 'shutdown' => 'welcome#shutdown', :as => :shutdown
-  match 'welcome/new' => 'welcome#new'
-  match 'welcome/existing' => 'welcome#existing'
-  match 'welcome' => 'welcome#index'
   match 'query/insert' => 'query#insert'
   resources :users, :user_sessions
   match 'login' => 'user_sessions#new', :as => :login
@@ -23,10 +27,4 @@ WepimApp::Application.routes.draw do
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
-
-  if ENV['ROLE']!=nil
-    root :to => 'users#index'
-  else
-    root :to => 'welcome#index'
-  end
 end

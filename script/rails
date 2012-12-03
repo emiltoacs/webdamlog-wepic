@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 # This command will automatically be run when you run "rails" with Rails 3 gems installed from the root of your application.
 
-#The ROLE environment variable is to specify whether the server is a welcome page or corresponds to a webdamlog
-#instance.
-ENV['ROLE']=ARGV[4] if ARGV.size>4
+#The PORT environment variable lets the port on which the rails server is booted accessible from everywhere,
+#including route parameters. Ports used for wlinstances are expected to have values above 9999.
+ENV['PORT']=ARGV[3] if ARGV.size>3
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)
 require 'rails/commands'
