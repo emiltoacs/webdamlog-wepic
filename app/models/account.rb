@@ -1,3 +1,3 @@
 class Account < ActiveRecord::Base
-  attr_accessible :active, :location, :username, :pid
+  attr_accessible :ip, :port, :username
 end

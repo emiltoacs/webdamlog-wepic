@@ -19,7 +19,13 @@ class WLLauncherTest < Test::Unit::TestCase
     start_server(@port)
   end
   
-  def test_b_destroy_server
+  def test_b_port_open
+    sleep(8)
+    assert_equal(true,port_open?('localhost',@port))
+    assert_equal(false,port_open?('localhost',@port+1))
+  end
+  
+  def test_c_destroy_server
     #The method should destroy one process
     sleep(10)
     assert_equal(1,exit_server(@port))

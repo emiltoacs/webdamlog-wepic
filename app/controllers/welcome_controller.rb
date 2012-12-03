@@ -1,7 +1,7 @@
 require 'lib/wl_launcher'
 
 class WelcomeController < ApplicationController
-  inlcude WLLauncher
+  include WLLauncher
   
   def index
     @account = Account.new
@@ -10,19 +10,25 @@ class WelcomeController < ApplicationController
   def existing
     username = params[:username]
     @account = Account.find(:first,:conditions => {:username=>username})
+    #If the account cannot be found
     if @account.nil?
       respond_to do |format|
         format.html {redirect_to :welcome, :alert => 'No account exists with this username.'}
       end
       return
     end
-    port = @account.url.split(':').last
-    if !@account.active
-      @account.active = system("rails server -p #{port} #{username}")
-      @account.save
-    end
-    respond_to do |format|
-      format.html {redirect_to @account.location, :notice => "Server was rebooted"}
+    #If the server for account is down.
+    url = "http://#{@account.ip}:#{@account.port}"
+    if port_open?(@account.ip,@account.port)
+      start_server(@account.port)
+      respond_to do |format|
+        format.html {redirect_to url, :notice => "Server was rebooted"}
+      end
+      #If the server for account is up.
+    else
+      respond_to do |format|
+        format.html {redirect_to url}
+      end
     end    
   end
   
@@ -35,10 +41,16 @@ class WelcomeController < ApplicationController
     max = Account.maximum(:id)
     max = 0 if max.nil?
     port = default_port_number + max + 1
-    
-    if @account.active && @account.save
+    #This will override the port
+    exit_server(port) if !port_open?(ip,port)
+    puts "starting server..."
+    start_server(port)
+    #This code does not check if call to rails failed. This operations requires interprocess communication.
+    @account = Account.new(:username => username, :ip=> ip, :port => port)
+    if @account.save
       respond_to do |format|
-        format.html {redirect_to @account.location}
+        sleep(5) #very ugly of making the user wait for the external server to be ready. We probably can do better.
+        format.html {redirect_to "http://#{ip}:#{port}"}
       end
     else
       respond_to do |format|
@@ -46,12 +58,4 @@ class WelcomeController < ApplicationController
       end
     end
   end
-  
-  def start_wl(username,ip,port)
-    url = "http://#{ip}:#{port}"
-    
-    #This code does not check if call to rails failed. This operations requires interprocess communication.
-    @account = Account.new(:username => username, :location => url, :active => true, :pid => start_server(username,ip,port))
-  end
-  
 end

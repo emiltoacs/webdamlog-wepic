@@ -14,9 +14,8 @@ ActiveRecord::Schema.define(:version => 20121128163150) do
 
   create_table "accounts", :force => true do |t|
     t.string   "username"
-    t.string   "location"
-    t.boolean  "active"
-    t.integer  "pid"
+    t.string   "ip"
+    t.integer  "port"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
