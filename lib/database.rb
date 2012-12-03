@@ -92,11 +92,13 @@ module Database
     def create_relation(name,schema)
       name.capitalize!
       @relation_classes[name] = create_relation_class(name,schema)
+      @wlschema.open_connection
       if @wlschema.new(:name => name,:schema => schema.to_json).save
         #good
       else
         puts "Relation was not properly updated"
       end
+      @wlschema.remove_connection
     end
     
     def create_relation_class(name,schema)

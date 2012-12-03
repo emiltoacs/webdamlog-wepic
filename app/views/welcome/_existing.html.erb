@@ -1,0 +1,6 @@
+<h2>Access your WLInstance</h2>
+<i>Select this option if you already have an account.</i>
+<%=form_tag({:controller => "welcome", :action=>"existing"},:method=>'post') do %>
+	<div class="field"> Username : <%= text_field_tag "username" %> </div>
+	<%= submit_tag 'Access your machine' %>
+<% end %>
