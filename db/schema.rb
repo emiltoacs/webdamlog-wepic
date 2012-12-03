@@ -16,6 +16,7 @@ ActiveRecord::Schema.define(:version => 20121128163150) do
     t.string   "username"
     t.string   "location"
     t.boolean  "active"
+    t.integer  "pid"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end

@@ -1,0 +1,6 @@
+<h2>Create a new WLInstance</h2>
+<i>Select this option if you don't have an account.</i>
+<%=form_tag({:controller => "welcome", :action=>"new"},:method=>'post') do %>
+	<div class="field"> Username : <%= text_field_tag "username" %> </div>
+	<%= submit_tag 'Create new instance' %>
+<% end %>
