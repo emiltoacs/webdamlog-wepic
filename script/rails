@@ -3,11 +3,16 @@
 
 #The PORT environment variable lets the port on which the rails server is booted accessible from everywhere,
 #including route parameters. Ports used for wlinstances are expected to have values above 9999.
-require 'script/admindbsetup'
-ENV['PORT']=ARGV[2] if ARGV.size>2
-puts "port : #{ENV['PORT']}"
+require 'lib/wl_setup'
 
-if ENV['PORT'].to_i <= 9999
+ENV['IS_MANAGER']='true'
+if ARGV.include?("-b")
+  ENV['IS_MANAGER']='false'
+  puts "Server is a WLInstance."
+end
+
+if ENV['IS_MANAGER']=='true'
+  puts "Server is a WLInstance Manager."
   dbsetup(:sqlite3)
 end
 

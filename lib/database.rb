@@ -52,6 +52,7 @@ module Database
       @db_name = "db/database_#{database_id}.db"      
       @configuration = {:adapter => 'sqlite3', :database => @db_name}
       create_schema
+      #create_relation("Users",{"name","password"})
     end    
     
     #This method creates a special table that represents the schema of the database.

@@ -1,31 +1,29 @@
 WepimApp::Application.routes.draw do
   
-  if ENV['PORT'].to_i>9999
-    root :to => 'users#index'
-  else
+  if ENV['IS_MANAGER']=='true'
     root :to => 'welcome#index'
-    match 'welcome/new' => 'welcome#new'
-    match 'welcome/existing' => 'welcome#existing'
+    match 'welcome/login' => 'welcome#login'
     match "welcome/shutdown/:id" => "welcome#shutdown"
     match 'welcome/start/:id' => "welcome#start"
     match 'welcome' => 'welcome#index'    
     match '/*else' => 'welcome#index'
-  end
-
-  match 'admin' => 'admin#index', :as => :admin
-  match 'program' => 'program#index', :as => :program
-  match 'wepic' => 'wepic#index', :as => :wepic
-  resources :pictures do
-    member do
-      get :images
+  else
+    root :to => 'users#index'
+    match 'program' => 'program#index', :as => :program
+    match 'wepic' => 'wepic#index', :as => :wepic
+    resources :pictures do
+      member do
+        get :images
+      end
     end
+    resources :query
+    match 'query/insert' => 'query#insert'
   end
-  resources :query
-  match 'query/insert' => 'query#insert'
-  resources :users, :user_sessions
-  match 'login' => 'user_sessions#new', :as => :login
-  match 'logout' => 'user_sessions#destroy', :as => :logout
-  match 'list' => 'users#list'
+    resources :users, :user_sessions
+    match 'login' => 'user_sessions#new', :as => :login
+    match 'logout' => 'user_sessions#destroy', :as => :logout
+    match 'list' => 'users#list'    
+  match 'admin' => 'admin#index', :as => :admin
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

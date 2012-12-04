@@ -8,14 +8,12 @@ class WelcomeController < ApplicationController
     @accounts = Account.all
   end
   
-  def existing
+  def login
     username = params[:username]
     @account = Account.find(:first,:conditions => {:username=>username})
     #If the account cannot be found
     if @account.nil?
-      respond_to do |format|
-        format.html {redirect_to :welcome, :alert => 'No account exists with this username.'}
-      end
+      new(username)
       return
     end
     #If the server for account is down.
@@ -34,8 +32,7 @@ class WelcomeController < ApplicationController
     end    
   end
   
-  def new
-    username = params[:username]
+  def new(username)
     #Temporary, need a better specification of URL.
     ip = "localhost"
     default_port_number = 9999

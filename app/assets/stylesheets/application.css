@@ -91,8 +91,8 @@ body {
     width : 80%;
 }
 
-#welcome {
-    padding-bottom : 300px;    
+#users {
+    padding-bottom : 30px;    
 }
 
 #main .content {
@@ -102,18 +102,10 @@ body {
 }
 
 
-#newuser {
+#user_prompt {
     position : relative;
-    float : left;
-    width : 50%;
-    left : 12.5%;
-}
-
-#newsession {
-    position : relative;
-    float : left;
-    width : 50%;
-    left : 12.5%;
+    text-align: center;
+    width : 100%;
 }
 
 /* TAB CSS */
