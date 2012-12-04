@@ -16,6 +16,7 @@ ActiveRecord::Schema.define(:version => 20121128163150) do
     t.string   "username"
     t.string   "ip"
     t.integer  "port"
+    t.boolean  "active"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
