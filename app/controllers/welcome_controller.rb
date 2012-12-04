@@ -19,7 +19,7 @@ class WelcomeController < ApplicationController
     #If the server for account is down.
     url = "http://#{@account.ip}:#{@account.port}"
     if port_open?(@account.ip,@account.port)
-      start_server(@account.port)
+      start_server(@account.username,@account.port)
       @account.active=true
       respond_to do |format|
         format.html {redirect_to url, :notice => "Server was rebooted"}
@@ -43,7 +43,7 @@ class WelcomeController < ApplicationController
     #This will override the port
     exit_server(port) if !port_open?(ip,port)
     puts "starting server..."
-    start_server(port)
+    start_server(username,port)
     #This code does not check if call to rails failed. This operations requires interprocess communication.
     @account = Account.new(:username => username, :ip=> ip, :port => port, :active => true)
     if @account.save
@@ -75,7 +75,7 @@ class WelcomeController < ApplicationController
   
   def start
     @account = Account.find(params[:id])
-    start_server(@account.port)
+    start_server(@account.username,@account.port)
     @account.active=true
     @account.save
     respond_to do |format|

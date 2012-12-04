@@ -5,7 +5,7 @@
 #   gem 'sqlite3'
 development:
   adapter: sqlite3
-  database: db/admin.db
+  database: db/database_MANAGER.db
   pool: 5
   timeout: 5000
 
@@ -20,6 +20,6 @@ test:
 
 production:
   adapter: sqlite3
-  database: db/admin.db
+  database: db/database_MANAGER.db
   pool: 5
   timeout: 5000

@@ -4,7 +4,7 @@ class QueryController < ApplicationController
   include Database
   
   def index
-    @relation_classes = database(current_user.id).relation_classes
+    @relation_classes = database(ENV['USERNAME']).relation_classes
   end
   
   #Insert a tuple in the instance database
@@ -14,7 +14,7 @@ class QueryController < ApplicationController
         format.html {redirect_to '/query', :notice => "No relation was selected"}
       end
     else
-      @relation_classes = database(current_user.id).relation_classes
+      @relation_classes = database(ENV['USERNAME']).relation_classes
       rel_name = params[:relation][:name]
       values = params[:values].split(";")
       values_hash = Hash.new
@@ -53,7 +53,7 @@ class QueryController < ApplicationController
         schema[col_names[i]]=col_types[i]
       end
     end
-    database(current_user.id).create_relation(rel_name,schema)    
+    database(ENV['USERNAME']).create_relation(rel_name,schema)    
     respond_to do |format|
       format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
       format.json { head :no_content }

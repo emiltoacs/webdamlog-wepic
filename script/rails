@@ -5,16 +5,17 @@
 #including route parameters. Ports used for wlinstances are expected to have values above 9999.
 require 'lib/wl_setup'
 
-ENV['IS_MANAGER']='true'
-if ARGV.include?("-b")
-  ENV['IS_MANAGER']='false'
-  puts "Server is a WLInstance."
-end
+ENV['USERNAME']=ARGV.last.upcase
+ARGV.delete(ARGV.last)
 
-if ENV['IS_MANAGER']=='true'
+if ENV['USERNAME']=='MANAGER'
   puts "Server is a WLInstance Manager."
   dbsetup(:sqlite3)
+else
+  puts "Server is a WLInstance."  
 end
+
+#ENV['DATABASE_URL'] = "db/database_#{ENV['USERNAME']}.db"
 
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)

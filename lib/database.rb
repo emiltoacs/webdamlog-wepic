@@ -52,7 +52,6 @@ module Database
       @db_name = "db/database_#{database_id}.db"      
       @configuration = {:adapter => 'sqlite3', :database => @db_name}
       create_schema
-      #create_relation("Users",{"name","password"})
     end    
     
     #This method creates a special table that represents the schema of the database.
@@ -61,6 +60,9 @@ module Database
     def create_schema
       @relation_classes = Hash.new
       database=self
+      
+      
+      #Create the WLSchema model.
       relation_name="WLSchema"
       @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
         @schema = {"name"=>"string","schema"=>"string"}
@@ -76,8 +78,56 @@ module Database
         end
         def self.open_connection
           establish_connection @configuration
-        end        
+        end
+        def self.remove_connection
+          super
+        end
       end
+      
+      #Create the User Model
+#      user_table_name = "Users"
+#      @relation_class[user_table_name]=create_class("#{user_table_name}", ActiveRecord::Base) do
+#        acts_as_authentic do |c|
+#          c.logged_in_timeout = 10.minutes # default is 10.minutes
+#        end
+#        @schema = {
+#          "username"=>"string",
+#          "email"=>"string",
+#          "crypted_password" => "string",
+#          "password_salt" => "string",
+#          "persistence_token" => "string",
+#          "created_at" => "datetime",
+#          "updated_at" => "datetime"
+#        }
+#        @configuration = database.configuration
+#        establish_connection @configuration
+#        self.table_name = relation_name
+#        connection.create_table table_name, :force => true do |t|
+#          t.string :username
+#          t.string :email
+#          t.string :crypted_password
+#          t.string :password_salt
+#          t.string :persistence_token
+#          t.timestamps
+#        end if !connection.table_exists?(table_name)
+#        def self.schema
+#          @schema
+#        end
+#        def self.open_connection
+#          establish_connection @configuration
+#        end
+#      end
+      
+      #Create User sessions model
+#      @relation_class[user_table_name]=create_class("#{user_table_name}Session", Authlogic::Session::Base) do
+#        def to_key
+#          new_record? ? nil : [ self.send(self.class.primary_key) ]
+#        end
+# 
+#        def persisted?
+#          false
+#        end
+#      end
       
       @relation_classes[relation_name]=@wlschema
       @wlschema.establish_connection @configuration 
@@ -135,6 +185,9 @@ module Database
         end
         def self.open_connection
           establish_connection @configuration
+        end
+        def self.remove_connection
+          super
         end
       end      
     end

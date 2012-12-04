@@ -1,6 +1,6 @@
 WepimApp::Application.routes.draw do
   
-  if ENV['IS_MANAGER']=='true'
+  if ENV['USERNAME']=='MANAGER'
     root :to => 'welcome#index'
     match 'welcome/login' => 'welcome#login'
     match "welcome/shutdown/:id" => "welcome#shutdown"
