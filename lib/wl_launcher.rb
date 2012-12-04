@@ -18,7 +18,6 @@ module WLLauncher
     pids = Set.new
     `ps -ef | grep rails`.split("\n").each_with_index do |line,i|
       line_tokens = line.split(" ")
-      puts "line_tokens : #{line_tokens.inspect}"
       pids.add(line_tokens[1]) if line_tokens.include?(port.inspect)
     end
     pids.each do |pid|
