@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'uri'
-require 'paperclip/url_generator'
+require 'lib/paperclip/paperclip/url_generator'
 
 module Paperclip
   # The Attachment class manages the files for a given attachment. It saves
