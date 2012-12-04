@@ -1,7 +1,7 @@
-require 'paperclip/matchers/have_attached_file_matcher'
-require 'paperclip/matchers/validate_attachment_presence_matcher'
-require 'paperclip/matchers/validate_attachment_content_type_matcher'
-require 'paperclip/matchers/validate_attachment_size_matcher'
+require 'lib/paperclip/paperclip/matchers/have_attached_file_matcher'
+require 'lib/paperclip/paperclip/matchers/validate_attachment_presence_matcher'
+require 'lib/paperclip/paperclip/matchers/validate_attachment_content_type_matcher'
+require 'lib/paperclip/paperclip/matchers/validate_attachment_size_matcher'
 
 module Paperclip
   module Shoulda
@@ -11,7 +11,7 @@ module Paperclip
     #
     # In spec_helper.rb, you'll need to require the matchers:
     #
-    #   require "paperclip/matchers"
+    #   require "lib/paperclip/paperclip/matchers"
     #
     # And _include_ the module:
     #
@@ -35,7 +35,7 @@ module Paperclip
     #
     # In test_helper.rb, you'll need to require the matchers as well:
     #
-    #   require "paperclip/matchers"
+    #   require "lib/paperclip/paperclip/matchers"
     #
     # And _extend_ the module:
     #
