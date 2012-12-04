@@ -3,7 +3,12 @@
 
 #The PORT environment variable lets the port on which the rails server is booted accessible from everywhere,
 #including route parameters. Ports used for wlinstances are expected to have values above 9999.
-ENV['PORT']=ARGV[3] if ARGV.size>3
+ARGV.each_with_index do |arg,i|
+  puts "arg #{i} : #{arg.inspect}"
+end
+
+ENV['PORT']=ARGV[2] if ARGV.size>2
+puts "port : #{ENV['PORT']}"
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)
 require 'rails/commands'

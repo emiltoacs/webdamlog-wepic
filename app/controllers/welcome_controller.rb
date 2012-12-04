@@ -63,7 +63,7 @@ class WelcomeController < ApplicationController
   
   def shutdown
     @account = Account.find(params[:id])
-    if (exit_server(@account.port)>0)
+    if (exit_server(@account.port))
       @account.active = false
       @account.save
       respond_to do |format|
