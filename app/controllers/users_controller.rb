@@ -1,4 +1,5 @@
 require 'lib/database'
+
 class UsersController < ApplicationController
   include Database
   def list
@@ -13,6 +14,7 @@ class UsersController < ApplicationController
   # GET /users.json
   def index
     @user = User.new
+    @users = User.all
     @user_session = UserSession.new
     respond_to do |format|
       format.html # index.html.erb

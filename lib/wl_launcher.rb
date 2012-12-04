@@ -8,7 +8,7 @@ require 'set'
 module WLLauncher
   def start_server(port)
     pid = fork do
-      exec "/bin/bash -l -c \"rails server -p #{port}\""
+      exec "/bin/bash -l -c \"rails server -p #{port} -b 0.0.0.0\""
     end
     Process.detach(pid)
   end
