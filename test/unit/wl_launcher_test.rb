@@ -16,7 +16,7 @@ class WLLauncherTest < Test::Unit::TestCase
   end
   
   def test_a_start_server
-    start_server(@port)
+    start_server('test',@port)
   end
   
   def test_b_port_open

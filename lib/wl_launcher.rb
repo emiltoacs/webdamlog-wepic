@@ -6,9 +6,9 @@ require 'timeout'
 require 'set'
 
 module WLLauncher
-  def start_server(port)
+  def start_server(username,port)
     pid = fork do
-      exec "/bin/bash -l -c \"rails server -p #{port} -b 0.0.0.0\""
+      exec "/bin/bash -l -c \"rails server -p #{port} #{username}\""
     end
     Process.detach(pid)
   end
