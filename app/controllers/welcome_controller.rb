@@ -5,6 +5,7 @@ class WelcomeController < ApplicationController
   
   def index
     @account = Account.new
+    @accounts = Account.all
   end
   
   def existing
@@ -21,6 +22,7 @@ class WelcomeController < ApplicationController
     url = "http://#{@account.ip}:#{@account.port}"
     if port_open?(@account.ip,@account.port)
       start_server(@account.port)
+      @account.active=true
       respond_to do |format|
         format.html {redirect_to url, :notice => "Server was rebooted"}
       end
@@ -46,16 +48,41 @@ class WelcomeController < ApplicationController
     puts "starting server..."
     start_server(port)
     #This code does not check if call to rails failed. This operations requires interprocess communication.
-    @account = Account.new(:username => username, :ip=> ip, :port => port)
+    @account = Account.new(:username => username, :ip=> ip, :port => port, :active => true)
     if @account.save
       respond_to do |format|
-        sleep(5) #very ugly of making the user wait for the external server to be ready. We probably can do better.
+        sleep(7) #very ugly of making the user wait for the external server to be ready. We probably can do better.
         format.html {redirect_to "http://#{ip}:#{port}"}
       end
     else
       respond_to do |format|
-        format.html {redirect_to :welcome, :alert => "New WLInstance was not set properly"}
+        format.html {redirect_to :welcome, :alert => "New WebdamLog Instance was not set properly"}
       end
     end
+  end
+  
+  def shutdown
+    @account = Account.find(params[:id])
+    if (exit_server(@account.port)>0)
+      @account.active = false
+      @account.save
+      respond_to do |format|
+        format.html {redirect_to :welcome, :notice => "The WebdamLog Instance was properly shut down."}
+      end
+    else
+      respond_to do |format|
+        format.html {redirect_to :welcome, :alert => "The WebdamLog Instance was not properly shut down."}
+      end
+    end
+  end
+  
+  def start
+    @account = Account.find(params[:id])
+    start_server(@account.port)
+    @account.active=true
+    @account.save
+    respond_to do |format|
+      format.html {redirect_to :welcome, :notice => "The WebdamLog Instance was properly restarted."}
+    end   
   end
 end

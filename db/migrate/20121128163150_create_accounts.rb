@@ -4,6 +4,7 @@ class CreateAccounts < ActiveRecord::Migration
       t.string :username
       t.string :ip
       t.integer :port
+      t.boolean :active
 
       t.timestamps
     end

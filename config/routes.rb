@@ -6,6 +6,8 @@ WepimApp::Application.routes.draw do
     root :to => 'welcome#index'
     match 'welcome/new' => 'welcome#new'
     match 'welcome/existing' => 'welcome#existing'
+    match "welcome/shutdown/:id" => "welcome#shutdown"
+    match 'welcome/start/:id' => "welcome#start"
     match 'welcome' => 'welcome#index'    
     match '/*else' => 'welcome#index'
   end

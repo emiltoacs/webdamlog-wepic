@@ -27,6 +27,13 @@ body {
     filter:alpha(opacity=80);    
 }
 
+.admin {
+    border-style : solid;
+    border-width : 1px;
+    padding : 10px;
+    border-color : #E33;
+}
+
 #nav {
     width : 80%;
     position : relative;
