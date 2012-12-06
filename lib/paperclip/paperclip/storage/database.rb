@@ -91,7 +91,7 @@ module Paperclip
           end
           relative_url_root
         end
-        ActiveRecord::Base.logger.info("[paperclip] Database Storage Initalized.")
+        #ActiveRecord::Base.logger.info("[paperclip] Database Storage Initalized.")
       end
 
       def column_for_style style
