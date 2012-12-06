@@ -13,7 +13,7 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @user = User.new
+    @user = User.new #:username => ENV['USERNAME']
     @users = User.all
     @user_session = UserSession.new
     respond_to do |format|
@@ -36,7 +36,7 @@ class UsersController < ApplicationController
   # GET /users/new
   # GET /users/new.json
   def new
-    @user = User.new
+    @user = User.new #:username => ENV['USERNAME']
 
     respond_to do |format|
       format.html # new.html.erb
@@ -53,7 +53,7 @@ class UsersController < ApplicationController
   # POST /users.json
   def create
     @user = User.new(params[:user])
-
+    flash[:notice] = params.inspect
     respond_to do |format|
       if @user.save
         #When user is created, he is automatically logged in, which means
@@ -62,7 +62,7 @@ class UsersController < ApplicationController
         format.html { redirect_to(:wepic, :notice => "Registration successfull. #{database.inspect}") }
         format.xml { render :xml => @user, :status => :created, :location => @user }
       else
-        format.html { render :action => "new" }
+        format.html { render :action => "new" , :notice => params.inspect}
         format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
       end
     end

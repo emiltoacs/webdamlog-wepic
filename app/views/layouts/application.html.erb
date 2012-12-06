@@ -23,9 +23,10 @@
 				</div>
 				<div id="register_login">
 					<% if current_user %>
-					<% if is_admin(current_user.id)%>
-					<%= link_to "Admin", admin_path%>
-					<% end %>
+						<% if is_admin(current_user.id)%>
+							<%= link_to "Admin", admin_path%> |
+						<% end %>
+						<%= link_to "Logout", :logout %>
 					<% end %>
 				</div>
 			</div>

@@ -5,6 +5,7 @@
 #including route parameters. Ports used for wlinstances are expected to have values above 9999.
 require 'lib/wl_setup'
 
+#TODO : Do not require username to be last argument.
 ENV['USERNAME']=ARGV.last.upcase
 ARGV.delete(ARGV.last)
 
