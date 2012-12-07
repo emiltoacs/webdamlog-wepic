@@ -21,3 +21,20 @@ def dbsetup(db_type)
     end
   end
 end
+
+def argsetup(args)
+  user_opt_index = args.index('-u')
+  port_opt_index = args.index('-p')
+  ENV['USERNAME'] = args[user_opt_index+1].upcase if (user_opt_index)
+  ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
+  2.times { args.delete_at(user_opt_index)}
+  ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
+  ENV['PORT'] = '3000' if ENV['PORT'].nil?
+  if  ENV['USERNAME']=='MANAGER'
+    puts "Server is a WLInstance Manager."
+    dbsetup(:sqlite3)
+  else
+    puts "Server is a WLInstance."  
+  end
+  puts "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}"
+end

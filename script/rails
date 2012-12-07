@@ -1,23 +1,8 @@
 #!/usr/bin/env ruby
 # This command will automatically be run when you run "rails" with Rails 3 gems installed from the root of your application.
 
-#The PORT environment variable lets the port on which the rails server is booted accessible from everywhere,
-#including route parameters. Ports used for wlinstances are expected to have values above 9999.
 require 'lib/wl_setup'
-
-#TODO : Do not require username to be last argument.
-ENV['USERNAME']=ARGV.last.upcase
-ARGV.delete(ARGV.last)
-
-if ENV['USERNAME']=='MANAGER'
-  puts "Server is a WLInstance Manager."
-  dbsetup(:sqlite3)
-else
-  puts "Server is a WLInstance."  
-end
-
-#ENV['DATABASE_URL'] = "db/database_#{ENV['USERNAME']}.db"
-
+argsetup(ARGV)
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)
 require 'rails/commands'

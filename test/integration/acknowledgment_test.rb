@@ -16,6 +16,7 @@ class AcknowledgmentTest < Test::Unit::TestCase
   end
   
   def test_a_start_peer_without_server
+    puts "TEST A"
     thread = start_peer('MANAGER',nil,@manager_port,@port)
     sleep(0.5)
     send_acknowledgment(@name,@manager_port,@port)
@@ -24,10 +25,9 @@ class AcknowledgmentTest < Test::Unit::TestCase
     print "----------\n#{@name} has connected on port #{@port}!\n-----------"
   end
   
-  def test_a_start_peer_with_server
+  def test_b_start_peer_with_server
+    puts "TEST B"
     thread = start_peer('MANAGER','JULES',@manager_port,@port)
-    sleep(0.5)
-    send_acknowledgment(@name,@manager_port,@port)
     assert_equal(false,thread.nil?)
     thread.join
     print "----------\n#{@name} has connected on port #{@port}!\n-----------"
