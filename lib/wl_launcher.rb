@@ -4,6 +4,7 @@
 require 'socket'
 require 'timeout'
 require 'set'
+require 'pty'
 
 module WLLauncher
   
@@ -22,7 +23,7 @@ module WLLauncher
       end
     rescue Timeout::Error
       return false
-    end    
+    end
   end
   
   #This method is not supposed to be used by the manager, whose environment
@@ -35,23 +36,29 @@ module WLLauncher
     end
   end
   
-  #This method is not supposed to be used by webdamlog instance
-  def start_peer(name,username,manager_port,port)
-    if name=='MANAGER'
-      puts "Starting server"
-      start_server(username,port) if !username.nil?
-      server = TCPServer.new(manager_port)
-      thread = Thread.new do
-        wait_for_acknowledgment(server,port)
-      end
-      return thread
-    end
-    nil
-  end
-  
-  def start_server(username,port)
+  def start_server(username,manager_port,port)
     pid = fork do
-      exec "/bin/bash -l -c \"rails server -p #{port} #{username}\""
+      @line = ""
+      cmd =  "/bin/bash -l -c \"rails server -p #{port} -u #{username}\""
+      begin
+        PTY.spawn(cmd) do |stdin,stdout,pid|
+          begin
+            stdin.each do |line|
+              puts line
+              if line.include?("pid=") && line.include?("port=")
+                puts "Server is ready!"
+                send_acknowledgment(username,manager_port,port)
+              end
+            end
+          rescue Errno::EIO
+            puts "Server is shutdown. No longer listening to server output"
+          rescue Errno::ECONNREFUSED
+            puts "Server is shutdown. No longer listening to server output"
+          end
+        end
+      rescue PTY::ChildExited
+        puts "Child process exited!"
+      end
     end
     Process.detach(pid)
   end

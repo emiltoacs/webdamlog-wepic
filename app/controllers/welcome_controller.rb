@@ -19,7 +19,8 @@ class WelcomeController < ApplicationController
     #If the server for account is down.
     url = "http://#{@account.ip}:#{@account.port}"
     if port_open?(@account.ip,@account.port)
-      start_server(@account.username,@account.port)
+      thread = start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
+      thread.join
       @account.active=true
       respond_to do |format|
         format.html {redirect_to url, :notice => "Server was rebooted"}
@@ -32,24 +33,24 @@ class WelcomeController < ApplicationController
     end    
   end
   
-  def new(username)
+  def new(ext_username)
     #Temporary, need a better specification of URL.
+    port_spacing = 5
     ip = "localhost"
     default_port_number = 9999
     #Here is specification of port
     max = Account.maximum(:id)
     max = 0 if max.nil?
-    port = default_port_number + max + 1
+    ext_port = default_port_number + max + port_spacing
     #This will override the port
-    exit_server(port) if !port_open?(ip,port)
+    exit_server(ext_port) if !port_open?(ip,ext_port)
     puts "starting server..."
-    start_server(username,port)
+    start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port)
     #This code does not check if call to rails failed. This operations requires interprocess communication.
-    @account = Account.new(:username => username, :ip=> ip, :port => port, :active => true)
+    @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => true)
     if @account.save
       respond_to do |format|
-        sleep(7) #very ugly of making the user wait for the external server to be ready. We probably can do better.
-        format.html {redirect_to "http://#{ip}:#{port}"}
+        format.html {redirect_to "http://#{ip}:#{ext_port}"}
       end
     else
       respond_to do |format|
@@ -75,11 +76,25 @@ class WelcomeController < ApplicationController
   
   def start
     @account = Account.find(params[:id])
-    start_server(@account.username,@account.port)
+    start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
     @account.active=true
     @account.save
     respond_to do |format|
       format.html {redirect_to :welcome, :notice => "The WebdamLog Instance was properly restarted."}
     end   
   end
+  
+  #This method is not supposed to be used by webdamlog instance
+  def start_peer(name,ext_name,manager_port,ext_port)
+    if name=='MANAGER'
+      puts "Starting server"
+      start_server(ext_name,manager_port,ext_port) if !ext_name.nil?
+      server = TCPServer.new(manager_port.to_i+1)
+      wait_for_acknowledgment(server,ext_port)      
+#      thread = Thread.new do
+#      end
+#      return thread
+    end
+    false
+  end  
 end
