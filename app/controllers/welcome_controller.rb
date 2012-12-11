@@ -19,11 +19,12 @@ class WelcomeController < ApplicationController
     #If the server for account is down.
     url = "http://#{@account.ip}:#{@account.port}"
     if port_open?(@account.ip,@account.port)
-      thread = start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
-      thread.join
+      Thread.new do
+        start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
+      end
       @account.active=true
       respond_to do |format|
-        format.html {redirect_to url, :notice => "Server was rebooted"}
+        format.html {redirect_to url, :notice => "Server is rebooting..."}
       end
       #If the server for account is up.
     else
@@ -45,12 +46,15 @@ class WelcomeController < ApplicationController
     #This will override the port
     exit_server(ext_port) if !port_open?(ip,ext_port)
     puts "starting server..."
-    start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port)
+    Thread.new do
+      start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port)
+    end
     #This code does not check if call to rails failed. This operations requires interprocess communication.
     @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => true)
     if @account.save
       respond_to do |format|
-        format.html {redirect_to "http://#{ip}:#{ext_port}"}
+        #format.html {redirect_to "http://#{ip}:#{ext_port}"}
+        format.html {redirect_to :welcome, :notice => "Please wait while your wepic instance is being created..."}
       end
     else
       respond_to do |format|
@@ -76,25 +80,25 @@ class WelcomeController < ApplicationController
   
   def start
     @account = Account.find(params[:id])
-    start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
+    Thread.new do 
+      start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
+    end
     @account.active=true
     @account.save
     respond_to do |format|
-      format.html {redirect_to :welcome, :notice => "The WebdamLog Instance was properly restarted."}
+      format.html {redirect_to :welcome, :notice => "The WebdamLog Instance is restarting...."}
     end   
   end
   
-  #This method is not supposed to be used by webdamlog instance
-  def start_peer(name,ext_name,manager_port,ext_port)
-    if name=='MANAGER'
-      puts "Starting server"
-      start_server(ext_name,manager_port,ext_port) if !ext_name.nil?
-      server = TCPServer.new(manager_port.to_i+1)
-      wait_for_acknowledgment(server,ext_port)      
-#      thread = Thread.new do
-#      end
-#      return thread
+  def killall
+    @accounts = Account.all
+    @accounts.each do |account|
+      exit_server(account.port)
+      account.active = false
+      account.save      
     end
-    false
-  end  
+    respond_to do |format|
+      format.html {redirect_to :welcome, :notice => "All peers were killed"}
+    end
+  end
 end

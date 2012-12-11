@@ -1,74 +1,112 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
-
+require 'rubygems'
 require 'socket'
 require 'timeout'
 require 'set'
 require 'pty'
+require 'faye'
+require 'eventmachine'
 
 module WLLauncher
   
   def wait_for_acknowledgment(server,port)
     begin
-      Timeout::timeout(20) do
+      Timeout::timeout(10) do
         begin
           client = server.accept
-          puts client.gets          
+          client.gets
           client.close
           server.close
           return true
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+          puts "Connection Error..."
           return false
         end        
       end
     rescue Timeout::Error
+      puts "Time out..."
       return false
     end
   end
+  
+  #This method is not supposed to be used by webdamlog instance
+  def start_peer(name,ext_name,manager_port,ext_port)
+    if name=='MANAGER'
+      thread = Thread.new do
+        start_server(ext_name,manager_port,ext_port) if !ext_name.nil?
+      end
+      server = TCPServer.new(manager_port.to_i+1)
+      b = wait_for_acknowledgment(server,ext_port)
+      thread.join
+      EM.run do
+        client = Faye::Client.new("http://localhost:#{manager_port.to_i+2}/faye")
+        client.publish('/redirect', 'text' => "Client at port #{ext_port} is ready!")
+        puts "message published to faye!"
+        EM.stop_event_loop
+      end      
+      return b
+    end
+    false
+  end  
   
   #This method is not supposed to be used by the manager, whose environment
   #variable MANAGER_PORT should be undefined (or nil).
   def send_acknowledgment(name,manager_port,port)
     if name!='MANAGER'
-      socket = TCPSocket.open('localhost',manager_port)
+      socket = TCPSocket.open('localhost',manager_port.to_i + 1)
       socket.puts "Port #{port} ready"
       socket.close      
     end
   end
   
-  def start_server(username,manager_port,port)
-    pid = fork do
-      @line = ""
-      cmd =  "/bin/bash -l -c \"rails server -p #{port} -u #{username}\""
-      begin
-        PTY.spawn(cmd) do |stdin,stdout,pid|
-          begin
-            stdin.each do |line|
-              puts line
+  def start_server(username,manager_port,port,server_type=:thin)
+    #cmd =  "/bin/bash -l -c \"rails server -p #{port} -u #{username}\""
+    cmd =  "rails server -p #{port} -u #{username}"
+    begin
+      PTY.spawn(cmd) do |stdin,stdout,pid|
+        begin
+          stdin.each do |line|
+            case server_type
+            when :webrick
               if line.include?("pid=") && line.include?("port=")
                 puts "Server is ready!"
                 send_acknowledgment(username,manager_port,port)
+                return
+              end
+            when :thin
+              if line.include?("Listening on") && line.include?(", CTRL+C to stop")
+                puts "Server is ready!"
+                send_acknowledgment(username,manager_port,port)
+                return
               end
             end
-          rescue Errno::EIO
-            puts "Server is shutdown. No longer listening to server output"
-          rescue Errno::ECONNREFUSED
-            puts "Server is shutdown. No longer listening to server output"
           end
+        rescue Errno::EIO
+          puts "Server is shutdown. No longer listening to server output EIO"
+        rescue Errno::ECONNREFUSED
+          puts "Server is shutdown. No longer listening to server output ECONN"
         end
-      rescue PTY::ChildExited
-        puts "Child process exited!"
       end
+    rescue PTY::ChildExited
+      puts "Child process exited!"
     end
-    Process.detach(pid)
   end
   
   #This method kills the wl server if it located on the same machine only.
-  def exit_server(port)
+  def exit_server(port,type=:rails)
     pids = Set.new
-    `ps -ef | grep rails`.split("\n").each_with_index do |line,i|
-      line_tokens = line.split(" ")
-      pids.add(line_tokens[1]) if line_tokens.include?(port.inspect)
+    case type
+    when :rails
+      `ps -ef | grep rails`.split("\n").each_with_index do |line,i|
+        line_tokens = line.split(" ")
+        pids.add(line_tokens[1]) if line_tokens.include?(port.inspect)
+      end
+    when :faye
+      `ps -ef | grep rackup`.split("\n").each_with_index do |line,i|
+        line_tokens = line.split(" ")
+        pids.add(line_tokens[1]) if line_tokens.include?(port.inspect)
+      end      
     end
     pids.each do |pid|
       system "kill -9 #{pid}"
