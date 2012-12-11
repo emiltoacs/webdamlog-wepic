@@ -43,7 +43,7 @@ module WLLauncher
         client = Faye::Client.new("http://localhost:#{manager_port.to_i+2}/faye")
         client.publish('/redirect', 'text' => "Client at port #{ext_port} is ready!")
         puts "message published to faye!"
-        EM.stop_event_loop
+        #EM.stop_event_loop
       end      
       return b
     end
@@ -61,7 +61,6 @@ module WLLauncher
   end
   
   def start_server(username,manager_port,port,server_type=:thin)
-    #cmd =  "/bin/bash -l -c \"rails server -p #{port} -u #{username}\""
     cmd =  "rails server -p #{port} -u #{username}"
     begin
       PTY.spawn(cmd) do |stdin,stdout,pid|
