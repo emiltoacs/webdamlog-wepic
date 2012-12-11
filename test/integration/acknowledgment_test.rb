@@ -25,6 +25,10 @@ class AcknowledgmentTest < Test::Unit::TestCase
     thread = Thread.new do
       return_value = start_peer('MANAGER',nil,@manager_port,@port)
     end
+    Thread.new do
+      #XXX this code could be enhance to avoid the use of environment variables.
+      system("export FAYE_PORT=\"#{@manager_port.to_i+2}\";rackup faye.ru -s thin -E production")
+    end      
     sleep(0.5)
     send_acknowledgment(@name,@manager_port,@port)
     thread2 = Thread.new do

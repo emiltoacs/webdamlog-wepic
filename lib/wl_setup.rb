@@ -25,7 +25,8 @@ end
 def faye_setup
   puts "----------------------\nBOOTING FAYE SERVER\n----------------------"
   Thread.new do
-    system("rackup faye.ru -s thin -E production -p #{ENV['PORT'].to_i+2}")
+    system("export FAYE_PORT=\"#{ENV['PORT'].to_i+2}\"")
+    system("rackup faye.ru -s thin -E production")
   end  
 end
 
