@@ -22,12 +22,19 @@ def dbsetup(db_type)
   end
 end
 
+def faye_setup
+  puts "----------------------\nBOOTING FAYE SERVER\n----------------------"
+  Thread.new do
+    system("rackup faye.ru -s thin -E production -p #{ENV['PORT'].to_i+2}")
+  end  
+end
+
 def argsetup(args)
   user_opt_index = args.index('-u')
   port_opt_index = args.index('-p')
   ENV['USERNAME'] = args[user_opt_index+1].upcase if (user_opt_index)
   ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
-  2.times { args.delete_at(user_opt_index)}
+  2.times { args.delete_at(user_opt_index)} if user_opt_index
   ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
   ENV['PORT'] = '3000' if ENV['PORT'].nil?
   if  ENV['USERNAME']=='MANAGER'
@@ -37,4 +44,5 @@ def argsetup(args)
     puts "Server is a WLInstance."  
   end
   puts "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}"
+  faye_setup
 end

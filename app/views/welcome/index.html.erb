@@ -1,3 +1,15 @@
+<script>
+  $(function() {
+    // Create a new client to connect to Faye
+    var client = new Faye.Client("http://localhost:#{port().to_i+2}/faye");
+    // Subscribe to the public channel
+    var public_subscription = client.subscribe('/redirect/new', function(data) {
+			if (typeof console !== 'undefined') {
+					console.log(data);
+			}      
+    });
+	});
+</script>
 <div class="opacity"></div>
 <div class="content">
 	<div class="notice"><%= notice %></div>
@@ -7,5 +19,10 @@
 	</div>
 	<div class="list" style="margin-top:30px;">
 		<%= render 'list'%>
+	</div>
+	<div class="field">
+		<%=form_tag({:controller => "welcome", :action=>"killall"},:method=>'post') do %>
+			<%= submit_tag 'Kill all wepic peers'%>
+		<%end%>
 	</div>
 </div>

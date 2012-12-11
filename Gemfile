@@ -15,11 +15,13 @@ gem 'bud', '0.9.1'
 
 gem 'rmagick'
 
-#gem 'paperclip', '~> 2.8.0'
-
 gem 'sqlite3'
 
 gem 'json'
+
+gem 'faye'
+
+gem 'thin'
 
 # Gems used only for assets and not required
 # in production environments by default.
