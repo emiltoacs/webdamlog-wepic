@@ -5,7 +5,6 @@ require 'socket'
 require 'timeout'
 require 'set'
 require 'pty'
-require 'lib/bayeux'
 
 module WLLauncher
   
@@ -30,17 +29,16 @@ module WLLauncher
   end
   
   #This method is not supposed to be used by webdamlog instance
-  def start_peer(name,ext_name,manager_port,ext_port)
+  def start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
       thread = Thread.new do
         start_server(ext_name,manager_port,ext_port) if !ext_name.nil?
       end
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
-      EM.run do
-        client = Faye::Client.new('http://localhost:9292/faye')
-        client.publish('/redirect', 'text' => "Port #{ext_port} is ready")
-        EM.stop_event_loop
+      if account
+        account.active=true
+        account.save
       end
       return b
     end

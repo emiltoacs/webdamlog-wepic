@@ -1,6 +1,6 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
-require 'wl_launcher'
+require 'lib/wl_launcher'
 
 def dbsetup(db_type)
   case db_type
@@ -23,15 +23,6 @@ def dbsetup(db_type)
   end
 end
 
-def faye_setup
-  include WLLauncher
-  puts "----------------------\nBOOTING FAYE SERVER\n----------------------"
-  exit_server(9292)
-  Thread.new do
-    system("rackup faye.ru -s thin -E production")
-  end  
-end
-
 def argsetup(args)
   user_opt_index = args.index('-u')
   port_opt_index = args.index('-p')
@@ -47,5 +38,4 @@ def argsetup(args)
     puts "Server is a WLInstance."  
   end
   puts "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}"
-  faye_setup
 end

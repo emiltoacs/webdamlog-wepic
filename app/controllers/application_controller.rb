@@ -14,10 +14,6 @@ class ApplicationController < ActionController::Base
   #TODO : need to find a clean way to define our admin list.
   #@@adminlist = Array[3,4,5]
   
-  def port
-    @port
-  end
-  
   def current_user_session
     return @current_user_session if defined?(@current_user_session)
     @current_user_session = UserSession.find

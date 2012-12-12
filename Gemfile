@@ -19,8 +19,6 @@ gem 'sqlite3'
 
 gem 'json'
 
-gem 'faye'
-
 gem 'thin'
 
 # Gems used only for assets and not required
@@ -38,6 +36,7 @@ end
 gem 'jquery-rails'
 
 gem 'authlogic'
+
 # To use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
