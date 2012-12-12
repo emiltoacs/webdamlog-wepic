@@ -5,14 +5,13 @@ require 'socket'
 require 'timeout'
 require 'set'
 require 'pty'
-require 'faye'
-require 'eventmachine'
+require 'lib/bayeux'
 
 module WLLauncher
   
   def wait_for_acknowledgment(server,port)
     begin
-      Timeout::timeout(10) do
+      Timeout::timeout(5) do
         begin
           client = server.accept
           client.gets
@@ -38,13 +37,11 @@ module WLLauncher
       end
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
-      thread.join
       EM.run do
-        client = Faye::Client.new("http://localhost:#{manager_port.to_i+2}/faye")
-        client.publish('/redirect', 'text' => "Client at port #{ext_port} is ready!")
-        puts "message published to faye!"
-        #EM.stop_event_loop
-      end      
+        client = Faye::Client.new('http://localhost:9292/faye')
+        client.publish('/redirect', 'text' => "Port #{ext_port} is ready")
+        EM.stop_event_loop
+      end
       return b
     end
     false
@@ -66,6 +63,7 @@ module WLLauncher
       PTY.spawn(cmd) do |stdin,stdout,pid|
         begin
           stdin.each do |line|
+            puts line
             case server_type
             when :webrick
               if line.include?("pid=") && line.include?("port=")
