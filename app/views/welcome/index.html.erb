@@ -1,17 +1,3 @@
-<script>
-  $(function() {
-    // Create a new client to connect to Faye
-    var client = new Faye.Client(<%="http://localhost:#{port().to_i+2}/faye"%>);
-    // Subscribe to the public channel
-    var public_subscription = client.subscribe('/redirect', function(data) {
-			if (typeof console !== 'undefined') {
-				console.log(data);
-			} else {
-				$("#notice").append("<li>" + data + "</li>");
-			}
-    });
-	});
-</script>
 <div id="notice"><%= notice %></div>
 <div class="opacity"></div>
 <div class="content">

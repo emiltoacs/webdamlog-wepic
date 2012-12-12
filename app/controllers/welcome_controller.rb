@@ -20,11 +20,11 @@ class WelcomeController < ApplicationController
     url = "http://#{@account.ip}:#{@account.port}"
     if port_open?(@account.ip,@account.port)
       Thread.new do
-        start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
+        start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port,@account)
       end
-      @account.active=true
       respond_to do |format|
-        format.html {redirect_to url, :notice => "Server is rebooting..."}
+        #XXX need to take care of url
+        format.html {redirect_to "/waiting/#{@account.id}", :notice => "Server is rebooting..."}
       end
       #If the server for account is up.
     else
@@ -46,15 +46,16 @@ class WelcomeController < ApplicationController
     #This will override the port
     exit_server(ext_port) if !port_open?(ip,ext_port)
     puts "starting server..."
+    @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
     Thread.new do
-      start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port)
+      start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
     end
     #This code does not check if call to rails failed. This operations requires interprocess communication.
-    @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => true)
     if @account.save
       respond_to do |format|
         #format.html {redirect_to "http://#{ip}:#{ext_port}"}
-        format.html {redirect_to :welcome, :notice => "Please wait while your wepic instance is being created..."}
+        #Take care of URL
+        format.html {redirect_to "/waiting/#{@account.id}", :notice => "Please wait while your wepic instance is being created..."}
       end
     else
       respond_to do |format|
@@ -101,4 +102,17 @@ class WelcomeController < ApplicationController
       format.html {redirect_to :welcome, :notice => "All peers were killed"}
     end
   end
+
+  def confirm_server_ready
+     @account = Account.find(params[:id])
+     #puts "account : " + @account.inspect
+     respond_to do |format|
+       format.json { render :json => @account.active }
+     end
+  end
+  
+  def waiting
+    @account = Account.find(params[:id])
+  end
 end
+
