@@ -1,5 +1,6 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
+require 'wl_launcher'
 
 def dbsetup(db_type)
   case db_type
@@ -23,9 +24,10 @@ def dbsetup(db_type)
 end
 
 def faye_setup
+  include WLLauncher
   puts "----------------------\nBOOTING FAYE SERVER\n----------------------"
+  exit_server(9292)
   Thread.new do
-    system("export FAYE_PORT=\"#{ENV['PORT'].to_i+2}\"")
     system("rackup faye.ru -s thin -E production")
   end  
 end
