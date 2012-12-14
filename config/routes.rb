@@ -5,7 +5,10 @@ WepimApp::Application.routes.draw do
     match 'welcome/login' => 'welcome#login'
     match "welcome/shutdown/:id" => "welcome#shutdown"
     match 'welcome/start/:id' => "welcome#start"
-    match 'welcome' => 'welcome#index'    
+    match 'welcome/killall' => "welcome#killall"
+    match 'welcome' => 'welcome#index'
+    match 'waiting/:id' => 'welcome#waiting', :as => :waiting
+    match 'waiting/confirm/:id' => 'welcome#confirm_server_ready', :as => :confirm_server_ready
     match '/*else' => 'welcome#index'
   else
     root :to => 'users#index'
