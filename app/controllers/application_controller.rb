@@ -3,6 +3,12 @@ class ApplicationController < ActionController::Base
   
   helper_method :current_user
   helper_method :is_admin
+  helper_method :port
+  
+  def initialize
+    @port = ENV['PORT']
+    super
+  end
   
   private
   #TODO : need to find a clean way to define our admin list.

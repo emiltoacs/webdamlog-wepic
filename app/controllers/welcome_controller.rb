@@ -19,10 +19,12 @@ class WelcomeController < ApplicationController
     #If the server for account is down.
     url = "http://#{@account.ip}:#{@account.port}"
     if port_open?(@account.ip,@account.port)
-      start_server(@account.username,@account.port)
-      @account.active=true
+      Thread.new do
+        start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port,@account)
+      end
       respond_to do |format|
-        format.html {redirect_to url, :notice => "Server was rebooted"}
+        #XXX need to take care of url
+        format.html {redirect_to "/waiting/#{@account.id}", :notice => "Server is rebooting..."}
       end
       #If the server for account is up.
     else
@@ -32,24 +34,28 @@ class WelcomeController < ApplicationController
     end    
   end
   
-  def new(username)
+  def new(ext_username)
     #Temporary, need a better specification of URL.
+    port_spacing = 5
     ip = "localhost"
     default_port_number = 9999
     #Here is specification of port
     max = Account.maximum(:id)
     max = 0 if max.nil?
-    port = default_port_number + max + 1
+    ext_port = default_port_number + max + port_spacing
     #This will override the port
-    exit_server(port) if !port_open?(ip,port)
+    exit_server(ext_port) if !port_open?(ip,ext_port)
     puts "starting server..."
-    start_server(username,port)
+    @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
+    Thread.new do
+      start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
+    end
     #This code does not check if call to rails failed. This operations requires interprocess communication.
-    @account = Account.new(:username => username, :ip=> ip, :port => port, :active => true)
     if @account.save
       respond_to do |format|
-        sleep(7) #very ugly of making the user wait for the external server to be ready. We probably can do better.
-        format.html {redirect_to "http://#{ip}:#{port}"}
+        #format.html {redirect_to "http://#{ip}:#{ext_port}"}
+        #Take care of URL
+        format.html {redirect_to "/waiting/#{@account.id}", :notice => "Please wait while your wepic instance is being created..."}
       end
     else
       respond_to do |format|
@@ -75,11 +81,38 @@ class WelcomeController < ApplicationController
   
   def start
     @account = Account.find(params[:id])
-    start_server(@account.username,@account.port)
+    Thread.new do 
+      start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
+    end
     @account.active=true
     @account.save
     respond_to do |format|
-      format.html {redirect_to :welcome, :notice => "The WebdamLog Instance was properly restarted."}
+      format.html {redirect_to :welcome, :notice => "The WebdamLog Instance is restarting...."}
     end   
   end
+  
+  def killall
+    @accounts = Account.all
+    @accounts.each do |account|
+      exit_server(account.port)
+      account.active = false
+      account.save      
+    end
+    respond_to do |format|
+      format.html {redirect_to :welcome, :notice => "All peers were killed"}
+    end
+  end
+
+  def confirm_server_ready
+     @account = Account.find(params[:id])
+     #puts "account : " + @account.inspect
+     respond_to do |format|
+       format.json { render :json => @account.active }
+     end
+  end
+  
+  def waiting
+    @account = Account.find(params[:id])
+  end
 end
+
