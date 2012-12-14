@@ -6,8 +6,12 @@ require 'timeout'
 require 'set'
 require 'pty'
 
+#This module manages the launch by the Wepic Manager of the different 
+#Wepic peers.
+#
 module WLLauncher
   
+  #The manager waits
   def wait_for_acknowledgment(server,port)
     begin
       Timeout::timeout(5) do
@@ -29,10 +33,17 @@ module WLLauncher
   end
   
   #This method is not supposed to be used by webdamlog instance
+  #XXX bug fix : make sure the redirection works even if port is already taken.
+  #XXX only works for local host.
   def start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
-      thread = Thread.new do
-        start_server(ext_name,manager_port,ext_port) if !ext_name.nil?
+      if !ext_name.nil?
+        thread = Thread.new do
+          #if port_open('localhost',)
+          #exit_server(ext_port)
+          #sleep(2)
+          start_server(ext_name,manager_port,ext_port)
+        end        
       end
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
@@ -61,19 +72,19 @@ module WLLauncher
       PTY.spawn(cmd) do |stdin,stdout,pid|
         begin
           stdin.each do |line|
-            puts line
+            puts "Peer #{username}@localhost:#{port} : " + line
             case server_type
             when :webrick
               if line.include?("pid=") && line.include?("port=")
                 puts "Server is ready!"
                 send_acknowledgment(username,manager_port,port)
-                return
+                #return
               end
             when :thin
               if line.include?("Listening on") && line.include?(", CTRL+C to stop")
                 puts "Server is ready!"
                 send_acknowledgment(username,manager_port,port)
-                return
+                #return
               end
             end
           end

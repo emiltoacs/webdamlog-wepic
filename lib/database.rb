@@ -84,51 +84,6 @@ module Database
         end
       end
       
-      #Create the User Model
-#      user_table_name = "Users"
-#      @relation_class[user_table_name]=create_class("#{user_table_name}", ActiveRecord::Base) do
-#        acts_as_authentic do |c|
-#          c.logged_in_timeout = 10.minutes # default is 10.minutes
-#        end
-#        @schema = {
-#          "username"=>"string",
-#          "email"=>"string",
-#          "crypted_password" => "string",
-#          "password_salt" => "string",
-#          "persistence_token" => "string",
-#          "created_at" => "datetime",
-#          "updated_at" => "datetime"
-#        }
-#        @configuration = database.configuration
-#        establish_connection @configuration
-#        self.table_name = relation_name
-#        connection.create_table table_name, :force => true do |t|
-#          t.string :username
-#          t.string :email
-#          t.string :crypted_password
-#          t.string :password_salt
-#          t.string :persistence_token
-#          t.timestamps
-#        end if !connection.table_exists?(table_name)
-#        def self.schema
-#          @schema
-#        end
-#        def self.open_connection
-#          establish_connection @configuration
-#        end
-#      end
-      
-      #Create User sessions model
-#      @relation_class[user_table_name]=create_class("#{user_table_name}Session", Authlogic::Session::Base) do
-#        def to_key
-#          new_record? ? nil : [ self.send(self.class.primary_key) ]
-#        end
-# 
-#        def persisted?
-#          false
-#        end
-#      end
-      
       @relation_classes[relation_name]=@wlschema
       @wlschema.establish_connection @configuration 
       #Retrieve all the models
@@ -140,9 +95,16 @@ module Database
     #The create relation method will create a new relation in the database as well.
     #as a new rails model class connected to that relation. It requires a schema
     #that will correspond to the table's relationnal schema.
+    #XXX The api need to be managed for mistyping
     def create_relation(name,schema)
+      raise "Name should not be nil!" if name.nil?
+      raise "Name should not be empty!" if name.empty?
       name.capitalize!
-      @relation_classes[name] = create_relation_class(name,schema)
+      begin 
+        @relation_classes[name] = create_relation_class(name,schema)
+      rescue error
+        raise error
+      end
       @wlschema.open_connection
       if @wlschema.new(:name => name,:schema => schema.to_json).save
         #good
@@ -152,6 +114,8 @@ module Database
       @wlschema.remove_connection
     end
     
+    #Creates the relation class extends ActiveRecord::Base and follows the model
+    #given by schema.
     def create_relation_class(name,schema)
       database=self
       create_class("#{name}_#{@id}",ActiveRecord::Base) do
@@ -159,11 +123,15 @@ module Database
         @configuration = database.configuration
         establish_connection @configuration
         self.table_name=name
-        connection.create_table table_name, :force => true do |t|
-          schema.each_pair do |col_name,col_type|
-            eval("t.#{col_type} :#{col_name}")
-          end
-        end if !connection.table_exists?(table_name)
+        begin
+          connection.create_table table_name, :force => true do |t|
+            schema.each_pair do |col_name,col_type|
+              eval("t.#{col_type} :#{col_name}")
+            end
+          end if !connection.table_exists?(table_name)          
+        rescue
+          raise "Schema has been mistyped!"
+        end
         def self.insert(values)
           self.new(values).save
         end
