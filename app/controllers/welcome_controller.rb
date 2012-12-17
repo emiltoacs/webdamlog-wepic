@@ -42,10 +42,9 @@ class WelcomeController < ApplicationController
     #Here is specification of port
     max = Account.maximum(:id)
     max = 0 if max.nil?
-    ext_port = default_port_number + max + port_spacing
+    ext_port = default_port_number + max * port_spacing + 1
     #This will override the port
     exit_server(ext_port) if !port_open?(ip,ext_port)
-    puts "starting server..."
     @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
     Thread.new do
       start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
@@ -105,7 +104,6 @@ class WelcomeController < ApplicationController
 
   def confirm_server_ready
      @account = Account.find(params[:id])
-     #puts "account : " + @account.inspect
      respond_to do |format|
        format.json { render :json => @account.active }
      end

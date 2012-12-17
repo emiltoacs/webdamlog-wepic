@@ -1,6 +1,7 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 require 'lib/wl_launcher'
+require 'lib/database'
 
 def dbsetup(db_type)
   case db_type
@@ -20,7 +21,10 @@ def dbsetup(db_type)
       system 'bundle exec rake db:migrate'
       puts "Database migrated."
     end
+   when :mysql2
+    #Not needed for now
   end
+
 end
 
 def argsetup(args)
@@ -36,7 +40,10 @@ def argsetup(args)
   ENV['PORT'] = '3000' if ENV['PORT'].nil?
   if  ENV['USERNAME']=='MANAGER'
     if ENV['RESET']
-      system "rm db/*.db"
+      include Database
+      #XXX This does not remove customly created databases 
+      destroy_all
+      system "rake db:reset"
     end
     puts "Server is a WLInstance Manager."
     dbsetup(:sqlite3)

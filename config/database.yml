@@ -3,23 +3,45 @@
 #
 #   Ensure the SQLite 3 gem is defined in your Gemfile
 #   gem 'sqlite3'
+
+#development:
+#  adapter: sqlite3
+#  database: db/database_MANAGER.db
+#  pool: 5
+#  timeout: 5000
+
+# Now changing to my_sql because sqlite is too slow.
 development:
-  adapter: sqlite3
-  database: db/database_MANAGER.db
+  adapter: mysql2
+  encoding: utf8
+  reconnect: false
+  database: development_MANAGER
   pool: 5
-  timeout: 5000
+  username: root
+  password: 21elfenoir
+  socket: /var/run/mysqld/mysqld.sock
+  timeout : 5000
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
-  adapter: sqlite3
-  database: db/admin_test.db
+  adapter: mysql2
+  encoding: utf8
+  reconnect: false
+  database: test_MANAGER
   pool: 5
-  timeout: 5000
+  username: root
+  password: 21elfenoir
+  socket: /var/run/mysqld/mysqld.sock
+  timeout : 5000
 
 production:
-  adapter: sqlite3
-  database: db/database_MANAGER.db
+  adapter: mysql2
+  encoding: utf8
+  reconnect: false
+  database: production_MANAGER
   pool: 5
-  timeout: 5000
+  username: root
+  password: 21elfenoir
+  socket: /var/run/mysqld/mysqld.sock 
