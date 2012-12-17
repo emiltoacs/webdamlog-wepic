@@ -1,6 +1,13 @@
+require 'yaml'
+
+#The class picture contains all the pictures.
+#XXX Need to create custom classes for pictures in the database module.
+# We have to find a way around the has_attached_file method. 
 class Picture < ActiveRecord::Base
-  db_name = "db/database_#{ENV['USERNAME']}.db"  
-  establish_connection :adapter => 'sqlite3', :database => db_name  
+  db_name = "#{Rails.env}_#{ENV['USERNAME']}"
+  configuration = YAML::load(File.open(File.join(Rails.root,'config/database.yml')))[Rails.env]
+  configuration['database']=db_name
+  establish_connection configuration
   attr_accessible :title, :image
   self.table_name = 'Pictures'
   connection.create_table 'Pictures', :force => true do |t|

@@ -32,6 +32,12 @@ module WepimApp
     # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
+    date = Time.now
+    new_logger = Logger.new(File.join(Rails.root, "log", "#{Rails.env}.log"), 'daily')
+    new_logger.formatter = Logger::Formatter.new
+    #Active record logger logs interactiosn with the database. I 
+    config.active_record.logger = new_logger
+    config.action_controller.logger = new_logger
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
@@ -39,7 +45,6 @@ module WepimApp
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
     
-    config.active_record.logger = nil
 
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true

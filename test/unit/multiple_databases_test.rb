@@ -9,21 +9,22 @@ class MultipleDatabasesTest < Test::Unit::TestCase
   include Database
   
   def setup
+    @dbcount = 1
     @dbids = Array.new
-    (0..7).each do |i|
+    (0..@dbcount).each do |i|
       @dbids[i] =  (0...8).map{('a'..'z').to_a[rand(26)]}.join
       create_or_connect_db(@dbids[i])
     end
   end
   
   def teardown
-    (0..7).each do |i|
+    (0..@dbcount).each do |i|
       database(@dbids[i]).destroy
     end
   end
   
   def test_manipulate_databases
-    number=10
+    number=1000
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}

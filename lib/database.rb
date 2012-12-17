@@ -4,6 +4,7 @@ require 'set'
 require 'json'
 require 'pathname'
 require 'fileutils'
+require 'yaml'
 
 module Database
   @@databases = Hash.new
@@ -41,18 +42,38 @@ module Database
       destroy_classes
       
       #Destroy the db
-      path = Pathname.new(@db_name)
-      rails_root = File.expand_path('.')
-      file = path.absolute? ? path.to_s : File.join(rails_root, path)
-      FileUtils.rm(file)
+      case @configuration[:adapter]
+      when 'sqlite3'
+        path = Pathname.new(@db_name)
+        rails_root = File.expand_path('.')
+        file = path.absolute? ? path.to_s : File.join(rails_root, path)
+        FileUtils.rm(file)
+      when 'mysql2'
+        ActiveRecord::Base.establish_connection(@configuration)
+        ActiveRecord::Base.connection.drop_database @configuration[:database]        
+      end
     end
     
     def create_or_retrieve_database(database_id)
       @id = database_id
-      @db_name = "db/database_#{database_id}.db"      
-      @configuration = {:adapter => 'sqlite3', :database => @db_name}
+      @db_name = "#{Rails.env}_#{database_id}"
+      #XXX should not be hard-coded
+      @configuration = YAML::load(File.open(File.join(Rails.root,'config/database.yml')))[Rails.env]
+      @configuration['database']=@dbname
+      create_database
       create_schema
-    end    
+    end
+
+    def create_database
+      case @configuration[:adapter]
+      when 'sqlite3'
+        #Do nothing
+      when 'mysql2'
+          ActiveRecord::Base.establish_connection(@configuration.merge('database' => nil))
+          ActiveRecord::Base.connection.execute("CREATE DATABASE IF NOT EXISTS #{@configuration[:database]};")
+          ActiveRecord::Base.establish_connection(@configuration)
+      end
+    end
     
     #This method creates a special table that represents the schema of the database.
     #Since database schemas are different for every user, storing them is a quick
@@ -189,5 +210,12 @@ module Database
   def destroy(database_id)
     @@databases[database_id].destroy
     @@databases[database_id].delete(database_id)
+  end
+  
+  def destroy_all
+    @@databases.keys.each do |k|
+      @@databases[k].destroy
+    end
+    @@databases.clear
   end
 end

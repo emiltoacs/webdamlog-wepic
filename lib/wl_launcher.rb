@@ -11,25 +11,43 @@ require 'pty'
 #
 module WLLauncher
   
-  #The manager waits
-  def wait_for_acknowledgment(server,port)
+  #The manager waits for his peer 
+  #this method is blocking until it receives an answer.
+  def wait_for_acknowledgment(server)
     begin
       Timeout::timeout(5) do
         begin
+          #XXX in case servers connect simultaneously  
           client = server.accept
-          client.gets
+          Rails.logger.info client.gets
           client.close
           server.close
           return true
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-          puts "Connection Error..."
+          Rails.logger.info "Connection Error..."
           return false
         end        
       end
     rescue Timeout::Error
-      puts "Time out..."
+      Rails.logger.info "Time out..."
       return false
     end
+  end
+  
+  #Retrieves an available server for acknowledgment.
+  #This method returns an available port on which to hook
+  #the acknowledgement sever. Also returns the server itself
+  #
+  def server(manager_port)
+    ack_port = manager_port.to_i+1
+    while !@server do
+      begin
+        @server ||= TCPServer.new(port)
+      rescue Errno::EADDRINUSE,Errno::ECONNREFUSED
+        ack_port = ack_port+1
+      end
+    end
+    return @server, ack_port
   end
   
   #This method is not supposed to be used by webdamlog instance
@@ -37,65 +55,72 @@ module WLLauncher
   #XXX only works for local host.
   def start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
-      if !ext_name.nil?
+      #XXX What happens when several peers want to log on at the same time?
+      #Need to add support to ensure acknowledgement are recognized properly if several
+      #peers attempt to connect at the same time.
+      server, ack_port = server(manager_port)
+      Rails.logger.info "Ack_port : #{ack_port}"
+      unless ext_name.nil?
         thread = Thread.new do
-          #if port_open('localhost',)
-          #exit_server(ext_port)
-          #sleep(2)
-          start_server(ext_name,manager_port,ext_port)
-        end        
+          start_server(ext_name,ack_port,ext_port)
+        end
+      else
+        Rails.logger.warn "Ext_name parameter is nil, this should only happen in a testing environment."
       end
-      server = TCPServer.new(manager_port.to_i+1)
-      b = wait_for_acknowledgment(server,ext_port)
-      if account
+      
+      ack_received = wait_for_acknowledgment(server)
+      if ack_received
         account.active=true
         account.save
       end
-      return b
+      return ack_received
     end
     false
   end  
   
   #This method is not supposed to be used by the manager, whose environment
   #variable MANAGER_PORT should be undefined (or nil).
-  def send_acknowledgment(name,manager_port,port)
+  def send_acknowledgment(name,ack_port,port)
     if name!='MANAGER'
-      socket = TCPSocket.open('localhost',manager_port.to_i + 1)
+      socket = TCPSocket.open('localhost',ack_port.to_i)
       socket.puts "Port #{port} ready"
       socket.close      
     end
   end
   
-  def start_server(username,manager_port,port,server_type=:thin)
-    cmd =  "rails server -p #{port} -u #{username}"
+  #This method starts the server the peer with given *username* will be
+  #running on. Ack_port is the port of the manager application
+  #
+  #
+  def start_server(username,ack_port,peer_port,server_type=:thin)
+    Rails.logger.info "In start_server"
+    cmd =  "rails server -p #{peer_port} -u #{username}"
     begin
       PTY.spawn(cmd) do |stdin,stdout,pid|
         begin
           stdin.each do |line|
-            puts "Peer #{username}@localhost:#{port} : " + line
+            Rails.logger.info "Peer #{username}@localhost:#{peer_port} : " + line
             case server_type
             when :webrick
               if line.include?("pid=") && line.include?("port=")
-                puts "Server is ready!"
-                send_acknowledgment(username,manager_port,port)
+                send_acknowledgment(username,ack_port,peer_port)
                 #return
               end
             when :thin
               if line.include?("Listening on") && line.include?(", CTRL+C to stop")
-                puts "Server is ready!"
-                send_acknowledgment(username,manager_port,port)
+                send_acknowledgment(username,ack_portack_port,peer_port)
                 #return
               end
             end
           end
         rescue Errno::EIO
-          puts "Server is shutdown. No longer listening to server output EIO"
+          Rails.logger.error "Server is shutdown. No longer listening to server output EIO"
         rescue Errno::ECONNREFUSED
-          puts "Server is shutdown. No longer listening to server output ECONN"
+          Rails.logger.error "Server is shutdown. No longer listening to server output ECONN"
         end
       end
     rescue PTY::ChildExited
-      puts "Child process exited!"
+      Rails.logger.info "Child process exited!"
     end
   end
   
@@ -116,7 +141,7 @@ module WLLauncher
     end
     pids.each do |pid|
       system "kill -9 #{pid}"
-      puts "Process #{pid} killed"
+      Rails.logger.info "Process #{pid} killed"
     end
     pids.size
   end
