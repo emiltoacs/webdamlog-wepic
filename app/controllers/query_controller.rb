@@ -1,4 +1,4 @@
-require 'lib/database'
+require 'app/helpers/wl_database'
 
 class QueryController < ApplicationController
   include Database
