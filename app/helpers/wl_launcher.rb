@@ -38,27 +38,30 @@ module WLLauncher
   #This method returns an available port on which to hook
   #the acknowledgement sever. Also returns the server itself
   #
-  def server(manager_port)
+  def ack_server(manager_port)
     ack_port = manager_port.to_i+1
-    while !@server do
+    server=nil
+    while !server do
       begin
-        @server ||= TCPServer.new(port)
+        server = TCPServer.new(ack_port)
       rescue Errno::EADDRINUSE,Errno::ECONNREFUSED
         ack_port = ack_port+1
       end
     end
-    return @server, ack_port
+    puts "Expecting ack at : #{ack_port}"
+    return server, ack_port
   end
   
   #This method is not supposed to be used by webdamlog instance
   #XXX bug fix : make sure the redirection works even if port is already taken.
   #XXX only works for local host.
   def start_peer(name,ext_name,manager_port,ext_port,account=nil)
+    puts "safety check : #{name}"
     if name=='MANAGER'
       #XXX What happens when several peers want to log on at the same time?
       #Need to add support to ensure acknowledgement are recognized properly if several
       #peers attempt to connect at the same time.
-      server, ack_port = server(manager_port)
+      server, ack_port = ack_server(manager_port)
       Rails.logger.info "Ack_port : #{ack_port}"
       unless ext_name.nil?
         thread = Thread.new do
@@ -69,7 +72,7 @@ module WLLauncher
       end
       
       ack_received = wait_for_acknowledgment(server)
-      if ack_received
+      if ack_received && account
         account.active=true
         account.save
       end
@@ -81,15 +84,23 @@ module WLLauncher
   #This method is not supposed to be used by the manager, whose environment
   #variable MANAGER_PORT should be undefined (or nil).
   def send_acknowledgment(name,ack_port,port)
+    puts "sending ack at : #{ack_port}"
     if name!='MANAGER'
-      socket = TCPSocket.open('localhost',ack_port.to_i)
-      socket.puts "Port #{port} ready"
-      socket.close      
+      begin 
+        socket = TCPSocket.open('localhost',ack_port.to_i)
+        socket.puts "Port #{port} ready"
+        socket.close
+      rescue Errno::ECONNREFUSED 
+        raise Errno::ECONNREFUSED
+      end
+
+      puts "Acknowledgment sent!"
     end
   end
   
   #This method starts the server the peer with given *username* will be
-  #running on. Ack_port is the port of the manager application
+  #running on. Ack_port is the port on which the manager waits for a notification
+  #from the peer that tells him he is ready.
   #
   #
   def start_server(username,ack_port,peer_port,server_type=:thin)
@@ -108,7 +119,7 @@ module WLLauncher
               end
             when :thin
               if line.include?("Listening on") && line.include?(", CTRL+C to stop")
-                send_acknowledgment(username,ack_portack_port,peer_port)
+                send_acknowledgment(username,ack_port,peer_port)
                 #return
               end
             end
@@ -125,7 +136,7 @@ module WLLauncher
   end
   
   #This method kills the wl server if it located on the same machine only.
-  def exit_server(port,type=:rails)
+  def self.exit_server(port,type=:rails)
     pids = Set.new
     case type
     when :rails

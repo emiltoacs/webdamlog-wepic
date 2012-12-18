@@ -5,6 +5,8 @@ require 'json'
 require 'pathname'
 require 'fileutils'
 require 'yaml'
+require 'active_record'
+require 'app/models/account'
 
 module Database
   @@databases = Hash.new
@@ -42,7 +44,7 @@ module Database
       destroy_classes
       
       #Destroy the db
-      case @configuration[:adapter]
+      case @configuration['adapter']
       when 'sqlite3'
         path = Pathname.new(@db_name)
         rails_root = File.expand_path('.')
@@ -50,27 +52,27 @@ module Database
         FileUtils.rm(file)
       when 'mysql2'
         ActiveRecord::Base.establish_connection(@configuration)
-        ActiveRecord::Base.connection.drop_database @configuration[:database]        
+        ActiveRecord::Base.connection.drop_database @configuration['database']        
       end
     end
     
     def create_or_retrieve_database(database_id)
       @id = database_id
-      @db_name = "#{Rails.env}_#{database_id}"
+      @db_name = "#{ENV['RAILS_ENV']}_#{database_id}"
       #XXX should not be hard-coded
-      @configuration = YAML::load(File.open(File.join(Rails.root,'config/database.yml')))[Rails.env]
-      @configuration['database']=@dbname
+      @configuration = YAML::load(File.open(File.join(ENV['RAILS_ROOT'],'config/database.yml')))[ENV['RAILS_ENV']]
+      @configuration['database']=@db_name
       create_database
       create_schema
     end
 
     def create_database
-      case @configuration[:adapter]
+      case @configuration['adapter']
       when 'sqlite3'
         #Do nothing
       when 'mysql2'
           ActiveRecord::Base.establish_connection(@configuration.merge('database' => nil))
-          ActiveRecord::Base.connection.execute("CREATE DATABASE IF NOT EXISTS #{@configuration[:database]};")
+          ActiveRecord::Base.connection.execute("CREATE DATABASE IF NOT EXISTS #{@configuration['database']};")
           ActiveRecord::Base.establish_connection(@configuration)
       end
     end

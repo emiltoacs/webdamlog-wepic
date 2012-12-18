@@ -3,7 +3,7 @@
 
 require 'rubygems'
 require 'test/unit'
-require 'lib/wl_launcher'
+require 'app/helpers/wl_launcher'
 require 'childprocess'
 
 class PipeTest < Test::Unit::TestCase

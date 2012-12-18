@@ -33,11 +33,13 @@ module WepimApp
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     date = Time.now
-    new_logger = Logger.new(File.join(Rails.root, "log", "#{Rails.env}.log"), 'daily')
-    new_logger.formatter = Logger::Formatter.new
+    action_logger = Logger.new(File.join(Rails.root, "log", "#{Rails.env}_action_#{ENV['USERNAME']}.log"), 'daily')
+    action_logger.formatter = Logger::Formatter.new
+    db_logger = Logger.new(File.join(Rails.root, "log", "#{Rails.env}_db_#{ENV['USERNAME']}.log"), 'daily')
+    db_logger.formatter = Logger::Formatter.new
     #Active record logger logs interactiosn with the database. I 
-    config.active_record.logger = new_logger
-    config.action_controller.logger = new_logger
+    config.active_record.logger = db_logger#new_logger
+    config.action_controller.logger = action_logger
 
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"

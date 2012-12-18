@@ -1,7 +1,7 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
-require 'lib/wl_launcher'
-require 'lib/database'
+require 'app/helpers/wl_launcher'
+require 'app/helpers/wl_database'
 
 def dbsetup(db_type)
   case db_type
