@@ -62,6 +62,7 @@ module Database
       #XXX should not be hard-coded
       @configuration = YAML::load(File.open(File.join(ENV['RAILS_ROOT'],'config/database.yml')))[ENV['RAILS_ENV']]
       @configuration['database']=@db_name
+      puts "config : #{@configuration.inspect}"
       create_database
       create_schema
     end
@@ -83,7 +84,6 @@ module Database
     def create_schema
       @relation_classes = Hash.new
       database=self
-      
       
       #Create the WLSchema model.
       relation_name="WLSchema"
@@ -199,6 +199,7 @@ module Database
   #Creates a new database for the user using his database_id as key. If database
   #already exists, simply connects to it (no override).
   def create_or_connect_db(database_id)
+    puts "In create or connect db" if ENV['USERNAME']!='MANAGER'
     @@databases[database_id]=WLInstanceDatabase.new(database_id)
     @@databases[database_id]
   end
