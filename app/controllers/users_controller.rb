@@ -58,7 +58,6 @@ class UsersController < ApplicationController
       if @user.save
         #When user is created, he is automatically logged in, which means
         #we need to start his webdamlog session.
-        database = create_or_connect_db(ENV['USERNAME'])
         format.html { redirect_to(:wepic, :notice => "Registration successfull. #{database.inspect}") }
         format.xml { render :xml => @user, :status => :created, :location => @user }
       else

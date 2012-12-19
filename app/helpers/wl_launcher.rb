@@ -104,7 +104,6 @@ module WLLauncher
   #
   #
   def start_server(username,ack_port,peer_port,server_type=:thin)
-    Rails.logger.info "In start_server"
     cmd =  "rails server -p #{peer_port} -u #{username}"
     begin
       PTY.spawn(cmd) do |stdin,stdout,pid|
@@ -115,19 +114,18 @@ module WLLauncher
             when :webrick
               if line.include?("pid=") && line.include?("port=")
                 send_acknowledgment(username,ack_port,peer_port)
-                #return
               end
             when :thin
               if line.include?("Listening on") && line.include?(", CTRL+C to stop")
                 send_acknowledgment(username,ack_port,peer_port)
-                #return
               end
             end
           end
+          Rails.logger.info "PTY process has finished outputing. "
         rescue Errno::EIO
-          Rails.logger.error "Server is shutdown. No longer listening to server output EIO"
+          Rails.logger.error "Peer has shut down. No longer listening to server output (IOError)"
         rescue Errno::ECONNREFUSED
-          Rails.logger.error "Server is shutdown. No longer listening to server output ECONN"
+          Rails.logger.error "Peer has shut down. No longer listening to server output (Connection Refused)"
         end
       end
     rescue PTY::ChildExited
