@@ -56,7 +56,6 @@ module WLLauncher
   #XXX bug fix : make sure the redirection works even if port is already taken.
   #XXX only works for local host.
   def start_peer(name,ext_name,manager_port,ext_port,account=nil)
-    puts "safety check : #{name}"
     if name=='MANAGER'
       #XXX What happens when several peers want to log on at the same time?
       #Need to add support to ensure acknowledgement are recognized properly if several
@@ -84,7 +83,6 @@ module WLLauncher
   #This method is not supposed to be used by the manager, whose environment
   #variable MANAGER_PORT should be undefined (or nil).
   def send_acknowledgment(name,ack_port,port)
-    puts "sending ack at : #{ack_port}"
     if name!='MANAGER'
       begin 
         socket = TCPSocket.open('localhost',ack_port.to_i)
@@ -103,8 +101,9 @@ module WLLauncher
   #from the peer that tells him he is ready.
   #
   #
-  def start_server(username,ack_port,peer_port,server_type=:thin)
+  def start_server(username,ack_port,peer_port,server_type=:thin, dbid=nil)
     cmd =  "rails server -p #{peer_port} -u #{username}"
+    cmd += " -dbid #{dbid}" unless dbid.nil?
     begin
       PTY.spawn(cmd) do |stdin,stdout,pid|
         begin

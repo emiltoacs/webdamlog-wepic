@@ -3,11 +3,6 @@ require 'app/helpers/wl_database'
 
 class User < ActiveRecord::Base
   include Database
-  create_or_connect_db(ENV['USERNAME'])
-  db_name = "#{Rails.env}_#{ENV['USERNAME']}"
-  configuration = YAML::load(File.open(File.join(Rails.root,'config/database.yml')))[Rails.env]
-  configuration['database']=db_name  
-  establish_connection configuration
   self.table_name = "users"
   connection.create_table 'users', :force => true do |t|
     t.string :username
