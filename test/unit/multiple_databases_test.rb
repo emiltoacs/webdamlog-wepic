@@ -8,6 +8,12 @@ require 'app/helpers/wl_database'
 class MultipleDatabasesTest < Test::Unit::TestCase
   include Database
   
+  #FIXME: this test only works with a db count of 1. The problem is that
+  #currenlty the since each instance should only care about a database, each call
+  #to create_or_connect db in the setup method will change the ActiveRecord::Base database connection.
+  #Since classes from created using the create_relation method use ActiveRecord::Base
+  #connection, all classes will attempt to connect to the same db.
+  #
   def setup
     @dbcount = 1
     @dbids = Array.new
@@ -23,6 +29,7 @@ class MultipleDatabasesTest < Test::Unit::TestCase
     end
   end
   
+  #This test checks how fast it is to insert a thousand fact into a single database.
   def test_manipulate_databases
     number=1000
     relation_name = "Dog"
@@ -34,7 +41,6 @@ class MultipleDatabasesTest < Test::Unit::TestCase
     end
        
     @dbids.each do |id|
-      database(id).relation_classes["Dog"].open_connection
       puts "insert into db : #{id}"
 
       (0..number).each do |i|
@@ -47,14 +53,16 @@ class MultipleDatabasesTest < Test::Unit::TestCase
     
     @dbids.each do |id|
       number_of_tuples_to_delete = rand(number)
-      database(id).relation_classes["Dog"].open_connection
       (1..number_of_tuples_to_delete).each do |i|
         database(id).relation_classes["Dog"].delete(i)
       end
       assert_equal(number+1-number_of_tuples_to_delete,database(id).relation_classes["Dog"].all.size)
-      database(id).relation_classes["Dog"].remove_connection
     end
     
-  end  
+  end
+  
+  def test_images_upload
+    
+  end
   
 end

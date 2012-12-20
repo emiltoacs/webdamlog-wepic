@@ -34,6 +34,10 @@ class WelcomeController < ApplicationController
     end    
   end
   
+  def generate_db_name(name)
+    name
+  end
+  
   def new(ext_username)
     #Temporary, need a better specification of URL.
     port_spacing = 5
@@ -45,7 +49,8 @@ class WelcomeController < ApplicationController
     ext_port = default_port_number + max * port_spacing + 1
     #This will override the port
     WLLauncher.exit_server(ext_port) if !port_open?(ip,ext_port)
-    @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
+    @account = Account.new(:username => ext_username, :dbid => generate_db_name(ext_username),
+      :ip=> ip, :port => ext_port, :active => false)
     Thread.new do
       start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
     end
@@ -101,10 +106,10 @@ class WelcomeController < ApplicationController
   end
 
   def confirm_server_ready
-     @account = Account.find(params[:id])
-     respond_to do |format|
-       format.json { render :json => @account.active }
-     end
+    @account = Account.find(params[:id])
+    respond_to do |format|
+      format.json { render :json => @account.active }
+    end
   end
   
   def waiting
