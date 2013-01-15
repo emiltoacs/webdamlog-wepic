@@ -7,8 +7,6 @@ gem 'rails', '3.2.8'
 
 gem 'therubyracer'
 
-gem 'dbm'
-
 gem 'cocaine'
 
 gem 'bud', '0.9.1'
