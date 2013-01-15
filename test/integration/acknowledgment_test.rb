@@ -1,7 +1,8 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 require 'test/unit'
-require 'lib/wl_launcher'
+require 'app/helpers/wl_launcher'
+require File.expand_path(File.join(File.dirname(__FILE__),'../../','config/environment'))
 
 class AcknowledgmentTest < Test::Unit::TestCase
   include WLLauncher
@@ -9,12 +10,12 @@ class AcknowledgmentTest < Test::Unit::TestCase
   def setup
     @name = 'jules'
     @port = 20000;
-    @manager_port = 3000;    
+    @manager_port = 3000;
     
   end
   
   def teardown
-    exit_server(@port)
+    WLLauncher.exit_server(@port)
   end
   
   def test_a_start_peer_without_server
@@ -24,7 +25,7 @@ class AcknowledgmentTest < Test::Unit::TestCase
       return_peer_value = start_peer('MANAGER',nil,@manager_port,@port)
     end 
     sleep(0.5)
-    send_acknowledgment(@name,@manager_port,@port)
+    send_acknowledgment(@name,@manager_port+1,@port)
     peer_thread.join
     assert_equal(true, return_peer_value)
     print "----------\n#{@name} has connected on port #{@port}!\n-----------"
@@ -34,6 +35,6 @@ class AcknowledgmentTest < Test::Unit::TestCase
     puts "TEST B"
     assert_equal(true,start_peer('MANAGER','JULES',@manager_port,@port))
     print "----------\n#{@name} has connected on port #{@port}!\n-----------"
-    exit_server(@port)
+    WLLauncher.exit_server(@port)
   end
 end

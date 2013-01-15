@@ -1,4 +1,4 @@
-require 'lib/wl_launcher'
+require 'app/helpers/wl_launcher'
 
 class WelcomeController < ApplicationController
   include WLLauncher
@@ -34,6 +34,10 @@ class WelcomeController < ApplicationController
     end    
   end
   
+  def generate_db_name(name)
+    name
+  end
+  
   def new(ext_username)
     #Temporary, need a better specification of URL.
     port_spacing = 5
@@ -42,19 +46,17 @@ class WelcomeController < ApplicationController
     #Here is specification of port
     max = Account.maximum(:id)
     max = 0 if max.nil?
-    ext_port = default_port_number + max + port_spacing
+    ext_port = default_port_number + max * port_spacing + 1
     #This will override the port
-    exit_server(ext_port) if !port_open?(ip,ext_port)
-    puts "starting server..."
-    @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
+    WLLauncher.exit_server(ext_port) if !port_open?(ip,ext_port)
+    @account = Account.new(:username => ext_username, :dbid => generate_db_name(ext_username),
+      :ip=> ip, :port => ext_port, :active => false)
     Thread.new do
       start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
     end
     #This code does not check if call to rails failed. This operations requires interprocess communication.
     if @account.save
       respond_to do |format|
-        #format.html {redirect_to "http://#{ip}:#{ext_port}"}
-        #Take care of URL
         format.html {redirect_to "/waiting/#{@account.id}", :notice => "Please wait while your wepic instance is being created..."}
       end
     else
@@ -66,7 +68,7 @@ class WelcomeController < ApplicationController
   
   def shutdown
     @account = Account.find(params[:id])
-    if (exit_server(@account.port))
+    if (WLLauncher.exit_server(@account.port))
       @account.active = false
       @account.save
       respond_to do |format|
@@ -94,7 +96,7 @@ class WelcomeController < ApplicationController
   def killall
     @accounts = Account.all
     @accounts.each do |account|
-      exit_server(account.port)
+      WLLauncher.exit_server(account.port)
       account.active = false
       account.save      
     end
@@ -104,11 +106,10 @@ class WelcomeController < ApplicationController
   end
 
   def confirm_server_ready
-     @account = Account.find(params[:id])
-     #puts "account : " + @account.inspect
-     respond_to do |format|
-       format.json { render :json => @account.active }
-     end
+    @account = Account.find(params[:id])
+    respond_to do |format|
+      format.json { render :json => @account.active }
+    end
   end
   
   def waiting

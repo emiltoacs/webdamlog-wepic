@@ -3,14 +3,19 @@
 require 'rubygems'
 require 'active_record'
 require 'test/unit'
-require 'lib/database'
+require 'app/helpers/wl_database'
 require 'lib/kernel'
+
+
+require File.expand_path(File.join(File.dirname(__FILE__),'../../','config/environment'))
 
 #This class is meant to test and explain the database API to be used 
 #by the rails controllers and WebdamLog.
 #The suppress warning messages are used to avoid constant reassignment warnings.
 #Constant reassignment should not be used in practice but is useful for purposes
 #of testing.
+
+
 #TODO : Avoid duplication of information in the Database module by reducing the 
 #number of variables.
 class DatabaseTest < Test::Unit::TestCase
@@ -26,18 +31,21 @@ class DatabaseTest < Test::Unit::TestCase
     @database.destroy
   end
   
-  test "setup_and_teardown" do
+  def test_setup_and_teardown
     assert(true)
   end
   
-  test "access schema from class" do
+  def test_destroy_all  
+  end
+  
+  def test_access_schema_from_class
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
     assert_equal(relation_schema,@database.relation_classes[relation_name].schema)
   end
   
-  test "connect to db" do
+  def test_connect_to_db
     #Check if database was created during the setup
     assert_equal(WLInstanceDatabase,@database.class)
     #Check if database contains the WLSchema relation
@@ -46,7 +54,7 @@ class DatabaseTest < Test::Unit::TestCase
   end
   
   #TODO enhance test by adding several relations to the testing.
-  test "create relation" do
+  def test_create_relation
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
@@ -54,12 +62,12 @@ class DatabaseTest < Test::Unit::TestCase
     assert_equal("Dog",@database.relation_classes["Dog"].table_name)
   end
   
-  test "deconnect" do
+  def test_deconnect
     close_connection(@dbid)
     assert_equal(nil,database(@dbid))
   end
   
-  test "reconnection" do
+  def test_reconnection
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
@@ -70,36 +78,44 @@ class DatabaseTest < Test::Unit::TestCase
     assert_equal("Dog",@database.relation_classes["WLSchema"].find(1).name)
   end
   
-  #You can check that the dog was added to the database with the following commands:
-  #sqlite3 db/database_2.db
-  #SELECT * FROM DOG;
-  test "insert and retrieve" do
+  def test_insert_and_retrieve
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
     dog_table = @database.relation_classes["Dog"]
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
-    dog_table.open_connection
     dog_table.insert(values)
     assert_equal(false,dog_table.all.empty?)
     bobby = dog_table.find(1)
     assert_equal("Bobby",bobby.name)
     assert_equal(2,bobby.age)
     assert_equal("labrador",bobby.race)
-    dog_table.remove_connection
   end
   
-  test "delete" do
+  def test_insert_and_retrieve_images
+    relation_name = "Dog"
+    relation_schema = {"name" => "string", "race" => "string", "age" => "integer", "photo" => "image"}
+    @database.create_relation(relation_name,relation_schema)
+    dog_table = @database.relation_classes["Dog"]
+    #TODO change test to select actual picture.
+    values = {"name" => "Bobby", "age" => 2, "race"=> "labrador", "photo" => nil}
+    dog_table.insert(values)
+    assert_equal(false,dog_table.all.empty?)
+    bobby = dog_table.find(1)
+    assert_equal("Bobby",bobby.name)
+    assert_equal(2,bobby.age)
+    assert_equal("labrador",bobby.race)
+  end
+  
+  def test_delete
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
     dog_table = @database.relation_classes["Dog"]
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
-    dog_table.open_connection
     dog_table.insert(values)
     assert_equal(false,dog_table.all.empty?)
     dog_table.delete(1)
     assert_equal(true,dog_table.all.empty?)
-    dog_table.remove_connection
   end
 end
