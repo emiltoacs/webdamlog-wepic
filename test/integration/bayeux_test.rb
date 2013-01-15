@@ -26,7 +26,7 @@ t2 = Thread.new do
 end
 
 def at_exit
-  exit_server(9292)
+  WLLauncher.exit_server(9292)
   puts "Bye!"
   exit
 end

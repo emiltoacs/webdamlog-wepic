@@ -4,7 +4,6 @@
 		<title>Wepic</title>
 		<%= stylesheet_link_tag    "application", :media => "all" %>
 		<%= javascript_include_tag "application" %>
-		<!-- This line should not refer to localhost. -->
 		<%= csrf_meta_tags %>
 	</head>
 	<body>
@@ -16,11 +15,23 @@
 			</div>
 			<div class="content">
 				<div id="title">
-					<h1> <% if current_user %> <a href="/wepic">
-					Welcome, <%= current_user.username%>!
-					<% else %> <a href="/">
-					Welcome To Wepic!
-					<% end %> </a></h1>
+					<h1> 
+					<% unless ENV['USERNAME']=='MANAGER' %>
+						<% if current_user %>
+							<a href="/wepic">
+								Welcome, <%= current_user.username%>!
+							</a>
+						<% else %>
+							<a href="/">							
+								Welcome To <%= ENV['USERNAME'].capitalize %>'s peer!
+							</a>
+						<% end %> 
+					<% else %>
+						<a href="/">							
+							Welcome To Wepic!
+						</a>
+					<% end %>	
+					</h1>
 				</div>
 				<div id="register_login">
 					<% if current_user %>
@@ -32,6 +43,7 @@
 				</div>
 			</div>
 		</div>
+		<%unless ENV['USERNAME']=='MANAGER' %>
 		<% if current_user %>
 		<% 
 			@wepic_tab = "tab"
@@ -56,6 +68,7 @@
 				<div class="content"><a href="/program">Program</a></div>
 			</div>						
 		</div>
+		<% end %>
 		<% end %>
 		<div id="main" style="width:80%;left:10%;">
             <%= yield %>
