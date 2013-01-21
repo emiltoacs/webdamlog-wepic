@@ -63,7 +63,6 @@ install .deb package
 
 *** install dependencies with bundle
 
-
 Go to the root of you project (prevously retrieved from git repo)
 : bundle install
 

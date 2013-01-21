@@ -2,22 +2,32 @@
 # and open the template in the editor.
 
 require 'test/unit'
-require 'app/helpers/wl_launcher'
+require 'lib/wl_launcher'
 
 class WLLauncherTest < Test::Unit::TestCase
   include WLLauncher
   
-  #For most of the tests, please refer to acknowledgment_test under test/integration.
+  def setup
+    @port = 10000
+  end
   
-  def test_ack_server
-    server1, port1 = ack_server(4999)
-    server2, port2 = ack_server(4999)
-    assert_equal(5000,port1)
-    assert_equal(5001,port2)
-    server1.close    
-    server3, port3 = ack_server(4999)
-    assert_equal(5000,port3)
-    server2.close
-    server3.close
+  def teardown
+    
+  end
+  
+  def test_a_start_server
+    start_server('test',@port)
+  end
+  
+  def test_b_port_open
+    sleep(8)
+    assert_equal(true,port_open?('localhost',@port))
+    assert_equal(false,port_open?('localhost',@port+1))
+  end
+  
+  def test_c_destroy_server
+    #The method should destroy one process
+    sleep(10)
+    assert_equal(1,exit_server(@port))
   end
 end
