@@ -4,7 +4,7 @@
 require 'test/unit'
 
 #XXX Warning : Running this test will kill all rails instances! Even non-webdamsystem ones!
-#For destroying a particular instance, please use the library method WLLauncher.exit_server(port).
+#For destroying a particular instance, please use the library method exit_server(port).
 class DestroyRails < Test::Unit::TestCase
   def destroy_background_processes_test
     pids = Array.new

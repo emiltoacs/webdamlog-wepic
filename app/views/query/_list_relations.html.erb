@@ -6,7 +6,9 @@
 			<div class="column"><%= col %>,<%= type %></div>
 		<% end %>
 		</div>
+		<%@relation_classes[name].open_connection%>
 		<%relation_tuples = @relation_classes[name].all%>
+		<%@relation_classes[name].remove_connection%>
 		<%relation_tuples.each do |tuple| %>
 			<div class="row">
 			<%rel_class.schema.keys.each do |col| %>

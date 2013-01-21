@@ -1,4 +1,4 @@
-require 'app/helpers/wl_database'
+require 'lib/database'
 class UserSessionsController < ApplicationController
   include Database
   # GET /user_sessions/new
@@ -18,6 +18,7 @@ class UserSessionsController < ApplicationController
     @user_session = UserSession.new(params[:user_session])
     respond_to do |format|
       if @user_session.save
+        database = create_or_connect_db(ENV['USERNAME'])
         format.html { redirect_to(:wepic, :notice => "Login Successful.#{database.inspect}") }
         format.xml { render :xml => @user_session, :status => :created, :location => @user_session }
       else

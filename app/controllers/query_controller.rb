@@ -1,10 +1,10 @@
-require 'app/helpers/wl_database'
+require 'lib/database'
 
 class QueryController < ApplicationController
   include Database
   
   def index
-    @relation_classes = database(ENV['DBID']).relation_classes
+    @relation_classes = database(ENV['USERNAME']).relation_classes
   end
   
   #Insert a tuple in the instance database
@@ -14,7 +14,7 @@ class QueryController < ApplicationController
         format.html {redirect_to '/query', :notice => "No relation was selected"}
       end
     else
-      @relation_classes = database(ENV['DBID']).relation_classes
+      @relation_classes = database(ENV['USERNAME']).relation_classes
       rel_name = params[:relation][:name]
       values = params[:values].split(";")
       values_hash = Hash.new
@@ -26,6 +26,7 @@ class QueryController < ApplicationController
         values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
       end
       respond_to do |format|
+        @relation_classes[rel_name].open_connection
         if @relation_classes[rel_name].insert(values_hash)
           format.html { redirect_to '/query', :notice => "#{rel_name} : #{values_hash.inspect}"}
           format.json { head :no_content }
@@ -33,6 +34,7 @@ class QueryController < ApplicationController
           format.html {redirect_to '/query', :notice => "insert did not happen properly"}
           format.json {head :no_content}
         end
+        @relation_classes[rel_name].remove_connection
       end
     end
   end
@@ -51,7 +53,7 @@ class QueryController < ApplicationController
         schema[col_names[i]]=col_types[i]
       end
     end
-    database(ENV['DBID']).create_relation(rel_name,schema)    
+    database(ENV['USERNAME']).create_relation(rel_name,schema)    
     respond_to do |format|
       format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
       format.json { head :no_content }

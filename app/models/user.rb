@@ -1,8 +1,6 @@
-require 'yaml'
-require 'app/helpers/wl_database'
-
 class User < ActiveRecord::Base
-  include Database
+  db_name = "db/database_#{ENV['USERNAME']}.db"
+  establish_connection :adapter => 'sqlite3', :database => db_name
   self.table_name = "users"
   connection.create_table 'users', :force => true do |t|
     t.string :username
