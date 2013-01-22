@@ -1,6 +1,7 @@
 require 'lib/wl_launcher'
 require 'yaml'
 
+# The controller of the manager
 class WelcomeController < ApplicationController
   include WLLauncher
   
@@ -8,31 +9,32 @@ class WelcomeController < ApplicationController
     @account = Account.new
     @accounts = Account.all
   end
-  
+
+  # Once clicked on the button go, launch or reconnect to a peer
   def login
     username = params[:username]
     @account = Account.find(:first,:conditions => {:username=>username})
-    #If the account cannot be found
+    #If the account is new
     if @account.nil?
       new(username)
-      return
-    end
-    #If the server for account is down.
-    url = "http://#{@account.ip}:#{@account.port}"
-    if port_open?(@account.ip,@account.port)
-      Thread.new do
-        start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port,@account)
-      end
-      respond_to do |format|
-        #XXX need to take care of url
-        format.html {redirect_to "/waiting/#{@account.id}", :notice => "Server is rebooting..."}
-      end
-      #If the server for account is up.
     else
-      respond_to do |format|
-        format.html {redirect_to url}
+      #If the server for account is down.
+      url = "http://#{@account.ip}:#{@account.port}"
+      if port_open?(@account.ip,@account.port)
+        Thread.new do
+          start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port,@account)
+        end
+        respond_to do |format|
+          #XXX need to take care of url
+          format.html {redirect_to "/waiting/#{@account.id}", :notice => "Server is rebooting..."}
+        end
+        #If the server for account is up.
+      else
+        respond_to do |format|
+          format.html {redirect_to url}
+        end
       end
-    end    
+    end
   end
   
   def new(ext_username)
@@ -106,11 +108,11 @@ class WelcomeController < ApplicationController
   end
 
   def confirm_server_ready
-     @account = Account.find(params[:id])
-     #puts "account : " + @account.inspect
-     respond_to do |format|
-       format.json { render :json => @account.active }
-     end
+    @account = Account.find(params[:id])
+    #puts "account : " + @account.inspect
+    respond_to do |format|
+      format.json { render :json => @account.active }
+    end
   end
   
   def waiting
