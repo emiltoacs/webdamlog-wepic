@@ -31,9 +31,7 @@ module WLLauncher
   
   def self.start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
-      thread = Thread.new do
         spawn_server(ext_name,manager_port,ext_port) if !ext_name.nil?
-      end
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
       if account
@@ -48,9 +46,10 @@ module WLLauncher
   #This method is used by the manager.
   def self.spawn_server(username,manager_port,port,server_type=:thin)
     cmd =  "rails server -p #{port} -u #{username} -m #{manager_port}"
-    fork do
+    child_pid=fork do
       exec cmd
     end
+    child_pid
   end
   
   #This method kills the wl server if it located on the same machine only
