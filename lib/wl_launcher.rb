@@ -32,7 +32,7 @@ module WLLauncher
   def start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
       thread = Thread.new do
-        start_server(ext_name,manager_port,ext_port) if !ext_name.nil?
+        spawn_server_and_wait_for_ack(ext_name,manager_port,ext_port) if !ext_name.nil?
       end
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
@@ -55,7 +55,8 @@ module WLLauncher
     end
   end
   
-  def start_server(username,manager_port,port,server_type=:thin)
+  #This method is used by the manager.
+  def spawn_server_and_wait_for_ack(username,manager_port,port,server_type=:thin)
     cmd =  "rails server -p #{port} -u #{username}"
     begin
       PTY.spawn(cmd) do |stdin,stdout,pid|
@@ -88,20 +89,17 @@ module WLLauncher
     end
   end
   
-  #This method kills the wl server if it located on the same machine only.
-  def exit_server(port,type=:rails)
+  #This method kills the wl server if it located on the same machine only
+  #TODO: This is not a proper method to kill a server. Change this method to a
+  #more central method 
+  def exit_server(port,type=:thin)
     pids = Set.new
     case type
-    when :rails
+    when :thin
       `ps -ef | grep rails`.split("\n").each_with_index do |line,i|
         line_tokens = line.split(" ")
         pids.add(line_tokens[1]) if line_tokens.include?(port.inspect)
-      end
-    when :faye
-      `ps -ef | grep rackup`.split("\n").each_with_index do |line,i|
-        line_tokens = line.split(" ")
-        pids.add(line_tokens[1]) if line_tokens.include?(port.inspect)
-      end      
+      end    
     end
     pids.each do |pid|
       system "kill -9 #{pid}"
