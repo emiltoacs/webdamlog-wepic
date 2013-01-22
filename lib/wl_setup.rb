@@ -77,6 +77,11 @@ module WLSetup
       args.push('-p')
       args.push(ENV['PORT'])
     end
+    
+    #Generate a pid file
+    args.push('-P')
+    args.push("tmp/pids/#{ENV['USERNAME']}.pid")
+    
     #The reset switch has been used if reset_opt_index is true (i.e. is not nil).
     #
     if reset_opt_index
