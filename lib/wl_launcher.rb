@@ -43,7 +43,7 @@ module WLLauncher
       return b
     end
     false
-  end  
+  end
   
   #This method is not supposed to be used by the manager, whose environment
   #variable MANAGER_PORT should be undefined (or nil).
