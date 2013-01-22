@@ -2,14 +2,16 @@
 # and open the template in the editor.
 require 'test/unit'
 require 'lib/wl_launcher'
+require 'yaml'
 
 class AcknowledgmentTest < Test::Unit::TestCase
   include WLLauncher
   
   def setup
+    properties = YAML.load_file('config/properties.yml')
     @name = 'jules'
-    @port = 20000;
-    @manager_port = 3000;    
+    @port = properties['test_communication']['default_spawn_port'];
+    @manager_port = properties['test_communication']['manager_port'];    
     
   end
   
