@@ -6,6 +6,7 @@ require 'timeout'
 require 'set'
 require 'pty'
 
+# Define some methods to launch and manage new peers spawned by the manager
 module WLLauncher
   
   def wait_for_acknowledgment(server,port)
@@ -28,7 +29,8 @@ module WLLauncher
     end
   end
   
-  #This method is not supposed to be used by webdamlog instance
+  # This method should be used only by the manager to start a new wlinstance
+  # TODO store the thread in a table so that the manager know which process run which peer
   def start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
       thread = Thread.new do
