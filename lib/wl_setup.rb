@@ -17,7 +17,7 @@ module WLSetup
         stm = database.prepare "select port from accounts"
         rs = stm.execute
       rescue SQLite3::Exception => e
-        @logger.info e          
+        @logger.info e.inspect
       end
     end
     rs
@@ -72,8 +72,11 @@ module WLSetup
     
     #Default values
     ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
-    ENV['PORT'] = properties['communication']['manager_port'].to_s if ENV['PORT'].nil?
-    
+    if ENV['PORT'].nil?
+      ENV['PORT'] = properties['communication']['manager_port'].to_s 
+      args.push('-p')
+      args.push(ENV['PORT'])
+    end
     #The reset switch has been used if reset_opt_index is true (i.e. is not nil).
     #
     if reset_opt_index

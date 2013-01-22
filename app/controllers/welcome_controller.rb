@@ -29,10 +29,9 @@ class WelcomeController < ApplicationController
         format.html {redirect_to "/waiting/#{@account.id}", :notice => "Server is rebooting..."}
       end
       #If the server for account is up.
-     else
-       respond_to do |format|
-         format.html {redirect_to url}
-       end
+    else
+      respond_to do |format|
+        format.html {redirect_to url}
       end
     end
   end
