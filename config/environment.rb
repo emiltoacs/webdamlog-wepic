@@ -1,6 +1,7 @@
 # Load the rails application
 require File.expand_path('../application', __FILE__)
 require 'lib/wl_launcher'
+
 # Initialize the rails application
 WepimApp::Application.initialize!
 
