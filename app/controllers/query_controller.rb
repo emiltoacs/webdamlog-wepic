@@ -57,6 +57,6 @@ class QueryController < ApplicationController
     respond_to do |format|
       format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
       format.json { head :no_content }
-    end    
+    end
   end
 end
