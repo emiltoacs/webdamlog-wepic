@@ -26,18 +26,18 @@ class DatabaseTest < Test::Unit::TestCase
     @database.destroy
   end
   
-  test "setup_and_teardown" do
+  def test_setup_and_teardown
     assert(true)
   end
   
-  test "access schema from class" do
+  def test_access_schema_from_class
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
     assert_equal(relation_schema,@database.relation_classes[relation_name].schema)
   end
   
-  test "connect to db" do
+  def test_connect_to_db
     #Check if database was created during the setup
     assert_equal(WLInstanceDatabase,@database.class)
     #Check if database contains the WLSchema relation
@@ -46,7 +46,7 @@ class DatabaseTest < Test::Unit::TestCase
   end
   
   #TODO enhance test by adding several relations to the testing.
-  test "create relation" do
+  def test_create_relation
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
@@ -54,12 +54,12 @@ class DatabaseTest < Test::Unit::TestCase
     assert_equal("Dog",@database.relation_classes["Dog"].table_name)
   end
   
-  test "deconnect" do
+  def test_deconnect
     close_connection(@dbid)
     assert_equal(nil,database(@dbid))
   end
   
-  test "reconnection" do
+  def test_reconnection
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
@@ -73,7 +73,7 @@ class DatabaseTest < Test::Unit::TestCase
   #You can check that the dog was added to the database with the following commands:
   #sqlite3 db/database_2.db
   #SELECT * FROM DOG;
-  test "insert and retrieve" do
+  def test_insert_and_retrieve
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
@@ -89,7 +89,7 @@ class DatabaseTest < Test::Unit::TestCase
     dog_table.remove_connection
   end
   
-  test "delete" do
+  def test_delete
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
