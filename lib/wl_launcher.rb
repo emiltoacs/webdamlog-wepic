@@ -45,16 +45,6 @@ module WLLauncher
     false
   end
   
-  #This method is not supposed to be used by the manager, whose environment
-  #variable MANAGER_PORT should be undefined (or nil).
-  def self.send_acknowledgment(name,manager_port,port)
-    if name!='MANAGER'
-      socket = TCPSocket.open('localhost',manager_port.to_i + 1)
-      socket.puts "Port #{port} ready"
-      socket.close      
-    end
-  end
-  
   #This method is used by the manager.
   def self.spawn_server(username,manager_port,port,server_type=:thin)
     cmd =  "rails server -p #{port} -u #{username} -m #{manager_port}"

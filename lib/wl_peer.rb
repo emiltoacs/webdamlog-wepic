@@ -3,7 +3,7 @@
 #
 #I intend to base most of the communication on udp sockets.
 #
-module PeerManager
+module WLPeer
   #This method is not supposed to be used by the manager, whose environment
   #variable MANAGER_PORT should be undefined (or nil).
   def self.send_acknowledgment(name,manager_port,port)
@@ -13,4 +13,5 @@ module PeerManager
       socket.close
     end
   end
+  
 end
