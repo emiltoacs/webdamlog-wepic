@@ -4,6 +4,7 @@ class QueryController < ApplicationController
   include Database
   
   def index
+    #Fetches relation from schema
     @relation_classes = database(ENV['USERNAME']).relation_classes
   end
   

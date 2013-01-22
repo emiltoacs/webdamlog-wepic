@@ -67,6 +67,7 @@ module WepimApp
   #a manager (and is therefore a "peer", as there are only two types of wepic applications)
   #
   def self.is_manager?
+    #Managers have no manager port
     return ENV['MANAGER_PORT'].nil?
   end
 end

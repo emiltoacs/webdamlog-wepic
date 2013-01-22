@@ -61,36 +61,6 @@ module WLLauncher
     fork do
       exec cmd
     end
-#    begin
-#      PTY.spawn(cmd) do |stdin,stdout,pid|
-#        begin
-#          stdin.each do |line|
-#            puts line
-#            case server_type
-#            when :webrick
-#              if line.include?("pid=") && line.include?("port=")
-#                puts "Server is ready!"
-#                send_acknowledgment(username,manager_port,port)
-#                return
-#              end
-#            when :thin
-#              if line.include?("Listening on") && line.include?(", CTRL+C to stop")
-#                puts "Server is ready!"
-#                send_acknowledgment(username,manager_port,port)
-#                return
-#              end
-#            end
-#          end
-#        rescue Errno::EIO
-#          puts "Server is shutdown. No longer listening to server output EIO"
-#        rescue Errno::ECONNREFUSED
-#          puts "Server is shutdown. No longer listening to server output ECONN"
-#        end
-#      end
-#      
-#    rescue PTY::ChildExited
-#      puts "Child process exited!"
-#    end
   end
   
   #This method kills the wl server if it located on the same machine only
