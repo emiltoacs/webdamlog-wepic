@@ -6,6 +6,7 @@ require 'timeout'
 require 'set'
 require 'pty'
 
+# Define some methods to launch and manage new peers spawned by the manager
 module WLLauncher
   
   def self.wait_for_acknowledgment(server,port)
@@ -28,7 +29,6 @@ module WLLauncher
     end
   end
   
-  #This method is not supposed to be used by webdamlog instance
   def self.start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
       thread = Thread.new do
@@ -43,7 +43,7 @@ module WLLauncher
       return b
     end
     false
-  end  
+  end
   
   #This method is not supposed to be used by the manager, whose environment
   #variable MANAGER_PORT should be undefined (or nil).
@@ -111,7 +111,7 @@ module WLLauncher
     end
     pids.size
   end
-  
+
   def self.port_open?(ip, port)
     begin
       Timeout::timeout(1) do
@@ -123,9 +123,7 @@ module WLLauncher
           return false
         end
       end
-    rescue Timeout::Error
     end
-
     return false
   end
 end

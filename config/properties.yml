@@ -1,9 +1,9 @@
 communication:
-  manager_port : 3000
-  default_spawn_port : 10000
+  manager_port : 3100
+  default_spawn_port : 3200
   port_spacing : 3
 
 test_communication:
-  manager_port : 13000
-  default_spawn_port : 20000
+  manager_port : 4100
+  default_spawn_port : 4200
   port_spacing : 3
