@@ -38,7 +38,7 @@ class WelcomeController < ApplicationController
     #Temporary, need a better specification of URL.
     port_spacing = 5
     ip = "localhost"
-    default_port_number = 9999
+    default_port_number = 11110
     #Here is specification of port
     max = Account.maximum(:id)
     max = 0 if max.nil?
