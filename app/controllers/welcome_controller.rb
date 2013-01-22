@@ -19,9 +19,9 @@ class WelcomeController < ApplicationController
     end
     #If the server for account is down.
     url = "http://#{@account.ip}:#{@account.port}"
-    if port_open?(@account.ip,@account.port)
+    if WLLauncher.port_open?(@account.ip,@account.port)
       Thread.new do
-        start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port,@account)
+        WLLauncher.start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port,@account)
       end
       respond_to do |format|
         #XXX need to take care of url
@@ -46,11 +46,11 @@ class WelcomeController < ApplicationController
     max = 0 if max.nil?
     ext_port = default_port_number + max + port_spacing
     #This will override the port
-    exit_server(ext_port) if !port_open?(ip,ext_port)
+    WLLauncher.exit_server(ext_port) unless WLLauncher.port_open?(ip,ext_port)
     puts "starting server..."
     @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
     Thread.new do
-      start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
+      WLLauncher.start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
     end
     #This code does not check if call to rails failed. This operations requires interprocess communication.
     if @account.save
@@ -68,7 +68,7 @@ class WelcomeController < ApplicationController
   
   def shutdown
     @account = Account.find(params[:id])
-    if (exit_server(@account.port))
+    if (WLLauncher.exit_server(@account.port))
       @account.active = false
       @account.save
       respond_to do |format|
@@ -84,7 +84,7 @@ class WelcomeController < ApplicationController
   def start
     @account = Account.find(params[:id])
     Thread.new do 
-      start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
+      WLLauncher.start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
     end
     @account.active=true
     @account.save
@@ -96,7 +96,7 @@ class WelcomeController < ApplicationController
   def killall
     @accounts = Account.all
     @accounts.each do |account|
-      exit_server(account.port)
+      WLLauncher.exit_server(account.port)
       account.active = false
       account.save      
     end

@@ -2,8 +2,24 @@
 # and open the template in the editor.
 require 'lib/wl_launcher'
 require 'yaml'
+require 'sqlite3'
 
 module WLSetup
+  
+  def self.get_peer_ports_from_account(db_type=:sqlite3)
+    rs=[]
+    case db_type
+    when :sqlite3
+      begin
+        database = SQLite3::Database.open "db/database_MANAGER.db"
+        stm = database.prepare "select port from accounts"
+        rs = stm.execute
+      rescue SQLite3::Exception => e
+        puts e          
+      end
+    end
+    rs
+  end  
   
   #The dbsetup method is used for clean up the database environment in case, for
   #instance, of a database reset, or if the manager database is missing.
@@ -39,16 +55,49 @@ module WLSetup
     properties = YAML.load_file('config/properties.yml')
     user_opt_index = args.index('-u')
     port_opt_index = args.index('-p')
+    reset_opt_index = args.index('reset')
+    
+    #The username is stored as an environment variable, as we do not know the name
+    #of the users created beforehand.
+    #
     ENV['USERNAME'] = args[user_opt_index+1].upcase if (user_opt_index)
-    ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
     2.times { args.delete_at(user_opt_index)} if user_opt_index
+    
+    #The port is not other available everywhere in Rails, this is why it is added
+    #as an environment variable here (if the -p option is chosen)
+    #
+    ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
+    
+    #Default values
     ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
     ENV['PORT'] = properties['communication']['manager_port'].to_s if ENV['PORT'].nil?
+    
+    #The reset switch has been used if reset_opt_index is true (i.e. is not nil).
+    #
+    if reset_opt_index
+      puts "Killing all of the peers launched that are remaining"
+      get_peer_ports_from_account.each do |peer_port|
+        puts "Peer at port #{peer_port} killed."
+        WLLauncher.exit_server(peer_port)
+      end
+      puts "Reset option has been chosen. Removing the database_MANAGER.db file. This will cause a reset of the system."
+      system 'rm db/database_MANAGER.db'
+      args.delete_at(reset_opt_index)
+    end
+    
+    
     if  ENV['USERNAME']=='MANAGER'
       puts "Server is a WLInstance Manager."
       dbsetup(:sqlite3)
     else
-      puts "Server is a WLInstance."  
+      puts "Server is a WLInstance."
+      #The manager_port option is only available on non-manager peers.
+      #There is no default value for the MANAGER_PORT variable.
+      mport_opt_index = args.index('-m')
+      if mport_opt_index
+        ENV['MANAGER_PORT'] = args[mport_opt_index+1]
+        2.times {args.delete_at(mport_opt_index)}
+      end
     end
     puts "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}"
   end
