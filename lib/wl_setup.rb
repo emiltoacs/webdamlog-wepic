@@ -3,8 +3,10 @@
 require 'lib/wl_launcher'
 require 'yaml'
 require 'sqlite3'
+require 'lib/wl_logger'
 
 module WLSetup
+  @logger = WLLogger.new(STDOUT)
   
   def self.get_peer_ports_from_account(db_type=:sqlite3)
     rs=[]
@@ -15,7 +17,7 @@ module WLSetup
         stm = database.prepare "select port from accounts"
         rs = stm.execute
       rescue SQLite3::Exception => e
-        puts e          
+        @logger.info e          
       end
     end
     rs
@@ -39,10 +41,10 @@ module WLSetup
       if !admin_present
         #Remove all .db files
         system 'rm db/*.db'
-        puts "database_MANAGER.db file absent. Recreating database..."
+        @logger.info "database_MANAGER.db file absent. Recreating database..."
         #Migrate the db appropriately
         system 'bundle exec rake db:migrate'
-        puts "Database migrated."
+        @logger.info "Database migrated."
       end
     end
   end
@@ -75,22 +77,22 @@ module WLSetup
     #The reset switch has been used if reset_opt_index is true (i.e. is not nil).
     #
     if reset_opt_index
-      puts "Killing all of the peers launched that are remaining"
+      @logger.info "Killing all of the peers launched that are remaining"
       get_peer_ports_from_account.each do |peer_port|
-        puts "Peer at port #{peer_port} killed."
+        @logger.info "Peer at port #{peer_port} killed."
         WLLauncher.exit_server(peer_port)
       end
-      puts "Reset option has been chosen. Removing the database_MANAGER.db file. This will cause a reset of the system."
+      @logger.info "Reset option has been chosen. Removing the database_MANAGER.db file. This will cause a reset of the system."
       system 'rm db/database_MANAGER.db'
       args.delete_at(reset_opt_index)
     end
     
     
     if  ENV['USERNAME']=='MANAGER'
-      puts "Server is a WLInstance Manager."
+      @logger.info "Server is a WLInstance Manager."
       dbsetup(:sqlite3)
     else
-      puts "Server is a WLInstance."
+      @logger.info "Server is a WLInstance."
       #The manager_port option is only available on non-manager peers.
       #There is no default value for the MANAGER_PORT variable.
       mport_opt_index = args.index('-m')
@@ -99,7 +101,7 @@ module WLSetup
         2.times {args.delete_at(mport_opt_index)}
       end
     end
-    puts "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}"
+    @logger.info "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}"
   end
   
 end
