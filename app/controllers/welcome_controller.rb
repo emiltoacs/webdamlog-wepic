@@ -1,4 +1,5 @@
 require 'lib/wl_launcher'
+require 'yaml'
 
 class WelcomeController < ApplicationController
   include WLLauncher
@@ -36,9 +37,10 @@ class WelcomeController < ApplicationController
   
   def new(ext_username)
     #Temporary, need a better specification of URL.
-    port_spacing = 5
+    properties = YAML.load_file('config/properties.yml')
+    port_spacing = properties['communication']['port_spacing']
     ip = "localhost"
-    default_port_number = 9999
+    default_port_number = properties['communication']['default_spawn_port']
     #Here is specification of port
     max = Account.maximum(:id)
     max = 0 if max.nil?
