@@ -12,5 +12,5 @@ if WepimApp.is_manager?
   require 'lib/wl_launcher'
 else
   require 'lib/wl_peer'
-  WLLauncher.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],ENV['PORT'])
+  WLPeer.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],ENV['PORT'])
 end

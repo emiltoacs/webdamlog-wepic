@@ -6,8 +6,6 @@ require 'lib/wl_peer'
 require 'yaml'
 
 class AcknowledgmentTest < Test::Unit::TestCase
-  include WLLauncher
-  include WLPeer
   
   def setup
     properties = YAML.load_file('config/properties.yml')
