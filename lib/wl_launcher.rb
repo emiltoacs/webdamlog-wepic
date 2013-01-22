@@ -8,7 +8,7 @@ require 'pty'
 
 module WLLauncher
   
-  def wait_for_acknowledgment(server,port)
+  def self.wait_for_acknowledgment(server,port)
     begin
       Timeout::timeout(5) do
         begin
@@ -29,10 +29,10 @@ module WLLauncher
   end
   
   #This method is not supposed to be used by webdamlog instance
-  def start_peer(name,ext_name,manager_port,ext_port,account=nil)
+  def self.start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
       thread = Thread.new do
-        spawn_server_and_wait_for_ack(ext_name,manager_port,ext_port) if !ext_name.nil?
+        spawn_server(ext_name,manager_port,ext_port) if !ext_name.nil?
       end
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
@@ -47,7 +47,7 @@ module WLLauncher
   
   #This method is not supposed to be used by the manager, whose environment
   #variable MANAGER_PORT should be undefined (or nil).
-  def send_acknowledgment(name,manager_port,port)
+  def self.send_acknowledgment(name,manager_port,port)
     if name!='MANAGER'
       socket = TCPSocket.open('localhost',manager_port.to_i + 1)
       socket.puts "Port #{port} ready"
@@ -56,43 +56,47 @@ module WLLauncher
   end
   
   #This method is used by the manager.
-  def spawn_server_and_wait_for_ack(username,manager_port,port,server_type=:thin)
-    cmd =  "rails server -p #{port} -u #{username}"
-    begin
-      PTY.spawn(cmd) do |stdin,stdout,pid|
-        begin
-          stdin.each do |line|
-            puts line
-            case server_type
-            when :webrick
-              if line.include?("pid=") && line.include?("port=")
-                puts "Server is ready!"
-                send_acknowledgment(username,manager_port,port)
-                return
-              end
-            when :thin
-              if line.include?("Listening on") && line.include?(", CTRL+C to stop")
-                puts "Server is ready!"
-                send_acknowledgment(username,manager_port,port)
-                return
-              end
-            end
-          end
-        rescue Errno::EIO
-          puts "Server is shutdown. No longer listening to server output EIO"
-        rescue Errno::ECONNREFUSED
-          puts "Server is shutdown. No longer listening to server output ECONN"
-        end
-      end
-    rescue PTY::ChildExited
-      puts "Child process exited!"
+  def self.spawn_server(username,manager_port,port,server_type=:thin)
+    cmd =  "rails server -p #{port} -u #{username} -m #{manager_port}"
+    fork do
+      exec cmd
     end
+#    begin
+#      PTY.spawn(cmd) do |stdin,stdout,pid|
+#        begin
+#          stdin.each do |line|
+#            puts line
+#            case server_type
+#            when :webrick
+#              if line.include?("pid=") && line.include?("port=")
+#                puts "Server is ready!"
+#                send_acknowledgment(username,manager_port,port)
+#                return
+#              end
+#            when :thin
+#              if line.include?("Listening on") && line.include?(", CTRL+C to stop")
+#                puts "Server is ready!"
+#                send_acknowledgment(username,manager_port,port)
+#                return
+#              end
+#            end
+#          end
+#        rescue Errno::EIO
+#          puts "Server is shutdown. No longer listening to server output EIO"
+#        rescue Errno::ECONNREFUSED
+#          puts "Server is shutdown. No longer listening to server output ECONN"
+#        end
+#      end
+#      
+#    rescue PTY::ChildExited
+#      puts "Child process exited!"
+#    end
   end
   
   #This method kills the wl server if it located on the same machine only
   #TODO: This is not a proper method to kill a server. Change this method to a
   #more central method 
-  def exit_server(port,type=:thin)
+  def self.exit_server(port,type=:thin)
     pids = Set.new
     case type
     when :thin
@@ -108,7 +112,7 @@ module WLLauncher
     pids.size
   end
   
-  def port_open?(ip, port)
+  def self.port_open?(ip, port)
     begin
       Timeout::timeout(1) do
         begin
@@ -123,5 +127,5 @@ module WLLauncher
     end
 
     return false
-  end  
+  end
 end
