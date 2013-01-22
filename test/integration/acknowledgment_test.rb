@@ -2,6 +2,7 @@
 # and open the template in the editor.
 require 'test/unit'
 require 'lib/wl_launcher'
+require 'lib/wl_peer'
 require 'yaml'
 
 class AcknowledgmentTest < Test::Unit::TestCase
