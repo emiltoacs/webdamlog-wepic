@@ -1,0 +1,90 @@
+#-*- mode: org; comment-column: 50; fill-column: 65; -*-
+#+STARTUP: content
+#+STARTUP: indent
+
+* Root of the WePim project: implementation for SIGMOD12 demo
+
+** Git reminder
+
+*** Get a copy of the project
+#+begin_src sh
+git clone git+ssh://emilien@scm.gforge.inria.fr//gitroot/webdamsystem/webdamsystem.git
+#+end_src
+
+
+* Some instruction to install wepic
+
+** Requirement
+
+*** ruby 1.8.7 (2011-06-30 patchlevel 352) [i686-linux]
+installed via .deb package
+
+*** gem 1.7.2
+installed via .deb package
+
+*** rails (3.2.9, 3.2.8)
+it seems that needed version is 3.2.8 but it may work with next
+version
+
++ 3.2.8 :: installed thanks to gem
+
++ 3.2.9 :: installed in the dependency while executing
+: bundle install
+at the root of the project (see next section)
+
+*** download the project via git
+
+: git clone git+ssh://emilien@scm.gforge.inria.fr//gitroot/webdamsystem/webdamsystem.git
+
+*** install rmagick
+
+should be installed thanks to the gem, however it requires many
+non-usual libs on your machine that you may not have:
++ build-essential
++ imagemagick
++ libmagickcore-dev
++ libmagickwand-dev
++ ruby-full :: is ruby1.8 + ruby-dev
+
+once you have installed all this stuff lauch
+: gem install rmagick
+
+*** install sqlite3
+
+install .deb package
++ sqlite3
++ sqlite3-dev
+
+
+*** install dependencies with bundle
+
+Go to the root of you project (prevously retrieved from git repo)
+: bundle install
+
+The previous command start to install lots of gems
+
+Now you can see what and where gems have been installed by
+bundle.
+: bundle show
+
+
+
+
+
+** Launch the peer
+
+at the root of the project start
+: rails s -p 3100
+
+the default port for the manager is written in
+=config/properties.yml=
+
+See exemple
+#+begin_src conf
+communication:
+  manager_port : 3100
+  default_spawn_port : 3200
+  port_spacing : 3
+#+end_src
+
+
