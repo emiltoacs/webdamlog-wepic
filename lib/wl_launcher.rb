@@ -28,7 +28,8 @@ module WLLauncher
       return false
     end
   end
-  
+
+  # TODO keep the id of the child process launched to kill properly
   def self.start_peer(name,ext_name,manager_port,ext_port,account=nil)
     if name=='MANAGER'
         spawn_server(ext_name,manager_port,ext_port) if !ext_name.nil?
@@ -54,7 +55,7 @@ module WLLauncher
   
   #This method kills the wl server if it located on the same machine only
   #TODO: This is not a proper method to kill a server. Change this method to a
-  #more central method 
+  #more central method: se the pid of child that can get in start_peer
   def self.exit_server(port,type=:thin)
     pids = Set.new
     case type

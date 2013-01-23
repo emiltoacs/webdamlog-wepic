@@ -57,7 +57,7 @@ module WLSetup
     properties = YAML.load_file('config/properties.yml')
     user_opt_index = args.index('-u')
     port_opt_index = args.index('-p')
-    reset_opt_index = args.index('reset')
+    reset_opt_index = args.index('--reset')
     
     #The username is stored as an environment variable, as we do not know the name
     #of the users created beforehand.
@@ -91,7 +91,11 @@ module WLSetup
       2.times {args.delete_at port_opt_index}
     end
     
-    #The reset switch has been used if reset_opt_index is true (i.e. is not nil).
+    # The reset switch has been used if reset_opt_index is true (i.e. is not
+    # nil).
+    #
+    # TODO Maybe you want to end the rails initialization. It is not expected to
+    # launch a new server while you type reset
     #
     if reset_opt_index
       @logger.info "Killing all of the peers launched that are remaining"
