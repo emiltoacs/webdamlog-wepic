@@ -56,6 +56,10 @@ module Database
       @db_name = "db/database_#{database_id}.db"      
       @configuration = {:adapter => 'sqlite3', :database => @db_name}
       create_schema
+      
+      #XXX Good hook to start Bud! Rails env and db are set up but webpages 
+      #have not been accessed yet.
+      #
     end    
     
     #This method creates a special table that represents the schema of the database.
@@ -95,8 +99,14 @@ module Database
         @relation_classes[table.name] = create_relation_class(table.name,JSON.parse(table.schema))
       end
       
-      #TODO : Add the program class, picture class and user class
+      #TODO : Add the program class
       #@relation_classes['Program'] = Program
+      @relation_classes['Pictures'] = Picture
+      @relation_classes['Users'] = User
+      @wlschema.open_connection
+      @wlschema.new(:name=>'Pictures',:schema=>Picture.schema.to_json).save
+      @wlschema.new(:name=>'Users',:schema=>User.schema.to_json).save
+      @wlschema.remove_connection
     end
     
     #The create relation method will create a new relation in the database as well.
