@@ -17,4 +17,18 @@ class User < ActiveRecord::Base
   acts_as_authentic do |c|
     c.logged_in_timeout = 10.minutes # default is 10.minutes
   end
+  def self.schema
+    {'username' => 'string',
+     'email' => 'string',
+     'crypted_password' => 'string',
+     'password_salt' => 'string',
+     'persistence_token' => 'string'
+    }
+  end
+  def self.open_connection
+    establish_connection @configuration
+  end
+  def self.remove_connection
+    super
+  end  
 end
