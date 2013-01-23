@@ -48,6 +48,7 @@ module WLLauncher
   def self.spawn_server(username,manager_port,port,server_type=:thin)
     cmd =  "rails server -p #{port} -u #{username} -m #{manager_port}"
     child_pid=fork do
+      puts "execute #{cmd}"
       exec cmd
     end
     child_pid

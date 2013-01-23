@@ -60,7 +60,7 @@ module Database
       #XXX Good hook to start Bud! Rails env and db are set up but webpages 
       #have not been accessed yet.
       #
-    end    
+    end
     
     #This method creates a special table that represents the schema of the database.
     #Since database schemas are different for every user, storing them is a quick

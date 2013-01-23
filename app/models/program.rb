@@ -4,7 +4,7 @@ class Program < ActiveRecord::Base
   establish_connection @configuration
   
   attr_accessible :name, :author, :data, :source
-  validate_uniqueness_of :name
+  validates_uniqueness_of :name
   
   self.table_name = 'programs'
   connection.create_table 'programs', :force => true do |t|
