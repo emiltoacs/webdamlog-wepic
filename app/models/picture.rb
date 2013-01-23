@@ -1,7 +1,8 @@
 require 'wl_logger'
 class Picture < ActiveRecord::Base
-  db_name = "db/database_#{ENV['USERNAME']}.db"  
-  establish_connection :adapter => 'sqlite3', :database => db_name  
+  db_name = "db/database_#{ENV['USERNAME']}.db"
+  @configuration = {:adapter => 'sqlite3', :database => db_name}
+  establish_connection @configuration
   attr_accessible :title, :image
   validates_uniqueness_of :title
   self.table_name = 'Pictures'
