@@ -100,12 +100,13 @@ module Database
       end
       
       #TODO : Add the program class
-      #@relation_classes['Program'] = Program
+      @relation_classes['Program'] = Program
       @relation_classes['Pictures'] = Picture
       @relation_classes['Users'] = User
       @wlschema.open_connection
       @wlschema.new(:name=>'Pictures',:schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>'Users',:schema=>User.schema.to_json).save
+      @wlschema.new(:name=>'Programs',:schema=>Program.schema.to_json).save
       @wlschema.remove_connection
     end
     
