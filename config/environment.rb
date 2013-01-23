@@ -41,20 +41,19 @@ EOF
   @webdamlog = nil
   # TODO find a good port for the wlengine
   eval("@webdamlog = ClassWL#{ENV['USERNAME']}on#{ENV['PORT']}.new(peer_name,program_file,{:port => #{ENV['PORT']*2}, :dir_rule => dir_rule})")
-  @wlenginelogger = WLEnginelogger.new(STDOUT)
-  msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
-  if @webdamlog.nil?
-    @wlenginelogger.fatal("creation of the webdamlog engine instance has failed: #{msg}")
-  else
-    @wlenginelogger.info("new instance of webdamlog engine created: #{msg}")
-  end
-  @webdamlog.run_bg
+#  @wlenginelogger = WLEnginelogger.new(STDOUT)
+#  msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
+#  if @webdamlog.nil?
+#    @wlenginelogger.fatal("creation of the webdamlog engine instance has failed: #{msg}")
+#  else
+#    @wlenginelogger.info("new instance of webdamlog engine created: #{msg}")
+#  end
+#  @webdamlog.run_bg
 
   # XXX add action on shutdown for the wlengine such as erase program file if saved in db and clean rule dir if needed
 
   # WLE:END
 
-  puts "send acknowledgement"
   WLPeer.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],ENV['PORT'])
 
 end
