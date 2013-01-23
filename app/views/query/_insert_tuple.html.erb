@@ -1,5 +1,0 @@
-<%=form_tag({:controller => "query", :action=>"insert"},:method=>'post') do %>
-	<div class="field"> Relation Name : <%= select("relation","name",@relation_classes.keys.reject{|key| key.upcase =="WLSCHEMA"},{:prompt => 'Select Relation',:selected=>nil,:required=>true,:disable=>'Select Relation'}) %> </div>
-	<div class="field"> Values to Insert : <%= text_field_tag "values", nil, :required => true, :placeholder => "Values seperated by ';'", :size => 30 %> </div>
-	<%= submit_tag 'Insert tuple' %>
-<% end %>
