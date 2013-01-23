@@ -1,9 +1,14 @@
 require 'wl_logger'
-class Picture < ActiveRecord::Base
-  db_name = "db/database_#{ENV['USERNAME']}.db"  
-  establish_connection :adapter => 'sqlite3', :database => db_name  
+class Picture < ActiveRecord::Base 
+  validates_uniqueness_of :title, :image
   attr_accessible :title, :image
+  
+  #The table is created in the database if it does not exist, since we use meta
+  #programming information to create this table.
+  #
   self.table_name = 'Pictures'
+  db_name = "db/database_#{ENV['USERNAME']}.db" 
+  establish_connection :adapter => 'sqlite3', :database => db_name  
   connection.create_table 'Pictures', :force => true do |t|
       t.string :title
       t.string :image_file_name
@@ -23,5 +28,4 @@ class Picture < ActiveRecord::Base
     },
     :url => '/:class/:id/:attachment?style=:style'
   default_scope select_without_file_columns_for(:image)  
-  
 end

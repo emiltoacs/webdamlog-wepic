@@ -1,6 +1,9 @@
+require 'wl_logger'
+
 class PicturesController < WepicController
   def create
     @picture = Picture.new(params[:picture])
+    WLLog.logger.info @picture.attributes.inspect
     respond_to do |format|
       if @picture.save
         format.html { render :action => "show", :notice => 'Picture was successfully created.' }
