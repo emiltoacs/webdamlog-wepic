@@ -15,9 +15,6 @@ class Program < ActiveRecord::Base
   attr_accessible :name, :author, :data, :source
   validates_uniqueness_of :name
   
-    attr_accessible :name, :author, :data, :source
-  validates_uniqueness_of :name
-  
   #This method returns a schema to be used in the WLSchema table
   #to comply with the standards of that table. This should represent
   #a hash of the attributes of this record.
