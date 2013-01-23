@@ -5,7 +5,7 @@ require 'yaml'
 class WelcomeController < ApplicationController
   
   def index
-    @account = Account.new
+    @account = Account.new if @account.nil?
     @accounts = Account.all
   end
 
@@ -37,7 +37,8 @@ class WelcomeController < ApplicationController
   end
   
   def new(ext_username)
-    #Temporary, need a better specification of URL.
+    
+    #Use properties to define ports for spawned servers.
     properties = YAML.load_file('config/properties.yml')
     port_spacing = properties['communication']['port_spacing']
     ip = "localhost"
@@ -46,23 +47,24 @@ class WelcomeController < ApplicationController
     max = Account.maximum(:id)
     max = 0 if max.nil?
     ext_port = default_port_number + max + port_spacing
+    
     #This will override the port
     WLLauncher.exit_server(ext_port) unless WLLauncher.port_open?(ip,ext_port)
-    puts "starting server..."
     @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
-    Thread.new do
-      WLLauncher.start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
-    end
     #This code does not check if call to rails failed. This operations requires interprocess communication.
     if @account.save
+      puts "#{@account.valid?}"
       respond_to do |format|
+        Thread.new do
+          WLLauncher.start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
+        end
         #format.html {redirect_to "http://#{ip}:#{ext_port}"}
         #Take care of URL
         format.html {redirect_to "/waiting/#{@account.id}", :notice => "Please wait while your wepic instance is being created..."}
       end
     else
       respond_to do |format|
-        format.html {redirect_to :welcome, :alert => "New WebdamLog Instance was not set properly"}
+        format.html {redirect_to '/', :alert => "New WebdamLog Instance was not set properly. Reason : #{output_errors(@account)}"}
       end
     end
   end
@@ -77,7 +79,7 @@ class WelcomeController < ApplicationController
       end
     else
       respond_to do |format|
-        format.html {redirect_to :welcome, :alert => "The WebdamLog Instance was not properly shut down."}
+        format.html {redirect_to :welcome, :alert => "The WebdamLog Instance was not properly shut down. Reason : #{output_errors(@account)}"}
       end
     end
   end
@@ -116,5 +118,13 @@ class WelcomeController < ApplicationController
   
   def waiting
     @account = Account.find(params[:id])
+  end
+  
+  def output_errors(account)
+    s=""
+    account.errors.full_messages.each do |msg|
+      s+="\n\t#{msg}"
+    end
+    s
   end
 end

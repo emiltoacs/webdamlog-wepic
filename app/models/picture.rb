@@ -3,6 +3,7 @@ class Picture < ActiveRecord::Base
   db_name = "db/database_#{ENV['USERNAME']}.db"  
   establish_connection :adapter => 'sqlite3', :database => db_name  
   attr_accessible :title, :image
+  validates_uniqueness_of :title,:image_file_name
   self.table_name = 'Pictures'
   connection.create_table 'Pictures', :force => true do |t|
       t.string :title
