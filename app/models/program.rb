@@ -3,9 +3,6 @@ class Program < ActiveRecord::Base
   @configuration = {:adapter => 'sqlite3', :database => db_name}
   establish_connection @configuration
   
-  attr_accessible :name, :author, :data, :source
-  validates_uniqueness_of :name
-  
   self.table_name = 'programs'
   connection.create_table 'programs', :force => true do |t|
     t.string :name
@@ -13,7 +10,10 @@ class Program < ActiveRecord::Base
     t.text :data
     t.string :source
     t.timestamps
-  end if !connection.table_exists?('programs')  
+  end if !connection.table_exists?('programs')
+
+  attr_accessible :name, :author, :data, :source
+  validates_uniqueness_of :name
   
   
   #This method returns a schema to be used in the WLSchema table
