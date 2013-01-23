@@ -1,7 +1,0 @@
-<h1>Listing Pictures</h1>
-<% @pictures.each do |picture| %>
-<p>
-	Title : <%=picture.title%> , <%= link_to 'Show', picture%>
-	<%= link_to 'Destroy', picture, :method=>:delete,:data=>{:confirm => 'Are you sure?'}%>
-</p>
-<% end %>
