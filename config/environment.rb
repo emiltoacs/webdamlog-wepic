@@ -54,6 +54,7 @@ EOF
 
   # WLE:END
 
+  puts "send acknowledgement"
   WLPeer.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],ENV['PORT'])
 
 end
