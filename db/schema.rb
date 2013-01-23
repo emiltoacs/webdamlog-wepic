@@ -34,6 +34,11 @@ ActiveRecord::Schema.define(:version => 20121128163150) do
     t.binary   "image_thumb_file"
   end
 
+  create_table "user_sessions", :force => true do |t|
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "users", :force => true do |t|
     t.string   "username"
     t.string   "email"
