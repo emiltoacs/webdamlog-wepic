@@ -206,3 +206,8 @@ body {
     margin-left : 5%;
     height : 100%;
 }
+
+/*Alerts*/
+.alert {
+    color : #ff0000;
+}
