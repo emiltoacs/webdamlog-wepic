@@ -8,5 +8,8 @@ test_communication:
   default_spawn_port : 30000
   port_spacing : 3
 
-programs:
-  on_load_default : README.rdoc
+default_program:
+  name : README.rdoc
+  author : julestestard
+  source : ./
+
