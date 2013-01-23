@@ -1,27 +1,43 @@
-	<% @relation_classes.each_pair do |name,rel_class| %>
-	<div class="relation">
-		<div class="name"> <%= name %> </div>
-		<div class="row">
-		<% rel_class.schema.each_pair do |col,type| %>
-			<div class="column"><%= col %>,<%= type %></div>
-		<% end %>
-		</div>
-		<%@relation_classes[name].open_connection%>
-		<%relation_tuples = @relation_classes[name].all%>
-		<%@relation_classes[name].remove_connection%>
-		<%relation_tuples.each do |tuple| %>
-			<div class="row">
-			<%rel_class.schema.keys.each do |col| %>
-				<div class="column">
-					<% if tuple[col].size>22 %>
-						<%= "#{tuple[col][0..21]}..."%> 
-					<%else%> 
-						<%= tuple[col]%>
-					<%end%></div>
-			<%end%>
-			</div>
-		<%end %>		
+<% @relation_classes.each_pair do |name,rel_class| %>
+<div class="relation">
+	<div class="name">
+		<%= name %>
 	</div>
-	<% end %>
-
+	<div class="row">
+		<% rel_class.schema.each_pair do |col,type| %>
+		<div class="column">
+			<%= col %>,<%= type %>
+		</div>
+		<% end %>
+	</div>
+	<% @relation_classes[name].open_connection%>
+	<% relation_tuples = @relation_classes[name].all%>
+	<% @relation_classes[name].remove_connection%>
+	<%relation_tuples.each do |tuple| %>
+	<div class="row">
+		<%rel_class.schema.keys.each do |col| %>
+		<div class="column">
+			<!-- Depending on the type of the column, visual output has to be managed appropriately.-->
+			<%s=""%>
+			<!-- By default we take the current time because appropriate format is unknown. TODO : fix this-->
+			<%case rel_class.schema[col]%>			
+			<%when 'datetime'%>
+			<%s=Time.now.inspect[0..21]+'...'%>
+			<%when 'binary'%>
+			<%s="blob"%>			
+			<%else%>
+				<% if tuple[col].size>22 %>
+					<% s = "#{tuple[col][0..21]}..."%>
+				<%else%>
+					<% s = tuple[col]%>
+				<%end%>
+			<%end%>
+			
+			<%= s %>
+		</div>
+		<%end%>
+	</div>
+	<%end %>
+</div>
+<% end %>
 
