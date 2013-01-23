@@ -1,18 +1,19 @@
 require 'lib/wl_launcher'
 require 'yaml'
 
+# The controller of the manager
 class WelcomeController < ApplicationController
-  include WLLauncher
   
   def index
     @account = Account.new
     @accounts = Account.all
   end
-  
+
+  # Once clicked on the button go, launch or reconnect to a peer
   def login
     username = params[:username]
     @account = Account.find(:first,:conditions => {:username=>username})
-    #If the account cannot be found
+    #If the account is new
     if @account.nil?
       new(username)
       return
@@ -32,7 +33,7 @@ class WelcomeController < ApplicationController
       respond_to do |format|
         format.html {redirect_to url}
       end
-    end    
+    end
   end
   
   def new(ext_username)
@@ -106,15 +107,14 @@ class WelcomeController < ApplicationController
   end
 
   def confirm_server_ready
-     @account = Account.find(params[:id])
-     #puts "account : " + @account.inspect
-     respond_to do |format|
-       format.json { render :json => @account.active }
-     end
+    @account = Account.find(params[:id])
+    #puts "account : " + @account.inspect
+    respond_to do |format|
+      format.json { render :json => @account.active }
+    end
   end
   
   def waiting
     @account = Account.find(params[:id])
   end
 end
-

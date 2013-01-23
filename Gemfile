@@ -9,7 +9,7 @@ gem 'therubyracer'
 
 gem 'cocaine'
 
-gem 'bud', '0.9.1'
+gem 'bud', '0.9.5'
 
 gem 'rmagick'
 
