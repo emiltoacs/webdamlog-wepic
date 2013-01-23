@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Wepic</title>
+		<%= stylesheet_link_tag    "application", :media => "all" %>
+		<%= javascript_include_tag "application" %>
+		<!-- This line should not refer to localhost. -->
+		<%= csrf_meta_tags %>
+	</head>
+	<body>
+		<div id="nav">
+			<div class="opacity"></div>
+			<div class="logos">
+				<div id="webdamlogo"></div>
+				<div id="inrialogo"></div>
+			</div>
+			<div class="content">
+				<div id="title">
+					<h1> <% if current_user %> <a href="/wepic">
+					Welcome, <%= current_user.username%>!
+					<% else %> <a href="/">
+					Welcome To Wepic!
+					<% end %> </a></h1>
+				</div>
+				<div id="register_login">
+					<% if current_user %>
+						<% if is_admin(current_user.id)%>
+							<%= link_to "Admin", admin_path%> |
+						<% end %>
+						<%= link_to "Logout", :logout %>
+					<% end %>
+				</div>
+			</div>
+		</div>
+		<% if current_user %>
+		<% 
+			@wepic_tab = "tab"
+			@query_tab = "tab"
+			@program_tab = "tab"
+			current_path = request.env['PATH_INFO']
+			@wepic_tab = "selected_tab" if current_path=="/wepic" || current_path.include?("pictures")
+			@query_tab = "selected_tab" if current_path=="/query"
+			@program_tab = "selected_tab" if current_path=="/program"
+		%>
+		<div id="tabs">
+			<div id="wepic_tab" class="<%=@wepic_tab%>">
+				<div class="opacity"></div>
+				<div class="content"><a href="/wepic">Wepic</a></div>
+			</div>
+			<div id="query_tab" class="<%=@query_tab%>">
+				<div class="opacity"></div>
+				<div class="content"><a href="/query">Query</a></div>
+			</div>
+			<div id="program_tab" class="<%=@program_tab%>">
+				<div class="opacity"></div>
+				<div class="content"><a href="/program">Program</a></div>
+			</div>						
+		</div>
+		<% end %>
+		<div id="main" style="width:80%;left:10%;">
+            <%= yield %>
+		</div>
+	</body>
+</html>

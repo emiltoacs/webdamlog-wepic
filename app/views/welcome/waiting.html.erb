@@ -1,0 +1,30 @@
+<%#
+# To change this template, choose Tools | Templates
+# and open the template in the editor.
+%>
+<script>
+function executeQuery() {
+  $.ajax({
+    url: "confirm/<%= @account.id%>",
+    data : { id : <%= @account.id %>},
+    dataType : 'json',
+    success: function(data) {
+      if (data) {
+      	window.location = "http://localhost:<%=@account.port %>"
+      }
+    }
+  });
+  	setTimeout(executeQuery, 3000); // you could choose not to continue on failure...
+}
+
+
+$(document).ready(function() {
+  // run the first time; all subsequent calls will take care of themselves
+  setTimeout(executeQuery, 1000);
+});
+</script>
+<div class="opacity"></div>
+<div class="content">
+<h1>Waiting</h1>
+<div class="notice"><%= notice%></div>
+</div>
