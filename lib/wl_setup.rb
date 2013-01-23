@@ -68,19 +68,28 @@ module WLSetup
     #The port is not other available everywhere in Rails, this is why it is added
     #as an environment variable here (if the -p option is chosen)
     #
-    ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
     
-    #Default values
+    
+    #Default values for username
     ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
-    if ENV['PORT'].nil?
+    
+    #Port setup
+    ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
+    if port_opt_index.nil?
       ENV['PORT'] = properties['communication']['manager_port'].to_s 
       args.push('-p')
       args.push(ENV['PORT'])
+      port_opt_index=args.size-2
     end
-    
     #Generate a pid file
     args.push('-P')
-    args.push("tmp/pids/#{ENV['USERNAME']}.pid")
+    args.push("tmp/pids/#{ENV['USERNAME']}.pid")    
+    
+    #Ports and pids are not wanted in the args array if not running a server
+    if args[0]!='s' && args[0]!='server'
+      2.times {args.pop}
+      2.times {args.delete_at port_opt_index}
+    end
     
     #The reset switch has been used if reset_opt_index is true (i.e. is not nil).
     #

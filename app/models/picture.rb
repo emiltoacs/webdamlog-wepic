@@ -3,7 +3,7 @@ class Picture < ActiveRecord::Base
   db_name = "db/database_#{ENV['USERNAME']}.db"  
   establish_connection :adapter => 'sqlite3', :database => db_name  
   attr_accessible :title, :image
-  validates_uniqueness_of :title#,:image_file_name
+  validates_uniqueness_of :title
   self.table_name = 'Pictures'
   connection.create_table 'Pictures', :force => true do |t|
       t.string :title
@@ -23,6 +23,18 @@ class Picture < ActiveRecord::Base
     	:small => "300x300>"
     },
     :url => '/:class/:id/:attachment?style=:style'
-  default_scope select_without_file_columns_for(:image)  
+  default_scope select_without_file_columns_for(:image)
+  
+  def schema
+    {'title'=>'string',
+     'image_file_name'=>'string',
+     'image_content_type'=>'string',
+     'image_file_size'=>'integer',
+     'image_updated_at'=>'datetime',
+     'image_file'=>'binary',
+     'image_small_file'=>'binary',
+     'image_thumb_file'=>'binary'
+     }
+  end
   
 end
