@@ -1,8 +1,24 @@
-<div id="notice"><%= notice %></div>
 <div class="opacity"></div>
 <div class="content">
-	<div class="notice"><%= notice %></div>
-	<div class="alert"><%= alert %></div>
+	<div class="notice">
+		<%= notice %>
+	</div>
+	<div class="alert">
+		<%= alert %>
+	</div>
+	<% if @account.errors.any? %>
+	<div id="error_explanation">
+		<h2><%= pluralize(@account.errors.count, "error") %> prohibited this user from being saved:</h2>
+
+		<ul>
+			<% @account.errors.full_messages.each do |msg| %>
+			<li>
+				<%= msg %>
+			</li>
+			<% end %>
+		</ul>
+	</div>
+	<% end %>
 	<div class="signin">
 		<%= render 'login'%>
 	</div>
@@ -11,7 +27,7 @@
 	</div>
 	<div class="field">
 		<%=form_tag({:controller => "welcome", :action=>"killall"},:method=>'post') do %>
-			<%= submit_tag 'Kill all wepic peers'%>
+		<%= submit_tag 'Kill all wepic peers'%>
 		<%end%>
 	</div>
 </div>
