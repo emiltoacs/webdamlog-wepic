@@ -3,16 +3,24 @@ require 'wl_logger'
 class PicturesController < WepicController
   def create
     @picture = Picture.new(params[:picture])
+<<<<<<< HEAD
     WLLog.logger.info @picture.attributes.inspect
     respond_to do |format|
       if @picture.save
+=======
+    @pictures = Picture.all if @pictures.nil?
+    if @picture.save
+      respond_to do |format|
+>>>>>>> emilien
         format.html { render :action => "show", :notice => 'Picture was successfully created.' }
         format.json { render :json => @picture, :status => :created, :location => :wepic }
-      else
-        format.html { render :action => "new" }
+      end
+    else
+      respond_to do |format|        
+        format.html { render :action => :index, :alert => 'Image creation was not successful.' }
         format.json { render :json => @picture.errors, :status => :unprocessable_entity }
       end
-    end    
+    end   
   end
 
   def show
@@ -37,6 +45,6 @@ class PicturesController < WepicController
     @picture = Picture.find(params[:id])
     style = params[:style] ? params[:style] : 'original'
     send_data @picture.image.file_contents(style),
-             :type => @picture.image_content_type
+      :type => @picture.image_content_type
   end  
 end

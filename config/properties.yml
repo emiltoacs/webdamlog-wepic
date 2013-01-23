@@ -7,3 +7,9 @@ test_communication:
   manager_port : 4100
   default_spawn_port : 30000
   port_spacing : 3
+
+default_program:
+  name : README.rdoc
+  author : julestestard
+  source : ./
+

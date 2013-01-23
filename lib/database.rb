@@ -4,6 +4,9 @@ require 'set'
 require 'json'
 require 'pathname'
 require 'fileutils'
+require 'app/models/program'
+require 'app/models/picture'
+require 'app/models/user'
 
 module Database
   @@databases = Hash.new
@@ -13,6 +16,7 @@ module Database
   end
   
   #TODO Add namespace to WLSchema relation. The namespace is based on the database_id
+  #TODO: Datetime and binary format have to be managed to be viewed properly.
   class WLInstanceDatabase
     attr_accessor :id, :relation_classes, :configuration
     
@@ -52,6 +56,10 @@ module Database
       @db_name = "db/database_#{database_id}.db"      
       @configuration = {:adapter => 'sqlite3', :database => @db_name}
       create_schema
+      
+      #XXX Good hook to start Bud! Rails env and db are set up but webpages 
+      #have not been accessed yet.
+      #
     end    
     
     #This method creates a special table that represents the schema of the database.
@@ -60,8 +68,7 @@ module Database
     def create_schema
       @relation_classes = Hash.new
       database=self
-      
-      
+           
       #Create the WLSchema model.
       relation_name="WLSchema"
       @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
@@ -84,57 +91,23 @@ module Database
         end
       end
       
-      #Create the User Model
-#      user_table_name = "Users"
-#      @relation_class[user_table_name]=create_class("#{user_table_name}", ActiveRecord::Base) do
-#        acts_as_authentic do |c|
-#          c.logged_in_timeout = 10.minutes # default is 10.minutes
-#        end
-#        @schema = {
-#          "username"=>"string",
-#          "email"=>"string",
-#          "crypted_password" => "string",
-#          "password_salt" => "string",
-#          "persistence_token" => "string",
-#          "created_at" => "datetime",
-#          "updated_at" => "datetime"
-#        }
-#        @configuration = database.configuration
-#        establish_connection @configuration
-#        self.table_name = relation_name
-#        connection.create_table table_name, :force => true do |t|
-#          t.string :username
-#          t.string :email
-#          t.string :crypted_password
-#          t.string :password_salt
-#          t.string :persistence_token
-#          t.timestamps
-#        end if !connection.table_exists?(table_name)
-#        def self.schema
-#          @schema
-#        end
-#        def self.open_connection
-#          establish_connection @configuration
-#        end
-#      end
-      
-      #Create User sessions model
-#      @relation_class[user_table_name]=create_class("#{user_table_name}Session", Authlogic::Session::Base) do
-#        def to_key
-#          new_record? ? nil : [ self.send(self.class.primary_key) ]
-#        end
-# 
-#        def persisted?
-#          false
-#        end
-#      end
-      
       @relation_classes[relation_name]=@wlschema
-      @wlschema.establish_connection @configuration 
-      #Retrieve all the models
+       
+      #Retrieve all the models. Requires to establish a connection.
+      @wlschema.establish_connection @configuration
       @wlschema.all.each do |table|
         @relation_classes[table.name] = create_relation_class(table.name,JSON.parse(table.schema))
       end
+      
+      #TODO : Add the program class
+      @relation_classes['Program'] = Program
+      @relation_classes['Pictures'] = Picture
+      @relation_classes['Users'] = User
+      @wlschema.open_connection
+      @wlschema.new(:name=>'Pictures',:schema=>Picture.schema.to_json).save
+      @wlschema.new(:name=>'Users',:schema=>User.schema.to_json).save
+      @wlschema.new(:name=>'Programs',:schema=>Program.schema.to_json).save
+      @wlschema.remove_connection
     end
     
     #The create relation method will create a new relation in the database as well.
@@ -163,6 +136,7 @@ module Database
           schema.each_pair do |col_name,col_type|
             eval("t.#{col_type} :#{col_name}")
           end
+          t.timestamps
         end if !connection.table_exists?(table_name)
         def self.insert(values)
           self.new(values).save
