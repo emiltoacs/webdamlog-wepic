@@ -1,3 +1,4 @@
+require 'wl_logger'
 class Picture < ActiveRecord::Base
   db_name = "db/database_#{ENV['USERNAME']}.db"  
   establish_connection :adapter => 'sqlite3', :database => db_name  

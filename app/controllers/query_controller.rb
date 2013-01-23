@@ -4,6 +4,7 @@ class QueryController < ApplicationController
   include Database
   
   def index
+    #Fetches relation from schema
     @relation_classes = database(ENV['USERNAME']).relation_classes
   end
   
@@ -57,6 +58,6 @@ class QueryController < ApplicationController
     respond_to do |format|
       format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
       format.json { head :no_content }
-    end    
+    end
   end
 end
