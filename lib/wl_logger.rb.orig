@@ -1,10 +1,19 @@
 require 'logger'
 
+<<<<<<< HEAD
+class WLLogger < Logger
+  def debug message
+    super "#{ENV['USERNAME']}:#{message.strip}"
+  end
+  def info message
+    super "#{ENV['USERNAME']}:#{message.strip}"
+=======
 module WLLogger
   
   def self.logger
     @logger = WLLogger.new STDOUT unless @logger
     @logger
+>>>>>>> jules
   end
   
   class WLLogger < Logger

@@ -1,5 +1,6 @@
 require 'lib/wl_launcher'
 require 'yaml'
+require 'lib/wl_logger'
 
 # The controller of the manager
 class WelcomeController < ApplicationController
@@ -53,7 +54,7 @@ class WelcomeController < ApplicationController
     @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
     #This code does not check if call to rails failed. This operations requires interprocess communication.
     if @account.save
-      puts "#{@account.valid?}"
+      WLLogger.logger.info "#{@account.valid?}"
       respond_to do |format|
         Thread.new do
           WLLauncher.start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
@@ -110,7 +111,7 @@ class WelcomeController < ApplicationController
 
   def confirm_server_ready
     @account = Account.find(params[:id])
-    #puts "account : " + @account.inspect
+    #WLLogger.logger.info "account : " + @account.inspect
     respond_to do |format|
       format.json { render :json => @account.active }
     end

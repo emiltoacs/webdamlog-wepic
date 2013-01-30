@@ -5,6 +5,7 @@ require 'socket'
 require 'timeout'
 require 'set'
 require 'pty'
+require 'lib/wl_logger'
 
 # Define some methods to launch and manage new peers spawned by the manager
 module WLLauncher
@@ -19,12 +20,12 @@ module WLLauncher
           server.close
           return true
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-          puts "Connection Error..."
+          WLLogger.logger.info "Connection Error..."
           return false
         end        
       end
     rescue Timeout::Error
-      puts "Time out..."
+      WLLogger.logger.info "Time out..."
       return false
     end
   end
@@ -68,7 +69,7 @@ module WLLauncher
     end
     pids.each do |pid|
       system "kill -9 #{pid}"
-      puts "Process #{pid} killed"
+      WLLogger.logger.info "Process #{pid} killed"
     end
     pids.size
   end

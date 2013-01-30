@@ -11,6 +11,19 @@ require 'app/models/user'
 module Database
   @@databases = Hash.new
   
+  #Does nothing if the user already has his db setup. Otherwise, sets up his 
+  #db. FIXME change the naming convention used for the db to something more 
+  #standard.
+  #
+  def setupdb
+    unless @@databases[ENV['USERNAME']]
+      create_or_connect_db(ENV['USERNAME'])
+    end
+  end
+  
+  #Access a database loaded by the program using its database id. The id
+  #for the database is usually the username of the user.
+  #
   def database(database_id)
     @@databases[database_id]
   end
@@ -99,14 +112,15 @@ module Database
         @relation_classes[table.name] = create_relation_class(table.name,JSON.parse(table.schema))
       end
       
-      #TODO : Add the program class
-      @relation_classes['Program'] = Program
+      #XXX The error was basically impossible to guess but finally found it
+      #
+      #@relation_classes['Program'] = Program
       @relation_classes['Pictures'] = Picture
-      @relation_classes['Users'] = User
+      #@relation_classes['Users'] = User
       @wlschema.open_connection
       @wlschema.new(:name=>'Pictures',:schema=>Picture.schema.to_json).save
-      @wlschema.new(:name=>'Users',:schema=>User.schema.to_json).save
-      @wlschema.new(:name=>'Programs',:schema=>Program.schema.to_json).save
+      #@wlschema.new(:name=>'Users',:schema=>User.schema.to_json).save
+      #@wlschema.new(:name=>'Programs',:schema=>Program.schema.to_json).save
       @wlschema.remove_connection
     end
     
