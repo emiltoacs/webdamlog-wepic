@@ -1,9 +1,8 @@
 require 'yaml'
-require 'wl_logger'
+require 'lib/wl_logger'
 class ProgramController < ApplicationController
   
   def index
-    @logger = WLLogger.new STDOUT
     #Do not load program if already in main memory
     @program = get_default_program if @program.nil?
     
@@ -36,7 +35,7 @@ class ProgramController < ApplicationController
       data += line+'\n'
     end
     rescue => error
-      @logger.info error.inspect
+      WLLogger.logger.info error.inspect
       return nil
     end
     program =  Program.new(:name=>name,:author=>author,:source=>source,:data=>data)
