@@ -12,7 +12,7 @@ class Program < ActiveRecord::Base
     t.timestamps
   end if !connection.table_exists?('programs')  
   
-    attr_accessible :name, :author, :data, :source
+  attr_accessible :name, :author, :data, :source
   validates_uniqueness_of :name
   
   #This method returns a schema to be used in the WLSchema table
