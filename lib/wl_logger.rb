@@ -29,19 +29,19 @@ module WLLogger
       super "#{@prefix}#{message.strip}"
     end
   end
-end
 
-class WLEnginelogger < WLLogger
-  def debug message
-    super "WLEngine:#{message.strip}"
-  end
-  def info message
-    super "#WLEngine::#{message.strip}"
-  end
-  def warn message
-    super "WLEngine::#{message.strip}"
-  end
-  def fatal message
-    super "WLEngine::#{message.strip}"
+  class WLEngineLogger < WLLogger
+    def debug message
+      super "WLEngine:#{message.strip}"
+    end
+    def info message
+      super "#WLEngine::#{message.strip}"
+    end
+    def warn message
+      super "WLEngine::#{message.strip}"
+    end
+    def fatal message
+      super "WLEngine::#{message.strip}"
+    end
   end
 end

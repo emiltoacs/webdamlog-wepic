@@ -1,8 +1,4 @@
-class Program < ActiveRecord::Base
-  db_name = "db/database_#{ENV['USERNAME']}.db"
-  @configuration = {:adapter => 'sqlite3', :database => db_name}
-  establish_connection @configuration
-  
+class Program < ActiveRecord::Base  
   def self.setup
     unless @setup_done
       db_name = "db/database_#{ENV['USERNAME']}.db"
@@ -19,7 +15,6 @@ class Program < ActiveRecord::Base
       @setup_done = true
     end
   end
-
   
   #This method returns a schema to be used in the WLSchema table
   #to comply with the standards of that table. This should represent

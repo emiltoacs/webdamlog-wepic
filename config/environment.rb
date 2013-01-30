@@ -10,9 +10,10 @@ WepimApp::Application.initialize!
 if WepimApp.is_manager?
   require 'lib/wl_launcher'
 else
-  require 'lib/wl_peer'
+  require 'lib/wl_peer'  
+  require 'lib/wl_logger'
+  $:.unshift(File.expand_path("lib/webdamlog"))
   require 'lib/webdamlog/wlbud'
-  require 'lib/wl_logger'  
 
   # TODO WLE:START all this messy code for the peer should be moved into an appropriate structure
 
@@ -25,7 +26,7 @@ else
   program_file_dir = File.expand_path('../../tmp/rule_dir', __FILE__)
   unless (File::directory?(program_file_dir))
     Dir.mkdir(program_file_dir)
-  end  
+  end
   program_file = File.join(program_file_dir,"programfile_of_#{ENV['USERNAME']}on#{ENV['PORT']}")
   dir_rule = program_file_dir
   STR0 = <<EOF
@@ -41,14 +42,14 @@ EOF
   @webdamlog = nil
   # TODO find a good port for the wlengine
   eval("@webdamlog = ClassWL#{ENV['USERNAME']}on#{ENV['PORT']}.new(peer_name,program_file,{:port => #{ENV['PORT']*2}, :dir_rule => dir_rule})")
-#  @wlenginelogger = WLEnginelogger.new(STDOUT)
-#  msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
-#  if @webdamlog.nil?
-#    @wlenginelogger.fatal("creation of the webdamlog engine instance has failed: #{msg}")
-#  else
-#    @wlenginelogger.info("new instance of webdamlog engine created: #{msg}")
-#  end
-#  @webdamlog.run_bg
+  @wlenginelogger = WLLogger::WLEngineLogger.new(STDOUT)
+  msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
+  if @webdamlog.nil?
+    @wlenginelogger.fatal("creation of the webdamlog engine instance has failed:\n#{msg}")
+  else
+    @wlenginelogger.info("new instance of webdamlog engine created:\n#{msg}")
+  end
+  #@webdamlog.run_bg
 
   # XXX add action on shutdown for the wlengine such as erase program file if saved in db and clean rule dir if needed
 
