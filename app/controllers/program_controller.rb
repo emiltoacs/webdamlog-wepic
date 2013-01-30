@@ -41,10 +41,9 @@ class ProgramController < ApplicationController
     WLLogger.logger.info name
     WLLogger.logger.info author
     WLLogger.logger.info source
-    WLLogger.logger.info data    
     
     #This is the table in the database that is storing the program
-    program =  Program.new(:name=>name,:author=>author,:source=>source,:data=>data)
+    program = Program.new(:name=>name,:author=>author,:source=>source,:data=>data)
     return nil unless program.save
     program
   end
