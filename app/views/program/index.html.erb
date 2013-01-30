@@ -4,11 +4,11 @@
 <div class="content">
 	<div class="notice"><%=  notice %></div>
 	<div class="alert"><%=  alert %></div>
-	<%if @program%>
-		<div id="program" class="name"><%=@program.name%></div>
-		<div id="program" class="source">From file : <%="#{@program.source}#{@program.name}"%></div>
-		<div id="program" class="author">Written by : <%=@program.author%></div>
-		<div id="program" class="body">From file : <%=@program.data%></div>
+	<%if @program%><%#TODO Should we add this security? %>
+        	<div id="program" class="name"><%=@program.name%></div>
+		<div id="program" class="source">From file : <%="#{@program.source}#{@program.name}" %></div>
+		<div id="program" class="author">Written by : <%=@program.name %></div><!--FIXME change inconsistency-->
+		<div id="program" class="body">Program : <%=@program.name %> </div><!--FIXME change inconsistency-->
 	<%else%>
 		<div id="program" class="unavailable">Program was unavailable!</div>
 	<%end%>
