@@ -55,6 +55,6 @@ EOF
 
   # WLE:END
 
+  WLLogger.logger.info "Wepic peer of #{ENV['USERNAME']},#{ENV['PORT']} has finsihed initialization and is ready to send acknowedgement to manager"
   WLPeer.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],ENV['PORT'])
-
 end
