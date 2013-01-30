@@ -112,13 +112,15 @@ module Database
         @relation_classes[table.name] = create_relation_class(table.name,JSON.parse(table.schema))
       end
       
-      @relation_classes['Program'] = Program
+      #XXX The error was basically impossible to guess but finally found it
+      #
+      #@relation_classes['Program'] = Program
       @relation_classes['Pictures'] = Picture
-      @relation_classes['Users'] = User
+      #@relation_classes['Users'] = User
       @wlschema.open_connection
       @wlschema.new(:name=>'Pictures',:schema=>Picture.schema.to_json).save
-      @wlschema.new(:name=>'Users',:schema=>User.schema.to_json).save
-      @wlschema.new(:name=>'Programs',:schema=>Program.schema.to_json).save
+      #@wlschema.new(:name=>'Users',:schema=>User.schema.to_json).save
+      #@wlschema.new(:name=>'Programs',:schema=>Program.schema.to_json).save
       @wlschema.remove_connection
     end
     

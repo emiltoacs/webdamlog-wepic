@@ -1,10 +1,13 @@
 <div class="opacity">
 </div>
 <div class="content"><%=notice%><%=alert%>
-	<h1>Query tab</h1><%if current_user%>
+	<%if current_user%>
 	<div id="query_forms">
 		<div id="create_relation"><%= render 'create_relation'%></div>
 		<div id="insert_tuple"><%= render 'insert_tuple'%></div>
 	</div>
-	<div id="list_relations"><%= render 'list_relations' %></div><%end%>
+	<div id="list_relations"><%= render 'list_relations' %></div>
+	<%else%>
+		<div id="notlogged">You are not logged in! <%=link_to "Log in",:login%></div>
+	<%end%>
 </div>
