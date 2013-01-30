@@ -1,7 +1,9 @@
 <div id="pictures">
 	<div class="opacity">
 	</div>
-	<div class="content"><%= notice %>
+	<div class="content">
+		<%if current_user%>
+		<%= notice %>
 		<div class="upload">
 			<%= render 'upload'%>
 		</div>
@@ -19,6 +21,9 @@
 		<h2>Contact Pictures</h2>
 		<div class="images">	
 		</div>
+		<%else%>
+			<div id="notlogged">You are not logged in! <%=link_to "Log in",:login%> </div>
+		<%end%>
 	</div>
 </div>
 <div id="contacts">

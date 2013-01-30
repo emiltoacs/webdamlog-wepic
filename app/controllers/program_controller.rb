@@ -4,16 +4,19 @@ class ProgramController < ApplicationController
   
   def index
     #Do not load program if already in main memory
-    @program = load_default_program if @program.nil?
     
-    flash.now[:alert] = 'Default Program was not loaded properly.' unless @program
+    @program = Program.first
+    @program = load_program(nil) if @program.nil?
+    
+    flash.now[:alert] = 'The program was not loaded properly.' unless @program
     
   end
   
-  def load_default_program
-    WLLogger.logger.info "Loading default program"    
+  def load_program(filepath)
+    WLLogger.logger.info "Loading default program" unless filepath
+    filepath='config/properties.yml' unless filepath
     #Get properties file
-    properties = YAML.load_file('config/properties.yml')
+    properties = YAML.load_file(filepath)
     #default values
     name = "Unknown"
     author = "Unknown"
