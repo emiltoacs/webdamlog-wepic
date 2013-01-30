@@ -13,7 +13,7 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @user = User.new #:username => ENV['USERNAME']
+    @user = User.new
     @users = User.all
     @user_session = UserSession.new
     respond_to do |format|
@@ -36,7 +36,7 @@ class UsersController < ApplicationController
   # GET /users/new
   # GET /users/new.json
   def new
-    @user = User.new #:username => ENV['USERNAME']
+    @user = User.new
 
     respond_to do |format|
       format.html # new.html.erb
@@ -44,10 +44,11 @@ class UsersController < ApplicationController
     end
   end
 
-  # GET /users/1/edit
-  def edit
-    @user = User.find(params[:id])
-  end
+  #TODO: Assess the usefulness of the edit method.
+#  # GET /users/1/edit
+#  def edit
+#    @user = User.find(params[:id])
+#  end
 
   # POST /users
   # POST /users.json
@@ -58,8 +59,8 @@ class UsersController < ApplicationController
       if @user.save
         #When user is created, he is automatically logged in, which means
         #we need to start his webdamlog session.
-        database = create_or_connect_db(ENV['USERNAME'])
-        format.html { redirect_to(:wepic, :notice => "Registration successfull. #{database.inspect}") }
+        setupdb
+        format.html { redirect_to(:wepic, :notice => "Registration successfull") }
         format.xml { render :xml => @user, :status => :created, :location => @user }
       else
         format.html { render :action => "new" , :notice => params.inspect}
