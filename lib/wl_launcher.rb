@@ -56,7 +56,10 @@ module WLLauncher
   
   #This method kills the wl server if it located on the same machine only
   #TODO: This is not a proper method to kill a server. Change this method to a
-  #more central method: se the pid of child that can get in start_peer
+  #more central method: se the pid of child that can get in start_peer.
+  #Moreover, we need the peer to be killed to be be able to perform some actions
+  #and this cannot be done if we use signals to kill the peers.
+  #
   def self.exit_server(port,type=:thin)
     pids = Set.new
     case type
