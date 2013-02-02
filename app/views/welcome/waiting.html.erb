@@ -3,6 +3,8 @@
 # and open the template in the editor.
 %>
 <script>
+//XXX: I am not sure if we should move this code elsewhere since it is very specific to this page, but at the same time,
+//having javascript code spread out is not always a good idea.
 function executeQuery() {
   $.ajax({
     url: "confirm/<%= @account.id%>",
@@ -10,7 +12,7 @@ function executeQuery() {
     dataType : 'json',
     success: function(data) {
       if (data) {
-      	window.location = "http://localhost:<%=@account.port %>"
+      	window.location = "http://<%=@account.ip%>:<%=@account.port%>"
       }
     }
   });

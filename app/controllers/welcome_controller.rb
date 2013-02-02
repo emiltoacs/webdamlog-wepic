@@ -3,6 +3,8 @@ require 'yaml'
 require 'lib/wl_logger'
 
 # The controller of the manager
+# Wepic Peers do not use this controller.
+#
 class WelcomeController < ApplicationController
   
   def index
@@ -97,6 +99,7 @@ class WelcomeController < ApplicationController
     end   
   end
   
+  #Kill all peers for which this manager is responsible.
   def killall
     @accounts = Account.all
     @accounts.each do |account|
@@ -109,6 +112,8 @@ class WelcomeController < ApplicationController
     end
   end
 
+  #This method is called by the javascript inside app/views/welcome/waiting.erb.html
+  #when the server is ready.
   def confirm_server_ready
     @account = Account.find(params[:id])
     #WLLogger.logger.info "account : " + @account.inspect
@@ -117,6 +122,15 @@ class WelcomeController < ApplicationController
     end
   end
   
+  #This method is used to redirect a user to a specific wepic peer homepage.
+  def redirect
+    @account = Account.find(params[:id])    
+    respond_to do |format|
+      format.html { redirect_to "http://localhost:#{@account.port}" }
+    end
+  end
+  
+  #Restful method for waiting view. 
   def waiting
     @account = Account.find(params[:id])
   end

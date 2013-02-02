@@ -23,9 +23,9 @@ class ProgramController < ApplicationController
     source = ""    
     
     #Initialize default program properties.
-    name = properties['default_program']['name'] if properties['default_program']['name']
-    author = properties['default_program']['author'] if properties['default_program']['author']
-    source = properties['default_program']['source'] if properties['default_program']['source']
+    name = properties['peer']['program']['name'] if properties['peer']['program']['name']
+    author = properties['peer']['program']['author'] if properties['peer']['program']['author']
+    source = properties['peer']['program']['source'] if properties['peer']['program']['source']
     
     filename = "#{name}"
     data = ""

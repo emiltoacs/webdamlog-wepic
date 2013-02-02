@@ -1,14 +1,20 @@
+#Communication ports
 communication:
   manager_port : 3100
   default_spawn_port : 10000
   port_spacing : 3
 
+#Communication ports for testing.
 test_communication:
   manager_port : 4100
   default_spawn_port : 30000
   port_spacing : 3
-
-default_program:
-  name : README.rdoc
-  author : julestestard
-  source : ./
+  
+#Peer properties
+peer:
+  protocol : http
+  #Which program is loaded by default by the peer.
+  program:
+    name : README.rdoc
+    author : julestestard
+    source : ./
