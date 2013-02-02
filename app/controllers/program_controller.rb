@@ -1,52 +1,40 @@
-require 'yaml'
-require 'lib/wl_logger'
 class ProgramController < ApplicationController
   
   def index
     #Do not load program if already in main memory
     
+    #TODO:This line assumes there is only one program. This assumption
+    #should be relaxed later.
     @program = Program.first
-    @program = load_program(nil) if @program.nil?
+    @program = load_program if @program.nil?
     
     flash.now[:alert] = 'The program was not loaded properly.' unless @program
     
   end
   
-  def load_program(filepath)
-    WLLogger.logger.info "Loading default program" unless filepath
-    filepath='config/properties.yml' unless filepath
-    #Get properties file
-    properties = YAML.load_file(filepath)
-    #default values
-    name = "Unknown"
-    author = "Unknown"
-    source = ""    
+  #Loads a webdamlog program specified by the given filepath.
+  def load_program(filepath="",name=nil,author=nil)
     
-    #Initialize default program properties.
-    name = properties['peer']['program']['name'] if properties['peer']['program']['name']
-    author = properties['peer']['program']['author'] if properties['peer']['program']['author']
-    source = properties['peer']['program']['source'] if properties['peer']['program']['source']
+    #Load default program properties if missing
+    name ||= properties['peer']['program']['name'] if properties['peer']['program']['name']
+    author ||= properties['peer']['program']['author'] if properties['peer']['program']['author']
+    filepath = properties['peer']['program']['source'] if properties['peer']['program']['source']
     
-    filename = "#{name}"
-    data = ""
     #Get the data attribute from the file.
+    data = ""
     begin
-    file = File.open(filename)
+    file = File.open(filepath)
     while line = file.gets
       data += line+'\n'
     end
     rescue => error
-      WLLogger.logger.warn error.inspect
+      logger.warn error.inspect
       return nil
     end
-    
-    WLLogger.logger.info "Program Configuration"
-    WLLogger.logger.info name
-    WLLogger.logger.info author
-    WLLogger.logger.info source
+    logger.info "Program Configuration:\n\t-#{name}\n\t-#{author}\n\t-#{filepath}"
     
     #This is the table in the database that is storing the program
-    program = Program.new(:name=>name,:author=>author,:source=>source,:data=>data)
+    program = Program.new(:name=>name,:author=>author,:source=>filepath,:data=>data)
     return nil unless program.save
     program
   end

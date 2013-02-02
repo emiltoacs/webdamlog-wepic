@@ -5,7 +5,7 @@
 		<%= account.username %> is using port <%= account.port%> on <%= account.ip %>,
 		<% if account.active %>
 			<%= link_to "close server", :controller => "welcome", :action => "shutdown", :id => account %>
-			<%= link_to "go to server", "http://localhost:#{account.port}" %>
+			<%= link_to "go to server", "#{properties['peer']['protocol']}://#{account.ip}:#{account.port}" %>
 		<% else %>
 			<%= link_to "start server", :controller => "welcome", :action => "start", :id => account %>
 		<% end%>

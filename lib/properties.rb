@@ -1,14 +1,16 @@
+require 'yaml'
+require 'lib/wl_logger'
+
 module Properties
   
+  #Access general properties  
   def self.properties
-    
+    @properties = YAML.load_file('config/properties.yml') unless @properties
+    @properties
   end
   
-  class Properties
-    
-    def initialize(filename)
-      
-    end
-    
-  end
+  def properties
+    @properties = YAML.load_file('config/properties.yml') unless @properties
+    @properties
+  end  
 end

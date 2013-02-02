@@ -9,6 +9,7 @@ require 'lib/wl_logger'
 
 # Define some methods to launch and manage new peers spawned by the manager
 module WLLauncher
+  include WLLogger
   
   def self.wait_for_acknowledgment(server,port)
     begin
@@ -20,12 +21,12 @@ module WLLauncher
           server.close
           return true
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-          WLLogger.logger.info "Connection Error..."
+          logger.info "Connection Error..."
           return false
         end        
       end
     rescue Timeout::Error
-      WLLogger.logger.info "Time out..."
+      logger.info "Time out..."
       return false
     end
   end
@@ -71,7 +72,7 @@ module WLLauncher
     end
     pids.each do |pid|
       system "kill -9 #{pid}"
-      WLLogger.logger.info "Process #{pid} killed"
+      logger.info "Process #{pid} killed"
     end
     pids.size
   end

@@ -1,7 +1,7 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 require 'lib/wl_launcher'
-require 'yaml'
+require 'lib/properties'
 require 'sqlite3'
 require 'lib/wl_logger'
 
@@ -53,7 +53,7 @@ module WLSetup
   #command.
   #
   def self.argsetup(args)
-    properties = YAML.load_file('config/properties.yml')
+    properties = Properties.properties
     user_opt_index = args.index('-u')
     port_opt_index = args.index('-p')
     reset_opt_index = args.index('--reset')

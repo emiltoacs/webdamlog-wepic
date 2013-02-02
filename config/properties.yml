@@ -17,4 +17,4 @@ peer:
   program:
     name : README.rdoc
     author : julestestard
-    source : ./
+    source : ./README.rdoc
