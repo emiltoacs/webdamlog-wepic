@@ -1,5 +1,3 @@
-require 'lib/database'
-
 class UsersController < ApplicationController
   include Database
   def list

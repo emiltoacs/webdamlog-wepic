@@ -1,4 +1,12 @@
+require 'lib/properties'
+require 'lib/wl_logger'
+require 'lib/database'
+require 'lib/wl_launcher'
+
 class ApplicationController < ActionController::Base
+  include Properties
+  include WLLogger
+  
   protect_from_forgery
   
   helper_method :current_user
@@ -10,15 +18,13 @@ class ApplicationController < ActionController::Base
   #@@adminlist = Array[3,4,5]
   
   def current_user_session
-    return @current_user_session if @current_user_session
+    return @current_user_session if defined?(@current_user_session)
     @current_user_session = UserSession.find
-    WLLogger.logger.info "Current session not already defined. Looking for session : #{exists(@current_user_session,"empty")}"
     @current_user_session
   end
   
   def current_user
-    return @current_user if @current_user
-    WLLogger.logger.info "Current User not already defined. Accessing session : #{exists(current_user_session,"no session")}"
+    return @current_user if defined?(@current_user)
     @current_user = current_user_session && current_user_session.record
   end
   

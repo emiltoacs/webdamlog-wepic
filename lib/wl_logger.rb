@@ -44,4 +44,9 @@ module WLLogger
       super "WLEngine::#{message.strip}"
     end
   end
+  
+  def logger
+    @logger = WLLogger.new STDOUT unless @logger
+    @logger
+  end    
 end

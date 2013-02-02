@@ -1,4 +1,4 @@
-require 'lib/database'
+
 class UserSessionsController < ApplicationController
   include Database
   # GET /user_sessions/new

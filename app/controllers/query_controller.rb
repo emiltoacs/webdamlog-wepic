@@ -1,5 +1,3 @@
-require 'lib/database'
-
 class QueryController < ApplicationController
   include Database
   

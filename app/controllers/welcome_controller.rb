@@ -1,7 +1,3 @@
-require 'lib/wl_launcher'
-require 'yaml'
-require 'lib/wl_logger'
-
 # The controller of the manager
 # Wepic Peers do not use this controller.
 #
@@ -56,7 +52,7 @@ class WelcomeController < ApplicationController
     @account = Account.new(:username => ext_username, :ip=> ip, :port => ext_port, :active => false)
     #This code does not check if call to rails failed. This operations requires interprocess communication.
     if @account.save
-      WLLogger.logger.info "#{@account.valid?}"
+      logger.info "#{@account.valid?}"
       respond_to do |format|
         Thread.new do
           WLLauncher.start_peer(ENV['USERNAME'],ext_username,ENV['PORT'],ext_port,@account)
@@ -116,7 +112,7 @@ class WelcomeController < ApplicationController
   #when the server is ready.
   def confirm_server_ready
     @account = Account.find(params[:id])
-    #WLLogger.logger.info "account : " + @account.inspect
+    #logger.info "account : " + @account.inspect
     respond_to do |format|
       format.json { render :json => @account.active }
     end
@@ -126,7 +122,7 @@ class WelcomeController < ApplicationController
   def redirect
     @account = Account.find(params[:id])    
     respond_to do |format|
-      format.html { redirect_to "http://localhost:#{@account.port}" }
+      format.html { redirect_to "#{properties['peer']['protocol']}://#{@account.ip}:#{@account.port}" }
     end
   end
   
