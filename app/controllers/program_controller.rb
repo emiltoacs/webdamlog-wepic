@@ -33,6 +33,8 @@ class ProgramController < ApplicationController
       return nil
     end
     logger.info "Program Configuration:\n\t-#{name}\n\t-#{author}\n\t-#{filepath}"
+
+    # WLBUDinsert 
     
     #This is the table in the database that is storing the program
     program = Program.new(:name=>name,:author=>author,:source=>filepath,:data=>data)
