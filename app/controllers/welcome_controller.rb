@@ -5,6 +5,7 @@ class WelcomeController < ApplicationController
   def index
     @account = Peer.new if @account.nil?
     @accounts = Peer.all
+    @protocol = properties['peer']['protocol']
   end
 
   # Once clicked on the button go, launch or reconnect to a peer
@@ -47,31 +48,6 @@ class WelcomeController < ApplicationController
           format.html {redirect_to '/', :alert => "The specified peer cannot be accessed. Please contact the service administrator."}
         end
       end
-    #If the acccount already exists
-
-    # url = "#{properties['peer']['protocol']}://#{@account.ip}:#{@account.port}"
-    #
-    # if WLLauncher.start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port,@account)
-    # respond_to do |format|
-    # format.html {redirect_to url}
-    # end
-    # respond_to do |format|
-    # #XXX need to take care of url
-    # format.html {redirect_to "/waiting/#{@account.id}", :notice => "Server is rebooting..."}
-    # end
-    # else
-    #
-    # end
-    #
-    # #If the server for account is down.
-    # if WLLauncher.port_available?(@account.ip,@account.port)
-    # Thread.new do
-    # WLLauncher.start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port,@account)
-    # end
-    #
-    # #If the server for account is up.
-    # else
-    # end
     end
   end
 
