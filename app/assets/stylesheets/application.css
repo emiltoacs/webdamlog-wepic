@@ -12,7 +12,7 @@
  *= require_tree .
 */
 
-/*General CSS. Main, Opacity and Navigation*/
+/*********************GENERAL*************************/
 body {
     background-image: url(/assets/background.png);   
 }
@@ -32,6 +32,10 @@ body {
     border-width : 1px;
     padding : 10px;
     border-color : #E33;
+}
+
+.alert {
+    color : #ff0000;
 }
 
 #nav {
@@ -164,55 +168,7 @@ body {
     filter:alpha(opacity=85);      
 }
 
-/*Wepic Images CSS*/
-.images {
-    height : 110px;
-    margin-bottom : 20px;
-}
-
-.entry {
-    height : 100px;
-    margin-top : 5px;
-    margin-bottom : 5px;
-    position : relative;
-    float : left;
-    margin-right : 5px;
-    margin-left : 5px;
-    width : 100px;    
-}
-
-.entry .title {
-    display : none;
-}
-
-.entry .image {   
-}
-
-.images img {
-    width : 100px;
-    height : 100px;
-}
-
-#pictures {
-    position : relative;
-    float : left;
-    width : 80%;
-}
-
-#contacts {
-    position : relative;
-    float : left;
-    width : 15%;
-    margin-left : 5%;
-    height : 100%;
-}
-
-/*Alerts*/
-.alert {
-    color : #ff0000;
-}
-
-/*Program Tab*/
+/*************************PROGRAM*********************/
 
 #program .body {
 }

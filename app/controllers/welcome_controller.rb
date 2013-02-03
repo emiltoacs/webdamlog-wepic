@@ -38,7 +38,7 @@ class WelcomeController < ApplicationController
           end
         else
           #The peer is accessible but has to be rebooted
-          respond_to do |formnat|
+          respond_to do |format|
             format.html {redirect_to "/waiting/#{@account.id}", :notice => "Server is rebooting..."}
           end
         end

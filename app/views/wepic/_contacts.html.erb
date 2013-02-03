@@ -1,0 +1,6 @@
+<%@contacts.each do |contact| %>
+	<div class="contact">
+		<img src="/assets/images/<%if contact.online%>online<%else%>offline<%end%>.png"/>
+		<button><%=contact.username%></button>
+	</div>
+<%end%>

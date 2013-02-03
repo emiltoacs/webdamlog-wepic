@@ -22,7 +22,7 @@ class User < ActiveRecord::Base
   
   def default_values
     self.username ||= ENV['USERNAME']
-  end  
+  end
   
   def self.schema
     {'username' => 'string',

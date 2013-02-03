@@ -40,10 +40,6 @@ module WLSetup
       if !admin_present
         #Remove all .db files
         system 'rm db/*.db'
-        WLLogger.logger.info "database_MANAGER.db file absent. Recreating database..."
-        #Migrate the db appropriately
-        system 'bundle exec rake db:migrate'
-        WLLogger.logger.info "Database migrated."
       end
     end
   end
@@ -121,7 +117,7 @@ module WLSetup
         2.times {args.delete_at(mport_opt_index)}
       end
     end
-    WLLogger.logger.info "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}"
+    WLLogger.logger.info "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}" 
   end
   
 end

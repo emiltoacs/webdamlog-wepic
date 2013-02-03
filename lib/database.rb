@@ -7,6 +7,7 @@ require 'fileutils'
 require 'app/models/program'
 require 'app/models/picture'
 require 'app/models/user'
+require 'lib/wl_logger'
 
 module Database
   @@databases = Hash.new
@@ -88,6 +89,8 @@ module Database
         @schema = {"name"=>"string","schema"=>"string"}
         @configuration = database.configuration
         establish_connection @configuration
+        attr_accessible :name, :schema
+        validates_uniqueness_of :name
         self.table_name = relation_name
         connection.create_table table_name, :force => true do |t|
           t.string :name
@@ -113,15 +116,20 @@ module Database
       end
       
       #XXX The error was basically impossible to guess but finally found it
+      #do not add the User class here or Authlogic will not be able to handle sessions properly.
       #
-      #@relation_classes['Program'] = Program
       @relation_classes['Pictures'] = Picture
-      #@relation_classes['Users'] = User
+      @relation_classes['Contacts'] = Contact
       @wlschema.open_connection
       @wlschema.new(:name=>'Pictures',:schema=>Picture.schema.to_json).save
-      #@wlschema.new(:name=>'Users',:schema=>User.schema.to_json).save
-      #@wlschema.new(:name=>'Programs',:schema=>Program.schema.to_json).save
+      @wlschema.new(:name=>'Contacts',:schema=>Contact.schema.to_json).save
       @wlschema.remove_connection
+      
+      #FIXME: This is a dummy SQL query to insert test facts in Contacts
+      Contact.new(:username=>'Emilien',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"emilien.antoine@inria.fr",:facebook=>"Émilien Antoine").save
+      Contact.new(:username=>'Julia',:peerlocation=>'SIGMODpeer',:email=>"stoyanovich@drexel.edu",:facebook=>"Julia Stoyanovich").save
+      Contact.new(:username=>'Gerome',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"miklau@cs.umass.edu",:facebook=>"Gerome Miklau").save
+      Contact.new(:username=>'Serge',:peerlocation=>'SIGMODpeer',:email=>"serge.abiteboul@inria.fr",:facebook=>"Serge Abiteboul").save
     end
     
     #The create relation method will create a new relation in the database as well.
@@ -131,10 +139,15 @@ module Database
       name.capitalize!
       @relation_classes[name] = create_relation_class(name,schema)
       @wlschema.open_connection
-      if @wlschema.new(:name => name,:schema => schema.to_json).save
-        #good
-      else
-        puts "Relation was not properly updated"
+      begin
+        if @wlschema.new(:name => name,:schema => schema.to_json).save
+          #good
+        else
+          puts "Relation was not properly updated"
+        end
+      rescue => error
+        WLLogger.logger.warn error
+        raise error
       end
       @wlschema.remove_connection
     end
