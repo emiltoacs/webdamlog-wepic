@@ -53,7 +53,7 @@ class WelcomeController < ApplicationController
 
   def shutdown
     @account = Peer.find(params[:id])
-    if (WLLauncher.exit_server(@account.port))
+    if (WLLauncher.end_peer(@account.port))
       @account.active = false
       @account.save
       respond_to do |format|
@@ -82,7 +82,7 @@ class WelcomeController < ApplicationController
   def killall
     @accounts = Peer.all
     @accounts.each do |account|
-      WLLauncher.exit_server(account.port)
+      WLLauncher.end_peer(account.port)
       account.active = false
       account.save
     end

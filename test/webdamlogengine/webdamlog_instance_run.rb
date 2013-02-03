@@ -17,7 +17,7 @@ class WebdamlogInstanceRun < Test::Unit::TestCase
   end
 
   def teardown
-    WLLauncher.exit_server(@port)
+    WLLauncher.end_peer(@port)
   end
 
   def test_foo

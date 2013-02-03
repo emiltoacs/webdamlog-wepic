@@ -100,7 +100,7 @@ module WLSetup
       WLLogger.logger.info "Killing all of the peers launched that are remaining"
       get_peer_ports_from_account.each do |peer_port|
         WLLogger.logger.info "Peer at port #{peer_port} killed."
-        WLLauncher.exit_server(peer_port)
+        WLLauncher.end_peer(peer_port)
       end
       WLLogger.logger.info "Reset option has been chosen. Removing the database_MANAGER.db file. This will cause a reset of the system."
       system 'rm db/database_MANAGER.db'
