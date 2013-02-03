@@ -34,7 +34,7 @@ module WLLauncher
   # TODO keep the id of the child process launched to kill properly
   def self.start_peer(name,ext_name,manager_port,ext_port,peer=nil)
     if name=='MANAGER'
-      spawn_server(ext_name,manager_port,ext_port) if !ext_name.nil?
+      launch(ext_name,manager_port,ext_port) if !ext_name.nil?
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
       if peer
@@ -47,20 +47,15 @@ module WLLauncher
   end
 
   #This method is used by the manager.
-  def self.spawn_server(username,manager_port,port,server_type=:thin)
+  def self.launch(username,manager_port,port,server_type=:thin)
     cmd =  "rails server -p #{port} -u #{username} -m #{manager_port}"
     child_pid=fork do
       exec cmd
     end
     child_pid
   end
-
-  #This method kills the wl server if it located on the same machine only
-  #TODO: This is not a proper method to kill a server. Change this method to a
-  #more central method: se the pid of child that can get in start_peer.
-  #Moreover, we need the peer to be killed to be be able to perform some actions
-  #and this cannot be done if we use signals to kill the peers.
-  #
+  
+  
   def self.exit_server(port,type=:thin)
     pids = Set.new
     case type
@@ -163,7 +158,7 @@ module WLLauncher
 
     #Create the peer active record.
     peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false)
-
+    peer.save
     #Launch the peer in a new thread.
     Thread.new do
       WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,peer)
