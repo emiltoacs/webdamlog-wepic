@@ -1,14 +1,10 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
-require 'rubygems'
-require 'active_record'
 require 'socket'
 require 'timeout'
 require 'set'
-require 'pty'
 require 'lib/wl_logger'
 require 'lib/properties'
-require 'app/models/account'
 
 # Define some methods to launch and manage new peers spawned by the manager
 module WLLauncher
@@ -36,14 +32,14 @@ module WLLauncher
   end
 
   # TODO keep the id of the child process launched to kill properly
-  def self.start_peer(name,ext_name,manager_port,ext_port,account=nil)
+  def self.start_peer(name,ext_name,manager_port,ext_port,peer=nil)
     if name=='MANAGER'
       spawn_server(ext_name,manager_port,ext_port) if !ext_name.nil?
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
-      if account
-      account.active=true
-      account.save
+      if peer
+      peer.active=true
+      peer.save
       end
     return b
     end
@@ -123,6 +119,29 @@ module WLLauncher
     end
   end
 
+  #Check if URL specified is local.
+  def self.local?(url)
+    url.include?('localhost') || url.include?('127.0.0.1')
+  end
+  
+  #Checks if specified URL is reachable from this peer.
+  def self.reachable?(url)
+    if local?(url)
+      true
+    else
+      begin
+        Timeout::timeout(1) do
+          s = TCPSocket.new(url,80)
+          s.close
+          return true
+        end
+      rescue => error
+        WLLogger.logger.warn error.inspect
+      end
+      false
+    end
+  end
+
   #This method is responsible for giving the order to create a peer.
   #It returns the newly created active record for the peer as well as
   #if the creation process has been successful.
@@ -143,14 +162,47 @@ module WLLauncher
     end
 
     #Create the peer active record.
-    account = Account.new(:username => username, :ip=> ip, :port => root_port, :active => false)
+    peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false)
 
     #Launch the peer in a new thread.
     Thread.new do
-      WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,account)
+      WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,peer)
     end
 
-    return account,true
+    return peer,true
   end
 
+  #This method is used to access a peer that has already been created and assigned an address (ip:port)
+  def self.access_peer(peer)
+    properties = Properties.properties
+
+    #Checks if the peer object receives is valid
+    unless peer.ip && peer.port && peer.username
+      return nil,false,false
+    end
+
+    #Compose URL
+    url = "#{properties['peer']['protocol']}://#{peer.ip}:#{peer.port}"
+
+    #Check if url reachable.
+    unless reachable?(url)
+      return nil,false,false
+    end
+
+    #We know that the server is accessible
+    accessible = true
+    available = peer.active
+    
+    #If the peer is active we are done.
+    if available
+      return url,accessible,available
+    end
+    
+    #The peer is inactive and we need to reboot it.
+    Thread.new do
+      WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,peer)
+    end
+    
+    return url,accessible,available    
+  end
 end

@@ -1,7 +1,7 @@
 require 'lib/properties'
 require 'lib/wl_logger'
 require 'lib/database'
-require 'lib/wl_launcher'
+require 'app/helpers/wl_launcher'
 
 class ApplicationController < ActionController::Base
   include Properties

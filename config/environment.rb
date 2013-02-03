@@ -8,9 +8,9 @@ WepimApp::Application.initialize!
 #manager), it signals to its manager that it is ready to receive requests).
 #
 if WepimApp.is_manager?
-  require 'lib/wl_launcher'
+  require 'app/helpers/wl_launcher'
 else
-  require 'lib/wl_peer'  
+  require 'app/helpers/wl_peer'  
   require 'lib/wl_logger'
   $:.unshift(File.expand_path("lib/webdamlog"))
   require 'lib/webdamlog/wlbud'
