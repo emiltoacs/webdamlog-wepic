@@ -3,15 +3,13 @@
 
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 
-require 'rubygems'
-require 'active_record'
 require 'test/unit'
-require 'lib/wl_launcher'
+require 'app/helpers/wl_launcher'
 require 'lib/wl_logger'
 require 'lib/properties'
 require 'socket'
 require 'timeout'
-#require 'app/models/account'
+require 'app/models/peer'
 
 class WLLauncherTest < Test::Unit::TestCase
   include Properties
@@ -53,7 +51,7 @@ class WLLauncherTest < Test::Unit::TestCase
     #Wait for some time and then check if the peer has been succesfully launched by checking
     #if the acknowledgement it is supposed to send back has been recieved.
     sleep(1)
-    @account = Account.find(:username=>username)
+    @account = Peer.find(:username=>username)
     assert_equal(true,@account.active)
   end
 end

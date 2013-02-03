@@ -3,14 +3,14 @@
 #
 class WelcomeController < ApplicationController
   def index
-    @account = Account.new if @account.nil?
-    @accounts = Account.all
+    @account = Peer.new if @account.nil?
+    @accounts = Peer.all
   end
 
   # Once clicked on the button go, launch or reconnect to a peer
   def login
     username = params[:username]
-    @account = Account.find(:first,:conditions => {:username=>username})
+    @account = Peer.find(:first,:conditions => {:username=>username})
     
     if @account.nil?
       #If the account is new
@@ -76,7 +76,7 @@ class WelcomeController < ApplicationController
   end
 
   def shutdown
-    @account = Account.find(params[:id])
+    @account = Peer.find(params[:id])
     if (WLLauncher.exit_server(@account.port))
       @account.active = false
       @account.save
@@ -91,7 +91,7 @@ class WelcomeController < ApplicationController
   end
 
   def start
-    @account = Account.find(params[:id])
+    @account = Peer.find(params[:id])
     Thread.new do
       WLLauncher.start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
     end
@@ -104,7 +104,7 @@ class WelcomeController < ApplicationController
 
   #Kill all peers for which this manager is responsible.
   def killall
-    @accounts = Account.all
+    @accounts = Peer.all
     @accounts.each do |account|
       WLLauncher.exit_server(account.port)
       account.active = false
@@ -118,8 +118,7 @@ class WelcomeController < ApplicationController
   #This method is called by the javascript inside app/views/welcome/waiting.erb.html
   #when the server is ready.
   def confirm_server_ready
-    @account = Account.find(params[:id])
-    #logger.info "account : " + @account.inspect
+    @account = Peer.find(params[:id])
     respond_to do |format|
       format.json { render :json => @account.active }
     end
@@ -127,7 +126,7 @@ class WelcomeController < ApplicationController
 
   #This method is used to redirect a user to a specific wepic peer homepage.
   def redirect
-    @account = Account.find(params[:id])
+    @account = Peer.find(params[:id])
     respond_to do |format|
       format.html { redirect_to "#{properties['peer']['protocol']}://#{@account.ip}:#{@account.port}" }
     end
@@ -135,7 +134,7 @@ class WelcomeController < ApplicationController
 
   #Restful method for waiting view.
   def waiting
-    @account = Account.find(params[:id])
+    @account = Peer.find(params[:id])
   end
 
   def output_errors(account)

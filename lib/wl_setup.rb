@@ -1,6 +1,6 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
-require 'lib/wl_launcher'
+require 'app/helpers/wl_launcher'
 require 'lib/properties'
 require 'sqlite3'
 require 'lib/wl_logger'

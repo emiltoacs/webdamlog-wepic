@@ -19,9 +19,9 @@ peer:
   root_port : 10000
   #Which program is loaded by default by the peer.
   program:
-    name : README.rdoc
+    name : prog1.wl
     author : julestestard
-    source : ./README.rdoc
+    source : ./app/helpers/prog1.wl
 
 #Testing Peer properties
 testpeer:
