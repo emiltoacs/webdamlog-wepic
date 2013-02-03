@@ -23,7 +23,8 @@ class ProgramController < ApplicationController
     #Get the data attribute from the file.
     data = ""
     begin
-    file = File.open(filepath)
+    #Here we enter from Rails root directory
+    file = File.open(Rails.root+filepath)
     while line = file.gets
       data += line+'\n'
     end

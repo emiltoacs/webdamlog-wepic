@@ -21,7 +21,7 @@ peer:
   program:
     name : prog1.wl
     author : julestestard
-    source : ./app/helpers/prog1.wl
+    source : app/assets/wlprogram/prog1.wl
 
 #Testing Peer properties
 testpeer:

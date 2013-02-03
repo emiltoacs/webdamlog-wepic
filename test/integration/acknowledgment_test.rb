@@ -16,7 +16,7 @@ class AcknowledgmentTest < Test::Unit::TestCase
   end
   
   def teardown
-    WLLauncher.exit_server(@port)
+    WLLauncher.end_peer(@port)
   end
   
   def test_a_start_peer_without_server
@@ -36,6 +36,6 @@ class AcknowledgmentTest < Test::Unit::TestCase
     puts "TEST B"
     assert_equal(true,WLLauncher.start_peer('MANAGER','JULES',@manager_port,@port))
     print "----------\n#{@name} has connected on port #{@port}!\n-----------"
-    WLLauncher.exit_server(@port)
+    WLLauncher.end_peer(@port)
   end
 end

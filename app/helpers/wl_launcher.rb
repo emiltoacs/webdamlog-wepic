@@ -55,8 +55,7 @@ module WLLauncher
     child_pid
   end
   
-  
-  def self.exit_server(port,type=:thin)
+  def self.end_peer(port,type=:thin)
     pids = Set.new
     case type
     when :thin
