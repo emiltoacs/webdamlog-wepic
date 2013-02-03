@@ -24,6 +24,7 @@ class QueryController < ApplicationController
       @relation_classes[rel_name].schema.keys.each_index do |i|
         values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
       end
+      # WLBUDinsert 
       respond_to do |format|
         @relation_classes[rel_name].open_connection
         if @relation_classes[rel_name].insert(values_hash)
@@ -52,6 +53,7 @@ class QueryController < ApplicationController
         schema[col_names[i]]=col_types[i]
       end
     end
+    # WLBUDinsert 
     database(ENV['USERNAME']).create_relation(rel_name,schema)    
     respond_to do |format|
       format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
