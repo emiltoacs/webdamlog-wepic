@@ -1,5 +1,4 @@
 require 'yaml'
-require 'lib/wl_logger'
 
 module Properties
   
