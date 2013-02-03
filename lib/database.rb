@@ -126,7 +126,7 @@ module Database
       @wlschema.remove_connection
       
       #FIXME: This is a dummy SQL query to insert test facts in Contacts
-      Contact.new(:username=>'Emilien',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"emilien.antoine@inria.fr",:facebook=>"Émilien Antoine").save
+      Contact.new(:username=>'Emilien',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"emilien.antoine@inria.fr",:facebook=>"Emilien Antoine").save
       Contact.new(:username=>'Julia',:peerlocation=>'SIGMODpeer',:email=>"stoyanovich@drexel.edu",:facebook=>"Julia Stoyanovich").save
       Contact.new(:username=>'Gerome',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"miklau@cs.umass.edu",:facebook=>"Gerome Miklau").save
       Contact.new(:username=>'Serge',:peerlocation=>'SIGMODpeer',:email=>"serge.abiteboul@inria.fr",:facebook=>"Serge Abiteboul").save
