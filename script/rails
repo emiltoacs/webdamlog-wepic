@@ -2,7 +2,7 @@
 # This command will automatically be run when you run "rails" with Rails 3 gems installed from the root of your application.
 
 #Preliminary setup to take care of wepic-specific options and switches.
-require 'lib/wl_setup'
+require File.expand_path('../../lib/wl_setup',__FILE__)
 WLSetup.argsetup(ARGV)
 
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
