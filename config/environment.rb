@@ -1,6 +1,8 @@
 # Load the rails application
 require File.expand_path('../application', __FILE__)
 
+require 'debugger'; debugger
+
 # Initialize the rails application
 WepimApp::Application.initialize!
 
