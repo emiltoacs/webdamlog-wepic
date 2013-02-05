@@ -1,7 +1,8 @@
 # Load the rails application
 require File.expand_path('../application', __FILE__)
 
-require 'debugger'; debugger
+#This is specific to jules testard version. you can always activate the debugger here.
+#require 'debugger'; debugger
 
 # Initialize the rails application
 WepimApp::Application.initialize!
