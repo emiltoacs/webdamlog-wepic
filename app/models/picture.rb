@@ -8,7 +8,7 @@ class Picture < ActiveRecord::Base
       establish_connection @configuration
       attr_accessible :title, :image, :owner
       validates_uniqueness_of :title
-      validates_presence_of :owner
+      validates :owner, :presence => true
       self.table_name = 'pictures'
       connection.create_table 'pictures', :force => true do |t|
         t.string :title
@@ -38,9 +38,11 @@ class Picture < ActiveRecord::Base
       'image_thumb_file'=>'binary'
     }
   end
+
   def self.open_connection
     establish_connection @configuration
   end
+
   def self.remove_connection
     super
   end
@@ -53,6 +55,6 @@ class Picture < ActiveRecord::Base
     :small => "300x300>"
   },
     :url => '/:class/:id/:attachment?style=:style'
-  default_scope select_without_file_columns_for(:image)  
+  default_scope select_without_file_columns_for(:image)
   
 end

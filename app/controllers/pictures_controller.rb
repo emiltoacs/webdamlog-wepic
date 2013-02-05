@@ -1,6 +1,7 @@
 class PicturesController < WepicController
   def create
     @picture = Picture.new(params[:picture])
+    #require 'debugger' ; debugger
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(ENV['USERNAME']).relation_classes
     #FIXME check how to optimize database connections.
