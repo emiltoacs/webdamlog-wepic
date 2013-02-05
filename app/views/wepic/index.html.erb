@@ -10,7 +10,7 @@
 			<%= render 'upload'%>
 		</div>
 		<h2>My Pictures</h2>
-		<div class="images">
+		<div id="my_pictures" class="images">
 			<% @pictures.each do |picture| %>
 				<a href="<%='/pictures/'+picture.id.to_s%>">
 					<div class="entry">
@@ -21,7 +21,8 @@
 			<% end %>
 		</div>
 		<h2>Contact Pictures</h2>
-		<div class="images">	
+		<div id="contact_pictures" class="images">
+				
 		</div>
 		<%else%>
 			<div id="notlogged">You are not logged in! <%=link_to "Log in",:login%> </div>
@@ -32,7 +33,7 @@
 <%end%>
 
 <% if current_user%>
-<div id="contacts">
+<div id="contact_tab">
 	<div class="opacity"></div>
 	<div class="content">
 		<h2> Contacts </h2>

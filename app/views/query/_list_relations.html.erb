@@ -10,9 +10,9 @@
 		</div>
 		<% end %>
 	</div>
-	<% @relation_classes[name].open_connection%>
+	<% @relation_classes[name].open_connection #unless name='Pictures'%>
 	<% relation_tuples = @relation_classes[name].all%>
-	<% @relation_classes[name].remove_connection%>
+	<% @relation_classes[name].remove_connection #unless name='Pictures'%>
 	<%relation_tuples.each do |tuple| %>
 	<div class="row">
 		<%rel_class.schema.keys.each do |col| %>
@@ -22,17 +22,21 @@
 			<!-- By default we take the current time because appropriate format is unknown. TODO : fix this-->
 			<%case rel_class.schema[col]%>			
 			<%when 'datetime'%>
-			<%s=Time.now.inspect[0..21]+'...'%>
+			<%s="#{tuple[col]}".inspect[0..21]+'...'%>
 			<%when 'binary'%>
 			<%s="blob"%>	
 			<%when 'boolean'%>
-			<%s="#{tuple[col]}"%>		
+			<%s="#{tuple[col]}"%>
 			<%else%>
+			<%unless tuple[col].nil? %>
 				<% if tuple[col].size>22 %>
 					<% s = "#{tuple[col][0..21]}..."%>
 				<%else%>
 					<% s = tuple[col]%>
 				<%end%>
+			<%else%>
+				<%= 'nil' %>
+			<%end%>
 			<%end%>
 			
 			<%= s %>
