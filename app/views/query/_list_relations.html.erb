@@ -24,7 +24,9 @@
 			<%when 'datetime'%>
 			<%s=Time.now.inspect[0..21]+'...'%>
 			<%when 'binary'%>
-			<%s="blob"%>			
+			<%s="blob"%>	
+			<%when 'boolean'%>
+			<%s="#{tuple[col]}"%>		
 			<%else%>
 				<% if tuple[col].size>22 %>
 					<% s = "#{tuple[col][0..21]}..."%>
