@@ -22,7 +22,7 @@ class ActiveSupport::TestCase
   fixtures :all
   
   def self.logger
-    RAILS_DEFAULT_LOGGER
+    Rails.logger
   end
   # Add more helper methods to be used by all tests here...
 end

@@ -1,15 +1,15 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-$:.unshift File.join(File.dirname(__FILE__),'..','lib')
+require 'test_helper'
 
 require 'test/unit'
-require 'app/helpers/wl_launcher'
-require 'lib/wl_logger'
-require 'lib/properties'
-require 'socket'
-require 'timeout'
-require 'app/models/peer'
+#require 'app/helpers/wl_launcher'
+#require 'lib/wl_logger'
+#require 'lib/properties'
+#require 'socket'
+#require 'timeout'
+#require 'app/models/peer'
 
 class WLLauncherTest < Test::Unit::TestCase
   include Properties

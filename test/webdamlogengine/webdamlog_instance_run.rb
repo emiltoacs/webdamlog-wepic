@@ -1,10 +1,10 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-$:.unshift File.join(File.dirname(__FILE__),'..','lib')
+#$:.unshift File.join(File.dirname(__FILE__),'..','lib')
 require 'test_helper'
 require 'test/unit'
-require 'lib/webdamlog/wlbud'
+#require 'lib/webdamlog/wlbud'
 
 class WebdamlogInstanceRun < Test::Unit::TestCase
 
