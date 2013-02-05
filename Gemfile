@@ -25,6 +25,9 @@ gem 'thin'
 gem 'debugger', :platforms => :ruby_19
 gem "ruby-debug", :platforms => :ruby_18
 
+# To use advanced test
+gem 'shoulda'
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do

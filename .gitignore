@@ -7,3 +7,5 @@
 .project
 /lib/webdamlog/wlbud/storage/
 /lib/webdamlog/wlrule_to_bud/
+.rdebugrc
+

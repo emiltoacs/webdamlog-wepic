@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  include Database
+  include WLDatabase
   def list
     @users = User.all
     respond_to do |format|

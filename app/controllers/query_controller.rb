@@ -1,5 +1,5 @@
 class QueryController < ApplicationController
-  include Database
+  include WLDatabase
   
   def index
     #Fetches relation from schema

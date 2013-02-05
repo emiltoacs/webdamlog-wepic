@@ -1,5 +1,3 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
 require 'set'
 require 'json'
 require 'pathname'
@@ -9,7 +7,7 @@ require 'app/models/picture'
 require 'app/models/user'
 require 'lib/wl_logger'
 
-module Database
+module WLDatabase
   @@databases = Hash.new
   
   #Does nothing if the user already has his db setup. Otherwise, sets up his 
@@ -27,6 +25,24 @@ module Database
   #
   def database(database_id)
     @@databases[database_id]
+  end
+
+  #Creates a new database for the user using his database_id as key. If database
+  #already exists, simply connects to it (no override).
+  def create_or_connect_db(database_id)
+    @@databases[database_id]=WLInstanceDatabase.new(database_id)
+    @@databases[database_id]
+  end
+
+  #FIXME Do we want to destroy the object explicitly? classes?
+  def close_connection(database_id)
+    @@databases[database_id].destroy_classes
+    @@databases.delete(database_id)
+  end
+
+  def destroy(database_id)
+    @@databases[database_id].destroy
+    @@databases[database_id].delete(database_id)
   end
   
   #TODO Add namespace to WLSchema relation. The namespace is based on the database_id
@@ -70,10 +86,6 @@ module Database
       @db_name = "db/database_#{database_id}.db"      
       @configuration = {:adapter => 'sqlite3', :database => @db_name}
       create_schema
-      
-      #XXX Good hook to start Bud! Rails env and db are set up but webpages 
-      #have not been accessed yet.
-      #
     end
     
     #This method creates a special table that represents the schema of the database.
@@ -205,23 +217,5 @@ module Database
       end
     end
   
-  end
-  
-  #Creates a new database for the user using his database_id as key. If database
-  #already exists, simply connects to it (no override).
-  def create_or_connect_db(database_id)
-    @@databases[database_id]=WLInstanceDatabase.new(database_id)
-    @@databases[database_id]
-  end
-  
-  #FIXME Do we want to destroy the object explicitly? classes?
-  def close_connection(database_id)
-    @@databases[database_id].destroy_classes
-    @@databases.delete(database_id)
-  end
-  
-  def destroy(database_id)
-    @@databases[database_id].destroy
-    @@databases[database_id].delete(database_id)
   end
 end
