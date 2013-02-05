@@ -9,6 +9,8 @@ gem 'therubyracer'
 
 gem 'cocaine'
 
+# dbm is useless but required by bud without being in the dependency of bud
+gem 'dbm'
 gem 'bud', '0.9.5'
 
 gem 'rmagick'
@@ -19,7 +21,9 @@ gem 'json'
 
 gem 'thin'
 
-gem 'debugger'
+# To use the debugger
+gem 'debugger', :platforms => :ruby_19
+gem "ruby-debug", :platforms => :ruby_18
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -48,6 +52,3 @@ gem 'authlogic'
 
 # Deploy with Capistrano
 # gem 'capistrano'
-
-# To use debugger
-# gem 'ruby-debug'
