@@ -127,9 +127,10 @@ module Database
       
       #FIXME: This is a dummy SQL query to insert test facts in Contacts
       Contact.new(:username=>'Emilien',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"emilien.antoine@inria.fr",:facebook=>"Emilien Antoine").save
-      Contact.new(:username=>'Julia',:peerlocation=>'SIGMODpeer',:email=>"stoyanovich@drexel.edu",:facebook=>"Julia Stoyanovich").save
+      Contact.new(:username=>'Julia',:peerlocation=>'SIGMODpeer', :online=>false,:email=>"stoyanovich@drexel.edu",:facebook=>"Julia Stoyanovich").save
       Contact.new(:username=>'Gerome',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"miklau@cs.umass.edu",:facebook=>"Gerome Miklau").save
-      Contact.new(:username=>'Serge',:peerlocation=>'SIGMODpeer',:email=>"serge.abiteboul@inria.fr",:facebook=>"Serge Abiteboul").save
+      Contact.new(:username=>'Serge',:peerlocation=>'SIGMODpeer',:online=>false,:email=>"serge.abiteboul@inria.fr",:facebook=>"Serge Abiteboul").save
+      Contact.new(:username=>'Jules',:peerlocation=>'localhost',:online=>true,:email=>"jules.testard@mail.mcgill.ca",:facebook=>"Jules Testard").save
     end
     
     #The create relation method will create a new relation in the database as well.

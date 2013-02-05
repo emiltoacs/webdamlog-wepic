@@ -22,13 +22,14 @@ WepimApp::Application.routes.draw do
     end
     resources :query
     match 'query/insert' => 'query#insert'
+    match 'contacts/:username/pictures' => 'pictures#contact'
   end
-    resources :users, :user_sessions
-    match 'login' => 'user_sessions#new', :as => :login
-    match 'logout' => 'user_sessions#destroy', :as => :logout
-    match 'list' => 'users#list'    
+  resources :users, :user_sessions
+  match 'login' => 'user_sessions#new', :as => :login
+  match 'logout' => 'user_sessions#destroy', :as => :logout
+  match 'list' => 'users#list'
   match 'admin' => 'admin#index', :as => :admin
 
-  # The priority is based upon order of creation:
-  # first created -> highest priority.
+# The priority is based upon order of creation:
+# first created -> highest priority.
 end

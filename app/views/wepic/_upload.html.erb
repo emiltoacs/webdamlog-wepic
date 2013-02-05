@@ -2,7 +2,6 @@
   <% if @picture.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@picture.errors.count, "error") %> prohibited this user from being saved:</h2>
-
       <ul>
       <% @picture.errors.full_messages.each do |msg| %>
         <li><%= msg %></li>
@@ -13,6 +12,10 @@
   <div class="field">
     <%= f.label :title %><br />
     <%= f.text_field :title, :required => true %>
+  </div>
+  <div class="field">
+  	<%= f.label :owner%> <br />
+  	<%= f.select(:owner,options_for_select(@contacts.map {|contact| contact.username}),{:prompt => 'Select Owner',:selected=>nil,:required=>true,:disable=>'Select Owner'})%>
   </div>
   <div class="field">
     <%= f.label :image %><br />

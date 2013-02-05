@@ -6,11 +6,13 @@ class Picture < ActiveRecord::Base
       db_name = "db/database_#{ENV['USERNAME']}.db"
       @configuration = {:adapter => 'sqlite3', :database => db_name}
       establish_connection @configuration
-      attr_accessible :title, :image
+      attr_accessible :title, :image, :owner
       validates_uniqueness_of :title
+      validates_presence_of :owner
       self.table_name = 'pictures'
       connection.create_table 'pictures', :force => true do |t|
         t.string :title
+        t.string :owner
         t.string :image_file_name
         t.string :image_content_type
         t.integer :image_file_size
@@ -26,6 +28,7 @@ class Picture < ActiveRecord::Base
   
   def self.schema
     {'title'=>'string',
+      'owner'=>'string',
       'image_file_name'=>'string',
       'image_content_type'=>'string',
       'image_file_size'=>'integer',

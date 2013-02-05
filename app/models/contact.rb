@@ -28,10 +28,6 @@ class Contact < ActiveRecord::Base
     end
   end
   
-  def default_values
-    self.online ||= false
-  end  
-  
   def self.schema
     {
      'username' => 'string',
@@ -51,5 +47,4 @@ class Contact < ActiveRecord::Base
   end  
   
   setup
-  before_validation :default_values
 end
