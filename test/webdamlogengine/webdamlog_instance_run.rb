@@ -4,7 +4,7 @@
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 
 require 'test/unit'
-require 'lib/webdamlog'
+require 'lib/webdamlog/wlbud'
 
 class WebdamlogInstanceRun < Test::Unit::TestCase
 

@@ -2,6 +2,18 @@ ENV["RAILS_ENV"] = "test"
 require File.expand_path('../../config/environment', __FILE__)
 require 'rails/test_help'
 
+require 'test/unit'
+
+begin
+  require 'ruby-debug'
+rescue LoadError => e
+  begin
+    require 'debugger'
+  rescue LoadError => e
+    puts "debugger disabled"
+  end
+end
+
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
   #

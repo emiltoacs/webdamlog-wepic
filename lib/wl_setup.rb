@@ -1,5 +1,3 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
 require 'app/helpers/wl_launcher'
 require 'lib/properties'
 require 'sqlite3'

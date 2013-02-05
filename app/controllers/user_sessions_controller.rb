@@ -1,6 +1,6 @@
 
 class UserSessionsController < ApplicationController
-  include Database
+  include WLDatabase
   # GET /user_sessions/new
   # GET /user_sessions/new.xml
   def new

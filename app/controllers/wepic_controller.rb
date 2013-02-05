@@ -1,5 +1,5 @@
 class WepicController < ApplicationController
-  include Database
+  include WLDatabase
   def index
     @picture = Picture.new
     #Picture.open_connection

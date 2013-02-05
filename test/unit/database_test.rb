@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'active_record'
 require 'test/unit'
-require 'lib/database'
+require 'app/helpers/wl_database'
 require 'lib/kernel'
 
 #This class is meant to test and explain the database API to be used 
@@ -14,7 +14,7 @@ require 'lib/kernel'
 #TODO : Avoid duplication of information in the Database module by reducing the 
 #number of variables.
 class DatabaseTest < Test::Unit::TestCase
-  include Database
+  include WLDatabase
   include Kernel
   
   def setup

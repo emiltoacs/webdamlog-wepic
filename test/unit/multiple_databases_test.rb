@@ -3,10 +3,10 @@
 require 'rubygems'
 require 'test/unit'
 require 'active_record'
-require 'lib/database'
+require 'app/helpers/wl_database'
 
 class MultipleDatabasesTest < Test::Unit::TestCase
-  include Database
+  include WLDatabase
   
   def setup
     @dbids = Array.new
