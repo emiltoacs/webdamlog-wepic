@@ -23,14 +23,16 @@ else
   #Create a subclass of WL
   klass = Class.new(WLBud::WL)
   # TODO find a good name for the sub class, it should be uniq
-  self.class.class_eval "ClassWL#{ENV['USERNAME']}on#{ENV['PORT']} = klass"
-  peer_name = "peername_#{ENV['USERNAME']}on#{ENV['PORT']}"
+  # TODO find a good port for the wlengine
+  WLPORT = Integer(ENV['PORT'],10)+100
+  self.class.class_eval "ClassWL#{ENV['USERNAME']}on#{WLPORT} = klass"
+  peer_name = "peername_#{ENV['USERNAME']}on#{WLPORT}"
   # TODO find a good place to put the program file
   program_file_dir = File.expand_path('../../tmp/rule_dir', __FILE__)
   unless (File::directory?(program_file_dir))
     Dir.mkdir(program_file_dir)
   end
-  program_file = File.join(program_file_dir,"programfile_of_#{ENV['USERNAME']}on#{ENV['PORT']}")
+  program_file = File.join(program_file_dir,"programfile_of_#{ENV['USERNAME']}on#{WLPORT}")
   dir_rule = program_file_dir
   STR0 = <<EOF
 peer p0=localhost:11110;
@@ -42,9 +44,8 @@ fact bootstrap@p0(4);
 end
 EOF
   File.open(program_file, 'w'){ |file| file.write STR0 }
-  @webdamlog = nil
-  # TODO find a good port for the wlengine
-  eval("@webdamlog = ClassWL#{ENV['USERNAME']}on#{ENV['PORT']}.new(peer_name,program_file,{:port => #{ENV['PORT']*2}, :dir_rule => dir_rule})")
+  @webdamlog = nil  
+  eval("@webdamlog = ClassWL#{ENV['USERNAME']}on#{WLPORT}.new(peer_name,program_file,{:port => #{WLPORT}, :dir_rule => dir_rule})")
   @wlenginelogger = WLLogger::WLEngineLogger.new(STDOUT)
   msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
   if @webdamlog.nil?
@@ -52,12 +53,17 @@ EOF
   else
     @wlenginelogger.info("new instance of webdamlog engine created:\n#{msg}")
   end
+  
+  #require 'ruby-debug'
+
+  #debugger
+  
   #@webdamlog.run_bg
 
   # XXX add action on shutdown for the wlengine such as erase program file if saved in db and clean rule dir if needed
 
   # WLE:END
 
-  WLLogger.logger.info "Wepic peer of #{ENV['USERNAME']},#{ENV['PORT']} has finsihed initialization and is ready to send acknowedgement to manager"
-  WLPeer.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],ENV['PORT'])
+  WLLogger.logger.info "Wepic peer of #{ENV['USERNAME']},#{WLPORT} has finsihed initialization and is ready to send acknowedgement to manager"
+  WLPeer.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],WLPORT)
 end
