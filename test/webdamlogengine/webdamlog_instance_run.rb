@@ -13,7 +13,6 @@ class WebdamlogInstanceRun < Test::Unit::TestCase
     @name = 'tester'
     @port = properties['test_communication']['default_spawn_port'];
     @manager_port = properties['test_communication']['manager_port'];
-
   end
 
   def teardown

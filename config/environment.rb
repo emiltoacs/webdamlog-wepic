@@ -1,9 +1,6 @@
 # Load the rails application
 require File.expand_path('../application', __FILE__)
 
-#This is specific to jules testard version. you can always activate the debugger here.
-#require 'debugger'; debugger
-
 # Initialize the rails application
 WepimApp::Application.initialize!
 
@@ -19,7 +16,7 @@ else
   require 'lib/webdamlog/wlbud'
 
   # TODO WLE:START all this messy code for the peer should be moved into an appropriate structure
-
+  #$stderr.reopen($stdout)
   #Create a subclass of WL
   klass = Class.new(WLBud::WL)
   # TODO find a good name for the sub class, it should be uniq
@@ -43,6 +40,7 @@ fact bootstrap@p0(3);
 fact bootstrap@p0(4);
 end
 EOF
+
   File.open(program_file, 'w'){ |file| file.write STR0 }
   @webdamlog = nil  
   eval("@webdamlog = ClassWL#{ENV['USERNAME']}on#{WLPORT}.new(peer_name,program_file,{:port => #{WLPORT}, :dir_rule => dir_rule})")
@@ -53,11 +51,7 @@ EOF
   else
     @wlenginelogger.info("new instance of webdamlog engine created:\n#{msg}")
   end
-  
-  #require 'ruby-debug'
 
-  #debugger
-  
   #@webdamlog.run_bg
 
   # XXX add action on shutdown for the wlengine such as erase program file if saved in db and clean rule dir if needed

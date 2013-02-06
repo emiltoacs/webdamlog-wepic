@@ -8,7 +8,8 @@ class Picture < ActiveRecord::Base
       establish_connection @configuration
       attr_accessible :title, :image, :owner
       validates_uniqueness_of :title
-      validates :owner, :presence => true
+      #validates :owner, :presence => true
+      owner||=ENV['USERNAME']
       self.table_name = 'pictures'
       connection.create_table 'pictures', :force => true do |t|
         t.string :title

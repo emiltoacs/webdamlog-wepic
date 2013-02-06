@@ -22,13 +22,43 @@ module WLLauncher
           return true
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
           WLLogger.logger.info "Connection Error..."
-        return false
+          return false
         end
       end
     rescue Timeout::Error
       WLLogger.logger.info "Time out..."
-    return false
+      return false
     end
+  end
+
+  #This method is responsible for giving the order to create a peer.
+  #It returns the newly created active record for the peer as well as
+  #if the creation process has been successful.
+  #This method does not check if it already exists.
+  #
+  def self.create_peer(username)
+    properties = Properties.properties
+
+    #Find an available port at the location given by the properties.
+    ip = properties['peer']['ip']
+    number_of_ports_required = properties['peer']['ports_used']
+    root_port = properties['peer']['root_port']
+    root_port = find_ports(ip,number_of_ports_required,root_port)
+    if root_port==SOCKET_PORT_INVALID
+      return nil, false
+    else
+      properties['peer']['root_port'] = root_port + number_of_ports_required
+    end
+
+    #Create the peer active record.
+    peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false)
+    peer.save
+    #Launch the peer in a new thread.
+    Thread.new do
+      WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,peer)
+    end
+
+    return peer,true
   end
 
   # TODO keep the id of the child process launched to kill properly
@@ -38,10 +68,10 @@ module WLLauncher
       server = TCPServer.new(manager_port.to_i+1)
       b = wait_for_acknowledgment(server,ext_port)
       if peer
-      peer.active=true
-      peer.save
+        peer.active=true
+        peer.save
       end
-    return b
+      return b
     end
     false
   end
@@ -81,7 +111,7 @@ module WLLauncher
           return true
         rescue => error
           WLLogger.logger.warn error.inspect
-        return false
+          return false
         end
       end
     end
@@ -101,13 +131,13 @@ module WLLauncher
       if !port_available?(ip,root_port+increment)
         found_range = false
         WLLogger.logger.info "Port #{root_port+number_of_ports_required}"
-      increment += 1
-      break
+        increment += 1
+        break
       end
       increment += 1
     end
     if found_range
-    root_port
+      root_port
     else
       find_ports(ip,number_of_ports_required,root_port+increment)
     end
@@ -134,37 +164,7 @@ module WLLauncher
       end
       false
     end
-  end
-
-  #This method is responsible for giving the order to create a peer.
-  #It returns the newly created active record for the peer as well as
-  #if the creation process has been successful.
-  #This method does not check if it already exists.
-  #
-  def self.create_peer(username)
-    properties = Properties.properties
-
-    #Find an available port at the location given by the properties.
-    ip = properties['peer']['ip']
-    number_of_ports_required = properties['peer']['ports_used']
-    root_port = properties['peer']['root_port']
-    root_port = find_ports(ip,number_of_ports_required,root_port)
-    if root_port==SOCKET_PORT_INVALID
-      return nil, false
-    else
-      properties['peer']['root_port'] = root_port + number_of_ports_required
-    end
-
-    #Create the peer active record.
-    peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false)
-    peer.save
-    #Launch the peer in a new thread.
-    Thread.new do
-      WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,peer)
-    end
-
-    return peer,true
-  end
+  end  
 
   #This method is used to access a peer that has already been created and assigned an address (ip:port)
   def self.access_peer(peer)

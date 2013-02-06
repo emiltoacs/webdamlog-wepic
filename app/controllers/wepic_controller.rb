@@ -6,7 +6,7 @@ class WepicController < ApplicationController
     @pictures = Picture.all
     #Picture.remove_connection
     @relation_classes = database(ENV['USERNAME']).relation_classes
-    puts "WepicController#index:#{ENV['USERNAME']}"
+    #puts "WepicController#index:#{ENV['USERNAME']}"
     
     #FIXME check how to optimize database connections.
     @relation_classes['Contacts'].open_connection

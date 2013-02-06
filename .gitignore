@@ -8,3 +8,4 @@
 /lib/webdamlog/wlrule_to_bud/
 .rdebugrc
 /nbproject/
+*.orig
