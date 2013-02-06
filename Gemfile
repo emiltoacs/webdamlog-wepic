@@ -21,10 +21,11 @@ gem 'json'
 
 gem 'thin'
 
-# To use the debugger
-gem 'debugger', :platforms => :ruby_19
-gem "ruby-debug", :platforms => :ruby_18
-
+group :development, :test do
+  # To use the debugger
+  gem 'debugger', :platforms => :ruby_19
+  gem "ruby-debug", :platforms => :ruby_18
+end
 # To use advanced test
 gem 'shoulda'
 

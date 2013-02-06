@@ -5,10 +5,10 @@ require 'rails/test_help'
 require 'test/unit'
 
 begin
-  require 'ruby-debug'
+  require 'debugger'
 rescue LoadError => e
   begin
-    require 'debugger'
+    require 'ruby-debug'
   rescue LoadError => e
     puts "debugger disabled"
   end
