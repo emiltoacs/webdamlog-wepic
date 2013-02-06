@@ -21,14 +21,24 @@ class PicturesController < WepicController
     end   
   end
   
+  #This method returns a json representation of the pictures of a contact (not the picture data itself,
+  #but enough information to display the picture thumbnail).
   def contact
     username = params[:username]
-    Contact.open_connection
-    @contact = Contact.find(:first,:conditions => {:username=>username})
-    Contact.remove_connection
-    @contact_pictures = Picture.find(:all,:conditions => {:owner=>username})
+    @contact_pictures = Picture.find(:all,:conditions => {:owner=>username})    
+    #Render the json data we need to send to the contact javascript/
+    return_hash = {}
+    @contact_pictures.each do |picture|
+      key = picture.title
+      value = {}
+      value['title']=picture.title
+      value['href']="/pictures/#{picture.id}"
+      value['src']=picture.image.url(:thumb)
+      value['alt']="Images?#{value['src'].split('?').last}"
+      return_hash[key]=value
+    end  
     respond_to do |format|
-      format.json {render :json => @contact_pictures }
+      format.json {render :json => return_hash.to_json }
     end
   end
 
