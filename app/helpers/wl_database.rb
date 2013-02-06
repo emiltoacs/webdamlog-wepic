@@ -42,7 +42,7 @@ module WLDatabase
 
   def destroy(database_id)
     @@databases[database_id].destroy
-    @@databases[database_id].delete(database_id)
+    @@databases.delete(database_id)
   end
   
   #TODO Add namespace to WLSchema relation. The namespace is based on the database_id
