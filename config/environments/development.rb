@@ -1,4 +1,4 @@
-require 'lib/wl_logger'
+require 'wl_logger'
 
 WepimApp::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
