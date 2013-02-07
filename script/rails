@@ -5,7 +5,7 @@
 $:.unshift File.expand_path('../',File.dirname(__FILE__))
 require 'lib/wl_setup'
 WLSetup.argsetup(ARGV)
-
+# Regular rails script 
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)
 require 'rails/commands'
