@@ -1,8 +1,8 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 require 'test/unit'
-require 'app/helpers/wl_launcher'
-require 'app/helpers/wl_peer'
+require 'wl_launcher'
+require 'wl_peer'
 require 'yaml'
 
 class AcknowledgmentTest < Test::Unit::TestCase

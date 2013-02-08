@@ -17,7 +17,6 @@ class PropertiesTest < Test::Unit::TestCase
     assert_not_nil(@properties['communication']['default_spawn_port'])
     assert_not_nil(@properties['communication']['port_spacing'])
     
-    Rails.logger.info("Properties for wepic : \n\t#{@properties.inspect}")
-    
+    Rails.logger.info("Properties for wepic : \n\t#{@properties.inspect}")    
   end
 end

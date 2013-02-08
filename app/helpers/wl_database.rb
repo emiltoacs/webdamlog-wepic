@@ -2,9 +2,9 @@ require 'set'
 require 'json'
 require 'pathname'
 require 'fileutils'
-require 'app/models/program'
-require 'app/models/picture'
-require 'app/models/user'
+require 'program'
+require 'picture'
+require 'user'
 require 'wl_logger'
 
 module WLDatabase
