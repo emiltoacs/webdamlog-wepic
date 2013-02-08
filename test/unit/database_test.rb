@@ -1,10 +1,5 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
-require 'rubygems'
-require 'active_record'
+require 'test_helper'
 require 'test/unit'
-require 'wl_database'
-require 'kernel'
 
 #This class is meant to test and explain the database API to be used 
 #by the rails controllers and WebdamLog.

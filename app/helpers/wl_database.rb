@@ -88,18 +88,19 @@ module WLDatabase
       create_schema
     end
     
-    #This method creates a special table that represents the schema of the database.
-    #Since database schemas are different for every user, storing them is a quick
-    #way of loading efficient methods into the newly created instance.
+    # This method creates a special table that represents the schema of the
+    # database. Since database schemas are different for every user, storing
+    # them is a quick way of loading efficient methods into the newly created
+    # instance.
+    # 
     def create_schema
       @relation_classes = Hash.new
-      database=self
            
       #Create the WLSchema model.
       relation_name="WLSchema"
       @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
         @schema = {"name"=>"string","schema"=>"string"}
-        @configuration = database.configuration
+        @configuration = self.configuration
         establish_connection @configuration
         attr_accessible :name, :schema
         validates_uniqueness_of :name
@@ -127,8 +128,9 @@ module WLDatabase
         @relation_classes[table.name] = create_relation_class(table.name,JSON.parse(table.schema))
       end
       
-      #XXX The error was basically impossible to guess but finally found it
-      #do not add the User class here or Authlogic will not be able to handle sessions properly.
+      # XXX The error was basically impossible to guess but finally found it
+      # do not add the User class here or Authlogic will not be able to handle
+      # sessions properly.
       #
       @relation_classes['Pictures'] = Picture
       @relation_classes['Contacts'] = Contact
