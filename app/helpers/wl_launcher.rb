@@ -1,8 +1,6 @@
 require 'socket'
 require 'timeout'
 require 'set'
-require 'wl_logger'
-require 'properties'
 
 # Define some methods to launch and manage new peers spawned by the manager
 module WLLauncher

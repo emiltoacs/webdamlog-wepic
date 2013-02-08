@@ -1,17 +1,7 @@
-# To change this template, choose Tools | Templates
-# and open the template in the editor.
-
 require 'test_helper'
-
 require 'test/unit'
-#require 'app/helpers/wl_launcher'
-#require 'lib/wl_logger'
-#require 'lib/properties'
-#require 'socket'
-#require 'timeout'
-#require 'app/models/peer'
 
-class WLLauncherTest < Test::Unit::TestCase
+class WLLauncherTest < ActionController::IntegrationTest
   include Properties
     
   def setup

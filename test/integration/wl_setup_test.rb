@@ -1,11 +1,12 @@
 require 'test_helper'
+require 'wl_setup'
 
 class WLSetupTest < ActionController::IntegrationTest
 
   def test_clean_orphaned_peer
     assert File.exists?("db")
     assert_equal Rails.root, Pathname.getwd
-    system 'rm db/database_MANAGER.db'
+    File.delete('db/database_MANAGER.db') if File.exists?('db/database_MANAGER.db')
     WLSetup.clean_orphaned_peer(:sqlite3)
     assert Dir['your_directory/*'].empty?
     File.new('db/database_MANAGER.db', 'w')

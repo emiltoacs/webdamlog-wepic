@@ -53,7 +53,10 @@ module WLDatabase
     #Creates a new database with a name defined by the user's id. If the database
     #already exists, simply connects to it.
     def initialize(database_id)
-      create_or_retrieve_database(database_id)
+      @id = database_id
+      @db_name = "db/database_#{database_id}.db"
+      @configuration = {:adapter => 'sqlite3', :database => @db_name}
+      create_schema
     end
     
     #Resets instance schemas and relation_classes attributes.
@@ -81,13 +84,6 @@ module WLDatabase
       FileUtils.rm(file)
     end
     
-    def create_or_retrieve_database(database_id)
-      @id = database_id
-      @db_name = "db/database_#{database_id}.db"      
-      @configuration = {:adapter => 'sqlite3', :database => @db_name}
-      create_schema
-    end
-    
     # This method creates a special table that represents the schema of the
     # database. Since database schemas are different for every user, storing
     # them is a quick way of loading efficient methods into the newly created
@@ -100,7 +96,7 @@ module WLDatabase
       relation_name="WLSchema"
       @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
         @schema = {"name"=>"string","schema"=>"string"}
-        @configuration = self.configuration
+        #@configuration = self.configuration
         establish_connection @configuration
         attr_accessible :name, :schema
         validates_uniqueness_of :name
@@ -168,10 +164,9 @@ module WLDatabase
     end
     
     def create_relation_class(name,schema)
-      database=self
       create_class("#{name}_#{@id}",ActiveRecord::Base) do
         @schema = schema
-        @configuration = database.configuration
+        #@configuration = database.configuration
         establish_connection @configuration
         self.table_name=name
         connection.create_table table_name, :force => true do |t|
