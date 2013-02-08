@@ -44,34 +44,34 @@ module WLSetup
   #command.
   #
   def self.argsetup(args)
-    properties = Properties.properties
+    
     user_opt_index = args.index('-u')
     port_opt_index = args.index('-p')
     reset_opt_index = args.index('--reset')
     
-    #The username is stored as an environment variable, as we do not know the name
-    #of the users created beforehand.
+    # The username is stored as an environment variable, as we do not know the
+    # name of the users created beforehand.
     #
     ENV['USERNAME'] = args[user_opt_index+1].upcase if (user_opt_index)
     2.times { args.delete_at(user_opt_index)} if user_opt_index
     
-    #The port is not other available everywhere in Rails, this is why it is added
-    #as an environment variable here (if the -p option is chosen)
+    # The port is not other available everywhere in Rails, this is why it is
+    # added as an environment variable here (if the -p option is chosen)
     #
+    properties = Properties.properties
     
-    
-    #Default values for username
+    # Default values for username
     ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
     
-    #Port setup
+    # Port setup
     ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
     if port_opt_index.nil?
-      ENV['PORT'] = properties['communication']['manager_port'].to_s 
+      ENV['PORT'] = properties['communication']['manager_port'].to_s
       args.push('-p')
       args.push(ENV['PORT'])
       port_opt_index=args.size-2
     end
-    #Generate a pid file
+    # Generate a pid file
     args.push('-P')
     args.push("tmp/pids/#{ENV['USERNAME']}.pid")    
     
@@ -83,9 +83,6 @@ module WLSetup
     
     # The reset switch has been used if reset_opt_index is true (i.e. is not
     # nil).
-    #
-    # TODO Maybe you want to end the rails initialization. It is not expected to
-    # launch a new server while you type reset
     #
     if reset_opt_index
       WLLogger.logger.info "Killing all of the peers launched that are remaining"
@@ -100,10 +97,10 @@ module WLSetup
     
     
     if  ENV['USERNAME']=='MANAGER'
-      WLLogger.logger.info "USERNAME is not specified hence by default it will be MANAGER"
+      WLLogger.logger.info "Setup a manager"
       clean_orphaned_peer(:sqlite3)
     else
-      WLLogger.logger.info "Server is a WLInstance."
+      WLLogger.logger.info "Setup a peer"
       #The manager_port option is only available on non-manager peers.
       #There is no default value for the MANAGER_PORT variable.
       mport_opt_index = args.index('-m')
@@ -113,6 +110,5 @@ module WLSetup
       end
     end
     WLLogger.logger.info "#{ENV['USERNAME']} will be started on port #{ENV['PORT']}"
-  end
-  
+  end  
 end
