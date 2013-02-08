@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
 # This command will automatically be run when you run "rails" with Rails 3 gems installed from the root of your application.
 
+# Preliminary setup to take care of wepic-specific options and switches.
+# TODO change that for a rake task instead of custom filter
+root = File.expand_path('../../',  __FILE__)
+require "#{root}/lib/wl_setup"
+WLSetup.argsetup(ARGV)
+
 # Regular rails script 
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require File.expand_path('../../config/boot',  __FILE__)

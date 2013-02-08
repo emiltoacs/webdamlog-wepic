@@ -4,10 +4,11 @@ require 'test_helper'
 
 class PropertiesTest < Test::Unit::TestCase
   def setup
-    @properties = YAML.load_file("config/properties.yml")
+    
   end
   
   def test_config
+    @properties = YAML.load_file("config/properties.yml")
 
     assert_not_nil(@properties['test_communication']['manager_port'])
     assert_equal 4100, @properties['test_communication']['manager_port']
@@ -23,8 +24,6 @@ class PropertiesTest < Test::Unit::TestCase
     assert_equal "prog1.wl", @properties['peer_test']['program']['name']
     assert_equal "johndoe", @properties['peer_test']['program']['author']
     assert_equal "app/assets/wlprogram/prog1.wl", @properties['peer_test']['program']['source']
-
-
     # We don't want to output huge message while tesing !
 #    assert_nothing_raised do
 #      Rails.logger.info("Properties for wepic : \n\t#{@properties.inspect}")

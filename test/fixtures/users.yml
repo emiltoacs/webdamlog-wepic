@@ -8,8 +8,8 @@ one:
   persistence_token: MyString
 
 two:
-  username: MyString
-  email: MyString
-  crypted_password: MyString
-  password_salt: MyString
-  persistence_token: MyString
+  username: MyString2
+  email: MyString2
+  crypted_password: MyString2
+  password_salt: MyString2
+  persistence_token: MyString2
