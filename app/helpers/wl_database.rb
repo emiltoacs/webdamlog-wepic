@@ -5,7 +5,7 @@ require 'fileutils'
 require 'app/models/program'
 require 'app/models/picture'
 require 'app/models/user'
-require 'lib/wl_logger'
+require 'wl_logger'
 
 module WLDatabase
   @@databases = Hash.new

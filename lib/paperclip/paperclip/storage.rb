@@ -1,4 +1,4 @@
-require "lib/paperclip/paperclip/storage/filesystem"
-require "lib/paperclip/paperclip/storage/fog"
-require "lib/paperclip/paperclip/storage/s3"
-require "lib/paperclip/paperclip/storage/database"
+require "paperclip/paperclip/storage/filesystem"
+require "paperclip/paperclip/storage/fog"
+require "paperclip/paperclip/storage/s3"
+require "paperclip/paperclip/storage/database"

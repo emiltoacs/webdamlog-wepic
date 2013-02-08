@@ -8,12 +8,11 @@ WepimApp::Application.initialize!
 #manager), it signals to its manager that it is ready to receive requests).
 #
 if WepimApp.is_manager?
-  require 'app/helpers/wl_launcher'
+  require 'wl_launcher'
 else
-  require 'app/helpers/wl_peer'  
+  require 'app/helpers/wl_peer'
   require 'lib/wl_logger'
-  $:.unshift(File.expand_path("lib/webdamlog"))
-  require 'lib/webdamlog/wlbud'
+  require 'webdamlog/wlbud'
 
   # TODO WLE:START all this messy code for the peer should be moved into an appropriate structure
   #$stderr.reopen($stdout)
