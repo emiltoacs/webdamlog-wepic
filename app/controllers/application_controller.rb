@@ -1,5 +1,5 @@
-require 'lib/properties'
-require 'lib/wl_logger'
+require 'properties'
+require 'wl_logger'
 require 'app/helpers/wl_database'
 require 'app/helpers/wl_launcher'
 

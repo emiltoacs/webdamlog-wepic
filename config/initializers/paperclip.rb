@@ -1,4 +1,4 @@
-require 'lib/paperclip/paperclip'
-require 'lib/paperclip/paperclip/railtie'
+require 'paperclip/paperclip'
+require 'paperclip/paperclip/railtie'
 
 Paperclip::Railtie.insert

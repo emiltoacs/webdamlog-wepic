@@ -1,7 +1,7 @@
 require 'app/helpers/wl_launcher'
-require 'lib/properties'
+require 'properties'
 require 'sqlite3'
-require 'lib/wl_logger'
+require 'wl_logger'
 
 module WLSetup
   
@@ -20,25 +20,29 @@ module WLSetup
     rs
   end  
   
-  #The dbsetup method is used for clean up the database environment in case, for
-  #instance, of a database reset, or if the manager database is missing.
-  #TODO : dbsetup should also check the consistency between the databases present
-  #and those that are cited in the account table for the manager database.
+  # The dbsetup method is used for clean up the database environment in case,
+  # for instance, of a database reset, or if the manager database is missing.
+  # TODO dbsetup should also check the consistency between the databases present
+  # and those that are cited in the account table for the manager database.
   #
   def self.dbsetup(db_type)
     case db_type
     when :sqlite3
-      admin_present = false
-      `ls -la db/*.db`.split("\n").each do |line|
-        if line.split(" ").last.include?("database_MANAGER.db")
-          #Do nothing, admin db is already present.
-          admin_present=true;
-        end
+#      admin_present = false
+      unless File.exists?("db/database_MANAGER.db")
+        Dir.foreach('db') { |file_name| File.delete(file_name) if file_name=~/.*\.db/ }
       end
-      if !admin_present
-        #Remove all .db files
-        system 'rm db/*.db'
-      end
+#      `ls -la db/*.db`.split("\n").each do |line|
+#        if line.split(" ").last.include?("database_MANAGER.db")
+#          #Do nothing, admin db is already present.
+#          admin_present=true;
+#        end
+#      end
+#      if !admin_present
+#        #Remove all .db files
+#
+#        # system 'rm db/*.db'
+#      end
     end
   end
   
@@ -103,7 +107,7 @@ module WLSetup
     
     
     if  ENV['USERNAME']=='MANAGER'
-      WLLogger.logger.info "Server is a WLInstance Manager."
+      WLLogger.logger.info "USERNAME is not specified hence by default it will be MANAGER"
       dbsetup(:sqlite3)
     else
       WLLogger.logger.info "Server is a WLInstance."
@@ -115,7 +119,7 @@ module WLSetup
         2.times {args.delete_at(mport_opt_index)}
       end
     end
-    WLLogger.logger.info "#{ENV['USERNAME']} is running Wepic on port #{ENV['PORT']}" 
+    WLLogger.logger.info "#{ENV['USERNAME']} will be started on port #{ENV['PORT']}"
   end
   
 end

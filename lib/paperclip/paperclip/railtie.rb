@@ -1,5 +1,5 @@
-require 'lib/paperclip/paperclip'
-require 'lib/paperclip/paperclip/schema'
+require 'paperclip/paperclip'
+require 'paperclip/paperclip/schema'
 
 module Paperclip
   if defined? Rails::Railtie
