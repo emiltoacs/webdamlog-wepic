@@ -3,8 +3,8 @@
 require 'rubygems'
 require 'active_record'
 require 'test/unit'
-require 'app/helpers/wl_database'
-require 'lib/kernel'
+require 'wl_database'
+require 'kernel'
 
 #This class is meant to test and explain the database API to be used 
 #by the rails controllers and WebdamLog.

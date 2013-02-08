@@ -1,4 +1,4 @@
-require 'app/helpers/wl_launcher'
+require 'wl_launcher'
 require 'properties'
 require 'sqlite3'
 require 'wl_logger'
@@ -20,29 +20,22 @@ module WLSetup
     rs
   end  
   
-  # The dbsetup method is used for clean up the database environment in case,
-  # for instance, of a database reset, or if the manager database is missing.
+  # If the manager has no database it erase all other database since it would
+  # be old peer database not belonging to any known manager.
+  #
   # TODO dbsetup should also check the consistency between the databases present
   # and those that are cited in the account table for the manager database.
   #
-  def self.dbsetup(db_type)
+  def self.clean_orphaned_peer(db_type)
     case db_type
     when :sqlite3
-#      admin_present = false
       unless File.exists?("db/database_MANAGER.db")
-        Dir.foreach('db') { |file_name| File.delete(file_name) if file_name=~/.*\.db/ }
+        Dir.foreach('db') do |file_name|
+          if file_name=~/database_.*\.db/
+            File.delete(File.join('db', file_name))
+          end
+        end
       end
-#      `ls -la db/*.db`.split("\n").each do |line|
-#        if line.split(" ").last.include?("database_MANAGER.db")
-#          #Do nothing, admin db is already present.
-#          admin_present=true;
-#        end
-#      end
-#      if !admin_present
-#        #Remove all .db files
-#
-#        # system 'rm db/*.db'
-#      end
     end
   end
   
@@ -108,7 +101,7 @@ module WLSetup
     
     if  ENV['USERNAME']=='MANAGER'
       WLLogger.logger.info "USERNAME is not specified hence by default it will be MANAGER"
-      dbsetup(:sqlite3)
+      clean_orphaned_peer(:sqlite3)
     else
       WLLogger.logger.info "Server is a WLInstance."
       #The manager_port option is only available on non-manager peers.

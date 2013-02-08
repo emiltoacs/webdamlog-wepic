@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'test/unit'
 require 'active_record'
-require 'app/helpers/wl_database'
+require 'wl_database'
 
 class MultipleDatabasesTest < Test::Unit::TestCase
   include WLDatabase

@@ -10,8 +10,8 @@ WepimApp::Application.initialize!
 if WepimApp.is_manager?
   require 'wl_launcher'
 else
-  require 'app/helpers/wl_peer'
-  require 'lib/wl_logger'
+  require 'wl_peer'
+  require 'wl_logger'
   require 'webdamlog/wlbud'
 
   # TODO WLE:START all this messy code for the peer should be moved into an appropriate structure
