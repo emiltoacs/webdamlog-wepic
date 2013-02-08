@@ -24,8 +24,14 @@ peer:
     source : app/assets/wlprogram/prog1.wl
 
 #Testing Peer properties
-testpeer:
+#Peer properties
+peer_test:
   protocol : http
   ip : localhost
   ports_used : 3
-  root_port : 30000
+  root_port : 10000
+  #Which program is loaded by default by the peer.
+  program:
+    name : prog1.wl
+    author : johndoe
+    source : app/assets/wlprogram/prog1.wl
