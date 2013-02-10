@@ -32,9 +32,4 @@ class ApplicationController < ActionController::Base
     return current_user.nil?#@@adminlist.include?(user_id)
   end
   
-  
-  #FIXME move to some utility module
-  def exists(a,b)
-    if a then a else b end
-  end
 end

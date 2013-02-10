@@ -58,7 +58,7 @@ module WLSetup
     # The port is not other available everywhere in Rails, this is why it is
     # added as an environment variable here (if the -p option is chosen)
     #
-    properties = Properties.properties
+    properties = Properties.read_prop_file
 
     # Default values for username
     ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?

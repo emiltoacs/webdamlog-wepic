@@ -1,7 +1,7 @@
 require 'test_helper'
 require 'test/unit'
 
-class WebdamlogInstanceRun < Test::Unit::TestCase
+class TestWebdamlogInstanceRun < Test::Unit::TestCase
 
   def setup
     properties = YAML.load_file('config/properties.yml')
