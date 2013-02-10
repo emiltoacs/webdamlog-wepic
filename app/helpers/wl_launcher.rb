@@ -123,12 +123,10 @@ module WLLauncher
     end
     increment = 0
     found_range = true
-    while increment < number_of_ports_required do
+    while increment < number_of_ports_required and found_range do
       if !port_available?(ip,root_port+increment)
         found_range = false
-        WLLogger.logger.info "Port #{root_port+number_of_ports_required}"
-        increment += 1
-        break
+        WLLogger.logger.info "Port #{root_port+number_of_ports_required}"    
       end
       increment += 1
     end
