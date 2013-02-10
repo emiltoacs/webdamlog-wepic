@@ -7,7 +7,7 @@ WepimApp::Application.initialize!
 #Once the application is initialized, if the application is a peer (and not a
 #manager), it signals to its manager that it is ready to receive requests).
 #
-if WepimApp.is_manager?
+if WepimApp.is_manager?  
   require 'wl_launcher'
 else
   require 'wl_peer'

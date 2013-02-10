@@ -5,7 +5,7 @@ class Peer < ActiveRecord::Base
       db_name = "db/database_#{ENV['USERNAME']}.db"
       @configuration = {:adapter => 'sqlite3', :database => db_name}
       establish_connection @configuration
-      attr_accessible :ip, :port, :username
+      attr_accessible :ip, :port, :username, :protocol
       attr_accessible :active
       validates :username, :format => { :with => /\A[a-zA-Z]+\z/,
                                         :message => "Only letters allowed (between 5 and 20)",
@@ -15,12 +15,13 @@ class Peer < ActiveRecord::Base
         t.string :username
         t.string :ip
         t.integer :port
+        t.string :protocol
         t.boolean :active
         t.timestamps
       end if !connection.table_exists?('peers')      
       @setup_done = true
     end
-  end  
+  end
   
   setup
 end

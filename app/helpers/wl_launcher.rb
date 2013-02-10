@@ -7,6 +7,7 @@ module WLLauncher
 
   SOCKET_MAX_PORT = 65535
   SOCKET_PORT_INVALID = -1
+  
   def self.wait_for_acknowledgment(server,port)
     begin
       Timeout::timeout(5) do
@@ -36,7 +37,7 @@ module WLLauncher
     #Find an available port at the location given by the properties.
     ip = properties['peer']['ip']
     number_of_ports_required = properties['peer']['ports_used']
-    root_port = properties['peer']['root_port']
+    root_port = properties['peer']['root_port']    
     root_port = find_ports(ip,number_of_ports_required,root_port)
     if root_port==SOCKET_PORT_INVALID
       return nil, false
@@ -45,7 +46,8 @@ module WLLauncher
     end
 
     #Create the peer active record.
-    peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false)
+    protocol = properties['peer']['protocol']
+    peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false, :protocol => protocol)
     peer.save
     #Launch the peer in a new thread.
     Thread.new do
@@ -163,15 +165,13 @@ module WLLauncher
   # assigned an address (ip:port)
   #
   def self.access_peer(peer)
-    properties = Properties.properties
-
     #Checks if the peer object receives is valid
     unless peer.ip && peer.port && peer.username
       return nil,false,false
     end
 
     #Compose URL
-    url = "#{properties['peer']['protocol']}://#{peer.ip}:#{peer.port}"
+    url = "#{peer.protocol}://#{peer.ip}:#{peer.port}"
 
     #Check if url reachable.
     unless reachable?(url)

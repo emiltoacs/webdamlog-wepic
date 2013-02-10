@@ -3,13 +3,13 @@ class Picture < ActiveRecord::Base
   
   def self.setup
     unless @setup_done
+      debugger
       db_name = "db/database_#{ENV['USERNAME']}.db"
       @configuration = {:adapter => 'sqlite3', :database => db_name}
       establish_connection @configuration
       attr_accessible :title, :image, :owner
       validates_uniqueness_of :title
-      #validates :owner, :presence => true
-      owner||=ENV['USERNAME']
+      #validates :owner, :presence => true      
       self.table_name = 'pictures'
       connection.create_table 'pictures', :force => true do |t|
         t.string :title

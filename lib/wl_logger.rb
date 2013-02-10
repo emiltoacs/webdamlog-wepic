@@ -43,10 +43,5 @@ module WLLogger
     def fatal message
       super "WLEngine::#{message.strip}"
     end
-  end
-  
-  def logger
-    @logger = WLLogger.new STDOUT unless @logger
-    @logger
-  end    
+  end  
 end

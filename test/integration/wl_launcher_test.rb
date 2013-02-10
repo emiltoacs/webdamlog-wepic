@@ -37,7 +37,7 @@ class WLLauncherTest < ActionController::IntegrationTest
   def test_create_peer
     #Create a new peer
     username = "jules"
-    WLLauncher.create_peer(username)
+    WLLauncher.create_peer(username, properties)
     #Wait for some time and then check if the peer has been succesfully launched by checking
     #if the acknowledgement it is supposed to send back has been recieved.
     sleep(1)
