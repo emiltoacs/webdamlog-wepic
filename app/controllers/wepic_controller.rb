@@ -2,9 +2,9 @@ class WepicController < ApplicationController
   include WLDatabase
   def index
     @picture = Picture.new
-    #Picture.open_connection
+    Picture.open_connection
     @pictures = Picture.all
-    #Picture.remove_connection
+    Picture.remove_connection
     @relation_classes = database(ENV['USERNAME']).relation_classes
     #puts "WepicController#index:#{ENV['USERNAME']}"
     

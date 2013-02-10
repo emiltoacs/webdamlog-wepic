@@ -5,21 +5,7 @@ require "#{root}/app/helpers/wl_launcher"
 require 'sqlite3'
 
 module WLSetup  
-  def self.get_peer_ports_from_account(db_type=:sqlite3)
-    rs=[]
-    case db_type
-    when :sqlite3
-      begin
-        database = SQLite3::Database.open "db/database_MANAGER.db"
-        stm = database.prepare "select port from accounts"
-        rs = stm.execute
-      rescue SQLite3::Exception => e
-        WLLogger.logger.info e.inspect
-      end
-    end
-    rs
-  end  
-  
+
   # If the manager has no database it erase all other database since it would
   # be old peer database not belonging to any known manager.
   #
@@ -39,9 +25,42 @@ module WLSetup
     end
   end
 
-  #The argsetup method is used for preliminary setup (before conventional rails
-  #setup is done) to take care of wepic-specific options given to the rails commandline
-  #command.
+  def self.get_peer_ports_from_account(db_type=:sqlite3)
+    rs=[]
+    case db_type
+    when :sqlite3      
+      if File.exists?("db/database_MANAGER.db")
+        begin
+          database = SQLite3::Database.open "db/database_MANAGER.db"
+          stm = database.prepare "select port from accounts"
+          rs = stm.execute
+        rescue SQLite3::Exception => e
+          WLLogger.logger.info e.inspect
+        end
+      else
+        WLLogger.logger.info "no sqlite3 database for the manager"
+      end
+    end
+    rs
+  end
+
+  def self.reset_peer_databases
+    WLLogger.logger.info "Killing all of the peers launched that are remaining"
+    get_peer_ports_from_account.each do |peer_port|
+      WLLogger.logger.info "Peer at port #{peer_port} killed."
+      WLLauncher.end_peer(peer_port)
+    end
+    WLLogger.logger.info "Reset option has been chosen. Removing the database_MANAGER.db file. This will cause a reset of the system."
+    if File.exists?("db/database_MANAGER.db")
+      system 'rm db/database_MANAGER.db'
+    else
+      WLLogger.logger.info "db/database_MANAGER.db does not exists nothing. The manager has been already erased."
+    end
+  end
+
+  # The argsetup method is used for preliminary setup (before conventional rails
+  # setup is done) to take care of wepic-specific options given to the rails
+  # commandline command.
   #
   def self.argsetup(args)
 
@@ -85,16 +104,9 @@ module WLSetup
     # nil).
     #
     if reset_opt_index
-      WLLogger.logger.info "Killing all of the peers launched that are remaining"
-      get_peer_ports_from_account.each do |peer_port|
-        WLLogger.logger.info "Peer at port #{peer_port} killed."
-        WLLauncher.end_peer(peer_port)
-      end
-      WLLogger.logger.info "Reset option has been chosen. Removing the database_MANAGER.db file. This will cause a reset of the system."
-      system 'rm db/database_MANAGER.db'
+      reset_peer_databases
       args.delete_at(reset_opt_index)
     end
-
 
     if  ENV['USERNAME']=='MANAGER'
       WLLogger.logger.info "Setup a manager"

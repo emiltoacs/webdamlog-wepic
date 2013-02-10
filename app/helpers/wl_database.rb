@@ -90,32 +90,36 @@ module WLDatabase
     # instance.
     # 
     def create_schema
-      @relation_classes = Hash.new
-           
+      @relation_classes = Hash.new      
       #Create the WLSchema model.
       relation_name="WLSchema"
+      database_instance = self
       @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
         @schema = {"name"=>"string","schema"=>"string"}
-        #@configuration = self.configuration
-        establish_connection @configuration
+        @wl_database_instance = database_instance
+        establish_connection @wl_database_instance.configuration
         attr_accessible :name, :schema
         validates_uniqueness_of :name
-        self.table_name = relation_name
-        connection.create_table table_name, :force => true do |t|
-          t.string :name
-          t.string :schema
-        end if !connection.table_exists?(table_name)
+        self.table_name = relation_name        
+        if !connection.table_exists?(table_name)
+          connection.create_table table_name, :force => true do |t|
+            t.string :name
+            t.string :schema
+          end
+        else          
+          WLLogger.logger.debug "try to create wlschema table in db #{@wl_database_instance.configuration} but it already exists"
+        end
         def self.schema
           @schema
         end
         def self.open_connection
-          establish_connection @configuration
+          establish_connection(@wl_database_instance.configuration)
         end
         def self.remove_connection
           super
         end
-      end
-      
+        WLLogger.logger.debug "create a model #{self} with its table #{table_name} with the schema #{@schema}"
+      end      
       @relation_classes[relation_name]=@wlschema
        
       #Retrieve all the models. Requires to establish a connection.
@@ -143,31 +147,31 @@ module WLDatabase
       Contact.new(:username=>'Jules',:peerlocation=>'localhost',:online=>true,:email=>"jules.testard@mail.mcgill.ca",:facebook=>"Jules Testard").save
     end
     
-    #The create relation method will create a new relation in the database as well.
-    #as a new rails model class connected to that relation. It requires a schema
-    #that will correspond to the table's relationnal schema.
+    # The create relation method will create a new relation in the database as well.
+    # as a new rails model class connected to that relation. It requires a schema
+    # that will correspond to the table's relationnal schema.
     def create_relation(name,schema)
       name.capitalize!
       @relation_classes[name] = create_relation_class(name,schema)
       @wlschema.open_connection
       begin
         if @wlschema.new(:name => name,:schema => schema.to_json).save
-          #good
         else
-          puts "Relation was not properly updated"
+          WLLogger.logger.warn "Relation wlschema was not properly updated"
         end
       rescue => error
-        WLLogger.logger.warn error
+        WLLogger.logger.fatal error
         raise error
       end
       @wlschema.remove_connection
     end
     
     def create_relation_class(name,schema)
+      database_instance = self
       create_class("#{name}_#{@id}",ActiveRecord::Base) do
         @schema = schema
-        #@configuration = database.configuration
-        establish_connection @configuration
+        @wl_database_instance = database_instance
+        establish_connection @wl_database_instance.configuration
         self.table_name=name
         connection.create_table table_name, :force => true do |t|
           schema.each_pair do |col_name,col_type|
@@ -195,7 +199,7 @@ module WLDatabase
           @schema
         end
         def self.open_connection
-          establish_connection @configuration
+          establish_connection @wl_database_instance.configuration
         end
         def self.remove_connection
           super
