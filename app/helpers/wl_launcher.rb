@@ -27,14 +27,12 @@ module WLLauncher
     end
   end
 
-  #This method is responsible for giving the order to create a peer.
-  #It returns the newly created active record for the peer as well as
-  #if the creation process has been successful.
-  #This method does not check if it already exists.
+  # This method is responsible for giving the order to create a peer. It returns
+  # the newly created active record for the peer as well as if the creation
+  # process has been successful. This method does not check if it already
+  # exists.
   #
-  def self.create_peer(username, properties)
-    #properties = properties
-
+  def self.create_peer(username, properties)    
     #Find an available port at the location given by the properties.
     ip = properties['peer']['ip']
     number_of_ports_required = properties['peer']['ports_used']
@@ -119,6 +117,7 @@ module WLLauncher
   # If no such number can be found, this returns an invalid port.
   def self.find_ports(ip,number_of_ports_required,root_port)
     if root_port+number_of_ports_required > SOCKET_MAX_PORT
+      WLLogger.logger.debug "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{root_port+number_of_ports_required}"
       return SOCKET_PORT_INVALID
     end
     increment = 0
@@ -162,6 +161,7 @@ module WLLauncher
 
   # This method is used to access a peer that has already been created and
   # assigned an address (ip:port)
+  #
   def self.access_peer(peer)
     properties = Properties.properties
 
