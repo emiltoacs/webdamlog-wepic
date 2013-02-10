@@ -1,14 +1,13 @@
 require 'yaml'
 
-module Properties  
-  #Access general properties  
-  def self.properties
-    @properties = YAML.load_file('config/properties.yml') unless @properties
-    @properties
+module Properties
+
+  def self.read_prop_file
+    return YAML.load_file('config/properties.yml')    
   end
   
   def properties
-    @properties = YAML.load_file('config/properties.yml') unless @properties
+    @properties = read_prop_file unless @properties
     @properties
-  end  
+  end
 end
