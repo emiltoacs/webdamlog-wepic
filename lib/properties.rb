@@ -7,7 +7,7 @@ module Properties
   end
   
   def properties
-    @properties = read_prop_file unless @properties
+    @properties = Properties.read_prop_file unless @properties
     @properties
   end
 end

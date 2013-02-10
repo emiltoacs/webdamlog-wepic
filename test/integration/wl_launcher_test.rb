@@ -5,9 +5,9 @@ class WLLauncherTest < ActionController::IntegrationTest
   include Properties
     
   def setup
-    @root_port = properties['testpeer']['root_port']
-    @ports_used = properties['testpeer']['ports_used']
-    @ip = properties['testpeer']['ip']
+    @root_port = properties['test_peer']['root_port']
+    @ports_used = properties['test_peer']['ports_used']
+    @ip = properties['test_peer']['ip']
   end
     
   def teardown
