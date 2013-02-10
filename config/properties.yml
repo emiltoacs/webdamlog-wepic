@@ -25,7 +25,7 @@ peer:
 
 #Testing Peer properties
 #Peer properties
-peer_test:
+test_peer:
   protocol : http
   ip : localhost
   ports_used : 3

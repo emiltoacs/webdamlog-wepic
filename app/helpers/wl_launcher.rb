@@ -32,8 +32,8 @@ module WLLauncher
   #if the creation process has been successful.
   #This method does not check if it already exists.
   #
-  def self.create_peer(username)
-    properties = Properties.properties
+  def self.create_peer(username, properties)
+    #properties = properties
 
     #Find an available port at the location given by the properties.
     ip = properties['peer']['ip']
@@ -114,9 +114,9 @@ module WLLauncher
     return false
   end
 
-  #This method return the smallest port number in a range of available ports large enough
-  #for our purposes. This number is called the root port number. If no such
-  #number can be found, the algorithm returns an invalid port.
+  # This method return the smallest port number in a range of available ports
+  # large enough for our purposes. This number is called the root port number.
+  # If no such number can be found, this returns an invalid port.
   def self.find_ports(ip,number_of_ports_required,root_port)
     if root_port+number_of_ports_required > SOCKET_MAX_PORT
       return SOCKET_PORT_INVALID
@@ -162,7 +162,8 @@ module WLLauncher
     end
   end  
 
-  #This method is used to access a peer that has already been created and assigned an address (ip:port)
+  # This method is used to access a peer that has already been created and
+  # assigned an address (ip:port)
   def self.access_peer(peer)
     properties = Properties.properties
 

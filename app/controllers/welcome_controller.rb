@@ -15,7 +15,7 @@ class WelcomeController < ApplicationController
     
     if @account.nil?
       #If the account is new
-      @account,launched = WLLauncher.create_peer(username)
+      @account,launched = WLLauncher.create_peer(username, properties)
       if launched
         #The peer is being launched, we send the user to the waiting until the peer is ready.
         respond_to do |format|
