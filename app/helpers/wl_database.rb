@@ -134,10 +134,10 @@ module WLDatabase
       #
       @relation_classes['Pictures'] = Picture
       @relation_classes['Contacts'] = Contact
-      @wlschema.open_connection
+      #@wlschema.open_connection
       @wlschema.new(:name=>'Pictures',:schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>'Contacts',:schema=>Contact.schema.to_json).save
-      @wlschema.remove_connection
+      #@wlschema.remove_connection
       
       #FIXME: This is a dummy SQL query to insert test facts in Contacts
       Contact.new(:username=>'Emilien',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"emilien.antoine@inria.fr",:facebook=>"Emilien Antoine").save
@@ -153,7 +153,7 @@ module WLDatabase
     def create_relation(name,schema)
       name.capitalize!
       @relation_classes[name] = create_relation_class(name,schema)
-      @wlschema.open_connection
+      #@wlschema.open_connection
       begin
         if @wlschema.new(:name => name,:schema => schema.to_json).save
         else
@@ -163,7 +163,7 @@ module WLDatabase
         WLLogger.logger.fatal error
         raise error
       end
-      @wlschema.remove_connection
+      #@wlschema.remove_connection
     end
     
     def create_relation_class(name,schema)
