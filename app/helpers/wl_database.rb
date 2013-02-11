@@ -7,6 +7,17 @@ require 'picture'
 require 'user'
 require 'wl_logger'
 
+# This helper manage database connection for a peer
+#
+# @@databases is the set of databse on which the peer is connected. In our app
+# there is always exactly one.
+#
+# The class WLInstanceDatabase represent the object which provide methods to
+# alter the database schema (add table)
+#
+# TODO all the methods open_connection and remove_connection defined for every
+# model in this app are now totally useless. Think to remove them properly.
+#
 module WLDatabase
   @@databases = Hash.new
   
@@ -204,7 +215,7 @@ module WLDatabase
         def self.remove_connection
           super
         end
-      end      
+      end
     end
     
     def create_class(class_name, superclass, &block)

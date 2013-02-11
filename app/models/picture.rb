@@ -2,8 +2,7 @@ require 'wl_logger'
 class Picture < ActiveRecord::Base
   
   def self.setup
-    unless @setup_done
-      debugger
+    unless @setup_done      
       db_name = "db/database_#{ENV['USERNAME']}.db"
       @configuration = {:adapter => 'sqlite3', :database => db_name}
       establish_connection @configuration
@@ -40,8 +39,7 @@ class Picture < ActiveRecord::Base
     }
   end
 
-  def self.open_connection
-    debugger
+  def self.open_connection    
     establish_connection @configuration
   end
 

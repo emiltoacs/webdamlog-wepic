@@ -1,6 +1,5 @@
 class PicturesController < WepicController
-  def create
-    debugger
+  def create    
     @picture = Picture.new(params[:picture])
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(ENV['USERNAME']).relation_classes
