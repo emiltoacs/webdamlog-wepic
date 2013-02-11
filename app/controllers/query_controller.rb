@@ -26,7 +26,7 @@ class QueryController < ApplicationController
       end
       # WLBUDinsert 
       respond_to do |format|
-        @relation_classes[rel_name].open_connection
+        #@relation_classes[rel_name].open_connection
         if @relation_classes[rel_name].insert(values_hash)
           format.html { redirect_to '/query', :notice => "#{rel_name} : #{values_hash.inspect}"}
           format.json { head :no_content }
@@ -34,7 +34,7 @@ class QueryController < ApplicationController
           format.html {redirect_to '/query', :notice => "insert did not happen properly"}
           format.json {head :no_content}
         end
-        @relation_classes[rel_name].remove_connection
+        #@relation_classes[rel_name].remove_connection
       end
     end
   end

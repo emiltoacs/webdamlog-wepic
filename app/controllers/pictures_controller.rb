@@ -5,9 +5,9 @@ class PicturesController < WepicController
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(ENV['USERNAME']).relation_classes
     #FIXME check how to optimize database connections.
-    Contact.open_connection
+    #Contact.open_connection
     @contacts = Contact.all
-    Contact.remove_connection 
+    #Contact.remove_connection 
     if @picture.save
       respond_to do |format|
         format.html { render :action => "show", :notice => 'Picture was successfully created.' }
