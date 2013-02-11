@@ -1,6 +1,7 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
+require 'wl_logger'
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -33,8 +34,6 @@ module WepimApp
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     
-    require 'wl_logger'
-    config.logger = WLLogger::WLLogger.new STDOUT
     # Configure the default encoding used in templates for Ruby 1.9.
     config.encoding = "utf-8"
 
@@ -62,6 +61,11 @@ module WepimApp
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+
+    # The standard logger for this application
+    config.logger = WLLogger::WLLogger.new STDOUT
+
+    
   end
   
   #If an app has the manager port environment variable defined, then it is not

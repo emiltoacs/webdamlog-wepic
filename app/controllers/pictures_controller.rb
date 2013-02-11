@@ -2,22 +2,23 @@ class PicturesController < WepicController
   def create    
     @picture = Picture.new(params[:picture])
     @pictures = Picture.all if @pictures.nil?
-    @relation_classes = database(ENV['USERNAME']).relation_classes
-    #FIXME check how to optimize database connections.
+    @relation_classes = database(ENV['USERNAME']).relation_classes    
     #Contact.open_connection
     @contacts = Contact.all
     #Contact.remove_connection 
     if @picture.save
+      config.logger.debug "#in PicturesController, user {ENV['USERNAME']} successfully saved a new picture"
       respond_to do |format|
         format.html { render :action => "show", :notice => 'Picture was successfully created.' }
         format.json { render :json => @picture, :status => :created, :location => :wepic }
       end
     else
+      config.logger.debug "#in PicturesController, user {ENV['USERNAME']} failed to save a new picture"
       respond_to do |format|        
         format.html { render :action => :index, :notice => 'Image creation was not successful.' }
         format.json { render :json => @picture.errors, :status => :unprocessable_entity }
       end
-    end   
+    end
   end
   
   #This method returns a json representation of the pictures of a contact (not the picture data itself,
@@ -64,5 +65,5 @@ class PicturesController < WepicController
     style = params[:style] ? params[:style] : 'original'
     send_data @picture.image.file_contents(style),
       :type => @picture.image_content_type
-  end  
+  end
 end

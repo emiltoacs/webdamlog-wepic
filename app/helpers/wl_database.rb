@@ -2,10 +2,10 @@ require 'set'
 require 'json'
 require 'pathname'
 require 'fileutils'
-require 'program'
 require 'picture'
-require 'user'
-require 'wl_logger'
+require 'contact'
+#require 'wl_logger'
+#require 'wl_tool'
 
 # This helper manage database connection for a peer
 #
@@ -18,7 +18,8 @@ require 'wl_logger'
 # TODO all the methods open_connection and remove_connection defined for every
 # model in this app are now totally useless. Think to remove them properly.
 #
-module WLDatabase
+module WLDatabase  
+
   @@databases = Hash.new
   
   #Does nothing if the user already has his db setup. Otherwise, sets up his 
@@ -59,6 +60,8 @@ module WLDatabase
   #TODO Add namespace to WLSchema relation. The namespace is based on the database_id
   #TODO: Datetime and binary format have to be managed to be viewed properly.
   class WLInstanceDatabase
+    include WLTool
+    
     attr_accessor :id, :relation_classes, :configuration
     
     #Creates a new database with a name defined by the user's id. If the database
@@ -143,8 +146,9 @@ module WLDatabase
       # do not add the User class here or Authlogic will not be able to handle
       # sessions properly.
       #
-      @relation_classes['Pictures'] = Picture
-      @relation_classes['Contacts'] = Contact
+      
+      @relation_classes['Pictures'] = Object.const_get("Picture").clone
+      @relation_classes['Contacts'] = Object.const_get("Contact").clone
       #@wlschema.open_connection
       @wlschema.new(:name=>'Pictures',:schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>'Contacts',:schema=>Contact.schema.to_json).save
@@ -217,17 +221,5 @@ module WLDatabase
         end
       end
     end
-    
-    def create_class(class_name, superclass, &block)
-      klass = Class.new superclass, &block
-      Object.const_set class_name, klass
-    end
-    
-    def delete_class(klass)
-      Object.class_eval do
-        remove_const(klass.name.intern) if const_defined?(klass.name.intern)
-      end
-    end
-  
   end
 end

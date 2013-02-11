@@ -12,6 +12,5 @@ module WLPeer
       socket.puts "Port #{port} ready"
       socket.close
     end
-  end
-  
+  end  
 end

@@ -17,10 +17,11 @@ peer:
   ip : localhost
   ports_used : 3
   root_port : 10000
+  wdl_engine_port : 20000
   #Which program is loaded by default by the peer.
   program:
     name : prog1.wl
-    author : julestestard
+    author : johndoe
     source : app/assets/wlprogram/prog1.wl
 
 #Testing Peer properties
@@ -30,6 +31,7 @@ test_peer:
   ip : localhost
   ports_used : 3
   root_port : 10000
+  wdl_engine_port : 20000
   #Which program is loaded by default by the peer.
   program:
     name : prog1.wl

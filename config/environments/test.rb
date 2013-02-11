@@ -34,4 +34,11 @@ WepimApp::Application.configure do
 
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :stderr
+
+  if RUBY_VERSION =~ /^1.9/
+    require 'debugger'
+  else
+    require 'ruby-debug'
+    Debugger.start
+  end
 end

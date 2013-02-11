@@ -97,16 +97,20 @@ module WLLauncher
     pids.size
   end
 
-  #This method returns true if the given port is available
+  # This method returns true if the given port is available
+  #
   def self.port_available?(ip, port)
     begin
       Timeout::timeout(1) do
         begin
-          s = TCPServer.new(ip, port)
-          s.close
+          test_open_port = TCPServer.new(ip, port)
+          test_open_port.close
           return true
+        rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => error
+          WLLogger.logger.info error.inspect
+          return false
         rescue => error
-          WLLogger.logger.warn error.inspect
+          WLLogger.logger.error error.inspect
           return false
         end
       end
@@ -117,23 +121,28 @@ module WLLauncher
   # This method return the smallest port number in a range of available ports
   # large enough for our purposes. This number is called the root port number.
   # If no such number can be found, this returns an invalid port.
+  #
+  # TODO: this looks for adjacent port number only, relax to return a list of
+  # ports
+  #
   def self.find_ports(ip,number_of_ports_required,root_port)
     if root_port+number_of_ports_required > SOCKET_MAX_PORT
       WLLogger.logger.debug "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{root_port+number_of_ports_required}"
       return SOCKET_PORT_INVALID
     end
     increment = 0
-    found_range = true
-    while increment < number_of_ports_required and found_range do
+    port_range_usable = true
+    while increment < number_of_ports_required and port_range_usable do
       if !port_available?(ip,root_port+increment)
-        found_range = false
-        WLLogger.logger.info "Port #{root_port+number_of_ports_required}"    
+        port_range_usable = false
+        WLLogger.logger.info "Port #{ip}:#{root_port+number_of_ports_required} required by wl and impossible to use"
       end
       increment += 1
     end
-    if found_range
+    if port_range_usable
       root_port
     else
+      # look for the next possible free port range
       find_ports(ip,number_of_ports_required,root_port+increment)
     end
   end
