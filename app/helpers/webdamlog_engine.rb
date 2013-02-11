@@ -45,6 +45,6 @@ EOF
         @wlenginelogger.info("new instance of webdamlog engine created:\n#{msg}")
       end
       #@webdamlog.run_bg
-    end    
+    end
   end  
 end
