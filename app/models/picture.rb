@@ -1,8 +1,6 @@
-require 'wl_logger'
-class Picture < ActiveRecord::Base
-  
+class Picture < ActiveRecord::Base  
   def self.setup
-    unless @setup_done      
+    unless @setup_done
       db_name = "db/database_#{ENV['USERNAME']}.db"
       @configuration = {:adapter => 'sqlite3', :database => db_name}
       establish_connection @configuration
@@ -21,7 +19,7 @@ class Picture < ActiveRecord::Base
         t.binary :image_small_file
         t.binary :image_thumb_file
         t.timestamps
-      end if !connection.table_exists?('pictures')      
+      end if !connection.table_exists?('pictures')
       @setup_done = true
     end
   end
@@ -55,6 +53,5 @@ class Picture < ActiveRecord::Base
     :small => "300x300>"
   },
     :url => '/:class/:id/:attachment?style=:style'
-  default_scope select_without_file_columns_for(:image)
-  
+  default_scope select_without_file_columns_for(:image)  
 end

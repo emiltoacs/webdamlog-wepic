@@ -8,12 +8,13 @@ require 'test/unit'
 #of testing.
 #TODO : Avoid duplication of information in the Database module by reducing the 
 #number of variables.
-class DatabaseTest < Test::Unit::TestCase
+class WLDatabaseTest < Test::Unit::TestCase
   include WLDatabase
   include Kernel
   
   def setup
-    @dbid = (0...8).map{('a'..'z').to_a[rand(26)]}.join
+    require 'environment'
+    @dbid = (0...6).map{('a'..'z').to_a[rand(26)]}.join
     @database = create_or_connect_db(@dbid)
   end
   
@@ -21,18 +22,18 @@ class DatabaseTest < Test::Unit::TestCase
     @database.destroy
   end
   
-  def test_setup_and_teardown
+  def test_1_setup_and_teardown
     assert(true)
   end
   
-  def test_access_schema_from_class
+  def test_2_access_schema_from_class
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
     assert_equal(relation_schema,@database.relation_classes[relation_name].schema)
   end
   
-  def test_connect_to_db
+  def test_3_connect_to_db
     #Check if database was created during the setup
     assert_equal(WLInstanceDatabase,@database.class)
     #Check if database contains the WLSchema relation
@@ -41,7 +42,7 @@ class DatabaseTest < Test::Unit::TestCase
   end
   
   #TODO enhance test by adding several relations to the testing.
-  def test_create_relation
+  def test_4_create_relation
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
@@ -49,12 +50,12 @@ class DatabaseTest < Test::Unit::TestCase
     assert_equal("Dog",@database.relation_classes["Dog"].table_name)
   end
   
-  def test_deconnect
+  def test_5_deconnect
     close_connection(@dbid)
     assert_equal(nil,database(@dbid))
   end
   
-  def test_reconnection
+  def test_6_reconnection
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
@@ -62,13 +63,14 @@ class DatabaseTest < Test::Unit::TestCase
     @database = create_or_connect_db(@dbid)
     #Schema should contain the Dog table information
     assert_equal(false,@database.relation_classes["WLSchema"].all.empty?)
+    debugger
     assert_equal("Dog",@database.relation_classes["WLSchema"].find(1).name)
   end
   
   #You can check that the dog was added to the database with the following commands:
   #sqlite3 db/database_2.db
   #SELECT * FROM DOG;
-  def test_insert_and_retrieve
+  def test_7_insert_and_retrieve
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)
@@ -84,7 +86,7 @@ class DatabaseTest < Test::Unit::TestCase
     dog_table.remove_connection
   end
   
-  def test_delete
+  def test_8_delete
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_relation(relation_name,relation_schema)

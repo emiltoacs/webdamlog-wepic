@@ -4,6 +4,8 @@ require 'rails/test_help'
 
 require 'test/unit'
 
+ENV['USERNAME'] = "test_user"
+
 begin
   require 'debugger'
 rescue LoadError => e

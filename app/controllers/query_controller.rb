@@ -54,7 +54,7 @@ class QueryController < ApplicationController
       end
     end
     # WLBUDinsert 
-    database(ENV['USERNAME']).create_relation(rel_name,schema)    
+    database(ENV['USERNAME']).create_relation(rel_name,schema)
     respond_to do |format|
       format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
       format.json { head :no_content }
