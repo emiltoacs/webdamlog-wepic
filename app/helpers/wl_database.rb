@@ -104,10 +104,15 @@ module WLDatabase
     # instance.
     # 
     def create_schema
-      @relation_classes = Hash.new      
-      #Create the WLSchema model.
+      
+      # The hash that contains the list of relations defined in this schema s
+      # key  and their class model as value
+      #
+      @relation_classes = Hash.new
+      
       relation_name="WLSchema"
       database_instance = self
+      # The model of the schema itself stored in the database
       @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
         @schema = {"name"=>"string","schema"=>"string"}
         @wl_database_instance = database_instance
@@ -168,7 +173,6 @@ module WLDatabase
     def create_relation(name,schema)
       name.capitalize!
       @relation_classes[name] = create_relation_class(name,schema)
-      #@wlschema.open_connection
       begin
         if @wlschema.new(:name => name,:schema => schema.to_json).save
         else
@@ -178,22 +182,27 @@ module WLDatabase
         WLLogger.logger.fatal error
         raise error
       end
-      #@wlschema.remove_connection
     end
-    
+
+    # Create the relation as a model and a table in the database
+    #
     def create_relation_class(name,schema)
       database_instance = self
-      create_class("#{name}_#{@id}",ActiveRecord::Base) do
+      klass = create_class("#{name}_#{@id}",ActiveRecord::Base) do
         @schema = schema
         @wl_database_instance = database_instance
         establish_connection @wl_database_instance.configuration
-        self.table_name=name
-        connection.create_table table_name, :force => true do |t|
-          schema.each_pair do |col_name,col_type|
-            eval("t.#{col_type} :#{col_name}")
+        self.table_name=name        
+        if !connection.table_exists?(table_name)
+          connection.create_table table_name, :force => true do |t|
+            schema.each_pair do |col_name,col_type|
+              eval("t.#{col_type} :#{col_name}")
+            end
+            t.timestamps
           end
-          t.timestamps
-        end if !connection.table_exists?(table_name)
+        else
+          WLLogger.logger.debug "try to create wlschema table in db #{@wl_database_instance.configuration} but it already exists"
+        end
         def self.insert(values)
           self.new(values).save
         end
@@ -213,13 +222,26 @@ module WLDatabase
         def self.schema
           @schema
         end
-        def self.open_connection
-          establish_connection @wl_database_instance.configuration
+      end
+      return klass
+    end
+      
+    # Test if the relation name in @wlschema has a corresponding table in
+    # the current database
+    def table_exists?(relation_name)
+      if @relation_classes.key? relation_name
+        if @relation_classes[relation_name].respond_to? :connection and @relation_classes[relation_name].respond_to? :table_name
+          @relation_classes[relation_name].connection.table_exists?(@relation_classes[relation_name].table_name)
+        else
+          WLLogger.logger.warn "Value of #{relation_name} in @wlschema is #{@relation_classes[relation_name].class} expected to respond_to? :connection and :table_name"
+          false
         end
-        def self.remove_connection
-          super
-        end
+      else
+        WLLogger.logger.warn "no such table #{relation_name} in @wlschema"
+        false
       end
     end
+    
   end
+
 end
