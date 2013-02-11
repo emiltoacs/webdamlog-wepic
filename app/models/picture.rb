@@ -41,6 +41,7 @@ class Picture < ActiveRecord::Base
   end
 
   def self.open_connection
+    debugger
     establish_connection @configuration
   end
 
