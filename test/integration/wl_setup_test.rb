@@ -3,8 +3,6 @@ require 'wl_setup'
 
 class WLSetupTest < ActionController::IntegrationTest
 
-  fixtures :none
-
   def test_clean_orphaned_peer
     assert File.exists?("db")
     assert_equal Rails.root, Pathname.getwd
