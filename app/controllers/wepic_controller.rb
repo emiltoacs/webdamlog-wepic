@@ -1,6 +1,7 @@
 class WepicController < ApplicationController
   include WLDatabase
   def index
+    debugger
     @picture = Picture.new
     Picture.open_connection
     @pictures = Picture.all
