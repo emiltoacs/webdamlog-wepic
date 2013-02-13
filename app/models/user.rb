@@ -5,7 +5,7 @@ class User < ActiveRecord::Base
   def self.setup
     unless @setup_done
       db_name = "db/database_#{ENV['USERNAME']}.db"
-      @configuration = {:adapter => 'sqlite3', :database => db_name}
+      @configuration = UserConf.config[:connection]
       establish_connection @configuration
       self.table_name = "users"
       connection.create_table 'users', :force => true do |t|

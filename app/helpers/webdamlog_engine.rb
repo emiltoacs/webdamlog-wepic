@@ -10,6 +10,8 @@ module WebdamlogEngine
   #
   class WebdamlogEngine
 
+    :engine
+
     STR0 = <<EOF
 peer p0=localhost:11110;
 collection ext persistent bootstrap@p0(atom1*);
@@ -24,19 +26,20 @@ EOF
       #Create a subclass of WL
       klass = Class.new(WLBud::WL)
       # TODO find a good name for the sub class, it should be uniq
-      wlport = PeerConf.config['peer']['wdl_engine_port']
-      self.class.class_eval "WLEngineOf#{ENV['USERNAME']}On#{wlport} = klass"
-      peer_name = "peername_#{ENV['USERNAME']}on#{WLPORT}"
+      username = UserConf.config[:connection]
+      wlport = ENV["PORT"]
+      self.class.class_eval "WLEngineOf#{username}On#{wlport} = klass"
+      peer_name = "peername_#{username}on#{wlport}"
       # TODO find a good place to put the program file
       program_file_dir = File.expand_path('../../tmp/rule_dir', __FILE__)
       unless (File::directory?(program_file_dir))
         Dir.mkdir(program_file_dir)
       end
-      program_file = File.join(program_file_dir,"programfile_of_#{ENV['USERNAME']}on#{WLPORT}")
-      dir_rule = program_file_dir      
+      program_file = File.join(program_file_dir,"programfile_of_#{username}on#{wlport}")
+      dir_rule = program_file_dir
       File.open(program_file, 'w'){ |file| file.write STR0 }
       @webdamlog = nil
-      eval("@webdamlog = ClassWL#{ENV['USERNAME']}on#{WLPORT}.new(peer_name,program_file,{:port => #{WLPORT}, :dir_rule => dir_rule})")
+      eval("@engine = ClassWL#{username}on#{wlport}.new(peer_name,program_file,{:port => #{wlport}, :dir_rule => dir_rule})")
       @wlenginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
       if @webdamlog.nil?

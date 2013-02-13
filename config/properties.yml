@@ -4,7 +4,7 @@ development: &base
     ip : localhost
     manager_port : 3100
     default_spawn_port : 10000
-    port_spacing : 3
+    port_spacing : 5
 
   #Peer properties
   peer:
@@ -24,7 +24,7 @@ test:
   communication:
     manager_port : 4100
     default_spawn_port : 30000
-    port_spacing : 3
+    port_spacing : 5
 
   #Testing Peer properties
   #Peer properties

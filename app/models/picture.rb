@@ -4,7 +4,7 @@ class Picture < ActiveRecord::Base
       @configuration = UserConf.config[:connection]
       establish_connection @configuration
       attr_accessible :title, :image, :owner
-      validates_uniqueness_of :title
+      validates_uniqueness_of :title      
       #validates :owner, :presence => true      
       #self.table_name = 'pictures'
       connection.create_table 'pictures', :force => true do |t|
