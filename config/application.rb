@@ -1,7 +1,7 @@
 require File.expand_path('../boot', __FILE__)
-
 require 'rails/all'
 require 'wl_logger'
+require 'wl_tool'
 
 if defined?(Bundler)
   # If you precompile assets before deploying to production, use this line
@@ -12,6 +12,7 @@ end
 
 module WepimApp
   class Application < Rails::Application
+    
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
@@ -65,7 +66,14 @@ module WepimApp
     # The standard logger for this application
     config.logger = WLLogger::WLLogger.new STDOUT
 
-    
+    # There is the general custom configuration options for this app
+    PeerConf.init
+    db_name = "db/database_#{ENV['USERNAME']}.db"
+    UserConf.init({
+        name: ENV['USERNAME'],
+        db_name: db_name,
+        connection: {:adapter => 'sqlite3', :database => db_name}
+      })
   end
   
   #If an app has the manager port environment variable defined, then it is not

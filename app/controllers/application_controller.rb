@@ -1,10 +1,8 @@
-require 'properties'
 require 'wl_logger'
 require 'wl_database'
 require 'wl_launcher'
 
 class ApplicationController < ActionController::Base
-  include Properties
   include WLLogger
   
   protect_from_forgery

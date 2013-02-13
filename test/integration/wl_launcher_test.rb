@@ -2,49 +2,36 @@ require 'test_helper'
 require 'test/unit'
 
 class WLLauncherTest < ActionController::IntegrationTest
-  include Properties
     
   def setup
-    @root_port = properties['test_peer']['root_port']
-    @ports_used = properties['test_peer']['ports_used']
-    @ip = properties['test_peer']['ip']
+    @config = PeerConf.init
+    
+    @root_port = @config['peer']['root_port']
+    @ports_used = @config['peer']['ports_used']
+    @ip = @config['peer']['ip']
   end
     
   def teardown
       
   end
 
-  # Test the port given in the properties.yml file
+  # Test the port given in the PeerProperties.config.yml file
   #
   # Test the methods port_availaibles? and find_ports
   #
   def test_1_port_in_config_file_available
-    ip = properties['communication']['ip']
-    port = properties['communication']['manager_port']
+    ip = @config['communication']['ip']
+    port = @config['communication']['manager_port']
     assert WLLauncher.port_available?(ip,port),
-      "check your properties.yml file the #{ip}:#{port} port should be availaible"
-    port_spacing = properties['communication']['port_spacing']
+      "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
+    port_spacing = @config['communication']['port_spacing']
     assert_equal port, WLLauncher.find_ports(ip,port_spacing,port)
 
-    ip = properties['test_communication']['ip']
-    port = properties['test_communication']['manager_port']
+    ip = @config['peer']['ip']
+    port = @config['peer']['root_port']
     assert WLLauncher.port_available?(ip,port),
-      "check your properties.yml file the #{ip}:#{port} port should be availaible"
-    port_spacing = properties['test_communication']['port_spacing']
-    assert_equal port,WLLauncher.find_ports(ip,port_spacing,port)
-
-    ip = properties['peer']['ip']
-    port = properties['peer']['root_port']
-    assert WLLauncher.port_available?(ip,port),
-      "check your properties.yml file the #{ip}:#{port} port should be availaible"
-    port_spacing = properties['peer']['ports_used']
-    assert_equal port,WLLauncher.find_ports(ip,port_spacing,port)
-
-    ip = properties['test_peer']['ip']
-    port = properties['test_peer']['root_port']
-    assert WLLauncher.port_available?(ip,port),
-      "check your properties.yml file the #{ip}:#{port} port should be availaible"
-    port_spacing = properties['test_peer']['ports_used']
+      "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
+    port_spacing = @config['peer']['ports_used']
     assert_equal port,WLLauncher.find_ports(ip,port_spacing,port)
   end
 
@@ -76,7 +63,7 @@ class WLLauncherTest < ActionController::IntegrationTest
   #
   def test_3_create_peer
     username = "tester"
-    peer, st = WLLauncher.create_peer(username, properties)
+    peer, st = WLLauncher.create_peer(username, @config)
     sleep(2)
     assert st
     assert_not_nil peer

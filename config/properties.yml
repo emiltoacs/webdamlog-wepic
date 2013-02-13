@@ -1,39 +1,44 @@
+development: &base
 #Communication ports
-communication:
-  ip : localhost
-  manager_port : 3100
-  default_spawn_port : 10000
-  port_spacing : 3
+  communication:
+    ip : localhost
+    manager_port : 3100
+    default_spawn_port : 10000
+    port_spacing : 3
 
-#Communication ports for testing.
-test_communication:
-  manager_port : 4100
-  default_spawn_port : 30000
-  port_spacing : 3
-  
-#Peer properties
-peer:
-  protocol : http
-  ip : localhost
-  ports_used : 3
-  root_port : 10000
-  wdl_engine_port : 20000
-  #Which program is loaded by default by the peer.
-  program:
-    name : prog1.wl
-    author : johndoe
-    source : app/assets/wlprogram/prog1.wl
+  #Peer properties
+  peer:
+    protocol : http
+    ip : localhost
+    ports_used : 3
+    root_port : 10000
+    wdl_engine_port : 20000
+    #Which program is loaded by default by the peer.
+    program:
+      name : prog1.wl
+      author : johndoe
+      source : app/assets/wlprogram/prog1.wl
+      
+test:  
+  #Communication ports for testing.
+  communication:
+    manager_port : 4100
+    default_spawn_port : 30000
+    port_spacing : 3
 
-#Testing Peer properties
-#Peer properties
-test_peer:
-  protocol : http
-  ip : localhost
-  ports_used : 3
-  root_port : 10000
-  wdl_engine_port : 20000
-  #Which program is loaded by default by the peer.
-  program:
-    name : prog1.wl
-    author : johndoe
-    source : app/assets/wlprogram/prog1.wl
+  #Testing Peer properties
+  #Peer properties
+  peer:
+    protocol : http
+    ip : localhost
+    ports_used : 3
+    root_port : 10000
+    wdl_engine_port : 20000
+    #Which program is loaded by default by the peer.
+    program:
+      name : prog1.wl
+      author : johndoe
+      source : app/assets/wlprogram/prog1.wl
+
+production:
+  <<: *base

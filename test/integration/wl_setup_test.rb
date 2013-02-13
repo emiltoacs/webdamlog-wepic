@@ -13,6 +13,8 @@ class WLSetupTest < ActionController::IntegrationTest
     File.new('db/database_OTHERPEER.db', 'w')
     # See the two notation for glob Dir[] or Dir.glob()
     assert_equal 2, Dir['db/database_*.db'].length, "there should be two datases"
+    WLSetup.clean_orphaned_peer(:sqlite3)
+    assert_equal 2, Dir.glob('db/database_*.db').length, "there should be one datases"
     system 'rm db/database_*.db'
     assert_equal 0, Dir.glob('db/database_*.db').length, "there should be zero datases"
   end
