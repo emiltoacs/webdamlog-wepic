@@ -108,7 +108,9 @@ module Network
   # ports
   #
   def self.find_ports(ip,number_of_ports_required,root_port)
-    if root_port+number_of_ports_required > SOCKET_MAX_PORT
+    root_port = Integer(root_port)
+    number_of_ports_required = Integer(number_of_ports_required)
+    if root_port + number_of_ports_required > SOCKET_MAX_PORT
       WLLogger.logger.debug "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{root_port+number_of_ports_required}"
       return SOCKET_PORT_INVALID
     end
@@ -117,7 +119,7 @@ module Network
     while increment < number_of_ports_required and port_range_usable do
       if !port_available?(ip,root_port+increment)
         port_range_usable = false
-        WLLogger.logger.info "Port #{ip}:#{root_port+number_of_ports_required} required by wl and impossible to use"
+        WLLogger.logger.info "Address:port #{ip}:#{root_port+number_of_ports_required} required but impossible to use"
       end
       increment += 1
     end

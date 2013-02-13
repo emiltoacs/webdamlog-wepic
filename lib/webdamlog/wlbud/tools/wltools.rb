@@ -9,6 +9,16 @@ module WLTools
   # + Replace internal space by _
   # + Remove " or '
   #
+  def self.sanitize(string)
+    return string.strip.downcase.delete('"').gsub(/\s+/, '_')
+  end
+
+  # Sanitize the string ie.
+  # + Remove leading and trailing whitespace
+  # + Downcase
+  # + Replace internal space by _
+  # + Remove " or '
+  #
   def self.sanitize!(string)
     string.strip!
     string.downcase!
