@@ -35,14 +35,6 @@ class Picture < ActiveRecord::Base
       'image_thumb_file'=>'binary'
     }
   end
-
-  def self.open_connection    
-    establish_connection @configuration
-  end
-
-  def self.remove_connection
-    super
-  end
   
   setup
   has_attached_file :image,

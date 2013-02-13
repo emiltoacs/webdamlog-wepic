@@ -2,7 +2,7 @@ class Peer < ActiveRecord::Base
   
   def self.setup
     unless @setup_done
-      db_name = "db/database_#{ENV['USERNAME']}.db"
+      db_name = UserConf.config[:db_name]
       @configuration = {:adapter => 'sqlite3', :database => db_name}
       establish_connection @configuration
       attr_accessible :ip, :port, :username, :protocol
@@ -21,6 +21,15 @@ class Peer < ActiveRecord::Base
       end if !connection.table_exists?('peers')      
       @setup_done = true
     end
+  end
+
+  def self.schema
+    {'username'=>'string',
+      'ip'=>'string',
+      'port'=>'string',
+      'protocol'=>'string',
+      'active'=>'integer'
+    }
   end
   
   setup

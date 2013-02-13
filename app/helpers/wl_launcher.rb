@@ -91,8 +91,8 @@ module WLLauncher
       end
     end
     pids.each do |pid|
-      system "kill -9 #{pid}"
-      WLLogger.logger.info "Process #{pid} killed"
+      system "kill -TERM #{pid}"
+      WLLogger.logger.info "Process #{pid} terminated"
     end
     pids.size
   end
