@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
     unless @setup_done
       db_name = "db/database_#{ENV['USERNAME']}.db"
       @configuration = UserConf.config[:connection]
-      establish_connection @configuration
+      establish_connection DBConf.init
       self.table_name = "users"
       connection.create_table 'users', :force => true do |t|
         t.string :username

@@ -10,7 +10,9 @@ db_name = "db/database_#{ENV['USERNAME']}.db"
 UserConf.init({
     name: ENV['USERNAME'],
     db_name: db_name,
-    connection: {:adapter => 'sqlite3', :database => db_name}
+    connection: {
+      adapter: DBConf.config[:adapter],
+      database: DBConf.config[:database]}
   })
 
 #Once the application is initialized, if the application is a peer (and not a

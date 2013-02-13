@@ -15,7 +15,7 @@ gem 'bud', '0.9.5'
 
 gem 'rmagick'
 
-#gem 'sqlite3'
+gem 'sqlite3'
 gem 'pg'
 
 gem 'json'

@@ -3,7 +3,7 @@ class Program < ActiveRecord::Base
     unless @setup_done
       db_name = "db/database_#{ENV['USERNAME']}.db"
       @configuration = UserConf.config[:connection]
-      establish_connection @configuration
+      establish_connection DBConf.init
       self.table_name = 'programs'
       connection.create_table 'programs', :force => true do |t|
         t.string :name

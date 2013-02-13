@@ -3,6 +3,7 @@ require "#{root}/lib/wl_logger"
 require "#{root}/lib/wl_tool"
 require "#{root}/app/helpers/wl_launcher"
 require 'sqlite3'
+require 'pg'
 
 module WLSetup
   # If the manager has no database it erase all other database since it would
@@ -11,34 +12,38 @@ module WLSetup
   # TODO dbsetup should also check the consistency between the databases present
   # and those that are cited in the account table for the manager database.
   #
-  def self.clean_orphaned_peer(db_type)
-    case db_type
-    when :sqlite3
-      unless File.exists?("db/database_MANAGER.db")
-        Dir.foreach('db') do |file_name|
-          if file_name=~/database_.*\.db/
-            File.delete(File.join('db', file_name))
-          end
+  def self.clean_orphaned_peer
+    config = DBConf.init
+    unless File.exists?(config["database"])
+      Dir.foreach('db') do |file_name|
+        if file_name=~/database_.*\.db/
+          File.delete(File.join('db', file_name))
         end
       end
     end
   end
 
-  def self.get_peer_ports_from_account(db_type=:sqlite3)
+  def self.get_peer_ports_from_account(db_type=:postgres)
     rs=[]
-    case db_type
-    when :sqlite3      
-      if File.exists?("db/database_MANAGER.db")
+    config = DBConf.init
+    db_file = config["database"]
+    if File.exists?(db_file)
+      case db_type
+      when :sqlite3
         begin
-          database = SQLite3::Database.open "db/database_MANAGER.db"
+          database = SQLite3::Database.open db_file
           stm = database.prepare "select port from accounts"
           rs = stm.execute
         rescue SQLite3::Exception => e
           WLLogger.logger.info e.inspect
         end
-      else
-        WLLogger.logger.info "no sqlite3 database for the manager"
+      when :postgres
+        conn = PGconn.open(:dbname => db_file)
+        rs = conn.exec('select port from accounts')
+        rs.flatten
       end
+    else
+      WLLogger.logger.info "no file for database for the manager"
     end
     rs
   end
@@ -77,6 +82,7 @@ module WLSetup
     # added as an environment variable here (if the -p option is chosen)
     #
     properties = PeerConf.init
+    database = DBConf.init
     
     # Default values for username
     ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
@@ -109,7 +115,7 @@ module WLSetup
 
     if  ENV['USERNAME']=='MANAGER'
       WLLogger.logger.info "Setup a manager"
-      clean_orphaned_peer(:sqlite3)
+      clean_orphaned_peer
     else
       WLLogger.logger.info "Setup a peer"
       #The manager_port option is only available on non-manager peers.
