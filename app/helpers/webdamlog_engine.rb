@@ -13,7 +13,6 @@ module WebdamlogEngine
   class WebdamlogEngine
 
     :engine
-
     STR0 = <<EOF
 peer p0=localhost:11110;
 collection ext persistent bootstrap@p0(atom1*);
@@ -23,14 +22,13 @@ fact bootstrap@p0(3);
 fact bootstrap@p0(4);
 end
 EOF
-
     def initialize
       #Create a subclass of WL
       klass = Class.new(WLBud::WL)
       # TODO find a good name for the sub class, it should be uniq
       username = UserConf.config[:name]
-      root_port = ENV["PORT"]
-      wlport = Network.find_ports('localhost', 1, root_port)
+      root_port = Integer(ENV["PORT"])
+      wlport = Network.find_ports('localhost', 1, root_port+1)
       # Dynamic class ClassWLEngineOf#{username}On#{wlport} subclass WLBud
       self.class.class_eval "ClassWLEngineOf#{username}On#{wlport} = klass"
       peer_name = "peername_#{username}on#{wlport}"
