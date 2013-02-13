@@ -3,7 +3,7 @@ class Peer < ActiveRecord::Base
   def self.setup
     unless @setup_done
       db_name = UserConf.config[:db_name]
-      @configuration = {:adapter => 'sqlite3', :database => db_name}
+      @configuration = UserConf.config[:connection]
       establish_connection @configuration
       attr_accessible :ip, :port, :username, :protocol
       attr_accessible :active

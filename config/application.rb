@@ -62,16 +62,9 @@ module WepimApp
     config.assets.version = '1.0'
 
     # The standard logger for this application
-    config.logger = WLLogger::WLLogger.new STDOUT
-
-    # There is the general custom configuration options for this app
-    PeerConf.init
-    db_name = "db/database_#{ENV['USERNAME']}.db"
-    UserConf.init({
-        name: ENV['USERNAME'],
-        db_name: db_name,
-        connection: {:adapter => 'sqlite3', :database => db_name}
-      })
+#    require 'WLLogger'
+#    config.logger = WLLogger::WLLogger.new STDOUT
+    
   end
   
   #If an app has the manager port environment variable defined, then it is not

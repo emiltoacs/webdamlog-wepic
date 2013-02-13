@@ -22,17 +22,17 @@ class WLLauncherTest < ActionController::IntegrationTest
   def test_1_port_in_config_file_available
     ip = @config['communication']['ip']
     port = @config['communication']['manager_port']
-    assert WLLauncher.port_available?(ip,port),
+    assert Network.port_available?(ip,port),
       "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
     port_spacing = @config['communication']['port_spacing']
-    assert_equal port, WLLauncher.find_ports(ip,port_spacing,port)
+    assert_equal port, Network.find_ports(ip,port_spacing,port)
 
     ip = @config['peer']['ip']
     port = @config['peer']['root_port']
-    assert WLLauncher.port_available?(ip,port),
+    assert Network.port_available?(ip,port),
       "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
     port_spacing = @config['peer']['ports_used']
-    assert_equal port,WLLauncher.find_ports(ip,port_spacing,port)
+    assert_equal port, Network.find_ports(ip,port_spacing,port)
   end
 
   # Test find port behavior when a port in the range is not availaible
@@ -47,7 +47,7 @@ class WLLauncherTest < ActionController::IntegrationTest
   #
   def test_2_find_ports_when_port_not_free
     #This test first assumes that all ports are available.
-    assert_equal(@root_port,WLLauncher.find_ports(@ip,@ports_used,@root_port))
+    assert_equal(@root_port, Network.find_ports(@ip,@ports_used,@root_port))
     #Now the test blocks a port and check that method behaves appropriately
     begin
       port_reserved = @root_port

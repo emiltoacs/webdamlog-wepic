@@ -3,6 +3,7 @@ require 'json'
 require 'pathname'
 require 'fileutils'
 require 'active_support/core_ext/string'
+require 'wl_tool'
 
 # This helper manage database connection for a peer
 #
