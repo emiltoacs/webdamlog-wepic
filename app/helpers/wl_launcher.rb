@@ -75,9 +75,10 @@ module WLLauncher
   #This method is used by the manager.
   def self.launch(username,manager_port,port,server_type=:thin)
     cmd =  "rails server -p #{port} -u #{username} -m #{manager_port}"
-    child_pid=fork do
-      exec cmd
-    end
+    #    child_pid=fork do
+    #      exec cmd
+    #    end
+    child_pid = Process.spawn cmd
     child_pid
   end
   
@@ -91,9 +92,13 @@ module WLLauncher
       end
     end
     pids.each do |pid|
-      system "kill -TERM #{pid}"
-      WLLogger.logger.info "Process #{pid} terminated"
+      #system "kill -TERM #{pid}"
+      Process.kill "TERM", Integer(pid)
     end
+    pids.each do |pid|
+      Process.wait Integer(pid)
+      WLLogger.logger.info "Process #{pid} terminated"
+    end    
     pids.size
   end
 
