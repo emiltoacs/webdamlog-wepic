@@ -13,6 +13,6 @@ else
   require 'wl_peer'
   require 'webdamlog_engine'
   #WepimApp::Application.config
-  WLLogger.logger.info "Wepic peer of #{ENV['USERNAME']},#{WLPORT} has finsihed initialization and is ready to send acknowedgement to manager"
-  WLPeer.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],WLPORT)
+  WLLogger.logger.info "Wepic peer of #{ENV['USERNAME']},#{ENV['PORT']} has finsihed initialization and is ready to send acknowedgement to manager"
+  WLPeer.send_acknowledgment(ENV['USERNAME'],ENV['MANAGER_PORT'],ENV['PORT'])
 end

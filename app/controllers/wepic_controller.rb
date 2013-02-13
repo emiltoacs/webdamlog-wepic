@@ -2,15 +2,9 @@ class WepicController < ApplicationController
   include WLDatabase
   def index    
     @picture = Picture.new
-    #Picture.open_connection
     @pictures = Picture.all
-    #Picture.remove_connection
-    @relation_classes = database(ENV['USERNAME']).relation_classes
-    #puts "WepicController#index:#{ENV['USERNAME']}"
+    @relation_classes = database(UserConf.config[:name]).relation_classes
     
-    #FIXME check how to optimize database connections.
-    #@relation_classes['Contacts'].open_connection
-    @contacts = @relation_classes['Contacts'].all
-    #@relation_classes['Contacts'].remove_connection
+    @contacts = @relation_classes['Contact'].all
   end
 end

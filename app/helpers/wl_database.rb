@@ -24,8 +24,8 @@ module WLDatabase
   # standard.
   #
   def setupdb
-    unless @@databases[ENV['USERNAME']]
-      create_or_connect_db(ENV['USERNAME'])
+    unless @@databases[UserConf.config[:name]]
+      create_or_connect_db(UserConf.config[:name], UserConf.config[:db_name], UserConf.config[:connection])
     end
   end
   
@@ -234,9 +234,12 @@ module WLDatabase
       else
         @relation_classes['Contact'] = con
       end
-      
-      @wlschema.new(:name=>Picture.table_name,:schema=>Picture.schema.to_json).save
-      @wlschema.new(:name=>Contact.table_name,:schema=>Contact.schema.to_json).save
+
+      # XXX some bootstrap relations
+      @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
+      @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
+      @wlschema.new(:name=>Peer.table_name, :schema=>Peer.schema.to_json).save
+      @wlschema.new(:name=>Program.table_name, :schema=>Program.schema.to_json).save
 
       # XXX some bootstrap facts
       Contact.new(:username=>'Emilien',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"emilien.antoine@inria.fr",:facebook=>"Emilien Antoine").save

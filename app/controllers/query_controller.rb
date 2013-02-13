@@ -3,7 +3,7 @@ class QueryController < ApplicationController
   
   def index
     #Fetches relation from schema
-    @relation_classes = database(ENV['USERNAME']).relation_classes
+    @relation_classes = database(UserConf.config[:name]).relation_classes
   end
   
   #Insert a tuple in the instance database
@@ -13,7 +13,7 @@ class QueryController < ApplicationController
         format.html {redirect_to '/query', :notice => "No relation was selected"}
       end
     else
-      @relation_classes = database(ENV['USERNAME']).relation_classes
+      @relation_classes = database(UserConf.config[:name]).relation_classes
       rel_name = params[:relation][:name]
       values = params[:values].split(";")
       values_hash = Hash.new
@@ -54,7 +54,7 @@ class QueryController < ApplicationController
       end
     end
     # WLBUDinsert 
-    database(ENV['USERNAME']).create_model(rel_name,schema)
+    database(UserConf.config[:name]).create_model(rel_name,schema)
     respond_to do |format|
       format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
       format.json { head :no_content }
