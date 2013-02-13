@@ -25,8 +25,8 @@ class WLDatabaseTest < Test::Unit::TestCase
     require 'test_helper'
     require 'application'
     @id = @dbid
-    @db_name = "db/database_#{@dbid}.db"
-    @configuration = {:adapter => 'sqlite3', :database => @db_name}
+    @db_name = DBConf.config[:database]
+    @configuration = {:adapter => DBConf.config[:adpater], :database => @db_name}
     @database = create_or_connect_db(@id,@db_name,@configuration)
   end
   

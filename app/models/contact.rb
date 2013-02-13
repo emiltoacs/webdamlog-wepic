@@ -4,7 +4,7 @@ class Contact < ActiveRecord::Base
   def self.setup
     unless @setup_done      
       @configuration = UserConf.config[:connection]
-      establish_connection @configuration
+      establish_connection DBConf.init
       attr_accessible :username
       #This describes where the contact is to be found. This might be how to contact it directly
       #or might be an index location such as the sigmod peer. For now this should be a ip:port combination.

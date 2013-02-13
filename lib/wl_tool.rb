@@ -9,17 +9,28 @@ module PeerConf
     rails_env ||= 'development'
     return YAML.load_file('./config/properties.yml')[rails_env]
   end
-
   def self.config
     @@config ||= {}
   end
-
   #  def self.config=(hash)
   #    @@config = hash
   #  end
-
   def self.init
     @@config ||= PeerConf.read_prop_file
+    @@config
+  end
+end
+
+module DBConf
+  def self.read_prop_file(rails_env = ENV["RAILS_ENV"])
+    rails_env ||= 'development'
+    return YAML.load_file('./config/database.yml')[rails_env]
+  end
+  def self.config
+    @@config ||= {}
+  end
+  def self.init
+    @@config ||= DBConf.read_prop_file
     @@config
   end
 end

@@ -283,7 +283,7 @@ module WLDatabase
         if table_name.nil? or table_name.empty?
           self.table_name = WLDatabase.to_table_name model_name
         end
-        establish_connection config
+        establish_connection DBConf.init
         if !connection.table_exists?(table_name)
           connection.create_table table_name, :force => true do |t|
             schema.each_pair do |col_name,col_type|
