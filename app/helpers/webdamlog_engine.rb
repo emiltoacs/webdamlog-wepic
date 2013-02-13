@@ -24,7 +24,7 @@ EOF
       #Create a subclass of WL
       klass = Class.new(WLBud::WL)
       # TODO find a good name for the sub class, it should be uniq
-      wlport = properties['peer']['wdl_engine_port']
+      wlport = PeerConf.config['peer']['wdl_engine_port']
       self.class.class_eval "WLEngineOf#{ENV['USERNAME']}On#{wlport} = klass"
       peer_name = "peername_#{ENV['USERNAME']}on#{WLPORT}"
       # TODO find a good place to put the program file

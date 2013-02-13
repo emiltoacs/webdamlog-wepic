@@ -1,13 +1,12 @@
-class Picture < ActiveRecord::Base  
+class Picture < ActiveRecord::Base
   def self.setup
     unless @setup_done
-      db_name = "db/database_#{ENV['USERNAME']}.db"
-      @configuration = {:adapter => 'sqlite3', :database => db_name}
+      @configuration = UserConf.config[:connection]
       establish_connection @configuration
       attr_accessible :title, :image, :owner
       validates_uniqueness_of :title
       #validates :owner, :presence => true      
-      self.table_name = 'pictures'
+      #self.table_name = 'pictures'
       connection.create_table 'pictures', :force => true do |t|
         t.string :title
         t.string :owner
@@ -53,5 +52,5 @@ class Picture < ActiveRecord::Base
     :small => "300x300>"
   },
     :url => '/:class/:id/:attachment?style=:style'
-  default_scope select_without_file_columns_for(:image)  
+  default_scope select_without_file_columns_for(:image)
 end

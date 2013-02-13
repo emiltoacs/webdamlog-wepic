@@ -2,9 +2,8 @@
 class Contact < ActiveRecord::Base
   
   def self.setup
-    unless @setup_done
-      db_name = "db/database_#{ENV['USERNAME']}.db"
-      @configuration = {:adapter => 'sqlite3', :database => db_name}
+    unless @setup_done      
+      @configuration = UserConf.config[:connection]
       establish_connection @configuration
       attr_accessible :username
       #This describes where the contact is to be found. This might be how to contact it directly
@@ -15,7 +14,7 @@ class Contact < ActiveRecord::Base
       attr_accessible :facebook
       validates :username, :presence => true, :uniqueness => true
       validates :peerlocation, :presence => true
-      self.table_name = "contacts"
+      #self.table_name = "contacts"
       connection.create_table 'contacts', :force => true do |t|
         t.string :username
         t.string :peerlocation

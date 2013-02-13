@@ -1,11 +1,10 @@
 root = File.expand_path('../../',  __FILE__)
 require "#{root}/lib/wl_logger"
-require "#{root}/lib/properties"
+require "#{root}/lib/wl_tool"
 require "#{root}/app/helpers/wl_launcher"
 require 'sqlite3'
 
-module WLSetup  
-
+module WLSetup
   # If the manager has no database it erase all other database since it would
   # be old peer database not belonging to any known manager.
   #
@@ -60,7 +59,7 @@ module WLSetup
 
   # The argsetup method is used for preliminary setup (before conventional rails
   # setup is done) to take care of wepic-specific options given to the rails
-  # commandline command.
+  # command.
   #
   def self.argsetup(args)
 
@@ -73,12 +72,12 @@ module WLSetup
     #
     ENV['USERNAME'] = args[user_opt_index+1].upcase if (user_opt_index)
     2.times { args.delete_at(user_opt_index)} if user_opt_index
-
+    
     # The port is not other available everywhere in Rails, this is why it is
     # added as an environment variable here (if the -p option is chosen)
     #
-    properties = Properties.read_prop_file
-
+    properties = PeerConf.init
+    
     # Default values for username
     ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
 

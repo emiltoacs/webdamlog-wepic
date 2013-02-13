@@ -28,7 +28,7 @@ class MultipleDatabasesTest < Test::Unit::TestCase
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
     @dbids.each do |id|
-      database(id).create_relation(relation_name,relation_schema)
+      database(id).create_model(relation_name,relation_schema)
       assert_equal("Dog",database(id).relation_classes["Dog"].table_name)
     end
     @dbids.each do |id|
@@ -50,7 +50,7 @@ class MultipleDatabasesTest < Test::Unit::TestCase
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
     @dbids.each do |id|
-      database(id).create_relation(relation_name,relation_schema)
+      database(id).create_model(relation_name,relation_schema)
       assert_equal("Dog",database(id).relation_classes["Dog"].table_name)
     end
        

@@ -1,4 +1,3 @@
-
 class UserSessionsController < ApplicationController
   include WLDatabase
   # GET /user_sessions/new

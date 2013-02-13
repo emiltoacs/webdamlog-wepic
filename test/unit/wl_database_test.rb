@@ -1,5 +1,10 @@
-require 'test_helper'
+# due to some problem of rails loading all these test can be passed only one by
+# one (see option -n when launching ruby test) do not include test_helper here
+# unlike usual, it is included in the setup method since the modules have to be
+# regenerated from scratch
 require 'test/unit'
+require 'wl_tool'
+require 'wl_database'
 
 #This class is meant to test and explain the database API to be used 
 #by the rails controllers and WebdamLog.
@@ -13,70 +18,97 @@ class WLDatabaseTest < Test::Unit::TestCase
   include Kernel
   
   def setup
-    require 'environment'
-    @dbid = (0...6).map{('a'..'z').to_a[rand(26)]}.join
-    @database = create_or_connect_db(@dbid)
+    @dbid = (0...8).map{('a'..'z').to_a[rand(26)]}.join
+    ENV['USERNAME'] = @dbid
+
+    # reload the models to allow builtins tables to be created
+    require 'test_helper'
+    require 'application'
+    @id = @dbid
+    @db_name = "db/database_#{@dbid}.db"
+    @configuration = {:adapter => 'sqlite3', :database => @db_name}
+    @database = create_or_connect_db(@id,@db_name,@configuration)
   end
   
   def teardown
     @database.destroy
   end
   
-  def test_1_setup_and_teardown
+  def test_10_setup_and_teardown
     assert(true)
   end
   
-  def test_2_access_schema_from_class
+
+  def test_20_access_schema_from_class
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
-    @database.create_relation(relation_name,relation_schema)
+    @database.create_model(relation_name,relation_schema)
     assert_equal(relation_schema,@database.relation_classes[relation_name].schema)
   end
-  
-  def test_3_connect_to_db
-    #Check if database was created during the setup
+
+  # Test the method tables_exists? succeed if the two buitins tables exists
+  #
+  def test_30_tables_exists?
+    assert @database.table_exists_for_model?("Picture"), "Picture is a builtins table that should have been created"
+    assert @database.table_exists_for_model?("Contact"), "Contact is a builtins table that should have been created"
+    assert(@database.relation_classes["Picture"].ancestors.include? ActiveRecord::Base)
+    assert(@database.relation_classes["Contact"].ancestors.include? ActiveRecord::Base)
+  end
+
+  # Check connection and two builtins tables wlschema and wlmeta
+  #
+  def test_31_connect_to_db
+    # Check if database was created during the setup
     assert_equal(WLInstanceDatabase,@database.class)
-    #Check if database contains the WLSchema relation
-    assert_equal({"name"=>"string","schema"=>"string"},@database.relation_classes["WLSchema"].schema)
-    assert_equal("WLSchema",@database.relation_classes["WLSchema"].table_name)
+    # Check if database contains the WLSchema relation
+    wl_schema = WLInstanceDatabase::DATABASE_SCHEMA
+    assert_equal({"name"=>"string","schema"=>"string"}, @database.relation_classes[wl_schema].schema)
+    assert_equal(WLDatabase.to_table_name(wl_schema), @database.relation_classes[wl_schema].table_name)
+    wl_meta = WLInstanceDatabase::DATABASE_META
+    assert_equal(WLInstanceDatabase::DATABASE_META_SCHEMA, @database.relation_classes[wl_meta].schema)
+    assert_equal(WLDatabase.to_table_name(wl_meta), @database.relation_classes[wl_meta].table_name)
+    assert @database.relation_classes[wl_meta].first.init
   end
   
-  def test_4_create_relation
+  def test_40_create_relation
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
-    debugger
-    assert_not_nil rel_klass = @database.create_relation(relation_name,relation_schema), "fails to create the new relation #{relation_name}"
+    assert_not_nil rel_klass = @database.create_model(relation_name,relation_schema), "fails to create the new relation #{relation_name}"
+    assert rel_klass.ancestors.include? ActiveRecord::Base
     assert rel_klass.insert(:name=>"dog1", :race=>"race1", :age=>"7")
     #Assert relations has been added to database schemas and relation class attributes.
-    assert_equal("Dog",@database.relation_classes["Dog"].table_name)
-    assert @database.table_exists? "Dog"
+    assert_equal(WLDatabase.to_table_name("dog"),@database.relation_classes["Dog"].table_name)
+    assert @database.table_exists_for_model? "Dog"
   end
   
-  def test_5_deconnect
+  def test_50_deconnect
     close_connection(@dbid)
     assert_equal(nil,database(@dbid))
   end
   
-  def test_6_reconnection
+  def test_60_reconnection
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
-    @database.create_relation(relation_name,relation_schema)
-    close_connection(@dbid)    
-    @database = create_or_connect_db(@dbid)
+    @database.create_model(relation_name,relation_schema)
+    close_connection(@dbid)
+    @database = create_or_connect_db(@id,@db_name,@configuration)
+    assert !@database.need_bootstrap?
     #Schema should contain the Dog table information
-    tuples = @database.relation_classes["WLSchema"].all
+    wlschema = WLInstanceDatabase::DATABASE_SCHEMA
+    tuples = @database.relation_classes[wlschema].all
     assert !tuples.empty?
-    # TODO change test here 
-    #assert_equal("Dog", @database.relation_classes["WLSchema"].find(1).name)
+    # TODO change test here    
+    assert @database.table_exists_for_model?("Dog")
+    assert_equal(WLDatabase.to_table_name("Dog"), @database.relation_classes[wlschema].where(:name=>WLDatabase.to_table_name("Dog")).first.name)
   end
   
   #You can check that the dog was added to the database with the following commands:
   #sqlite3 db/database_2.db
   #SELECT * FROM DOG;
-  def test_7_insert_and_retrieve
+  def test_70_insert_and_retrieve
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
-    @database.create_relation(relation_name,relation_schema)
+    @database.create_model(relation_name,relation_schema)
     dog_table = @database.relation_classes["Dog"]
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
     dog_table.insert(values)
@@ -87,10 +119,10 @@ class WLDatabaseTest < Test::Unit::TestCase
     assert_equal("labrador",bobby.race)
   end
   
-  def test_8_delete
+  def test_80_delete
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
-    @database.create_relation(relation_name,relation_schema)
+    @database.create_model(relation_name,relation_schema)
     dog_table = @database.relation_classes["Dog"]
     values = {"name" => "Bobby", "age" => 2, "race"=> "labrador"}
     dog_table.insert(values)
@@ -98,11 +130,5 @@ class WLDatabaseTest < Test::Unit::TestCase
     dog_table.delete(1)
     assert_equal(true,dog_table.all.empty?)
   end
-
-  # Test the method tables_exists? succeed if the two buitins tables exists
-  #
-  def test_9_tables_exists?
-    @database.table_exists? "Pictures"
-    @database.table_exists? "Contact"
-  end
+  
 end

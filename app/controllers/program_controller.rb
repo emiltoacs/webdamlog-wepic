@@ -15,10 +15,10 @@ class ProgramController < ApplicationController
   #Loads a webdamlog program specified by the given filepath.
   def load_program(filepath="",name=nil,author=nil)
     
-    #Load default program properties if missing
-    name ||= properties['peer']['program']['name'] if properties['peer']['program']['name']
-    author ||= properties['peer']['program']['author'] if properties['peer']['program']['author']
-    filepath = properties['peer']['program']['source'] if properties['peer']['program']['source']
+    #Load default program PeerProperties.config if missing
+    name ||= PeerConf.config['peer']['program']['name'] if PeerConf.config['peer']['program']['name']
+    author ||= PeerConf.config['peer']['program']['author'] if PeerConf.config['peer']['program']['author']
+    filepath = PeerConf.config['peer']['program']['source'] if PeerConf.config['peer']['program']['source']
     
     #Get the data attribute from the file.
     data = ""
