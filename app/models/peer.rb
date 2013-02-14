@@ -2,7 +2,6 @@ class Peer < ActiveRecord::Base
   
   def self.setup
     unless @setup_done
-      db_name = UserConf.config[:db_name]
       @configuration = DBConf.init
       establish_connection @configuration
       attr_accessible :ip, :port, :username, :protocol
