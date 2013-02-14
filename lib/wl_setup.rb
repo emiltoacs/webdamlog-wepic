@@ -6,6 +6,7 @@ require 'sqlite3'
 require 'pg'
 
 module WLSetup
+  
   # If the manager has no database it erase all other database since it would
   # be old peer database not belonging to any known manager.
   #
@@ -107,6 +108,7 @@ module WLSetup
 
     # The reset switch has been used if reset_opt_index is true (i.e. is not
     # nil).
+    # TODO change that for a rake task instead of custom filter
     #
     if reset_opt_index
       reset_peer_databases

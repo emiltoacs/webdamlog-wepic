@@ -1,3 +1,4 @@
+# This represent the generic parameters used by the manager
 development: &base
 #Communication ports
   communication:
@@ -19,7 +20,7 @@ development: &base
       author : johndoe
       source : app/assets/wlprogram/prog1.wl
       
-test:  
+test:
   #Communication ports for testing.
   communication:
     manager_port : 4100

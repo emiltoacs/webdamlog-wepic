@@ -170,7 +170,7 @@ module WLDatabase
       # The hash that keep the correspondance between the model class name and
       # the class themsleves
       #
-      @relation_classes ||= Hash.new      
+      @relation_classes ||= Hash.new
       unless @relation_classes.empty?
         WLLogger.logger.warn "try to recreate a object from the database but #{@relation_classes.length} models are left in memory #{@relation_classes}"
       end
@@ -292,7 +292,7 @@ module WLDatabase
             t.timestamps
           end
         else
-          WLLogger.logger.debug "try to create #{table_name} table in db #{config} for model #{model_name} but it already exists"
+          WLLogger.logger.debug "try to create #{table_name} table in db #{DBConf.init} for model #{model_name} but it already exists"
         end
         def self.insert(values)
           self.new(values).save
@@ -313,9 +313,9 @@ module WLDatabase
         def self.schema
           @schema
         end
-        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} schema #{@schema} in database #{config}"
+        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} schema #{@schema} in database #{DBConf.init}"
       end
-      klass.establish_connection config
+      klass.establish_connection DBConf.init
       return klass
     end
       

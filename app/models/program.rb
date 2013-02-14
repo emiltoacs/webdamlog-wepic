@@ -27,12 +27,6 @@ class Program < ActiveRecord::Base
       'source' => 'string'
     }
   end
-  def self.open_connection
-    establish_connection @configuration
-  end
-  def self.remove_connection
-    super
-  end
   
   setup
   attr_accessible :name, :author, :data, :source

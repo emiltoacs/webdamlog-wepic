@@ -33,14 +33,6 @@ class User < ActiveRecord::Base
     }
   end
   
-  def self.open_connection
-    establish_connection @configuration
-  end
-  
-  def self.remove_connection
-    super
-  end
-  
   #Try to put class action at the end
   setup
   before_validation :default_values

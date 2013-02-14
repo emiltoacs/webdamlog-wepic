@@ -1,12 +1,9 @@
+# This represent the generic parameter used to connected to the manager database
+# Some of these value must be override by the peers to acces their own db (such as the attribute database)
 common: &common
   adapter: postgresql
   username: rails
   password: password
-# SQLite version 3.x
-#   gem install sqlite3
-#
-#   Ensure the SQLite 3 gem is defined in your Gemfile
-#   gem 'sqlite3'
 #development:
 #  adapter: sqlite3
 #  database: db/database_MANAGER.db
@@ -31,7 +28,7 @@ test:
   encoding: unicode
   pool: 5
   database: db_test_rails
-#
+
 #production:
 #  adapter: sqlite3
 #  database: db/database_MANAGER.db

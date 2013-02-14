@@ -1,3 +1,5 @@
+# This is used by bundler to setup the gems dependencies:
+# http://gembundler.com/man/gemfile.5.html
 source 'https://rubygems.org'
 
 gem 'rails'#, '3.2.8'

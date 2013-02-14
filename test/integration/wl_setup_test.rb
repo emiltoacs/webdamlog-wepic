@@ -19,4 +19,6 @@ class WLSetupTest < ActionController::IntegrationTest
     assert_equal 0, Dir.glob('db/database_*.db').length, "there should be zero datases"
   end
 
+  
+
 end
