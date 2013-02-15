@@ -40,43 +40,33 @@ module WLLauncher
       return nil, false
     else
       properties['peer']['root_port'] = root_port + number_of_ports_required
+      #Create the peer active record.
+      protocol = properties['peer']['protocol']
+      peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false, :protocol => protocol)
+      peer.save
+      WLLauncher.start_peer(username,root_port,peer)
+      return peer,true
     end
-
-    #Create the peer active record.
-    protocol = properties['peer']['protocol']
-    peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false, :protocol => protocol)
-    peer.save
-    #Launch the peer in a new thread.
-    #Thread.new do
-      WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,peer)
-    #end
-    return peer,true
   end
 
-  # TODO keep the id of the child process launched to kill properly
-  def self.start_peer(name,ext_name,manager_port,ext_port,peer=nil)
-    if name=='MANAGER'
-      launch(ext_name,manager_port,ext_port) if !ext_name.nil?
-      server = TCPServer.new(manager_port.to_i+1)
-      b = wait_for_acknowledgment(server,ext_port)
+  def self.start_peer(new_peer_name,new_peer_port,peer=nil)
+    peer_name = Conf.env['USERNAME']
+    port = Conf.env['PORT']
+    if peer_name=='MANAGER'
+      if !new_peer_name.nil?
+        child_pid = Process.spawn "rails server -p #{new_peer_port} -u #{new_peer_name} -m #{port}"
+      end
+      server = TCPServer.new(port.to_i+1)
+      b = wait_for_acknowledgment(server,new_peer_port)
       if peer
         peer.active=true
         peer.save
       end
       return b
+    else
+      WLLogger.logger.warn "The non-manager #{peer_name} peer is trying to spawn a new peer"
+      return false
     end
-    WLLogger.logger.warn "Non-manager peer is trying to spawn a new peer"
-    false
-  end
-
-  #This method is used by the manager.
-  def self.launch(username,manager_port,port,server_type=:thin)
-    cmd =  "rails server -p #{port} -u #{username} -m #{manager_port}"
-    #    child_pid=fork do
-    #      exec cmd
-    #    end
-    child_pid = Process.spawn cmd
-    child_pid
   end
   
   def self.end_peer(port,type=:thin)
@@ -89,7 +79,6 @@ module WLLauncher
       end
     end
     pids.each do |pid|
-      #system "kill -TERM #{pid}"
       Process.kill "TERM", Integer(pid)
     end
     pids.each do |pid|
@@ -126,7 +115,7 @@ module WLLauncher
   # assigned an address (ip:port)
   #
   def self.access_peer(peer)
-    #Checks if the peer object receives is valid
+    #Checks if the peer object received is valid
     unless peer.ip && peer.port && peer.username
       return nil,false,false
     end
@@ -135,24 +124,15 @@ module WLLauncher
     url = "#{peer.protocol}://#{peer.ip}:#{peer.port}"
 
     #Check if url reachable.
-    unless reachable?(url)
+    if reachable?(url)
+      accessible = true
+      available = peer.active    
+      #If the peer is active we are done.
+      WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,peer) unless available
+      return url,accessible,available    
+    else
       return nil,false,false
     end
-
-    #We know that the server is accessible
-    accessible = true
-    available = peer.active
-    
-    #If the peer is active we are done.
-    if available
-      return url,accessible,available
-    end
-    
-    #The peer is inactive and we need to reboot it.
-    Thread.new do
-      WLLauncher.start_peer(ENV['USERNAME'],username,ENV['PORT'],root_port,peer)
-    end
-    
-    return url,accessible,available    
   end
+  
 end

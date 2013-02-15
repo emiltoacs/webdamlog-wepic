@@ -2,8 +2,7 @@
 class Contact < ActiveRecord::Base
   
   def self.setup
-    unless @setup_done      
-      @configuration = UserConf.config[:connection]
+    unless @setup_done
       establish_connection DBConf.init
       attr_accessible :username
       #This describes where the contact is to be found. This might be how to contact it directly

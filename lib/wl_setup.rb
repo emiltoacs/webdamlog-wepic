@@ -4,6 +4,8 @@ require "#{root}/lib/wl_tool"
 require "#{root}/app/helpers/wl_launcher"
 require 'sqlite3'
 require 'pg'
+require 'optparse'
+require 'ostruct'
 
 module WLSetup
   
@@ -63,71 +65,125 @@ module WLSetup
     end
   end
 
-  # The argsetup method is used for preliminary setup (before conventional rails
-  # setup is done) to take care of wepic-specific options given to the rails
-  # command.
+  # Parse the options given in the command line and modify it for subsequent
+  # rails launch. Setup the PeerConf and DBConf object with the default value,
+  # or the value found in the Yaml configuration file or in the command line.
   #
-  def self.argsetup(args)
-
-    user_opt_index = args.index('-u')
-    port_opt_index = args.index('-p')
-    reset_opt_index = args.index('--reset')
-
-    # The username is stored as an environment variable, as we do not know the
-    # name of the users created beforehand.
-    #
-    ENV['USERNAME'] = args[user_opt_index+1].upcase if (user_opt_index)
-    2.times { args.delete_at(user_opt_index)} if user_opt_index
-    
-    # The port is not other available everywhere in Rails, this is why it is
-    # added as an environment variable here (if the -p option is chosen)
-    #
-    properties = PeerConf.init
-    database = DBConf.init
-    
-    # Default values for username
-    ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
-
-    # Port setup
-    ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
-    if port_opt_index.nil?
-      ENV['PORT'] = properties['communication']['manager_port'].to_s
-      args.push('-p')
-      args.push(ENV['PORT'])
-      port_opt_index=args.size-2
-    end
-    # Generate a pid file
-    args.push('-P')
-    args.push("tmp/pids/#{ENV['USERNAME']}.pid")
-
-    #Ports and pids are not wanted in the args array if not running a server
-    if args[0]!='s' && args[0]!='server'
-      2.times {args.pop}
-      2.times {args.delete_at port_opt_index}
-    end
-
-    # The reset switch has been used if reset_opt_index is true (i.e. is not
-    # nil).
-    # TODO change that for a rake task instead of custom filter
-    #
-    if reset_opt_index
-      reset_peer_databases
-      args.delete_at(reset_opt_index)
-    end
-
-    if  ENV['USERNAME']=='MANAGER'
-      WLLogger.logger.info "Setup a manager"
-      clean_orphaned_peer
-    else
-      WLLogger.logger.info "Setup a peer"
-      #The manager_port option is only available on non-manager peers.
-      #There is no default value for the MANAGER_PORT variable.
-      mport_opt_index = args.index('-m')
-      if mport_opt_index
-        ENV['MANAGER_PORT'] = args[mport_opt_index+1]
-        2.times {args.delete_at(mport_opt_index)}
+  def self.parse(argv)
+    # Assign default value
+    options = OpenStruct.new
+    options.peername = "MANAGER"
+    options.port = "4000"
+    options.manager_port = nil
+    # Parse from command line
+    opts = OptionParser.new do |opt|
+      # -u take a mandatory argument 
+      opt.on("-uUSERNAME", "--username USERNAME",
+        "Specify the user name for this peer, default is 'MANAGER'") do |username|
+        options.username = username
+      end      
+      opt.on("-pPORT", "--portPORT", "give the port number on which this peer should listen") do |p|
+        options.port = p
+      end
+      opt.on("--reset", "custom tasks used to remove all the database to start from scratch a new rails manager") do
+        options.reset = true
+      end
+      opt.on("-m MPORT", "--manager-port MPORT", "give the port on which the manager is waiting your answer") do |mport|
+        options.manager_port = mport
       end
     end
-    WLLogger.logger.info "#{ENV['USERNAME']} will be started on port #{ENV['PORT']}"
+    opts.parse(argv)
+    if options.reset
+      WLLogger.logger.info "Reset the databases"
+      reset_peer_databases
+    else
+      if options.username.nil? or options.username.upcase == 'MANAGER'
+        WLLogger.logger.info "Setup a manager"
+        clean_orphaned_peer
+        argv.push('-p')
+        argv.push(options.port)
+      else
+        WLLogger.logger.info "Setup a regular peer"
+        unless options.manager_port.nil?
+          pos = argv.index '-m'
+          2.times {argv.delete_at pos}          
+        end
+      end
+      # Setup environement TODO check if it can be removed: replace all ENV[] by
+      # reads in this objects
+      ENV['USERNAME'] = options.peername
+      ENV['PORT'] = options.port
+      ENV['MANAGER_PORT'] = options.manager_port 
+    end
+    options
   end
+
+  #  # The argsetup method is used for preliminary setup (before conventional rails
+  #  # setup is done) to take care of wepic-specific options given to the rails
+  #  # command.
+  #  #
+  #  def self.argsetup(args)
+  #
+  #    user_opt_index = args.index('-u')
+  #    port_opt_index = args.index('-p')
+  #    reset_opt_index = args.index('--reset')
+  #
+  #    # The username is stored as an environment variable, as we do not know the
+  #    # name of the users created beforehand.
+  #    #
+  #    ENV['USERNAME'] = args[user_opt_index+1].upcase if (user_opt_index)
+  #    2.times { args.delete_at(user_opt_index)} if user_opt_index
+  #
+  #    # The port is not other available everywhere in Rails, this is why it is
+  #    # added as an environment variable here (if the -p option is chosen)
+  #    #
+  #    properties = PeerConf.init
+  #    database = DBConf.init
+  #
+  #    # Default values for username
+  #    ENV['USERNAME'] = 'MANAGER' if ENV['USERNAME'].nil?
+  #
+  #    # Port setup
+  #    ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
+  #    if port_opt_index.nil?
+  #      ENV['PORT'] = properties['communication']['manager_port'].to_s
+  #      args.push('-p')
+  #      args.push(ENV['PORT'])
+  #      port_opt_index=args.size-2
+  #    end
+  #    # Generate a pid file
+  #    # XXX seems useless, who is using it ?
+  #    args.push('-P')
+  #    args.push("tmp/pids/#{ENV['USERNAME']}.pid")
+  #
+  #    #Ports and pids are not wanted in the args array if not running a server
+  #    if args[0]!='s' && args[0]!='server'
+  #      2.times {args.pop}
+  #      2.times {args.delete_at port_opt_index}
+  #    end
+  #
+  #    # The reset switch has been used if reset_opt_index is true (i.e. is not
+  #    # nil).
+  #    # TODO change that for a rake task instead of custom filter
+  #    #
+  #    if reset_opt_index
+  #      reset_peer_databases
+  #      args.delete_at(reset_opt_index)
+  #    end
+  #
+  #    if  ENV['USERNAME']=='MANAGER'
+  #      WLLogger.logger.info "Setup a manager"
+  #      clean_orphaned_peer
+  #    else
+  #      WLLogger.logger.info "Setup a peer"
+  #      #The manager_port option is only available on non-manager peers.
+  #      #There is no default value for the MANAGER_PORT variable.
+  #      mport_opt_index = args.index('-m')
+  #      if mport_opt_index
+  #        ENV['MANAGER_PORT'] = args[mport_opt_index+1]
+  #        2.times {args.delete_at(mport_opt_index)}
+  #      end
+  #    end
+  #    WLLogger.logger.info "#{ENV['USERNAME']} will be started on port #{ENV['PORT']}"
+  #  end
 end

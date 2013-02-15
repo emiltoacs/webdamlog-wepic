@@ -8,7 +8,7 @@ require 'yaml'
 class AcknowledgmentTest < Test::Unit::TestCase
   
   def setup
-    properties = YAML.load_file('config/properties.yml')
+    properties = YAML.load_file('config/peer.yml')
     @name = 'jules'
     @port = properties['test_communication']['default_spawn_port'];
     @manager_port = properties['test_communication']['manager_port'];    

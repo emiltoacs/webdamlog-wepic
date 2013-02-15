@@ -1,6 +1,57 @@
 require 'yaml'
 require 'active_support'
 
+module Conf
+  @@init = false
+  @@current_env = Rails.env
+  # Store in one object all the configuration related to this peer
+  def self.init(rails_env='production')
+    # if you change rails environment this allows you to reload configuration
+    if @@current_env.nil? or @@current_env != rails_env
+      @@current_env = rails_env
+      @@init=false
+    end
+    # Reload configuration if needed
+    unless @@init
+      @@peer = read_yaml_file 'config/peer.yml', rails_env
+      @@db = read_yaml_file 'config/database.yml', rails_env
+      @@env = {}
+      @@env['USERNAME'] = ENV['USERNAME']
+      @@env['PORT'] = ENV['PORT']
+      @@env['MANAGER_PORT'] = ENV['MANAGER_PORT']
+      @@init = true
+    end
+    def self.peer
+      unless @@init
+        self.init
+      end
+      @@peer
+    end
+    def self.db
+      unless @@init
+        self.init
+      end
+      @@db
+    end
+    def self.env
+      unless @@init
+        self.init
+      end
+      @@env
+    end
+  end
+  
+  # This methods reads our Yaml configuration and return the corresponding hash
+  #
+  # rails_env allow to return only the sub-hash that is concerned by the
+  # subtree
+  #
+  def self.read_yaml_file(pathfile, rails_env)
+    hash = YAML.load_file(pathfile)
+    return hash[rails_env]
+  end
+end
+
 # Big multi-dimensional hash with the content of yaml file properties.yml used
 # to set up the database
 module PeerConf
@@ -70,7 +121,6 @@ module WLTool
       end
     end
   end
-
   # Test if the class class_name of type klass exists in the current ObjectSpace
   # and return the class object if it exists
   #
@@ -88,7 +138,6 @@ module Network
 
   SOCKET_MAX_PORT = 65535
   SOCKET_PORT_INVALID = -1
-
   # This method returns true if the given port is available
   #
   def self.port_available?(ip, port)
@@ -109,7 +158,6 @@ module Network
     end
     return false
   end
-
 
   # This method return the smallest port number in a range of available ports
   # large enough for our purposes. This number is called the root port number.
@@ -141,5 +189,4 @@ module Network
       find_ports(ip,number_of_ports_required,root_port+increment)
     end
   end
-
 end

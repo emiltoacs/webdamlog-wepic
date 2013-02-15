@@ -84,7 +84,6 @@ See exemple
 communication:
   manager_port : 3100
   default_spawn_port : 3200
-  port_spacing : 3
 #+end_src
 
 

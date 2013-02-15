@@ -1,7 +1,6 @@
 class Picture < ActiveRecord::Base
   def self.setup
     unless @setup_done
-      @configuration = UserConf.config[:connection]
       establish_connection DBConf.init
       attr_accessible :title, :image, :owner
       validates_uniqueness_of :title      
