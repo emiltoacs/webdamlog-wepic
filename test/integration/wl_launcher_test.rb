@@ -4,11 +4,10 @@ require 'test/unit'
 class WLLauncherTest < ActionController::IntegrationTest
     
   def setup
-    @config = PeerConf.init
-    
-    @root_port = @config['peer']['root_port']
-    @ports_used = @config['peer']['ports_used']
-    @ip = @config['peer']['ip']
+    Conf.init    
+    @root_port = Conf.peer['peer']['root_port']
+    @ports_used = Conf.peer['peer']['ports_used']
+    @ip = Conf.peer['peer']['ip']
   end
     
   def teardown
@@ -20,19 +19,19 @@ class WLLauncherTest < ActionController::IntegrationTest
   # Test the methods port_availaibles? and find_ports
   #
   def test_1_port_in_config_file_available
-    ip = @config['communication']['ip']
-    port = @config['communication']['manager_port']
+    ip = Conf.peer['communication']['ip']
+    port = Conf.peer['communication']['manager_port']
     assert Network.port_available?(ip,port),
       "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
-    port_spacing = @config['communication']['port_spacing']
-    assert_equal port, Network.find_ports(ip,port_spacing,port)
+    ports_used = Conf.peer['communication']['port_spacing']
+    assert_equal port, Network.find_ports(ip,ports_used,port)
 
-    ip = @config['peer']['ip']
-    port = @config['peer']['root_port']
+    ip = Conf.peer['peer']['ip']
+    port = Conf.peer['peer']['root_port']
     assert Network.port_available?(ip,port),
       "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
-    port_spacing = @config['peer']['ports_used']
-    assert_equal port, Network.find_ports(ip,port_spacing,port)
+    ports_used = Conf.peer['peer']['ports_used']
+    assert_equal port, Network.find_ports(ip,ports_used,port)
   end
 
   # Test find port behavior when a port in the range is not availaible
@@ -59,17 +58,16 @@ class WLLauncherTest < ActionController::IntegrationTest
     end
   end
 
-  # Test creation of a new peer in the database
+  # Test manager creates a new peer in the database
   #
   def test_3_create_peer
-    username = "tester"
-    peer, st = WLLauncher.create_peer(username, @config)
+    username = "new_peer_for_testing"
+    peer, st = WLLauncher.create_peer(username, Conf.peer)
     sleep(2)
     assert st
     assert_not_nil peer
     assert_equal username, peer.username
     tuples = Peer.where("username = ?",username)
-    p tuples.class
     assert_equal 1, tuples.length
   end
 end

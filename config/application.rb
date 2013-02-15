@@ -62,8 +62,8 @@ module WepimApp
     config.assets.version = '1.0'
 
     # The standard logger for this application
-#    require 'WLLogger'
-#    config.logger = WLLogger::WLLogger.new STDOUT
+    #    require 'WLLogger'
+    #    config.logger = WLLogger::WLLogger.new STDOUT
     
   end
   

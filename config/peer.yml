@@ -25,14 +25,13 @@ test:
   communication:
     manager_port : 4100
     default_spawn_port : 30000
-    port_spacing : 5
 
   #Testing Peer properties
   #Peer properties
   peer:
     protocol : http
     ip : localhost
-    ports_used : 3
+    ports_used : 5
     root_port : 10000
     wdl_engine_port : 20000
     #Which program is loaded by default by the peer.
