@@ -1,9 +1,8 @@
 #This is a dummy contact active record, the final result should be generated in WL.
-class Contact < ActiveRecord::Base
+class Contact < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      establish_connection DBConf.init
       attr_accessible :username
       #This describes where the contact is to be found. This might be how to contact it directly
       #or might be an index location such as the sigmod peer. For now this should be a ip:port combination.

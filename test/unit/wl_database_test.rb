@@ -6,13 +6,20 @@ require 'test/unit'
 require 'wl_tool'
 require 'wl_database'
 
-#This class is meant to test and explain the database API to be used 
-#by the rails controllers and WebdamLog.
-#The suppress warning messages are used to avoid constant reassignment warnings.
-#Constant reassignment should not be used in practice but is useful for purposes
-#of testing.
-#TODO : Avoid duplication of information in the Database module by reducing the 
-#number of variables.
+# Test the setup of the server
+#
+class WLDatabaseServerTest < Test::Unit::TestCase
+
+  def test_setup_database_server
+  
+  end
+
+end
+
+# This class is meant to test and explain the database API to be used by the
+# rails controllers and WebdamLog. The suppress warning messages are used to
+# avoid constant reassignment warnings.
+#
 class WLDatabaseTest < Test::Unit::TestCase
   include WLDatabase
   include Kernel
@@ -24,9 +31,10 @@ class WLDatabaseTest < Test::Unit::TestCase
     # reload the models to allow builtins tables to be created
     require 'test_helper'
     require 'application'
+    config = Conf.db[:database]
     @id = @dbid
-    @db_name = DBConf.config[:database]
-    @configuration = {:adapter => DBConf.config[:adpater], :database => @db_name}
+    @db_name = config[:database]
+    @configuration = {:adapter => config[:adapter], :database => @db_name}
     @database = create_or_connect_db(@id,@db_name,@configuration)
   end
   

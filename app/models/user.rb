@@ -1,10 +1,9 @@
 #The user class which defines the machine on which the user is.
 #
-class User < ActiveRecord::Base
+class User < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      establish_connection DBConf.init
       self.table_name = "users"
       connection.create_table 'users', :force => true do |t|
         t.string :username

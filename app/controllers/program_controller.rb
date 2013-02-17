@@ -16,9 +16,9 @@ class ProgramController < ApplicationController
   def load_program(filepath="",name=nil,author=nil)
     
     #Load default program PeerProperties.config if missing
-    name ||= PeerConf.config['peer']['program']['name'] if PeerConf.config['peer']['program']['name']
-    author ||= PeerConf.config['peer']['program']['author'] if PeerConf.config['peer']['program']['author']
-    filepath = PeerConf.config['peer']['program']['source'] if PeerConf.config['peer']['program']['source']
+    name ||= Conf.peer['peer']['program']['name'] if Conf.peer['peer']['program']['name']
+    author ||= Conf.peer['peer']['program']['author'] if Conf.peer['peer']['program']['author']
+    filepath = Conf.peer['peer']['program']['source'] if Conf.peer['peer']['program']['source']
     
     #Get the data attribute from the file.
     data = ""

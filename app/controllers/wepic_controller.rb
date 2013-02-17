@@ -3,7 +3,7 @@ class WepicController < ApplicationController
   def index    
     @picture = Picture.new
     @pictures = Picture.all
-    @relation_classes = database(UserConf.config[:name]).relation_classes
+    @relation_classes = database(Conf.env[:name]).relation_classes
     
     @contacts = @relation_classes['Contact'].all
   end

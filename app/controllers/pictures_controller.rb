@@ -2,18 +2,18 @@ class PicturesController < WepicController
   def create    
     @picture = Picture.new(params[:picture])
     @pictures = Picture.all if @pictures.nil?
-    @relation_classes = database(UserConf.config[:name]).relation_classes
+    @relation_classes = database(Conf.env[:name]).relation_classes
     #Contact.open_connection
     @contacts = Contact.all
     #Contact.remove_connection 
     if @picture.save
-      config.logger.debug "#in PicturesController, user #{UserConf.config[:name]} successfully saved a new picture"
+      config.logger.debug "#in PicturesController, user #{Conf.env[:name]} successfully saved a new picture"
       respond_to do |format|
         format.html { render :action => "show", :notice => 'Picture was successfully created.' }
         format.json { render :json => @picture, :status => :created, :location => :wepic }
       end
     else
-      config.logger.debug "#in PicturesController, user #{UserConf.config[:name]} failed to save a new picture"
+      config.logger.debug "#in PicturesController, user #{Conf.env[:name]} failed to save a new picture"
       respond_to do |format|        
         format.html { render :action => :index, :notice => 'Image creation was not successful.' }
         format.json { render :json => @picture.errors, :status => :unprocessable_entity }

@@ -5,12 +5,13 @@ require 'webdamlog/wlbud'
 # There is the set of function used to manage the webdamlog engine from the
 # wepic app
 #
-module WebdamlogEngine
+module WebdamlogEngine  
   
   # TODO add action on shutdown for the wlengine such as erase program file if
   # saved in db and clean rule dir if needed
   #
   class WebdamlogEngine
+    include WLTool
 
     :engine
     STR0 = <<EOF
@@ -22,16 +23,20 @@ fact bootstrap@p0(3);
 fact bootstrap@p0(4);
 end
 EOF
-    def initialize
-      #Create a subclass of WL
-      klass = Class.new(WLBud::WL)
-      # TODO find a good name for the sub class, it should be uniq
-      username = UserConf.config[:name]
-      root_port = Integer(ENV["PORT"])
+    def initialize      
+      
+      username = Conf.env['USERNAME']
+      root_port = Integer(Conf.env['PORT'])
       wlport = Network.find_ports('localhost', 1, root_port+1)
-      # Dynamic class ClassWLEngineOf#{username}On#{wlport} subclass WLBud
-      self.class.class_eval "ClassWLEngineOf#{username}On#{wlport} = klass"
       peer_name = "peername_#{username}on#{wlport}"
+
+      # Dynamic class ClassWLEngineOf#{username}On#{wlport} subclass WLBud
+      # Create a subclass of WL
+      # TODO find a good name for the sub class, it should be uniq maybe use ccreate class in WLTool
+#      klass = Class.new(WLBud::WL)
+#      self.class.class_eval "ClassWLEngineOf#{username}On#{wlport} = klass"
+      klass = create_class("ClassWLEngineOf#{username}On#{wlport}",WLBud::WL)
+      
       # TODO find a good place to put the program file
       program_file_dir = File.expand_path('../../../tmp/rule_dir', __FILE__)
       unless (File::directory?(program_file_dir))
@@ -41,7 +46,8 @@ EOF
       dir_rule = program_file_dir
       File.open(program_file, 'w'){ |file| file.write STR0 }
       @engine = nil
-      eval("@engine = ClassWLEngineOf#{username}On#{wlport}.new(username, program_file,{:port => #{wlport}, :dir_rule => dir_rule})")
+      #eval("@engine = ClassWLEngineOf#{username}On#{wlport}.new(username, program_file,{:port => #{wlport}, :dir_rule => dir_rule})")
+      @engine = klass.new(username, program_file,{:port => wlport, :dir_rule => dir_rule})
       @wlenginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
       if @engine.nil?

@@ -4,9 +4,10 @@
 # Preliminary setup to take care of wepic-specific options and switches.
 root = File.expand_path('../../',  __FILE__)
 require "#{root}/lib/wl_setup"
-WLSetup.parse(ARGV)
-
-# Regular rails script 
-APP_PATH = File.expand_path('../../config/application',  __FILE__)
-require File.expand_path('../../config/boot',  __FILE__)
-require 'rails/commands'
+start_app, options = WLSetup.parse!(ARGV)
+if start_app
+  # Regular rails script
+  APP_PATH = File.expand_path('../../config/application',  __FILE__)
+  require File.expand_path('../../config/boot',  __FILE__)
+  require 'rails/commands'
+end

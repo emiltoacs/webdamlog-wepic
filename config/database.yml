@@ -2,8 +2,8 @@
 # Some of these value must be override by the peers to acces their own db (such as the attribute database)
 common: &common
   adapter: postgresql
-  username: manager
-  password: password
+  username: wepic
+  password: 
 #development:
 #  adapter: sqlite3
 #  database: db/database_manager
@@ -13,7 +13,7 @@ development:
   <<: *common
   encoding: unicode
   pool: 5
-  database: db_manager
+  database: wp_manager
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -27,7 +27,7 @@ test:
   <<: *common
   encoding: unicode
   pool: 5
-  database: db_test
+  database: wp_manager
 
 #production:
 #  adapter: sqlite3
@@ -38,5 +38,5 @@ production:
   <<: *common
   encoding: unicode
   pool: 5
-  database: db_production_rails
+  database: wp_manager
   
