@@ -4,33 +4,13 @@ require 'set'
 
 # Define some methods to launch and manage new peers spawned by the manager
 module WLLauncher
-  
-  def self.wait_for_acknowledgment(server,port)
-    begin
-      Timeout::timeout(5) do
-        begin
-          client = server.accept
-          client.gets
-          client.close
-          server.close
-          return true
-        rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
-          WLLogger.logger.info "Connection Error..."
-          return false
-        end
-      end
-    rescue Timeout::Error
-      WLLogger.logger.info "Time out..."
-      return false
-    end
-  end
 
   # This method is responsible for giving the order to create a peer. It returns
   # the newly created active record for the peer as well as if the creation
   # process has been successful. This method does not check if it already
   # exists.
   #
-  def self.create_peer(username, properties)    
+  def self.create_peer(username, properties)
     #Find an available port at the location given by the properties.
     ip = properties['peer']['ip']
     number_of_ports_required = properties['peer']['ports_used']
@@ -42,33 +22,64 @@ module WLLauncher
       properties['peer']['root_port'] = root_port + number_of_ports_required
       #Create the peer active record.
       protocol = properties['peer']['protocol']
-      peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => false, :protocol => protocol)
-      peer.save
-      WLLauncher.start_peer(username,root_port,peer)
-      return peer,true
+      st, msg = WLLauncher.start_peer(username,root_port)
+      if st
+        peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => true, :protocol => protocol)
+        peer.save
+      end
+      return peer, st, msg
     end
   end
 
-  def self.start_peer(new_peer_name,new_peer_port,peer=nil)
+  # Start a new peer or restart a peer <peer_record> save in the db
+  #
+  def self.start_peer(new_peer_name,new_peer_port,peer_record=nil)
     peer_name = Conf.env['USERNAME']
-    port = Conf.env['PORT']
-    if peer_name=='MANAGER'
+    manager_port = Conf.env['PORT']
+    port = Network.find_ports('localhost', 1, Integer(manager_port)+1)
+    if peer_name=='manager'
       if !new_peer_name.nil?
-        child_pid = Process.spawn "rails server -p #{new_peer_port} -u #{new_peer_name} -m #{port}"
+        cmd = "rails server -p #{new_peer_port} -u #{new_peer_name} -m #{port}"
+        WLLogger.logger.debug "execute: #{cmd}"
+        child_pid = Process.spawn cmd
+      end      
+      #server = TCPServer.new(port.to_i+1)
+      server = TCPServer.new(port)
+      b, msg = wait_for_acknowledgment(server,new_peer_port)
+      unless peer_record.nil?
+        peer_record.active=true
+        peer_record.save
       end
-      server = TCPServer.new(port.to_i+1)
-      b = wait_for_acknowledgment(server,new_peer_port)
-      if peer
-        peer.active=true
-        peer.save
-      end
-      return b
+      return b, msg
     else
-      WLLogger.logger.warn "The non-manager #{peer_name} peer is trying to spawn a new peer"
-      return false
+      msg = "The non-manager #{peer_name} peer is trying to spawn a new peer"
+      WLLogger.logger.warn msg
+      return false, msg
     end
   end
-  
+
+  def self.wait_for_acknowledgment(server,port)
+    begin
+      Timeout::timeout(1000) do
+        begin
+          client = server.accept
+          str = client.gets
+          client.close
+          server.close
+          return true, "ack received #{str}"
+        rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
+          msg = "Connection Error..."
+          WLLogger.logger.info msg
+          return false, msg
+        end
+      end
+    rescue Timeout::Error
+      msg = "Time out..."
+      WLLogger.logger.info msg
+      return false, msg
+    end
+  end
+
   def self.end_peer(port,type=:thin)
     pids = Set.new
     case type

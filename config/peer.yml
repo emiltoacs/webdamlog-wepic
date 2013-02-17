@@ -5,15 +5,15 @@ development: &base
     ip : localhost
     manager_port : 3100
     default_spawn_port : 10000
-    port_spacing : 5
 
   #Peer properties
   peer:
-    protocol : http
-    ip : localhost
-    ports_used : 3
-    root_port : 10000
-    wdl_engine_port : 20000
+    username: manager
+    protocol: http
+    ip: localhost
+    ports_used: 3
+    root_port: 10000
+    wdl_engine_port: 20000
     #Which program is loaded by default by the peer.
     program:
       name : prog1.wl
@@ -29,6 +29,7 @@ test:
   #Testing Peer properties
   #Peer properties
   peer:
+    username: manager
     protocol : http
     ip : localhost
     ports_used : 5

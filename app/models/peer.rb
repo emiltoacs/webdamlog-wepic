@@ -1,8 +1,7 @@
-class Peer < ActiveRecord::Base
+class Peer < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      establish_connection DBConf.init
       attr_accessible :ip, :port, :username, :protocol
       attr_accessible :active
       validates :username, :format => { :with => /\A[a-zA-Z]+\z/,

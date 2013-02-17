@@ -21,12 +21,17 @@ module WLDatabase
   @@databases = Hash.new
   
   # Does nothing if the user already has his db setup. Otherwise, sets up his
-  # db. FIXME change the naming convention used for the db to something more
-  # standard.
+  # db.
   #
-  def setupdb
-    unless @@databases[UserConf.config[:name]]
-      create_or_connect_db(UserConf.config[:name], UserConf.config[:db_name], UserConf.config[:connection])
+  def setup_database_server
+    unless @@databases[Conf.env['username']]
+      # Connect to postgres database with admin user postgres that always
+      # exist. Then create the first database for the manager
+      if Conf.db[:adapter] == 'postgresql'
+        ActiveRecord::Base.establish_connection adapter:'postgresql', username:'postgres', password:'', database:'postgres'
+        ActiveRecord::Base.connection.create_database Conf.db['database']
+      end
+      create_or_connect_db(Conf.env['username'], Conf.db['database'], Conf.db)
     end
   end
   
@@ -37,8 +42,8 @@ module WLDatabase
     @@databases[database_id]
   end
 
-  #Creates a new database for the user using his database_id as key. If database
-  #already exists, simply connects to it (no override).
+  # Creates a new database for the user using his database_id as key. If
+  # database already exists, simply connects to it (no override).
   def create_or_connect_db(database_id,db_name,configuration)
     @@databases[database_id]=WLInstanceDatabase.new(database_id,db_name,configuration)
     @@databases[database_id]
@@ -275,15 +280,15 @@ module WLDatabase
     #
     def create_model_class(name,schema)
       database_instance = self
-      config = UserConf.config[:connection]
+      config = Conf.db
       model_name = WLDatabase.to_model_name("#{name}")
-      klass = create_class(model_name,ActiveRecord::Base) do
+      klass = create_class(model_name,AbstractDatabase) do
         @schema = schema
         @wl_database_instance = database_instance
         if table_name.nil? or table_name.empty?
           self.table_name = WLDatabase.to_table_name model_name
         end
-        establish_connection DBConf.init
+        #establish_connection config
         if !connection.table_exists?(table_name)
           connection.create_table table_name, :force => true do |t|
             schema.each_pair do |col_name,col_type|
@@ -292,7 +297,7 @@ module WLDatabase
             t.timestamps
           end
         else
-          WLLogger.logger.debug "try to create #{table_name} table in db #{DBConf.init} for model #{model_name} but it already exists"
+          WLLogger.logger.debug "try to create #{table_name} table in db #{config} for model #{model_name} but it already exists"
         end
         def self.insert(values)
           self.new(values).save
@@ -313,9 +318,9 @@ module WLDatabase
         def self.schema
           @schema
         end
-        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} schema #{@schema} in database #{DBConf.init}"
+        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} schema #{@schema} in database #{config}"
       end
-      klass.establish_connection DBConf.init
+      #klass.establish_connection config
       return klass
     end
       
@@ -340,6 +345,25 @@ module WLDatabase
         return false
       end
     end
+  end
+
+  module PostgresHelper
+
+    def db_exists? db_name, db_username
+      #conn = PGconn.new('localhost', 5432, '', '', db_name, db_username, "") # to use when password needed
+      conn = PGconn.open(:dbname => db_name, :user => db_username)
+      sql = "select count(1) from pg_catalog.pg_database where datname = '#{db_name}'"
+      rs = conn.exec(sql)
+      nb_database = rs.first['count']
+      if nb_database == 0
+        return false
+      else
+        return true
+      end
+    end
+
+    
+    
   end
 
 end

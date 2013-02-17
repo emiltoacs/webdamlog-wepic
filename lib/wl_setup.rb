@@ -2,6 +2,7 @@ root = File.expand_path('../../',  __FILE__)
 require "#{root}/lib/wl_logger"
 require "#{root}/lib/wl_tool"
 require "#{root}/app/helpers/wl_launcher"
+require "#{root}/app/helpers/wl_database"
 require 'sqlite3'
 require 'pg'
 require 'optparse'
@@ -16,73 +17,140 @@ module WLSetup
   # and those that are cited in the account table for the manager database.
   #
   def self.clean_orphaned_peer
-    config = DBConf.init
-    unless File.exists?(config["database"])
-      Dir.foreach('db') do |file_name|
-        if file_name=~/database_.*\.db/
-          File.delete(File.join('db', file_name))
+    config = Conf.db
+    case config['adapter']
+    when 'sqlite3'
+      unless File.exists?(config["database"])
+        Dir.foreach('db') do |file_name|
+          if file_name=~/database_.*\.db/
+            File.delete(File.join('db', file_name))
+          end
         end
       end
+    when 'postgres'
+      
     end
   end
 
-  def self.get_peer_ports_from_account(db_type=:postgres)
+  def self.get_peer_ports_from_account(db_type='postgresql')
     rs=[]
-    config = DBConf.init
-    db_file = config["database"]
-    if File.exists?(db_file)
-      case db_type
-      when :sqlite3
+    Conf.init
+    db_name = Conf.db["database"]
+    case db_type
+    when 'sqlite3'
+      if File.exists?(db_name)
         begin
-          database = SQLite3::Database.open db_file
+          database = SQLite3::Database.open db_name
           stm = database.prepare "select port from accounts"
           rs = stm.execute
         rescue SQLite3::Exception => e
           WLLogger.logger.info e.inspect
         end
-      when :postgres
-        conn = PGconn.open(:dbname => db_file)
-        rs = conn.exec('select port from accounts')
-        rs.flatten
+      else
+        WLLogger.logger.info "no file for database for the manager"
       end
-    else
-      WLLogger.logger.info "no file for database for the manager"
+    when 'postgresql'
+      conn = PGconn.open(:dbname => db_name)
+      rs = conn.exec('select port from accounts')
+      rs.flatten
     end
     rs
   end
 
   def self.reset_peer_databases
-    WLLogger.logger.info "Killing all of the peers launched that are remaining"
-    get_peer_ports_from_account.each do |peer_port|
-      WLLogger.logger.info "Peer at port #{peer_port} killed."
-      WLLauncher.end_peer(peer_port)
-    end
-    WLLogger.logger.info "Reset option has been chosen. Removing the database_MANAGER.db file. This will cause a reset of the system."
-    if File.exists?("db/database_MANAGER.db")
-      system 'rm db/database_MANAGER.db'
-    else
-      WLLogger.logger.info "db/database_MANAGER.db does not exists nothing. The manager has been already erased."
+    Conf.init
+    db_name = Conf.db['database']
+    db_username = Conf.db['username']
+    case Conf.db['adapter']
+    when 'sqlite3'
+      WLLogger.logger.info "Killing all of the peers launched that are remaining"
+      get_peer_ports_from_account.each do |peer_port|
+        WLLogger.logger.info "Peer at port #{peer_port} killed."
+        WLLauncher.end_peer(peer_port)
+      end
+      WLLogger.logger.info "Reset option has been chosen. Removing the #{db_name} file. This will cause a reset of the system."
+      if File.exists?("#{db_name}")
+        system 'rm #{db_name}'
+      else
+        WLLogger.logger.info "#{db_name} does not exists nothing. The manager has been already erased."
+      end
+    when 'postgresql'      
+      #conn = PGconn.new('localhost', 5432, '', '', db_name, db_username, "") # to use when password needed
+      conn = PGconn.open(:dbname => db_name, :user => db_username)
+      sql = "select count(1) from pg_catalog.pg_database where datname = '#{db_name}'"
+      rs = conn.exec(sql)
+      nb_database = rs.first['count']
+      
+      # if there is no database for the manager you should create one
+      if nb_database == 0
+        ActiveRecord::Base.establish_connection adapter:'postgresql', username:'postgres', password:'', database:'postgres'
+        ActiveRecord::Base.connection.create_database Conf.db['database']
+      end
+
+      # now you can drop all other databases
+      sql2=<<-END
+SELECT
+  pg_database.datname AS name
+FROM
+  pg_catalog.pg_database
+WHERE
+  pg_database.datname != 'wp_manager' AND
+  pg_database.datname != 'postgres' AND
+  pg_database.datistemplate = false;
+      END
+      rs = conn.exec(sql2)
+      rs.each do |t|
+        sqldrop = "DROP DATABASE #{t['name']}"
+        begin
+          rs = conn.exec(sqldrop)
+          p "#{sqldrop} succeed"
+        rescue PG::Error => err
+          p "Wepic Warning #{err.inspect}"
+        end
+      end
+
+      # and now clean the database of the manager
+      ddl_query=<<-END
+SELECT
+  'drop table if exists "' || tablename || '" cascade;' AS a
+FROM
+  pg_tables
+WHERE
+  schemaname = 'public';
+      END
+      dropper = []
+      rs = conn.exec(ddl_query)
+      p "Clean the database of the manager"
+      rs.each do |t|
+        dropper << t['a']
+      end
+      dropper.each do |d|
+        p d
+        conn.exec d
+      end
     end
   end
 
   # Parse the options given in the command line and modify it for subsequent
-  # rails launch. Setup the PeerConf and DBConf object with the default value,
+  # rails launch. Setup the Conf object with the default value,
   # or the value found in the Yaml configuration file or in the command line.
   #
-  def self.parse(argv)
+  def self.parse!(argv)
     # Assign default value
     options = OpenStruct.new
-    options.peername = "MANAGER"
+    options.peername = "manager"
     options.port = "4000"
     options.manager_port = nil
     # Parse from command line
     opts = OptionParser.new do |opt|
-      # -u take a mandatory argument 
-      opt.on("-uUSERNAME", "--username USERNAME",
-        "Specify the user name for this peer, default is 'MANAGER'") do |username|
+      opt.banner = "Usage: rails s [options]"
+      # -U take a mandatory argument, do not use -u since it is used by the
+      # server after for debug flag
+      opt.on("-UUSERNAME", "--username USERNAME",
+        "Specify the user name for this peer, default is '#{options.peername}'") do |username|
         options.username = username
-      end      
-      opt.on("-pPORT", "--portPORT", "give the port number on which this peer should listen") do |p|
+      end
+      opt.on("-pPORT", "--port PORT", "give the port number on which this peer should listen") do |p|
         options.port = p
       end
       opt.on("--reset", "custom tasks used to remove all the database to start from scratch a new rails manager") do
@@ -92,30 +160,41 @@ module WLSetup
         options.manager_port = mport
       end
     end
-    opts.parse(argv)
+
+    # All the options parsed previously are removed from the ARGV parameter tab
+    # only -p for port is usefull for server
+    # 
+    opts.parse!(argv)
+    start_app=true
     if options.reset
+      start_app = false
       WLLogger.logger.info "Reset the databases"
       reset_peer_databases
     else
-      if options.username.nil? or options.username.upcase == 'MANAGER'
+      start_app = true
+      if options.username.nil? or options.username.downcase == 'manager'
         WLLogger.logger.info "Setup a manager"
         clean_orphaned_peer
         argv.push('-p')
         argv.push(options.port)
+        options.peername = 'manager'
       else
         WLLogger.logger.info "Setup a regular peer"
-        unless options.manager_port.nil?
-          pos = argv.index '-m'
-          2.times {argv.delete_at pos}          
-        end
+        argv.push('-p')
+        argv.push(options.port)
+        options.peername = options.username
       end
+      # setup the pid file
+      argv.push('-P')
+      argv.push("tmp/pids/#{options.peername}.pid")
       # Setup environement TODO check if it can be removed: replace all ENV[] by
       # reads in this objects
       ENV['USERNAME'] = options.peername
       ENV['PORT'] = options.port
-      ENV['MANAGER_PORT'] = options.manager_port 
+      ENV['MANAGER_PORT'] = options.manager_port
     end
-    options
+    return start_app, options
+
   end
 
   #  # The argsetup method is used for preliminary setup (before conventional rails

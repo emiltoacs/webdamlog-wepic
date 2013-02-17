@@ -4,10 +4,13 @@ require 'test/unit'
 class WLLauncherTest < ActionController::IntegrationTest
     
   def setup
-    Conf.init    
+    ENV["USERNAME"] = "manager"
+    ENV["PORT"] = "4000"
+    ENV["MANAGER_PORT"] = nil
+    Conf.init('test', { force: true })
     @root_port = Conf.peer['peer']['root_port']
     @ports_used = Conf.peer['peer']['ports_used']
-    @ip = Conf.peer['peer']['ip']
+    @ip = Conf.peer['peer']['ip']    
   end
     
   def teardown
@@ -23,9 +26,8 @@ class WLLauncherTest < ActionController::IntegrationTest
     port = Conf.peer['communication']['manager_port']
     assert Network.port_available?(ip,port),
       "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
-    ports_used = Conf.peer['communication']['port_spacing']
+    ports_used = Conf.peer['peer']['ports_used']
     assert_equal port, Network.find_ports(ip,ports_used,port)
-
     ip = Conf.peer['peer']['ip']
     port = Conf.peer['peer']['root_port']
     assert Network.port_available?(ip,port),
@@ -62,7 +64,9 @@ class WLLauncherTest < ActionController::IntegrationTest
   #
   def test_3_create_peer
     username = "new_peer_for_testing"
-    peer, st = WLLauncher.create_peer(username, Conf.peer)
+    p Conf.env
+    p ENV['USERNAME']
+    peer, st, msg = WLLauncher.create_peer(username, Conf.peer)
     sleep(2)
     assert st
     assert_not_nil peer

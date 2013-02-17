@@ -1,7 +1,6 @@
-class Picture < ActiveRecord::Base
+class Picture < AbstractDatabase
   def self.setup
     unless @setup_done
-      establish_connection DBConf.init
       attr_accessible :title, :image, :owner
       validates_uniqueness_of :title      
       #validates :owner, :presence => true      

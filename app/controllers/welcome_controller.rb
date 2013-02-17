@@ -5,7 +5,7 @@ class WelcomeController < ApplicationController
   def index
     @account = Peer.new if @account.nil?
     @accounts = Peer.all
-    @protocol = PeerConf.config['peer']['protocol']
+    @protocol = Conf.peer['peer']['protocol']
   end
 
   # Once clicked on the button go, launch or reconnect to a peer
@@ -15,7 +15,7 @@ class WelcomeController < ApplicationController
     
     if @account.nil?
       #If the account is new
-      @account,launched = WLLauncher.create_peer(username, PeerConf.config)
+      @account, launched, msg = WLLauncher.create_peer(username, Conf.peer)
       if launched
         #The peer is being launched, we send the user to the waiting until the peer is ready.
         respond_to do |format|
@@ -24,7 +24,7 @@ class WelcomeController < ApplicationController
       else
         #The peer was not launched
         respond_to do |format|
-          format.html {redirect_to '/', :alert => "New WebdamLog Instance was not set properly. Reason : #{output_errors(@account)}"}
+          format.html {redirect_to '/', :alert => "New WebdamLog Instance was not set properly. Reason #{msg}"}
         end
       end
     else
@@ -104,7 +104,7 @@ class WelcomeController < ApplicationController
   def redirect
     @account = Peer.find(params[:id])
     respond_to do |format|
-      format.html { redirect_to "#{PeerConf.config['peer']['protocol']}://#{@account.ip}:#{@account.port}" }
+      format.html { redirect_to "#{Conf.peer['peer']['protocol']}://#{@account.ip}:#{@account.port}" }
     end
   end
 

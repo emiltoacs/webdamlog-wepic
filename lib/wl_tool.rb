@@ -3,9 +3,13 @@ require 'active_support'
 
 module Conf
   @@init = false
-  @@current_env = Rails.env
+  @@current_env = 'development'
   # Store in one object all the configuration related to this peer
-  def self.init(rails_env='production')
+  # put froce => true in options to force reloading of conf
+  #
+  def self.init(rails_env='development',options={})
+    options[:force] ||= false
+    @@init=false if options[:force]
     # if you change rails environment this allows you to reload configuration
     if @@current_env.nil? or @@current_env != rails_env
       @@current_env = rails_env
@@ -20,25 +24,25 @@ module Conf
       @@env['PORT'] = ENV['PORT']
       @@env['MANAGER_PORT'] = ENV['MANAGER_PORT']
       @@init = true
+    end    
+  end
+  def self.peer
+    unless @@init
+      self.init
     end
-    def self.peer
-      unless @@init
-        self.init
-      end
-      @@peer
+    @@peer
+  end
+  def self.db
+    unless @@init
+      self.init
     end
-    def self.db
-      unless @@init
-        self.init
-      end
-      @@db
+    @@db
+  end
+  def self.env
+    unless @@init
+      self.init
     end
-    def self.env
-      unless @@init
-        self.init
-      end
-      @@env
-    end
+    @@env
   end
   
   # This methods reads our Yaml configuration and return the corresponding hash
@@ -52,56 +56,56 @@ module Conf
   end
 end
 
-# Big multi-dimensional hash with the content of yaml file properties.yml used
-# to set up the database
-module PeerConf
-  # Force to reread the config file
-  def self.read_prop_file(rails_env = ENV["RAILS_ENV"])
-    rails_env ||= 'development'
-    return YAML.load_file('./config/properties.yml')[rails_env]
-  end
-  def self.config
-    @@config ||= {}
-  end
-  #  def self.config=(hash)
-  #    @@config = hash
-  #  end
-  def self.init
-    @@config ||= PeerConf.read_prop_file
-    @@config
-  end
-end
-
-module DBConf
-  def self.read_prop_file(rails_env = ENV["RAILS_ENV"])
-    rails_env ||= 'development'
-    return YAML.load_file('./config/database.yml')[rails_env]
-  end
-  def self.config
-    @@config ||= {}
-  end
-  def self.init
-    @@config ||= DBConf.read_prop_file
-    @@config
-  end
-end
-
-# Relate here all the parameter linked to a specific user
+## Big multi-dimensional hash with the content of yaml file properties.yml used
+## to set up the database
+#module PeerConf
+#  # Force to reread the config file
+#  def self.read_prop_file(rails_env = ENV["RAILS_ENV"])
+#    rails_env ||= 'development'
+#    return YAML.load_file('./config/properties.yml')[rails_env]
+#  end
+#  def self.config
+#    @@config ||= {}
+#  end
+#  #  def self.config=(hash)
+#  #    @@config = hash
+#  #  end
+#  def self.init
+#    @@config ||= PeerConf.read_prop_file
+#    @@config
+#  end
+#end
 #
-module UserConf
-  def self.config
-    @@config ||= {}
-  end
-
-  #  def self.config=(hash)
-  #    @@config.merge! hash
-  #  end
-
-  def self.init(hash)
-    @@config ||= hash
-    @@config
-  end
-end
+#module DBConf
+#  def self.read_prop_file(rails_env = ENV["RAILS_ENV"])
+#    rails_env ||= 'development'
+#    return YAML.load_file('./config/database.yml')[rails_env]
+#  end
+#  def self.config
+#    @@config ||= {}
+#  end
+#  def self.init
+#    @@config ||= DBConf.read_prop_file
+#    @@config
+#  end
+#end
+#
+## Relate here all the parameter linked to a specific user
+##
+#module UserConf
+#  def self.config
+#    @@config ||= {}
+#  end
+#
+#  #  def self.config=(hash)
+#  #    @@config.merge! hash
+#  #  end
+#
+#  def self.init(hash)
+#    @@config ||= hash
+#    @@config
+#  end
+#end
 
 # General usefull tool for ruby
 #
@@ -166,11 +170,11 @@ module Network
   # TODO: this looks for adjacent port number only, relax to return a list of
   # ports
   #
-  def self.find_ports(ip,number_of_ports_required,root_port)
+  def self.find_ports(ip, number_of_ports_required, root_port)
     root_port = Integer(root_port)
     number_of_ports_required = Integer(number_of_ports_required)
     if root_port + number_of_ports_required > SOCKET_MAX_PORT
-      WLLogger.logger.debug "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{root_port+number_of_ports_required}"
+      WLLogger.logger.error "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{root_port+number_of_ports_required}"
       return SOCKET_PORT_INVALID
     end
     increment = 0

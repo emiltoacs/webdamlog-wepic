@@ -1,7 +1,6 @@
-class Program < ActiveRecord::Base  
+class Program < AbstractDatabase
   def self.setup
     unless @setup_done
-      establish_connection DBConf.init
       self.table_name = 'programs'
       connection.create_table 'programs', :force => true do |t|
         t.string :name
