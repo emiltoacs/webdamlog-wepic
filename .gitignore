@@ -9,3 +9,4 @@
 .rdebugrc
 /nbproject/
 *.orig
+Gemfile.lock
