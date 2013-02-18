@@ -8,7 +8,7 @@ class ConfTest < Test::Unit::TestCase
     rails_env = Rails.env
     assert rails_env.test?
     assert_equal "test", rails_env
-    Conf.init(rails_env)
+    Conf.init(:rails_env=>rails_env)
     assert_not_nil(Conf.peer['communication']['manager_port'])
     assert_equal 4100, Conf.peer['communication']['manager_port']
     assert_not_nil(Conf.peer['communication']['default_spawn_port'])

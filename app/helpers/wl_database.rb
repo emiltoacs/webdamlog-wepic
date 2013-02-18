@@ -16,35 +16,45 @@ require './lib/wl_tool'
 # TODO all the methods open_connection and remove_connection defined for every
 # model in this app are now totally useless. Think to remove them properly.
 #
-module WLDatabase  
+module WLDatabase
 
   @@databases = Hash.new
   
-  # Does nothing if the user already has his db setup. Otherwise, sets up his
-  # db.
+  # This setup the database server (currently postgresql or sqlite3(nothing to
+  # do since their are jut files) )
   #
-  def setup_database_server
+  def self.setup_database_server
+    db_name = Conf.db['database']
+    db_username = Conf.db['username']
     unless @@databases[Conf.env['username']]
       # Connect to postgres database with admin user postgres that always
       # exist. Then create the first database for the manager
       if Conf.db[:adapter] == 'postgresql'
-        ActiveRecord::Base.establish_connection adapter:'postgresql', username:'postgres', password:'', database:'postgres'
-        ActiveRecord::Base.connection.create_database Conf.db['database']
+        if PostgresHelper.exists? db_name
+          WLLogger.logger.error "database object WLDatabase absent in the list of db but the physical database already exists in the database server"
+        end
+        if Conf.manager?
+          PostgresHelper.create_manager_db db_name
+        else
+          PostgresHelper.create_user_db db_name
+        end
       end
-      create_or_connect_db(Conf.env['username'], Conf.db['database'], Conf.db)
+      WLDatabase.create_or_connect_db(Conf.env['username'], db_name, Conf.db)
     end
   end
   
   # Access a database loaded by the program using its database id. The id for
-  # the database is usually the username of the user.
+  # the database is usually the username of the user since there is only one db
+  # per peer user.
   #
   def database(database_id)
     @@databases[database_id]
   end
 
-  # Creates a new database for the user using his database_id as key. If
+  # Creates a new database object for the user using his database_id as key. If
   # database already exists, simply connects to it (no override).
-  def create_or_connect_db(database_id,db_name,configuration)
+  #
+  def self.create_or_connect_db(database_id,db_name,configuration)
     @@databases[database_id]=WLInstanceDatabase.new(database_id,db_name,configuration)
     @@databases[database_id]
   end
@@ -163,7 +173,13 @@ module WLDatabase
     end
 
     def db_exists? (db_name)
-      return File.exists?(db_name)
+      case Conf.db['adapter']
+      when 'sqlite3'
+        return File.exists?(db_name)
+      when 'postgresql'
+        PostgresHelper.db_exists?(db_name)
+      end
+      
     end
     
     # This method creates a special table that represents the schema of the
@@ -282,7 +298,7 @@ module WLDatabase
       database_instance = self
       config = Conf.db
       model_name = WLDatabase.to_model_name("#{name}")
-      klass = create_class(model_name,AbstractDatabase) do
+      klass = create_class(model_name, ::AbstractDatabase) do
         @schema = schema
         @wl_database_instance = database_instance
         if table_name.nil? or table_name.empty?
@@ -346,24 +362,4 @@ module WLDatabase
       end
     end
   end
-
-  module PostgresHelper
-
-    def db_exists? db_name, db_username
-      #conn = PGconn.new('localhost', 5432, '', '', db_name, db_username, "") # to use when password needed
-      conn = PGconn.open(:dbname => db_name, :user => db_username)
-      sql = "select count(1) from pg_catalog.pg_database where datname = '#{db_name}'"
-      rs = conn.exec(sql)
-      nb_database = rs.first['count']
-      if nb_database == 0
-        return false
-      else
-        return true
-      end
-    end
-
-    
-    
-  end
-
 end
