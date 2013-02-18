@@ -17,7 +17,7 @@ class UserSessionsController < ApplicationController
     @user_session = UserSession.new(params[:user_session])
     respond_to do |format|
       if @user_session.save
-        setup_database_server
+        WLDatabase.setup_database_server
         format.html { redirect_to(:wepic, :notice => "Login Successful") }
         format.xml { render :xml => @user_session, :status => :created, :location => @user_session }
       else

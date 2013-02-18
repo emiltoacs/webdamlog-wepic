@@ -35,7 +35,7 @@ class WLDatabaseTest < Test::Unit::TestCase
     @id = @dbid
     @db_name = config[:database]
     @configuration = {:adapter => config[:adapter], :database => @db_name}
-    @database = create_or_connect_db(@id,@db_name,@configuration)
+    @database = WLDatabase.create_or_connect_db(@id,@db_name,@configuration)
   end
   
   def teardown
@@ -99,7 +99,7 @@ class WLDatabaseTest < Test::Unit::TestCase
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
     @database.create_model(relation_name,relation_schema)
     close_connection(@dbid)
-    @database = create_or_connect_db(@id,@db_name,@configuration)
+    @database = WLDatabase.create_or_connect_db(@id,@db_name,@configuration)
     assert !@database.need_bootstrap?
     #Schema should contain the Dog table information
     wlschema = WLInstanceDatabase::DATABASE_SCHEMA

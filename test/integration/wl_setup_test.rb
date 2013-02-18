@@ -1,10 +1,12 @@
+ENV['USERNAME'] = 'manager'
+ENV['PORT'] = '4000'
 require 'test_helper'
 require 'wl_setup'
 
 class WLSetupTest < ActionController::IntegrationTest
 
   # Test with sqlite3
-  def test_sqlite3_clean_orphaned_peer
+  def test_sqlite3_clean_orphaned_peer    
     Conf.db['adapter'] = 'sqlite3'
     Conf.db['database'] = 'db/database_manager.db'
     assert File.exists?("db")

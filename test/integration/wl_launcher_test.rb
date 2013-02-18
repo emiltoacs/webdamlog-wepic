@@ -7,7 +7,7 @@ class WLLauncherTest < ActionController::IntegrationTest
     ENV["USERNAME"] = "manager"
     ENV["PORT"] = "4000"
     ENV["MANAGER_PORT"] = nil
-    Conf.init('test', { force: true })
+    Conf.init({rails_env:'test', force: true })
     @root_port = Conf.peer['peer']['root_port']
     @ports_used = Conf.peer['peer']['ports_used']
     @ip = Conf.peer['peer']['ip']    

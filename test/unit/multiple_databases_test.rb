@@ -13,7 +13,7 @@ class MultipleDatabasesTest < Test::Unit::TestCase
     @n = 1
     (0..@n).each do |i|
       @dbids[i] =  (0...8).map{('a'..'z').to_a[rand(26)]}.join
-      create_or_connect_db(@dbids[i])
+      WLDatabase.create_or_connect_db(@dbids[i])
     end
   end
   

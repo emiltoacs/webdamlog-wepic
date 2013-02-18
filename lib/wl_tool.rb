@@ -1,30 +1,58 @@
 require 'yaml'
 require 'active_support'
+require 'active_record'
+require './lib/wl_logger'
 
 module Conf
-  @@init = false
+  @@init = true
   @@current_env = 'development'
   # Store in one object all the configuration related to this peer
-  # put froce => true in options to force reloading of conf
+  # + put :force => true in options to force reloading of conf
+  # + put :rails_env => [test,development,production] to change environment of configuration files
   #
-  def self.init(rails_env='development',options={})
+  def self.init(options={})
     options[:force] ||= false
     @@init=false if options[:force]
     # if you change rails environment this allows you to reload configuration
-    if @@current_env.nil? or @@current_env != rails_env
-      @@current_env = rails_env
+    options[:rails_env] ||= @@current_env
+    if options[:rails_env] != @@current_env
+      @@current_env = options[:rails_env]
       @@init=false
     end
     # Reload configuration if needed
     unless @@init
-      @@peer = read_yaml_file 'config/peer.yml', rails_env
-      @@db = read_yaml_file 'config/database.yml', rails_env
+      @@peer = read_yaml_file 'config/peer.yml', @@current_env
+      @@db = read_yaml_file 'config/database.yml', @@current_env
+      # store all parameter for manager db usefull for peer that change database
+      @@db['manager_db']=@@db.clone
       @@env = {}
+      if ENV['USERNAME'].nil?
+        WLLogger.logger.error "Variable ENV['USERNAME'] must not be nil"
+      end
       @@env['USERNAME'] = ENV['USERNAME']
+      if ENV['PORT'].nil?
+        WLLogger.logger.error "Variable ENV['PORT'] must not be nil"
+      end
       @@env['PORT'] = ENV['PORT']
       @@env['MANAGER_PORT'] = ENV['MANAGER_PORT']
       @@init = true
-    end    
+      if @@env['USERNAME'] == 'manager'
+        @@manager = true
+        WLLogger.logger.warn "the manager does not need to have a pararameter MANAGER_PORT" unless @@env['MANAGER_PORT'].nil?
+      else
+        @@manager = false
+        WLLogger.logger.warn "the regular peer must have a pararameter MANAGER_PORT" if @@env['MANAGER_PORT'].nil?
+        # Special config for regular peers
+        # Change default db and 
+        Conf.db['database']="wp_#{Conf.env['USERNAME']}"
+      end
+    end
+  end
+  def self.manager?
+    unless @@init
+      self.init
+    end
+    @@manager
   end
   def self.peer
     unless @@init
@@ -191,6 +219,41 @@ module Network
     else
       # look for the next possible free port range
       find_ports(ip,number_of_ports_required,root_port+increment)
+    end
+  end
+end
+
+module PostgresHelper
+
+  def self.db_exists? db_name
+    #conn = PGconn.new('localhost', 5432, '', '', db_name, db_username, "") # to use when password needed
+    conn = PGconn.open(:dbname => 'postgres', :user => 'postgres')
+    sql = "select count(1) from pg_catalog.pg_database where datname = '#{db_name}'"
+    rs = conn.exec(sql)
+    database_cpt = rs.first['count']
+    database_cpt = database_cpt.to_i
+    if database_cpt == 0
+      return false
+    else
+      return true
+    end
+  end
+
+  # Create the manager db as a child of postgres db
+  def self.create_manager_db db_name
+    # if there is no database for the manager you should create one
+    unless PostgresHelper.db_exists?(db_name)
+      ActiveRecord::Base.establish_connection adapter:'postgresql', username:'postgres', password:'', database:'postgres'
+      ActiveRecord::Base.connection.create_database db_name
+    end    
+  end
+
+  # Create the regular peer db as a child of the manager db
+  def self.create_user_db db_name
+    # if there is no database for the peer you should create one
+    unless PostgresHelper.db_exists?(db_name)
+      ActiveRecord::Base.establish_connection Conf.db['manager_db']
+      ActiveRecord::Base.connection.create_database db_name
     end
   end
 end

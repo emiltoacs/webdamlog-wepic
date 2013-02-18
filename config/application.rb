@@ -67,11 +67,4 @@ module WepimApp
     
   end
   
-  #If an app has the manager port environment variable defined, then it is not
-  #a manager (and is therefore a "peer", as there are only two types of wepic applications)
-  #
-  def self.is_manager?
-    #Managers have no manager port
-    return ENV['MANAGER_PORT'].nil?
-  end
 end

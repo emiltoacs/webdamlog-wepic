@@ -37,7 +37,7 @@ module WLLauncher
     peer_name = Conf.env['USERNAME']
     manager_port = Conf.env['PORT']
     port = Network.find_ports('localhost', 1, Integer(manager_port)+1)
-    if peer_name=='manager'
+    if Conf.manager?
       if !new_peer_name.nil?
         cmd = "rails server -p #{new_peer_port} -u #{new_peer_name} -m #{port}"
         WLLogger.logger.debug "execute: #{cmd}"
@@ -89,13 +89,14 @@ module WLLauncher
         pids.add(line_tokens[1]) if line_tokens.include?(port.inspect)
       end
     end
+    WLLogger.logger.debug "Sending TERM signal to #{pids}"
     pids.each do |pid|
       Process.kill "TERM", Integer(pid)
     end
     pids.each do |pid|
       Process.wait Integer(pid)
       WLLogger.logger.info "Process #{pid} terminated"
-    end    
+    end
     pids.size
   end
 

@@ -57,35 +57,24 @@ module WLSetup
     rs
   end
 
-  def self.reset_peer_databases
-    Conf.init
-    db_name = Conf.db['database']
-    db_username = Conf.db['username']
-    case Conf.db['adapter']
+  def self.reset_peer_databases db_name, db_username, db_adapter
+    case db_adapter
     when 'sqlite3'
       WLLogger.logger.info "Killing all of the peers launched that are remaining"
       get_peer_ports_from_account.each do |peer_port|
         WLLogger.logger.info "Peer at port #{peer_port} killed."
         WLLauncher.end_peer(peer_port)
       end
-      WLLogger.logger.info "Reset option has been chosen. Removing the #{db_name} file. This will cause a reset of the system."
+      WLLogger.logger.info "Reset option has been chosen for sqlite3. Removing the #{db_name} file. This will cause a reset of the system."
       if File.exists?("#{db_name}")
         system 'rm #{db_name}'
       else
         WLLogger.logger.info "#{db_name} does not exists nothing. The manager has been already erased."
       end
-    when 'postgresql'      
-      #conn = PGconn.new('localhost', 5432, '', '', db_name, db_username, "") # to use when password needed
+    when 'postgresql'
+      WLLogger.logger.info "You start a cleanup of the postgres database server"
       conn = PGconn.open(:dbname => db_name, :user => db_username)
-      sql = "select count(1) from pg_catalog.pg_database where datname = '#{db_name}'"
-      rs = conn.exec(sql)
-      nb_database = rs.first['count']
-      
-      # if there is no database for the manager you should create one
-      if nb_database == 0
-        ActiveRecord::Base.establish_connection adapter:'postgresql', username:'postgres', password:'', database:'postgres'
-        ActiveRecord::Base.connection.create_database Conf.db['database']
-      end
+      PostgresHelper.create_manager_db db_name
 
       # now you can drop all other databases
       sql2=<<-END
@@ -148,7 +137,7 @@ WHERE
       # server after for debug flag
       opt.on("-UUSERNAME", "--username USERNAME",
         "Specify the user name for this peer, default is '#{options.peername}'") do |username|
-        options.username = username
+        options.peername = username
       end
       opt.on("-pPORT", "--port PORT", "give the port number on which this peer should listen") do |p|
         options.port = p
@@ -159,30 +148,36 @@ WHERE
       opt.on("-m MPORT", "--manager-port MPORT", "give the port on which the manager is waiting your answer") do |mport|
         options.manager_port = mport
       end
-    end
-
+    end    
+    
     # All the options parsed previously are removed from the ARGV parameter tab
     # only -p for port is usefull for server
     # 
     opts.parse!(argv)
-    start_app=true
+    start_server = true
+    
     if options.reset
-      start_app = false
+      
+      ENV['USERNAME'] = options.peername
+      ENV['PORT'] = options.port
+      ENV['MANAGER_PORT'] = options.manager_port
+      Conf.init({force: true})
+      start_server = false
       WLLogger.logger.info "Reset the databases"
-      reset_peer_databases
+      reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
+
     else
-      start_app = true
-      if options.username.nil? or options.username.downcase == 'manager'
-        WLLogger.logger.info "Setup a manager"
-        clean_orphaned_peer
-        argv.push('-p')
-        argv.push(options.port)
-        options.peername = 'manager'
+      
+      start_server = true
+      # push switch -p to specify the port the rake server will use
+      argv.push('-p')
+      argv.push(options.port)
+      # setup kind of peer
+      if options.peername.nil? or options.peername.downcase == 'manager'
+        WLLogger.logger.info "Setup a manager"        
+        options.peername = 'manager'        
       else
         WLLogger.logger.info "Setup a regular peer"
-        argv.push('-p')
-        argv.push(options.port)
-        options.peername = options.username
       end
       # setup the pid file
       argv.push('-P')
@@ -192,9 +187,21 @@ WHERE
       ENV['USERNAME'] = options.peername
       ENV['PORT'] = options.port
       ENV['MANAGER_PORT'] = options.manager_port
+      Conf.init({force: true})
+      clean_orphaned_peer if Conf.manager?
+      setup_storage Conf.manager?
     end
-    return start_app, options
+    return start_server, options
+  end
 
+  
+  def self.setup_storage manager
+    require 'debugger' ; debugger
+    if manager
+      PostgresHelper.create_manager_db Conf.db['database']
+    else
+      PostgresHelper.create_user_db Conf.db['database']
+    end
   end
 
   #  # The argsetup method is used for preliminary setup (before conventional rails
