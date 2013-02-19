@@ -199,8 +199,7 @@ WHERE
   end
 
   
-  def self.setup_storage (manager,debug)
-    require 'debugger' if debug ; debugger if debug
+  def self.setup_storage manager
     if manager
       PostgresHelper.create_manager_db Conf.db['database']
     else
