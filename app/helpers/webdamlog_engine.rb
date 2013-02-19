@@ -5,15 +5,16 @@ require 'webdamlog/wlbud'
 # There is the set of function used to manage the webdamlog engine from the
 # wepic app
 #
-module WebdamlogEngine  
+module WebdamlogEngine
   
   # TODO add action on shutdown for the wlengine such as erase program file if
   # saved in db and clean rule dir if needed
   #
   class WebdamlogEngine
+    include Singleton
     include WLTool
 
-    :engine
+    attr_accessor :engine, :enginelogger
     
     STR0 = <<EOF
 peer p0=localhost:11110;
@@ -24,8 +25,7 @@ fact bootstrap@p0(3);
 fact bootstrap@p0(4);
 end
 EOF
-    def initialize      
-      
+    def initialize
       username = Conf.env['USERNAME']
       root_port = Integer(Conf.env['PORT'])
       wlport = Network.find_ports('localhost', 1, root_port+1)
@@ -34,8 +34,8 @@ EOF
       # Dynamic class ClassWLEngineOf#{username}On#{wlport} subclass WLBud
       # Create a subclass of WL
       # TODO find a good name for the sub class, it should be uniq maybe use ccreate class in WLTool
-#      klass = Class.new(WLBud::WL)
-#      self.class.class_eval "ClassWLEngineOf#{username}On#{wlport} = klass"
+      #      klass = Class.new(WLBud::WL)
+      #      self.class.class_eval "ClassWLEngineOf#{username}On#{wlport} = klass"
       klass = create_class("ClassWLEngineOf#{username}On#{wlport}",WLBud::WL)
       
       # TODO find a good place to put the program file
@@ -47,15 +47,13 @@ EOF
       dir_rule = program_file_dir
       File.open(program_file, 'w'){ |file| file.write STR0 }
       @engine = klass.new(username, program_file,{:port => wlport, :dir_rule => dir_rule})
-      @wlenginelogger = WLLogger::WLEngineLogger.new(STDOUT)
+      @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
       if @engine.nil?
-        @wlenginelogger.fatal("creation of the webdamlog engine instance has failed:\n#{msg}")
+        @enginelogger.fatal("creation of the webdamlog engine instance has failed:\n#{msg}")
       else
-        @wlenginelogger.info("new instance of webdamlog engine created:\n#{msg}")
+        @enginelogger.info("new instance of webdamlog engine created:\n#{msg}")
       end
-      require 'debugger' ; debugger
-      @engine.run_bg
     end #initialize
 
     

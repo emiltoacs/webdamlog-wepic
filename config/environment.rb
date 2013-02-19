@@ -16,8 +16,10 @@ if Conf.manager?
 else  
   require 'wl_peer'
   require 'webdamlog_engine'
+  
+  #WepimApp::Application.instance_variable_set(:@wl_engine, WebdamlogEngine::WebdamlogEngine.new)
+  
   WLLogger.logger.info "Wepic peer of #{Conf.env['USERNAME']},#{Conf.env['PORT']} has finsihed initialization and is ready to send acknowedgement to manager"
-  WebdamlogEngine::WebdamlogEngine.new
   WepicPeer.send_acknowledgment(Conf.env['USERNAME'],Conf.env['MANAGER_PORT'],Conf.env['PORT'])
 end
 

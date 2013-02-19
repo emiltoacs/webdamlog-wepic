@@ -58,15 +58,19 @@ module WLLauncher
     end
   end
 
-  def self.wait_for_acknowledgment(server,port)
+  def self.wait_for_acknowledgment(server, new_peer_port)
     begin
-      Timeout::timeout(1000) do
+      Timeout::timeout(10000) do
         begin
           client = server.accept
           str = client.gets
-          client.close
-          server.close
-          return true, "ack received #{str}"
+          if str.include? new_peer_port.to_s
+            client.close
+            server.close
+            return true, "ack received #{str}"
+          else
+            return false, "peer may have failed to start, it sends #{str}"
+          end          
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
           msg = "Connection Error..."
           WLLogger.logger.info msg

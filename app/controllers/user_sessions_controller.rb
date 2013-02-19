@@ -16,18 +16,18 @@ class UserSessionsController < ApplicationController
   def create
     @user_session = UserSession.new(params[:user_session])
     respond_to do |format|
-      if @user_session.save
-        begin
-          WLDatabase.setup_database_server
-        rescue => error
-          format.html { redirect_to(:wepic, :alert => error.message) }
-          format.xml { render :xml => {database: error.message}, :status => :unprocessable_entity}
+      begin
+        WLDatabase.setup_database_server
+        if @user_session.save
+          format.html { redirect_to(:wepic, :notice => "Login Successful") }
+          format.xml { render :xml => @user_session, :status => :created, :location => @user_session }              
+        else
+          format.html { render :action => "new" }
+          format.xml { render :xml => @user_session.errors, :status => :unprocessable_entity }
         end
-        format.html { redirect_to(:wepic, :notice => "Login Successful") }
-        format.xml { render :xml => @user_session, :status => :created, :location => @user_session }
-      else
-        format.html { render :action => "new" }
-        format.xml { render :xml => @user_session.errors, :status => :unprocessable_entity }
+      rescue => error
+        format.html { render :action => "new", :alert => error.message }
+        format.xml { render :xml => {setup: error.message}, :status => :unprocessable_entity }
       end
     end
   end

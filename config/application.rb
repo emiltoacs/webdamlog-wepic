@@ -64,7 +64,7 @@ module WepimApp
     # The standard logger for this application
     #    require 'WLLogger'
     #    config.logger = WLLogger::WLLogger.new STDOUT
-    
+      
   end
   
 end
