@@ -129,6 +129,7 @@ WHERE
     options = OpenStruct.new
     options.peername = "manager"
     options.port = "4000"
+    options.debug = false
     options.manager_port = nil
     # Parse from command line
     opts = OptionParser.new do |opt|
@@ -147,6 +148,9 @@ WHERE
       end
       opt.on("-m MPORT", "--manager-port MPORT", "give the port on which the manager is waiting your answer") do |mport|
         options.manager_port = mport
+      end
+      opt.on("-D","--debug","Enter debug mode") do
+        options.debug = true
       end
     end    
     
@@ -189,13 +193,14 @@ WHERE
       ENV['MANAGER_PORT'] = options.manager_port
       Conf.init({force: true})
       clean_orphaned_peer if Conf.manager?
-      setup_storage Conf.manager?
+      setup_storage(Conf.manager?,options.debug)
     end
     return start_server, options
   end
 
   
-  def self.setup_storage manager
+  def self.setup_storage (manager,debug)
+    require 'debugger' if debug ; debugger if debug
     if manager
       PostgresHelper.create_manager_db Conf.db['database']
     else
