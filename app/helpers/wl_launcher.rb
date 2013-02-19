@@ -17,7 +17,7 @@ module WLLauncher
     root_port = properties['peer']['root_port']    
     root_port = Network::find_ports(ip,number_of_ports_required,root_port)
     if root_port==Network::SOCKET_PORT_INVALID
-      return nil, false
+      return nil, false, "no port availaible to deploy this peer for #{username}"
     else
       properties['peer']['root_port'] = root_port + number_of_ports_required
       #Create the peer active record.

@@ -45,7 +45,6 @@ EOF
       program_file = File.join(program_file_dir,"programfile_of_#{username}on#{wlport}")
       dir_rule = program_file_dir
       File.open(program_file, 'w'){ |file| file.write STR0 }
-      @engine = nil
       #eval("@engine = ClassWLEngineOf#{username}On#{wlport}.new(username, program_file,{:port => #{wlport}, :dir_rule => dir_rule})")
       @engine = klass.new(username, program_file,{:port => wlport, :dir_rule => dir_rule})
       @wlenginelogger = WLLogger::WLEngineLogger.new(STDOUT)
@@ -55,7 +54,8 @@ EOF
       else
         @wlenginelogger.info("new instance of webdamlog engine created:\n#{msg}")
       end
-      #@engine.run_bg
+      require 'debugger' ; debugger
+      @engine.run_bg
     end
   end
 end

@@ -196,7 +196,6 @@ WHERE
 
   
   def self.setup_storage manager
-    require 'debugger' ; debugger
     if manager
       PostgresHelper.create_manager_db Conf.db['database']
     else

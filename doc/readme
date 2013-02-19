@@ -55,6 +55,25 @@ install .deb package
 + sqlite3
 + sqlite3-dev
 
+*** install postgres
+
+install the *postgresql* meta-package which install in their last
+version
++ postgresql-client-9.1
++ postgresql-server
++ libpq-5
++ postgresql-common
++ postgresql-common-sever
+
+Ruby
+: gem install pg
+
+also install
++ postgresql-server-dev-9.1 (to make the gem work)
+
+run the script posgtres_init_script at the root of the project
+
+optionally run rails --rese
 
 *** install dependencies with bundle
 
