@@ -57,7 +57,12 @@ class UsersController < ApplicationController
       if @user.save
         #When user is created, he is automatically logged in, which means
         #we need to start his webdamlog session.
-        WLDatabase.setup_database_server
+        begin
+          WLDatabase.setup_database_server
+        rescue => error
+          format.html { redirect_to(:wepic, :alert => error.message) }
+          format.xml { render :xml => {database: error.message}, :status => :unprocessable_entity}
+        end
         format.html { redirect_to(:wepic, :notice => "Registration successfull") }
         format.xml { render :xml => @user, :status => :created, :location => @user }
       else

@@ -21,17 +21,18 @@ module WLDatabase
   @@databases = Hash.new
   
   # This setup the database server (currently postgresql or sqlite3(nothing to
-  # do since their are jut files) )
+  # do since their are just files) )
   #
   def self.setup_database_server
     db_name = Conf.db['database']
-    db_username = Conf.db['username']
     unless @@databases[Conf.env['username']]
       # Connect to postgres database with admin user postgres that always
       # exist. Then create the first database for the manager
       if Conf.db[:adapter] == 'postgresql'
         if PostgresHelper.exists? db_name
-          WLLogger.logger.error "database object WLDatabase absent in the list of db but the physical database already exists in the database server"
+          msg = "database object WLDatabase absent in the list of db but the physical database already exists in the database server"
+          WLLogger.logger.error msg
+          raise msg
         end
         if Conf.manager?
           PostgresHelper.create_manager_db db_name
