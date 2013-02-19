@@ -45,7 +45,6 @@ EOF
       program_file = File.join(program_file_dir,"programfile_of_#{username}on#{wlport}")
       dir_rule = program_file_dir
       File.open(program_file, 'w'){ |file| file.write STR0 }
-      #eval("@engine = ClassWLEngineOf#{username}On#{wlport}.new(username, program_file,{:port => #{wlport}, :dir_rule => dir_rule})")
       @engine = klass.new(username, program_file,{:port => wlport, :dir_rule => dir_rule})
       @wlenginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"

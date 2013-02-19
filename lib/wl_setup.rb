@@ -193,7 +193,7 @@ WHERE
       ENV['MANAGER_PORT'] = options.manager_port
       Conf.init({force: true})
       clean_orphaned_peer if Conf.manager?
-      setup_storage(Conf.manager?,options.debug)
+      setup_storage Conf.manager?
     end
     return start_server, options
   end
