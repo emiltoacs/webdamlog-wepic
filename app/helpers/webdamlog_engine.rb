@@ -14,6 +14,7 @@ module WebdamlogEngine
     include WLTool
 
     :engine
+    
     STR0 = <<EOF
 peer p0=localhost:11110;
 collection ext persistent bootstrap@p0(atom1*);
@@ -55,6 +56,9 @@ EOF
       end
       require 'debugger' ; debugger
       @engine.run_bg
-    end
+    end #initialize
+
+    
+
   end
 end

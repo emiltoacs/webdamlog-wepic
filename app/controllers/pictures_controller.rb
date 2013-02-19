@@ -3,9 +3,7 @@ class PicturesController < WepicController
     @picture = Picture.new(params[:picture])
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(Conf.env[:name]).relation_classes
-    #Contact.open_connection
     @contacts = Contact.all
-    #Contact.remove_connection 
     if @picture.save
       config.logger.debug "#in PicturesController, user #{Conf.env[:name]} successfully saved a new picture"
       respond_to do |format|
