@@ -43,10 +43,10 @@ class UsersController < ApplicationController
   end
 
   #TODO: Assess the usefulness of the edit method.
-#  # GET /users/1/edit
-#  def edit
-#    @user = User.find(params[:id])
-#  end
+  #  # GET /users/1/edit
+  #  def edit
+  #    @user = User.find(params[:id])
+  #  end
 
   # POST /users
   # POST /users.json
@@ -54,21 +54,23 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     flash[:notice] = params.inspect
     respond_to do |format|
-      if @user.save
-        #When user is created, he is automatically logged in, which means
-        #we need to start his webdamlog session.
-        begin
-          WLDatabase.setup_database_server
-        rescue => error
-          format.html { redirect_to(:wepic, :alert => error.message) }
-          format.xml { render :xml => {database: error.message}, :status => :unprocessable_entity}
+      begin
+        WLDatabase.setup_database_server
+        debugger
+        WLENGINE.run_bg
+        if @user.save
+          #When user is created, he is automatically logged in, which means
+          #we need to start his webdamlog session.
+          format.html { redirect_to(:wepic, :notice => "Registration successfull") }
+          format.xml { render :xml => @user, :status => :created, :location => @user }               
+        else
+          format.html { render :action => "new" , :notice => params.inspect}
+          format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
         end
-        format.html { redirect_to(:wepic, :notice => "Registration successfull") }
-        format.xml { render :xml => @user, :status => :created, :location => @user }
-      else
-        format.html { render :action => "new" , :notice => params.inspect}
-        format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
-      end
+      rescue => error
+        format.html { render :action => "new", :alert => error.message }
+        format.xml { render :xml => {setup: error.message}, :status => :unprocessable_entity}
+      end 
     end
   end
 

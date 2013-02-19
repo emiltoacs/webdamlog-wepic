@@ -13,6 +13,7 @@ WepimApp::Application.routes.draw do
     match '/*else' => 'welcome#index'
   else
     root :to => 'users#index'
+    match 'index' => 'users#index'
     match 'program' => 'program#index', :as => :program
     match 'wepic' => 'wepic#index', :as => :wepic
     resources :pictures do

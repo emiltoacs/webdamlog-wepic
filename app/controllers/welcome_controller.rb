@@ -91,7 +91,7 @@ class WelcomeController < ApplicationController
     end
   end
 
-  #This method is called by the javascript inside app/views/welcome/waiting.erb.html
+  #This method is called by the javascript inside app/views/welcome/waiting.html.erb
   #when the server is ready.
   def confirm_server_ready
     @account = Peer.find(params[:id])
