@@ -191,6 +191,11 @@ module Network
     return false
   end
 
+  
+  def self.find_port
+    
+  end
+
   # This method return the smallest port number in a range of available ports
   # large enough for our purposes. This number is called the root port number.
   # If no such number can be found, this returns an invalid port.
