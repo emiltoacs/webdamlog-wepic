@@ -56,7 +56,6 @@ class UsersController < ApplicationController
     respond_to do |format|
       begin
         WLDatabase.setup_database_server
-        debugger
         WLENGINE.run_bg
         if @user.save
           #When user is created, he is automatically logged in, which means
