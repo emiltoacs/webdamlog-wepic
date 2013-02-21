@@ -1,5 +1,9 @@
 class PicturesController < WepicController
-  def create    
+  
+  # By convention this method create is called when the submit button of the
+  # form in wepic/_upload.html.erb is pressed. This convention is enforced
+  # because the form is sent with an http POST requests.
+  def create
     @picture = Picture.new(params[:picture])
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(Conf.env[:name]).relation_classes

@@ -42,4 +42,5 @@ WepimApp::Application.configure do
     require 'ruby-debug'
     Debugger.start
   end
+  
 end

@@ -2,7 +2,10 @@
 # http://gembundler.com/man/gemfile.5.html
 source 'https://rubygems.org'
 
-gem 'rails'#, '3.2.8'
+gem 'rails'
+gem 'rake'
+gem 'thin'
+gem 'rake'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -21,8 +24,6 @@ gem 'sqlite3'
 gem 'pg'
 
 gem 'json'
-
-gem 'thin'
 
 group :development, :test do
   # To use the debugger
@@ -56,4 +57,5 @@ gem 'authlogic'
 # gem 'unicorn'
 
 # Deploy with Capistrano
+#
 # gem 'capistrano'
