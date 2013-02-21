@@ -179,6 +179,7 @@ DEPENDENCIES
   json
   pg
   rails
+  rake
   rmagick
   ruby-debug
   sass-rails (~> 3.2.3)
