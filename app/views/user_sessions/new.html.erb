@@ -1,5 +1,11 @@
 <div class="opacity"></div>
 <div class="content">
-	<h1>Log in</h1>
-	<%= render 'form' %>
+  <% if flash[:notice] %>
+    <div class="notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:error] %>
+    <div class="error"><%= flash[:error] %></div>
+  <% end %>
+  <h1>Log in</h1>
+  <%= render 'form' %>
 </div>

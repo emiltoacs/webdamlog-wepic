@@ -15,7 +15,7 @@ if Conf.manager?
   require 'wl_launcher'
 else  
   require 'wl_peer'
-  require 'webdamlog_engine'
+  require 'engine_helper'
   
   #WepimApp::Application.instance_variable_set(:@wl_engine, WebdamlogEngine::WebdamlogEngine.new)
   

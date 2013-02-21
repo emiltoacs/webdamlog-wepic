@@ -24,6 +24,7 @@ gem 'sqlite3'
 gem 'pg'
 
 gem 'json'
+gem 'awesome_print'
 
 group :development, :test do
   # To use the debugger

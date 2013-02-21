@@ -5,12 +5,12 @@ require 'webdamlog/wlbud'
 # There is the set of function used to manage the webdamlog engine from the
 # wepic app
 #
-module WebdamlogEngine
+module EngineHelper
   
   # TODO add action on shutdown for the wlengine such as erase program file if
   # saved in db and clean rule dir if needed
   #
-  class WebdamlogEngine
+  class EngineHelper
     include Singleton
     include WLTool
 
@@ -32,11 +32,8 @@ EOF
       peer_name = "peername_#{username}on#{wlport}"
 
       # Dynamic class ClassWLEngineOf#{username}On#{wlport} subclass WLBud
-      # Create a subclass of WL
-      # TODO find a good name for the sub class, it should be uniq maybe use ccreate class in WLTool
-      #      klass = Class.new(WLBud::WL)
-      #      self.class.class_eval "ClassWLEngineOf#{username}On#{wlport} = klass"
-      klass = create_class("ClassWLEngineOf#{username}On#{wlport}",WLBud::WL)
+      # Create a subclass of WL      
+      klass = create_class("ClassWLEngineOf#{username}On#{wlport}", WLBud::WL)
       
       # TODO find a good place to put the program file
       program_file_dir = File.expand_path('../../../tmp/rule_dir', __FILE__)
@@ -46,7 +43,7 @@ EOF
       program_file = File.join(program_file_dir,"programfile_of_#{username}on#{wlport}")
       dir_rule = program_file_dir
       File.open(program_file, 'w'){ |file| file.write STR0 }
-      @engine = klass.new(username, program_file,{:port => wlport, :dir_rule => dir_rule})
+      @engine = klass.new(username, program_file, {:port => wlport, :dir_rule => dir_rule})
       @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
       if @engine.nil?
