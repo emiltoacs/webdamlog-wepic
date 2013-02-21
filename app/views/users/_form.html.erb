@@ -13,7 +13,7 @@
 <div id="signup">
   <div class="field">
     <%= f.label :username %><br />
-    <%= f.text_field(:username, :value => "#{ENV['USERNAME']}", :disabled => 'disabled') %>
+    <%= f.text_field(:username, :value => "#{Conf.env['USERNAME']}", :disabled => 'disabled') %>
   </div>
   <div class="field">
     <%= f.label :email %><br />

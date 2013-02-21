@@ -1,4 +1,10 @@
 <div class="opacity"></div>
-<div class="content"><div class="notice"><%= notice %></div>
-	<h2>No account yet? Sign up!</h2><%= render 'form' %>
+<div class="content">
+  <% if flash[:notice] %>
+    <div class="notice"><%= flash[:notice] %></div>
+  <% end %>
+  <% if flash[:error] %>
+    <div class="error"><%= flash[:error] %></div>
+  <% end %>
+  <h2>No account yet? Sign up!</h2><%= render 'form' %>
 </div>

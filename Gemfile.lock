@@ -32,6 +32,7 @@ GEM
     authlogic (3.2.0)
       activerecord (>= 3.0.0)
       activesupport (>= 3.0.0)
+    awesome_print (1.1.0)
     bud (0.9.5)
       eventmachine
       fastercsv
@@ -170,6 +171,7 @@ PLATFORMS
 
 DEPENDENCIES
   authlogic
+  awesome_print
   bud (= 0.9.5)
   cocaine
   coffee-rails (~> 3.2.1)

@@ -15,6 +15,7 @@ WepimApp::Application.routes.draw do
     root :to => 'users#index'
     match 'index' => 'users#index'
     match 'program' => 'program#index', :as => :program
+    match 'engine' => 'engine#index', :as => :engine
     match 'wepic' => 'wepic#index', :as => :wepic
     resources :pictures do
       member do
