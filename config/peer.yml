@@ -12,11 +12,17 @@ development: &base
   # First peer to spawn
   # A special name is manager to spawn a lightweight server used to launch other peers
   peer:
+    # name for the current peer, could be overrride by the ENV['USERNAME'] variable
     username: manager
     protocol: http
     ip: localhost
     ports_used: 3
+    # store the port on which the web server listen for requests, you can give a
+    # default value to this otherwise find_port will look for available starting
+    # from default_spawn_port of the manager
     web_port: 10000
+    # default value for the port on which the webdamlog engine listen although it
+    # will be defined by find_port
     wdl_engine_port: 20000
     #Which program is loaded by default by the peer.
     program:

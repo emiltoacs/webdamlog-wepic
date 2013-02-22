@@ -3,8 +3,7 @@ require 'active_support'
 require 'active_record'
 require './lib/wl_logger'
 
-module Conf
-  
+module Conf  
   @@init = true
   @@current_env = 'development'
   # Store in one object all the configuration related to this peer
@@ -27,28 +26,57 @@ module Conf
       # store all parameter for manager db usefull for peer that change database
       @@db['manager_db']=@@db.clone
       @@env = {}
+      
+      # setup username from env or conf file
       if ENV['USERNAME'].nil?
-        WLLogger.logger.error "Variable ENV['USERNAME'] must not be nil"
-      end
-      @@env['USERNAME'] = ENV['USERNAME']
-      if ENV['PORT'].nil?
-        WLLogger.logger.error "Variable ENV['PORT'] must not be nil"
-      end
-      @@env['PORT'] = ENV['PORT']
-      @@env['MANAGER_PORT'] = ENV['MANAGER_PORT']
-      @@init = true
-      if @@env['USERNAME'] == 'manager'
-        @@manager = true
-        WLLogger.logger.warn "the manager does not need to have a pararameter MANAGER_PORT" unless @@env['MANAGER_PORT'].nil?
+        if @@peer['peer']['username'].nil?
+          WLLogger.logger.error "Variable ENV['USERNAME'] must not be nil or the peername should be set in peer.yml peer:username"
+        else
+          @@env['USERNAME'] = @@peer['peer']['username']
+        end
       else
-        @@manager = false
-        WLLogger.logger.warn "the regular peer must have a pararameter MANAGER_PORT" if @@env['MANAGER_PORT'].nil?
+        @@env['USERNAME'] = ENV['USERNAME']
+      end
+
+      # setup port from env or conf file
+      if ENV['PORT'].nil?
+        if @@peer['peer']['web_port'].nil?
+          WLLogger.logger.error "Variable ENV['PORT'] must not be nil or the port for the current peer should be set in peer.yml peer:web_port"
+        else
+          @@env['PORT'] = @@peer['peer']['web_port']
+        end
+      else
+        @@env['PORT'] = ENV['PORT']
+      end      
+      
+      if @@env['USERNAME'] == 'manager'
+        @@manager = true        
+      else
+        @@manager = false        
         # Special config for regular peers
         # Change default db and 
         Conf.db['database']="wp_#{Conf.env['USERNAME']}"
       end
-    end
-  end
+
+      # setup manager port from env or conf file of nil is OK if it is itself the manager
+      if ENV['MANAGER_PORT'].nil?
+        if @@peer['communication']['manager_port'].nil?
+          if @@manager
+            @@env['MANAGER_PORT'] = nil
+          else
+            WLLogger.logger.warn "the regular peer must have a pararameter MANAGER_PORT"
+          end
+        else
+          @@env['MANAGER_PORT'] = @@peer['communication']['manager_port']
+        end
+      else
+        @@env['MANAGER_PORT'] = ENV['MANAGER_PORT']
+      end
+      
+      @@init = true
+    end # end unless init    
+  end # end def self.init
+
   def self.manager?
     unless @@init
       self.init
@@ -251,7 +279,7 @@ module PostgresHelper
     unless PostgresHelper.db_exists?(db_name)
       ActiveRecord::Base.establish_connection adapter:'postgresql', username:'postgres', password:'', database:'postgres'
       ActiveRecord::Base.connection.create_database db_name
-    end    
+    end
   end
 
   # Create the regular peer db as a child of the manager db
