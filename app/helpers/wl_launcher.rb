@@ -13,7 +13,7 @@ module WLLauncher
   def self.create_peer(username, properties)
     #Find an available port at the location given by the properties.
     ip = properties['peer']['ip']
-    root_port = properties['peer']['root_port']
+    root_port = properties['peer']['web_port']
     root_port = Network::find_ports(ip,1,root_port)
     if root_port==Network::SOCKET_PORT_INVALID
       return nil, false, "no port availaible to deploy this peer for #{username}"
