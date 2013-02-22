@@ -4,6 +4,7 @@ require 'active_record'
 require './lib/wl_logger'
 
 module Conf
+  
   @@init = true
   @@current_env = 'development'
   # Store in one object all the configuration related to this peer

@@ -57,7 +57,7 @@ class UsersController < ApplicationController
       begin
         WLDatabase.setup_database_server        
         if @user.save
-          EngineHelper::WLENGINE.run_bg
+          EngineHelper::WLHELPER.run
           #When user is created, he is automatically logged in, which means
           #we need to start his webdamlog session.
           format.html { redirect_to(:wepic, :notice => "Registration successfull") }

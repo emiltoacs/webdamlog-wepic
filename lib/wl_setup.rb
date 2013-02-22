@@ -152,7 +152,7 @@ WHERE
       opt.on("-D","--debug","Enter debug mode") do
         options.debug = true
       end
-    end    
+    end
     
     # All the options parsed previously are removed from the ARGV parameter tab
     # only -p for port is usefull for server
@@ -170,30 +170,45 @@ WHERE
       WLLogger.logger.info "Reset the databases"
       reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
 
-    else
+    else if argv[0] == 'server' or argv[0] == 's'
       
-      start_server = true
-      # push switch -p to specify the port the rake server will use
-      argv.push('-p')
-      argv.push(options.port)
-      # setup kind of peer
-      if options.peername.nil? or options.peername.downcase == 'manager'
-        WLLogger.logger.info "Setup a manager"        
-        options.peername = 'manager'        
+        start_server = true
+        # push switch -p to specify the port the rake server will use
+        argv.push('-p')
+        argv.push(options.port)
+        # setup kind of peer
+        if options.peername.nil? or options.peername.downcase == 'manager'
+          WLLogger.logger.info "Setup a manager"
+          options.peername = 'manager'
+        else
+          WLLogger.logger.info "Setup a regular peer"
+        end
+        # setup the pid file
+        argv.push('-P')
+        argv.push("tmp/pids/#{options.peername}.pid")
+        # Setup environement TODO check if it can be removed: replace all ENV[] by
+        # reads in this objects
+        ENV['USERNAME'] = options.peername
+        ENV['PORT'] = options.port
+        ENV['MANAGER_PORT'] = options.manager_port
+        Conf.init({force: true})
+        clean_orphaned_peer if Conf.manager?
+        setup_storage Conf.manager?
+
       else
-        WLLogger.logger.info "Setup a regular peer"
+
+        # yuk hacky: When you execute something else than starting a server you
+        # don't really need all this configurations but if it lacks it would
+        # generate errors due to missing Conf that would not have been
+        # generated.
+        #
+        ENV['USERNAME'] = options.peername
+        ENV['PORT'] = options.port
+        ENV['MANAGER_PORT'] = options.manager_port
+        Conf.init({force: true})
+
       end
-      # setup the pid file
-      argv.push('-P')
-      argv.push("tmp/pids/#{options.peername}.pid")
-      # Setup environement TODO check if it can be removed: replace all ENV[] by
-      # reads in this objects
-      ENV['USERNAME'] = options.peername
-      ENV['PORT'] = options.port
-      ENV['MANAGER_PORT'] = options.manager_port
-      Conf.init({force: true})
-      clean_orphaned_peer if Conf.manager?
-      setup_storage Conf.manager?
+      
     end
     return start_server, options
   end

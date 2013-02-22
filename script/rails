@@ -5,9 +5,12 @@
 root = File.expand_path('../../',  __FILE__)
 require "#{root}/lib/wl_setup"
 start_server, options = WLSetup.parse!(ARGV)
+
 if start_server
+
   # Regular rails script
   APP_PATH = File.expand_path('../../config/application',  __FILE__)
   require File.expand_path('../../config/boot',  __FILE__)
   require 'rails/commands'
+
 end

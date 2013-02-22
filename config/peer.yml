@@ -1,12 +1,16 @@
-# This represent the generic parameters used by the manager
+# Gather here most of the useful parameter for a given peer
 development: &base
-#Communication ports
+  # Manager settings:
+  # the manager who launched the peer,
+  # or the manager itself if the current peer is a manager
   communication:
     ip : localhost
     manager_port : 3100
+    # Choose a prefered port to spawn peer if not available, find_port will look for others
     default_spawn_port : 10000
 
-  #Peer properties
+  # First peer to spawn
+  # A special name is manager to spawn a lightweight server used to launch other peers
   peer:
     username: manager
     protocol: http
@@ -21,13 +25,9 @@ development: &base
       source : app/assets/wlprogram/prog1.wl
       
 test:
-  #Communication ports for testing.
   communication:
     manager_port : 4100
     default_spawn_port : 30000
-
-  #Testing Peer properties
-  #Peer properties
   peer:
     username: manager
     protocol : http
@@ -35,7 +35,6 @@ test:
     ports_used : 5
     root_port : 10000
     wdl_engine_port : 20000
-    #Which program is loaded by default by the peer.
     program:
       name : prog1.wl
       author : johndoe
