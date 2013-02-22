@@ -60,14 +60,14 @@ module Conf
 
       # setup manager port from env or conf file of nil is OK if it is itself the manager
       if ENV['MANAGER_PORT'].nil?
-        if @@peer['communication']['manager_port'].nil?
+        if @@peer['manager']['manager_port'].nil?
           if @@manager
             @@env['MANAGER_PORT'] = nil
           else
             WLLogger.logger.warn "the regular peer must have a pararameter MANAGER_PORT"
           end
         else
-          @@env['MANAGER_PORT'] = @@peer['communication']['manager_port']
+          @@env['MANAGER_PORT'] = @@peer['manager']['manager_port']
         end
       else
         @@env['MANAGER_PORT'] = ENV['MANAGER_PORT']

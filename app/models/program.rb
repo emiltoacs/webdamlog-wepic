@@ -4,7 +4,6 @@ class Program < AbstractDatabase
       self.table_name = 'programs'
       connection.create_table 'programs', :force => true do |t|
         t.string :name
-        t.string :author
         t.text :data
         t.string :source
         t.timestamps
@@ -19,13 +18,12 @@ class Program < AbstractDatabase
   #
   def self.schema
     {'name' => 'string',
-      'author' => 'string',
       'data' => 'string',
       'source' => 'string'
     }
   end
   
   setup
-  attr_accessible :name, :author, :data, :source
+  attr_accessible :name, :data, :source
   validates_uniqueness_of :name
 end
