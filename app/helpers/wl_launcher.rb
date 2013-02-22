@@ -13,17 +13,17 @@ module WLLauncher
   def self.create_peer(username, properties)
     #Find an available port at the location given by the properties.
     ip = properties['peer']['ip']
-    root_port = properties['peer']['web_port']
-    root_port = Network::find_ports(ip,1,root_port)
-    if root_port==Network::SOCKET_PORT_INVALID
+    web_port = properties['manager']['default_spawn_port']
+    web_port = Network::find_ports(ip,1,web_port)
+    if web_port==Network::SOCKET_PORT_INVALID
       return nil, false, "no port availaible to deploy this peer for #{username}"
     else
-      properties['peer']['root_port'] = root_port
+      properties['peer']['root_port'] = web_port
       #Create the peer active record.
       protocol = properties['peer']['protocol']
-      st, msg = WLLauncher.start_peer(username,root_port)
+      st, msg = WLLauncher.start_peer(username,web_port)
       if st
-        peer = Peer.new(:username => username, :ip=> ip, :port => root_port, :active => true, :protocol => protocol)
+        peer = Peer.new(:username => username, :ip=> ip, :port => web_port, :active => true, :protocol => protocol)
         peer.save
       end
       return peer, st, msg
@@ -41,7 +41,7 @@ module WLLauncher
         cmd = "rails server -p #{new_peer_port} -u #{new_peer_name} -m #{port}"
         WLLogger.logger.debug "execute: #{cmd}"
         child_pid = Process.spawn cmd
-      end      
+      end
       #server = TCPServer.new(port.to_i+1)
       server = TCPServer.new(port)
       b, msg = wait_for_acknowledgment(server,new_peer_port)

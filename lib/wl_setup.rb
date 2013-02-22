@@ -239,7 +239,7 @@ WHERE
   #    # Port setup
   #    ENV['PORT'] = args[port_opt_index+1] if (port_opt_index)
   #    if port_opt_index.nil?
-  #      ENV['PORT'] = properties['communication']['manager_port'].to_s
+  #      ENV['PORT'] = properties['manager']['manager_port'].to_s
   #      args.push('-p')
   #      args.push(ENV['PORT'])
   #      port_opt_index=args.size-2

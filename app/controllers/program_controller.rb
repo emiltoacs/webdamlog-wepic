@@ -13,11 +13,10 @@ class ProgramController < ApplicationController
   end
   
   #Loads a webdamlog program specified by the given filepath.
-  def load_program(filepath="",name=nil,author=nil)
+  def load_program(filepath="", name)
     
     #Load default program PeerProperties.config if missing
     name ||= Conf.peer['peer']['program']['name'] if Conf.peer['peer']['program']['name']
-    author ||= Conf.peer['peer']['program']['author'] if Conf.peer['peer']['program']['author']
     filepath = Conf.peer['peer']['program']['source'] if Conf.peer['peer']['program']['source']
     
     #Get the data attribute from the file.
@@ -32,12 +31,12 @@ class ProgramController < ApplicationController
       logger.warn error.inspect
       return nil
     end
-    logger.info "Program Configuration:\n\t-#{name}\n\t-#{author}\n\t-#{filepath}"
+    logger.info "Program Configuration:\n\t-#{name}\n\t-#{filepath}"
 
-    # WLBUDinsert 
+    # WLBUDinsert
     
     #This is the table in the database that is storing the program
-    program = Program.new(:name=>name,:author=>author,:source=>filepath,:data=>data)
+    program = Program.new(:name=>name,:source=>filepath,:data=>data)
     return nil unless program.save
     program
   end

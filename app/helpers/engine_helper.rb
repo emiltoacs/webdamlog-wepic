@@ -28,10 +28,12 @@ fact bootstrap@p0(3);
 fact bootstrap@p0(4);
 end
 EOF
+    
     def initialize
-      username = Conf.env['USERNAME']
-      root_port = Integer(Conf.env['PORT'])
+      username = Conf.peer['peer']['peername']
+      root_port = Integer(Conf.peer['peer']['web_port'])
       wlport = Network.find_ports('localhost', 1, root_port+1)
+      Conf.peer['peer']['wdl_engine_port'] = Integer(wlport)
       peer_name = "peername_#{username}on#{wlport}"
 
       # Dynamic class ClassWLEngineOf#{username}On#{wlport} subclass WLBud

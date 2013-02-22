@@ -9,17 +9,15 @@ class ConfTest < Test::Unit::TestCase
     assert rails_env.test?
     assert_equal "test", rails_env
     Conf.init(:rails_env=>rails_env)
-    assert_not_nil(Conf.peer['communication']['manager_port'])
-    assert_equal 4100, Conf.peer['communication']['manager_port']
-    assert_not_nil(Conf.peer['communication']['default_spawn_port'])
-    assert_equal 30000, Conf.peer['communication']['default_spawn_port']
+    assert_not_nil(Conf.peer['manager']['manager_port'])
+    assert_equal 4100, Conf.peer['manager']['manager_port']
+    assert_not_nil(Conf.peer['manager']['default_spawn_port'])
+    assert_equal 30000, Conf.peer['manager']['default_spawn_port']
     
     assert_equal "http", Conf.peer['peer']['protocol']
     assert_equal "localhost", Conf.peer['peer']['ip']
-    assert_equal 5, Conf.peer['peer']['ports_used']
     assert_equal 10000, Conf.peer['peer']['root_port']
     assert_equal "prog1.wl", Conf.peer['peer']['program']['name']
-    assert_equal "johndoe", Conf.peer['peer']['program']['author']
     assert_equal "app/assets/wlprogram/prog1.wl", Conf.peer['peer']['program']['source']
 
     assert_equal "postgresql", Conf.db['adapter']
