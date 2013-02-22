@@ -2,8 +2,8 @@ require 'engine_helper'
 
 module EngineHelper
 
-  WLSINGELTON = EngineHelper.instance
-  WLENGINE = WLSINGELTON.engine
-  WLLOGGER = WLSINGELTON.enginelogger
+  WLHELPER = EngineHelper.instance
+  WLENGINE = WLHELPER.engine
+  WLLOGGER = WLHELPER.enginelogger
 
 end

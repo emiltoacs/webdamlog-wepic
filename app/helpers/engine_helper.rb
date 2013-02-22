@@ -5,6 +5,9 @@ require 'webdamlog/wlbud'
 # There is the set of function used to manage the webdamlog engine from the
 # wepic app
 #
+# See the engine_initializer that define the constant used thoughout the
+# project to refere to this webdamlog engine.
+#
 module EngineHelper
   
   # TODO add action on shutdown for the wlengine such as erase program file if
@@ -32,7 +35,9 @@ EOF
       peer_name = "peername_#{username}on#{wlport}"
 
       # Dynamic class ClassWLEngineOf#{username}On#{wlport} subclass WLBud
-      # Create a subclass of WL      
+      # Create a subclass of WL FIXME maybe useless to subclass here, since I
+      # implement this as Singleton, no risk of border-effect in class varaible
+      # 
       klass = create_class("ClassWLEngineOf#{username}On#{wlport}", WLBud::WL)
       
       # TODO find a good place to put the program file
@@ -49,11 +54,14 @@ EOF
       if @engine.nil?
         @enginelogger.fatal("creation of the webdamlog engine instance has failed:\n#{msg}")
       else
-        @enginelogger.info("new instance of webdamlog engine created:\n#{msg}")
+        @enginelogger.debug("new instance of webdamlog engine created:\n#{msg}")
       end
     end #initialize
 
+    def run
+      @engine.run_bg
+      @enginelogger.info("internal webdamlog engine start running")
+    end
     
-
   end
 end
