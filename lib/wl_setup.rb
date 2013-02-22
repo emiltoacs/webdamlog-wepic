@@ -170,46 +170,35 @@ WHERE
       WLLogger.logger.info "Reset the databases"
       reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
 
-    else if argv[0] == 'server' or argv[0] == 's'
-      
+    else # continue to rails/command
+
+      # setup kind of peer: will be stored in Conf
+      if options.peername.nil? or options.peername.downcase == 'manager'
+        WLLogger.logger.info "Setup a manager"
+        options.peername = 'manager'
+      else
+        WLLogger.logger.info "Setup a regular peer"
+      end
+      # setup this environement variable are usefull to avoid Conf file to fail when loading
+      ENV['USERNAME'] = options.peername
+      ENV['PORT'] = options.port
+      ENV['MANAGER_PORT'] = options.manager_port
+      Conf.init({force: true})
+
+      if argv[0] == 'server' or argv[0] == 's'      
         start_server = true
         # push switch -p to specify the port the rake server will use
         argv.push('-p')
-        argv.push(options.port)
-        # setup kind of peer
-        if options.peername.nil? or options.peername.downcase == 'manager'
-          WLLogger.logger.info "Setup a manager"
-          options.peername = 'manager'
-        else
-          WLLogger.logger.info "Setup a regular peer"
-        end
+        argv.push(options.port)     
         # setup the pid file
         argv.push('-P')
         argv.push("tmp/pids/#{options.peername}.pid")
-        # Setup environement TODO check if it can be removed: replace all ENV[] by
-        # reads in this objects
-        ENV['USERNAME'] = options.peername
-        ENV['PORT'] = options.port
-        ENV['MANAGER_PORT'] = options.manager_port
-        Conf.init({force: true})
         clean_orphaned_peer if Conf.manager?
         setup_storage Conf.manager?
-
-      else
-
-        # yuk hacky: When you execute something else than starting a server you
-        # don't really need all this configurations but if it lacks it would
-        # generate errors due to missing Conf that would not have been
-        # generated.
-        #
-        ENV['USERNAME'] = options.peername
-        ENV['PORT'] = options.port
-        ENV['MANAGER_PORT'] = options.manager_port
-        Conf.init({force: true})
-
-      end
+      end # end if server
       
-    end
+    end # end continue to rails/command
+
     return start_server, options
   end
 
