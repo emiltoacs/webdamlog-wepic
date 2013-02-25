@@ -1,12 +1,14 @@
 root = File.expand_path('../../',  __FILE__)
 require "#{root}/lib/wl_logger"
 require "#{root}/lib/wl_tool"
+require "#{root}/lib/monkey_patch"
 require "#{root}/app/helpers/wl_launcher"
 require "#{root}/app/helpers/wl_database"
 require 'sqlite3'
 require 'pg'
 require 'optparse'
 require 'ostruct'
+
 
 module WLSetup
   
@@ -121,7 +123,7 @@ WHERE
   end
 
   # Parse the options given in the command line and modify it for subsequent
-  # rails launch. Setup the Conf object with the default value,
+  # rails launch. Setup the Conf object with the default value (manager, 4000),
   # or the value found in the Yaml configuration file or in the command line.
   #
   def self.parse!(argv)
@@ -136,28 +138,38 @@ WHERE
       opt.banner = "Usage: rails s [options]"
       # -U take a mandatory argument, do not use -u since it is used by the
       # server after for debug flag
-      opt.on("-UUSERNAME", "--username USERNAME",
+      opt.on("-U", "--username USERNAME",
         "Specify the user name for this peer, default is '#{options.peername}'") do |username|
         options.peername = username
       end
-      opt.on("-pPORT", "--port PORT", "give the port number on which this peer should listen") do |p|
+      opt.on("-p", "--port PORT", "give the port number on which this peer should listen") do |p|
         options.port = p
       end
       opt.on("--reset", "custom tasks used to remove all the database to start from scratch a new rails manager") do
         options.reset = true
       end
-      opt.on("-m MPORT", "--manager-port MPORT", "give the port on which the manager is waiting your answer") do |mport|
+      opt.on("-m", "--manager-port MPORT", "give the port on which the manager is waiting your answer") do |mport|
         options.manager_port = mport
       end
-      opt.on("-D","--debug","Enter debug mode") do
-        options.debug = true
-      end
+      # options for server: see rails/commands/server
+      opt.on("-b", "--binding=ip", String,
+        "Binds Rails to the specified ip.", "Default: 0.0.0.0") { |v| options.Host = v }
+      opt.on("-c", "--config=file", String,
+        "Use custom rackup configuration file") { |v| options.config = v }
+      opt.on("-d", "--daemon", "Make server run as a Daemon.") { options.daemonize = true }
+      opt.on("-u", "--debugger", "Enable ruby-debugging for the server.") { options.debugger = true }
+      opt.on("-e", "--environment=name", String,
+        "Specifies the environment to run this server under (test/development/production).",
+        "Default: development") { |v| options.environment = v }
+      opt.on("-P","--pid=pid",String,
+        "Specifies the PID file.",
+        "Default: tmp/pids/server.pid") { |v| options.pid = v }
     end
     
     # All the options parsed previously are removed from the ARGV parameter tab
     # only -p for port is usefull for server
     # 
-    opts.parse!(argv)
+    opts.parse(argv)
     start_server = true
     
     if options.reset
@@ -179,20 +191,31 @@ WHERE
       else
         WLLogger.logger.info "Setup a regular peer"
       end
-      # setup this environement variable are usefull to avoid Conf file to fail when loading
+      # setup this environment variable are useful to avoid Conf file to fail when loading
+      # TODO remove these and test
       ENV['USERNAME'] = options.peername
       ENV['PORT'] = options.port
       ENV['MANAGER_PORT'] = options.manager_port
       Conf.init({force: true})
-
+      
       if argv[0] == 'server' or argv[0] == 's'      
         start_server = true
+        ['-U', '--username', '-m', '--manager-port'].each do |switch|
+          id = argv.index(switch)
+          unless id.nil?
+            2.times{argv.delete_at id}
+          end
+        end
         # push switch -p to specify the port the rake server will use
-        argv.push('-p')
-        argv.push(options.port)     
+        inter = ['-p', '--port'] & ARGV
+        if inter.empty?
+          argv.push '-p'
+          argv.push Conf.env['PORT']
+        end
         # setup the pid file
         argv.push('-P')
         argv.push("tmp/pids/#{options.peername}.pid")
+
         clean_orphaned_peer if Conf.manager?
         setup_storage Conf.manager?
       end # end if server
@@ -202,7 +225,7 @@ WHERE
     return start_server, options
   end
 
-  
+  # Use to create database before loading model
   def self.setup_storage manager
     if manager
       PostgresHelper.create_manager_db Conf.db['database']

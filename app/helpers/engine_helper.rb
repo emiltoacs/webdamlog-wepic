@@ -1,6 +1,7 @@
 require 'wl_logger'
 require 'wl_tool'
 require 'webdamlog/wlbud'
+require 'fileutils'
 
 # There is the set of function used to manage the webdamlog engine from the
 # wepic app
@@ -18,51 +19,62 @@ module EngineHelper
     include WLTool
 
     attr_accessor :engine, :enginelogger
-    
-    STR0 = <<EOF
-peer p0=localhost:11110;
-collection ext persistent bootstrap@p0(atom1*);
-fact bootstrap@p0(1);
-fact bootstrap@p0(2);
-fact bootstrap@p0(3);
-fact bootstrap@p0(4);
-end
-EOF
-    
+        
     def initialize
-      username = Conf.peer['peer']['peername']
-      root_port = Integer(Conf.peer['peer']['web_port'])
-      wlport = Network.find_ports('localhost', 1, root_port+1)
-      Conf.peer['peer']['wdl_engine_port'] = Integer(wlport)
-      peer_name = "peername_#{username}on#{wlport}"
+      @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
+      username = Conf.peer['peer']['username']
+      #web_port = Integer(Conf.peer['peer']['web_port'])
+      @port = Network.find_port Conf.peer['peer']['ip'], :UDP
+      unless @port
+        @enginelogger.fatal("unable to find a UDP port for the webdamlog engine")
+        raise StandardError, "unable to find a UDP port for the webdamlog engine"
+      end
+      Conf.peer['peer']['wdl_engine_port'] = Integer(@port)
+      @peer_name = "peername_#{username}on#{@port}"
 
-      # Dynamic class ClassWLEngineOf#{username}On#{wlport} subclass WLBud
+      # Dynamic class ClassWLEngineOf#{username}On#{@port} subclass WLBud
       # Create a subclass of WL FIXME maybe useless to subclass here, since I
       # implement this as Singleton, no risk of border-effect in class varaible
-      # 
-      klass = create_class("ClassWLEngineOf#{username}On#{wlport}", WLBud::WL)
+      #
+      klass = create_class("ClassWLEngineOf#{username}On#{@port}", WLBud::WL)
+
+      program_file = create_program_dir Conf.peer['peer']['program']['file_path']
+      dir_rule = File.dirname program_file
+      @engine = klass.new(username, program_file, {:port => @port, :dir_rule => dir_rule})
       
-      # TODO find a good place to put the program file
-      program_file_dir = File.expand_path('../../../tmp/rule_dir', __FILE__)
-      unless (File::directory?(program_file_dir))
-        Dir.mkdir(program_file_dir)
-      end
-      program_file = File.join(program_file_dir,"programfile_of_#{username}on#{wlport}")
-      dir_rule = program_file_dir
-      File.open(program_file, 'w'){ |file| file.write STR0 }
-      @engine = klass.new(username, program_file, {:port => wlport, :dir_rule => dir_rule})
-      @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
-      msg = "peer_name = #{peer_name} program_file = #{program_file} dir_rule = #{dir_rule}"
+      msg = "peer_name = #{@peer_name} program_file = #{program_file} dir_rule = #{dir_rule} on port #{@port}"
       if @engine.nil?
         @enginelogger.fatal("creation of the webdamlog engine instance has failed:\n#{msg}")
       else
         @enginelogger.debug("new instance of webdamlog engine created:\n#{msg}")
       end
-    end #initialize
+    end # initialize
 
     def run
       @engine.run_bg
-      @enginelogger.info("internal webdamlog engine start running")
+      @enginelogger.info("internal webdamlog engine start running listeining on port #{@port}")
+    end
+
+    private
+
+    # Create the directory in which to put the program that must be writing into
+    # files because of bud methods to parse bloom blocks.
+    #
+    # Return the absolute path to the program file
+    #
+    def create_program_dir program_file
+      program_file_dir = File.expand_path('../../../tmp/rule_dir', __FILE__)
+      unless (File::directory?(program_file_dir))
+        Dir.mkdir(program_file_dir)
+      end
+      peer_program_dir = File.join(program_file_dir, @peer_name)
+      unless (File::directory?(peer_program_dir))
+        Dir.mkdir(peer_program_dir)
+      end
+      # TODO write content of the file instead of filename
+      pg_file = File.join(peer_program_dir, File.basename(program_file))
+      FileUtils.cp program_file, pg_file
+      return pg_file
     end
     
   end

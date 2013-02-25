@@ -8,7 +8,7 @@ class WLLauncherTest < ActionController::IntegrationTest
     ENV["PORT"] = "4000"
     ENV["MANAGER_PORT"] = nil
     Conf.init({rails_env:'test', force: true })
-    @root_port = Conf.peer['peer']['root_port']
+    @web_port = Conf.peer['peer']['web_port']
     @ip = Conf.peer['peer']['ip']    
   end
     
@@ -27,7 +27,7 @@ class WLLauncherTest < ActionController::IntegrationTest
       "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
     assert_equal port, Network.find_ports(ip,1,port)
     ip = Conf.peer['peer']['ip']
-    port = Conf.peer['peer']['root_port']
+    port = Conf.peer['peer']['web_port']
     assert Network.port_available?(ip,port),
       "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
   end
@@ -44,12 +44,12 @@ class WLLauncherTest < ActionController::IntegrationTest
   #
   def test_2_find_ports_when_port_not_free
     #This test first assumes that all ports are available.
-    assert_equal(@root_port, Network.find_ports(@ip,1,@root_port))
+    assert_equal(@web_port, Network.find_ports(@ip,1,@web_port))
     #Now the test blocks a port and check that method behaves appropriately
     begin
-      port_reserved = @root_port
+      port_reserved = @web_port
       socket_block_port = TCPServer.new(@ip, port_reserved)
-      # FIXME assert_equal(@root_port+1, WLLauncher.find_ports(@ip, @ports_used, @root_port))
+      # FIXME assert_equal(@web_port+1, WLLauncher.find_ports(@ip, @ports_used, @web_port))
       socket_block_port.close
     rescue => error
       WLLogger.logger.warn error.inspect

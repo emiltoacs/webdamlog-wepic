@@ -5,7 +5,9 @@ development: &base
   # or the manager itself if the current peer is a manager
   manager:
     ip : localhost
-    manager_port : 3100
+    # default value in WLSetup is 4000 if no flag given
+    manager_port :
+    manager_waiting_port :
     # Choose a prefered port to spawn peer if not available, find_port will look for others
     default_spawn_port : 10000
 
@@ -19,15 +21,14 @@ development: &base
     # store the port on which the web server listen for requests, you can give a
     # default value to this otherwise find_port if not available or by the manager
     # default_spawn_port if this peer has been launched by a manager
-    web_port: 10000
+    web_port: 4000
     # default value for the port on which the webdamlog engine listen although it
     # will be defined by find_port if not available or by the manager
-    # default_spawn_port if htis peer has been launched by a manager
-    wdl_engine_port: nil
+    # default_spawn_port if this peer has been launched by a manager
+    wdl_engine_port:
     #Which program is loaded by default by the peer.
     program:
-      name : prog1.wl
-      file_path : app/assets/wlprogram/prog1.wl
+      file_path : app/assets/wlprogram/bootstrap_program.wl
       
 test:
   communication:
@@ -37,11 +38,10 @@ test:
     username: manager
     protocol : http
     ip : localhost
-    root_port : 10000
+    web_port : 10000
     wdl_engine_port : 20000
     program:
-      name : prog1.wl
-      source : app/assets/wlprogram/prog1.wl
+      file_path : app/assets/wlprogram/bootstrap_program.wl
 
 production:
   <<: *base

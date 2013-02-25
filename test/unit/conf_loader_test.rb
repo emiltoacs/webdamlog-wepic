@@ -16,7 +16,7 @@ class ConfTest < Test::Unit::TestCase
     
     assert_equal "http", Conf.peer['peer']['protocol']
     assert_equal "localhost", Conf.peer['peer']['ip']
-    assert_equal 10000, Conf.peer['peer']['root_port']
+    assert_equal 10000, Conf.peer['peer']['web_port']
     assert_equal "prog1.wl", Conf.peer['peer']['program']['name']
     assert_equal "app/assets/wlprogram/prog1.wl", Conf.peer['peer']['program']['source']
 
