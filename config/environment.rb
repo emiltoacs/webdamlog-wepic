@@ -1,11 +1,6 @@
 # Load the rails application
 require File.expand_path('../application', __FILE__)
 
-# Initialize configuration with standard settings from files that describe
-# manager environment
-#require 'wl_tool'
-#Conf.init({ force:true })
-
 # Initialize the rails application
 WepimApp::Application.initialize!
 
@@ -16,10 +11,8 @@ if Conf.manager?
 else  
   require 'wl_peer'
   require 'engine_helper'
-  
-  #WepimApp::Application.instance_variable_set(:@wl_engine, WebdamlogEngine::WebdamlogEngine.new)
-  
-  WLLogger.logger.info "Wepic peer of #{Conf.env['USERNAME']},#{Conf.env['PORT']} has finsihed initialization and is ready to send acknowedgement to manager"
-  WepicPeer.send_acknowledgment(Conf.env['USERNAME'],Conf.env['MANAGER_PORT'],Conf.env['PORT'])
+    
+  WLLogger.logger.info "Wepic peer of #{Conf.env['USERNAME']},#{Conf.env['PORT']} has finished initialization and is ready to send acknowedgement to manager"
+  WepicPeer.send_acknowledgment(Conf.env['USERNAME'],Conf.env['MANAGER_PORT'],Conf.env['PORT']) unless Conf.standalone?
 end
 

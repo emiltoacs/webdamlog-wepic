@@ -24,23 +24,25 @@ module WLDatabase
   # do since their are just files) )
   #
   def self.setup_database_server
-    db_name = Conf.db['database']
     unless @@databases[Conf.env['username']]
+      db_name = Conf.db['database']
       # Connect to postgres database with admin user postgres that always
       # exist. Then create the first database for the manager
-      if Conf.db[:adapter] == 'postgresql'
-        if PostgresHelper.exists? db_name
-          msg = "database object WLDatabase absent in the list of db but the physical database already exists in the database server"
-          WLLogger.logger.error msg
-          raise msg
-        end
-        if Conf.manager?
-          PostgresHelper.create_manager_db db_name
+      if Conf.db['adapter'] == 'postgresql'
+        if PostgresHelper.db_exists? db_name
+          msg = "Database connection via ORM WLDatabase absent but the database #{db_name} exists in the database server postgreSQL"
+          WLLogger.logger.debug msg
         else
-          PostgresHelper.create_user_db db_name
+          msg = "Need to create the database #{db_name} in the database server postgreSQL"
+          WLLogger.logger.debug msg
+          if Conf.manager?
+            PostgresHelper.create_manager_db db_name
+          else
+            PostgresHelper.create_user_db db_name
+          end
         end
       end
-      WLDatabase.create_or_connect_db(Conf.env['username'], db_name, Conf.db)
+      WLDatabase.establish_orm_db_connection(Conf.env['username'], db_name, Conf.db)
     end
   end
   
@@ -55,8 +57,8 @@ module WLDatabase
   # Creates a new database object for the user using his database_id as key. If
   # database already exists, simply connects to it (no override).
   #
-  def self.create_or_connect_db(database_id,db_name,configuration)
-    @@databases[database_id]=WLInstanceDatabase.new(database_id,db_name,configuration)
+  def self.establish_orm_db_connection(database_id,db_name,configuration)
+    @@databases[database_id] ||= WLInstanceDatabase.new(database_id,db_name,configuration)
     @@databases[database_id]
   end
 
@@ -67,7 +69,7 @@ module WLDatabase
   end
 
   def destroy(database_id)
-    @@databases[database_id].destroy
+    @@databases[database_id].destroy_classes_and_database
     @@databases.delete(database_id)
   end
 
@@ -97,12 +99,14 @@ module WLDatabase
       @id = database_id
       @db_name = db_name
       @configuration = configuration
-      @initialized ||= false
-      create_schema
-      if need_bootstrap?
-        init_bootstrap
-      end
-      @initialized = true
+      @initialized = initialized?
+      unless @initialized
+        create_schema
+        if need_bootstrap?
+          init_bootstrap
+        end
+        @initialized = true
+      end      
     end
 
     def need_bootstrap?
@@ -120,16 +124,17 @@ module WLDatabase
     #
     def initialized?
       if @initialized.nil?
-        unless db_exists? @db_name
-          if @relation_classes.empty?
+
+        if db_exists? @db_name
+          if @relation_classes.nil? or @relation_classes.empty?
             @initialized = false
           else
-            @relation_classes.each do |model|
+            @relation_classes.each do |model| # each relation must have a model connected
               unless table_exists_for_model? model
                 WLLogger.logger.warn "database #{@db_name} seems to be corrupted: #{model} has no table in the database"
                 @initialized=false
               end
-              @initilized = true
+              @initialized = true
             end
             WLLogger.logger.warn "database #{@db_name} exists but there is no model to load"
             @initialized = false
@@ -137,16 +142,19 @@ module WLDatabase
         else
           @initialized = false
         end
-      else
+
+      else # @initialized.nil?
+        
         if @initialized
           if @wlschema.nil? or !table_exists_for_model?(@wlschema)
-            WLLogger.logger.warn "database #{@db_name} seems to be corrupted: wlschema not found"
+            WLLogger.logger.warn "database #{@db_name}supposed to be initialized but it seems to be corrupted: wlschema not found"
             @initialized=false
           end
         end
         return @initialized
-      end
-    end
+        
+      end # @initialized.nil?
+    end # initialized?
 
     #Resets instance schemas and relation_classes attributes.
     #Remove all generated model classes.
@@ -163,14 +171,26 @@ module WLDatabase
     # Removes the database file and generated model classes. Also resets
     # instance schemas and relation_classes attributes. Use
     # create_or_retrieve_database to reinitialize.
-    def destroy
+    def destroy_classes_and_database
       #Remove all generated model classes
-      destroy_classes      
+      destroy_classes
       #Destroy the db
-      path = Pathname.new(@db_name)
-      rails_root = File.expand_path('.')
-      file = path.absolute? ? path.to_s : File.join(rails_root, path)
-      FileUtils.rm(file)
+      case Conf.db['adapter']
+      when 'sqlite3'
+        path = Pathname.new(@db_name)
+        rails_root = File.expand_path('.')
+        file = path.absolute? ? path.to_s : File.join(rails_root, path)
+        FileUtils.rm(file)
+      when 'postgresql'
+        conn = PGconn.open(:dbname => @db_name, :user => Conf.db['username'])
+        sqldrop = "DROP DATABASE #{@db_name}"
+        begin
+          rs = conn.exec(sqldrop)
+          p "#{sqldrop} succeed"
+        rescue PG::Error => err
+          p "Wepic Warning #{err.inspect}"
+        end
+      end
     end
 
     def db_exists? (db_name)
@@ -183,14 +203,16 @@ module WLDatabase
       
     end
     
-    # This method creates a special table that represents the schema of the
-    # database. Since database schemas are different for every user, storing
+    # Initialize @wlschema, the model that keep the schema of the database for
+    # this peer. Since database schemas are different for every user, storing
     # them is a quick way of loading efficient methods into the newly created
     # instance.
-    # 
+    #
+    # Also it creates the model for all the tables that @wlshema knows
+    #
     def create_schema
-      # The hash that keep the correspondance between the model class name and
-      # the class themsleves
+      # The hash that keep the correspondence between the model class name and
+      # the class themselves
       #
       @relation_classes ||= Hash.new
       unless @relation_classes.empty?
@@ -234,13 +256,13 @@ module WLDatabase
     end
 
     def init_bootstrap
-      # Create the meta data for the current database, usefull on reload   
+      # Create the meta data for the current database, useful on reload
       @wlmeta = create_model(DATABASE_META,DATABASE_META_SCHEMA)
       @wlmeta.new(:id=>@id, :dbname=>@db_name, :configuration=>@configuration, :init=>true).save
       # XXX The error was basically impossible to guess but finally found it
       # do not add the User class here or Authlogic will not be able to handle
       # sessions properly.
-      # 
+      #
       # Init manually the two buildins relations created when rails has parsed
       # the models
       pic = WLTool::class_exists("Picture", ActiveRecord::Base)
@@ -347,20 +369,21 @@ module WLDatabase
     def table_exists_for_model?(relation_name)
       if @relation_classes.key? relation_name
         model = @relation_classes[relation_name]
-      else if relation_name.is_a? Class and relation_name.ancestors.includes? <= ActiveRecord::Base
-          model = relation_name.table_name
-        else
-          WLLogger.logger.warn "no such table #{relation_name} in @wlschema"
-          return false
-        end
+      elsif relation_name.is_a? Class and relation_name.ancestors.includes? <= ActiveRecord::Base
+        model = relation_name.table_name
+      else
+        WLLogger.logger.warn "#{relation_name} is not a model"
+        return false
       end
 
       if model.respond_to? :connection and model.respond_to? :table_name
         return model.connection.table_exists?(model.table_name)
       else
-        WLLogger.logger.warn "Value of #{relation_name} in @wlschema is #{@relation_classes[relation_name].class} expected to respond_to? :connection and :table_name"
+        WLLogger.logger.warn "Relation name #{relation_name} has model #{model} expected to respond_to? :connection and :table_name"
         return false
       end
-    end
-  end
-end
+    end # table_exists_for_model?
+
+  end # class WLInstanceDatabase
+
+end # module WLDatabase

@@ -69,7 +69,7 @@ class WelcomeController < ApplicationController
   def start
     @account = Peer.find(params[:id])
     Thread.new do
-      WLLauncher.start_peer(ENV['USERNAME'],@account.username,ENV['PORT'],@account.port)
+      WLLauncher.start_peer(@account.username,@account.port,@account)
     end
     @account.active=true
     @account.save
@@ -91,8 +91,8 @@ class WelcomeController < ApplicationController
     end
   end
 
-  #This method is called by the javascript inside app/views/welcome/waiting.html.erb
-  #when the server is ready.
+  # This method is called by the javascript inside
+  # app/views/welcome/waiting.html.erb when the server is ready.
   def confirm_server_ready
     @account = Peer.find(params[:id])
     respond_to do |format|

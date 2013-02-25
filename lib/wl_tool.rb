@@ -4,7 +4,7 @@ require 'active_record'
 require './lib/wl_logger'
 
 module Conf  
-  @@init = true
+  @@init = false
   @@current_env = 'development'
   # Store in one object all the configuration related to this peer
   # + put :force => true in options to force reloading of conf
@@ -36,44 +36,62 @@ module Conf
         end
       else
         @@env['USERNAME'] = ENV['USERNAME']
+        @@peer['peer']['username'] = @@env['USERNAME']
       end
-
       # setup port from env or conf file
       if ENV['PORT'].nil?
         if @@peer['peer']['web_port'].nil?
           WLLogger.logger.error "Variable ENV['PORT'] must not be nil or the port for the current peer should be set in peer.yml peer:web_port"
         else
-          @@env['PORT'] = @@peer['peer']['web_port']
+          if @@peer['peer']['web_port'].is_i?
+            @@env['PORT'] = @@peer['peer']['web_port']
+          else
+            WLLogger.logger.error "web_port #{@@peer['peer']['web_port']} is not an integer"
+          end
         end
       else
-        @@env['PORT'] = ENV['PORT']
-      end      
-      
-      if @@env['USERNAME'] == 'manager'
-        @@manager = true        
-      else
-        @@manager = false        
-        # Special config for regular peers
-        # Change default db and 
-        Conf.db['database']="wp_#{Conf.env['USERNAME']}"
+        if ENV['PORT'].is_i?
+          @@env['PORT'] = ENV['PORT']
+          @@peer['peer']['web_port'] = @@env['PORT']
+        else
+          WLLogger.logger.error "PORT #{ENV['PORT']} is not an integer"
+        end
       end
 
-      # setup manager port from env or conf file of nil is OK if it is itself the manager
-      if ENV['MANAGER_PORT'].nil?
-        if @@peer['manager']['manager_port'].nil?
-          if @@manager
-            @@env['MANAGER_PORT'] = nil
-          else
-            WLLogger.logger.warn "the regular peer must have a pararameter MANAGER_PORT"
-          end
-        else
-          @@env['MANAGER_PORT'] = @@peer['manager']['manager_port']
-        end
+      if @@env['USERNAME'] == 'manager'
+        @@manager = true
       else
-        @@env['MANAGER_PORT'] = ENV['MANAGER_PORT']
+        @@manager = false
+        # Special config for regular peers
+        # Change default db
+        @@db['database']="wp_#{@@env['USERNAME']}"
       end
       
+      # Setup manager port from env or conf file. Nil is OK if the peer as been
+      # run as a stand-alone (ie. not launched via the manager interface). This
+      # will be copied from peer:web_port if it is itself a manager.
+      mport = ENV['MANAGER_PORT'] if ENV['MANAGER_PORT'].is_i?
+      if mport.nil?
+        mport = @@peer['manager']['manager_port'] if @@peer['manager']['manager_port'].is_i?
+        if mport.nil?
+          if @@manager
+            @@env['MANAGER_PORT'] = @@env['PORT']
+          else
+            @@standalone = true
+            WLLogger.logger.info "without manager_port given, it is supposed that this peer should be launched in stand-alone mode"
+          end
+        else
+          @@env['MANAGER_PORT'] = mport
+          @@standalone = false
+        end
+      else        
+        @@env['MANAGER_PORT'] = mport
+        @@peer['manager']['manager_port'] = @@env['MANAGER_PORT']
+        @@standalone = false
+      end
+
       @@init = true
+      
     end # end unless init    
   end # end def self.init
 
@@ -82,6 +100,12 @@ module Conf
       self.init
     end
     @@manager
+  end
+  def self.standalone?
+    unless @@init
+      self.init
+    end
+    @@standalone
   end
   def self.peer
     unless @@init
@@ -112,57 +136,6 @@ module Conf
     return hash[rails_env]
   end
 end
-
-## Big multi-dimensional hash with the content of yaml file properties.yml used
-## to set up the database
-#module PeerConf
-#  # Force to reread the config file
-#  def self.read_prop_file(rails_env = ENV["RAILS_ENV"])
-#    rails_env ||= 'development'
-#    return YAML.load_file('./config/properties.yml')[rails_env]
-#  end
-#  def self.config
-#    @@config ||= {}
-#  end
-#  #  def self.config=(hash)
-#  #    @@config = hash
-#  #  end
-#  def self.init
-#    @@config ||= PeerConf.read_prop_file
-#    @@config
-#  end
-#end
-#
-#module DBConf
-#  def self.read_prop_file(rails_env = ENV["RAILS_ENV"])
-#    rails_env ||= 'development'
-#    return YAML.load_file('./config/database.yml')[rails_env]
-#  end
-#  def self.config
-#    @@config ||= {}
-#  end
-#  def self.init
-#    @@config ||= DBConf.read_prop_file
-#    @@config
-#  end
-#end
-#
-## Relate here all the parameter linked to a specific user
-##
-#module UserConf
-#  def self.config
-#    @@config ||= {}
-#  end
-#
-#  #  def self.config=(hash)
-#  #    @@config.merge! hash
-#  #  end
-#
-#  def self.init(hash)
-#    @@config ||= hash
-#    @@config
-#  end
-#end
 
 # General usefull tool for ruby
 #
@@ -201,29 +174,74 @@ module Network
   SOCKET_PORT_INVALID = -1
   # This method returns true if the given port is available
   #
-  def self.port_available?(ip, port)
+  def self.port_available?(ip, port, protocol=:TCP)
     begin
       Timeout::timeout(1) do
         begin
-          test_open_port = TCPServer.new(ip, port)
-          test_open_port.close
-          return true
+          case protocol
+          when :TCP
+            test_open_port = TCPServer.new(ip, port)
+            if test_open_port
+              test_open_port.close
+              return true
+            else
+              return false
+            end
+          when :UDP
+            test_open_port = UDPSocket.new
+            test_open_port.bind ip, port
+            if test_open_port
+              test_open_port.close
+              return true
+            else
+              return false
+            end
+          end                    
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => error
           WLLogger.logger.info error.inspect
           return false
-        rescue => error
-          WLLogger.logger.error error.inspect
-          return false
         end
       end
+    rescue Timeout::Error, Exception => error
+      WLLogger.logger.error error.inspect
+      return false
     end
     return false
   end
 
-  
-  def self.find_port
-    
-  end
+  # Return an open port for the given protocol
+  def self.find_port(ip='localhost', protocol=:TCP)
+    case protocol
+
+    when :TCP
+      begin
+        Timeout::timeout(1) do
+          socket = TCPServer.new ip, 0
+          addr = socket.local_address # the addrinfo struct of this socket
+          socket.close
+          return addr.ip_port
+        end
+      rescue Timeout::Error, Exception => error
+        WLLogger.logger.error error.inspect
+        return nil
+      end
+      
+    when :UDP
+      begin
+        Timeout::timeout(1) do
+          socket = UDPSocket.new
+          socket.bind ip, 0
+          addr = socket.local_address # the addrinfo struct of this socket
+          socket.close
+          return addr.ip_port
+        end
+      rescue Timeout::Error, Exception => error
+        WLLogger.logger.error error.inspect
+        return nil
+      end
+
+    end # case
+  end # find_port
 
   # This method return the smallest port number in a range of available ports
   # large enough for our purposes. This number is called the root port number.
@@ -232,27 +250,27 @@ module Network
   # TODO: this looks for adjacent port number only, relax to return a list of
   # ports
   #
-  def self.find_ports(ip, number_of_ports_required, root_port)
-    root_port = Integer(root_port)
+  def self.find_ports(ip, number_of_ports_required, port)
+    port = Integer(port)
     number_of_ports_required = Integer(number_of_ports_required)
-    if root_port + number_of_ports_required > SOCKET_MAX_PORT
-      WLLogger.logger.error "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{root_port+number_of_ports_required}"
+    if port + number_of_ports_required > SOCKET_MAX_PORT
+      WLLogger.logger.error "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{port+number_of_ports_required}"
       return SOCKET_PORT_INVALID
     end
     increment = 0
     port_range_usable = true
     while increment < number_of_ports_required and port_range_usable do
-      if !port_available?(ip,root_port+increment)
+      if !port_available?(ip,port+increment)
         port_range_usable = false
-        WLLogger.logger.info "Address:port #{ip}:#{root_port+number_of_ports_required} required but impossible to use"
+        WLLogger.logger.info "Address:port #{ip}:#{port+number_of_ports_required} required but impossible to use"
       end
       increment += 1
     end
     if port_range_usable
-      root_port
+      port
     else
       # look for the next possible free port range
-      find_ports(ip,number_of_ports_required,root_port+increment)
+      find_ports(ip,number_of_ports_required,port+increment)
     end
   end
 end

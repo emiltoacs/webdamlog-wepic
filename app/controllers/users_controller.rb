@@ -55,7 +55,7 @@ class UsersController < ApplicationController
     flash[:notice] = params.inspect
     respond_to do |format|
       begin
-        WLDatabase.setup_database_server        
+        WLDatabase.setup_database_server
         if @user.save
           EngineHelper::WLHELPER.run
           #When user is created, he is automatically logged in, which means
