@@ -59,6 +59,9 @@ module WLSetup
     rs
   end
 
+  # Clean all database and reset the database given in parameter, usually the
+  # manager.
+  #
   def self.reset_peer_databases db_name, db_username, db_adapter
     case db_adapter
     when 'sqlite3'
@@ -75,8 +78,9 @@ module WLSetup
       end
     when 'postgresql'
       WLLogger.logger.info "You start a cleanup of the postgres database server"
+      PostgresHelper.create_manager_db
+      PostgresHelper.create_user_db Conf.db
       conn = PGconn.open(:dbname => db_name, :user => db_username)
-      PostgresHelper.create_manager_db db_name
 
       # now you can drop all other databases
       sql2=<<-END
@@ -111,7 +115,7 @@ WHERE
       END
       dropper = []
       rs = conn.exec(ddl_query)
-      p "Clean the database of the manager"
+      p "Clean the database #{db_name} of #{db_username}"
       rs.each do |t|
         dropper << t['a']
       end
@@ -217,7 +221,7 @@ WHERE
         argv.push("tmp/pids/#{options.peername}.pid")
 
         clean_orphaned_peer if Conf.manager?
-        setup_storage Conf.manager?
+        setup_storage Conf.manager?, Conf.db
       end # end if server
       
     end # end continue to rails/command
@@ -225,12 +229,14 @@ WHERE
     return start_server, options
   end
 
-  # Use to create database before loading model
-  def self.setup_storage manager
+  # Use to create database before loading model, default db_config creates a
+  # postgres database for the super user postgres
+  #
+  def self.setup_storage manager, db_config
     if manager
-      PostgresHelper.create_manager_db Conf.db['database']
+      PostgresHelper.create_manager_db  db_config
     else
-      PostgresHelper.create_user_db Conf.db['database']
+      PostgresHelper.create_user_db db_config
     end
   end
 

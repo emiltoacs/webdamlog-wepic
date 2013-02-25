@@ -42,12 +42,6 @@ class UsersController < ApplicationController
     end
   end
 
-  #TODO: Assess the usefulness of the edit method.
-  #  # GET /users/1/edit
-  #  def edit
-  #    @user = User.find(params[:id])
-  #  end
-
   # POST /users
   # POST /users.json
   def create
@@ -55,9 +49,9 @@ class UsersController < ApplicationController
     flash[:notice] = params.inspect
     respond_to do |format|
       begin
-        WLDatabase.setup_database_server
-        if @user.save
-          EngineHelper::WLHELPER.run
+        WLDatabase.setup_database_server        
+        if @user.save          
+          EngineHelper::WLENGINE.run
           #When user is created, he is automatically logged in, which means
           #we need to start his webdamlog session.
           format.html { redirect_to(:wepic, :notice => "Registration successfull") }
@@ -69,7 +63,7 @@ class UsersController < ApplicationController
       rescue => error
         format.html { render :action => "new", :alert => error.message }
         format.xml { render :xml => {setup: error.message}, :status => :unprocessable_entity}
-      end 
+      end
     end
   end
 

@@ -35,7 +35,6 @@ module WLLauncher
   #
   def self.start_peer(new_peer_name, new_peer_port, peer_record=nil)
     peer_name = Conf.env['USERNAME']
-    manager_port = Conf.env['PORT']
     manager_waiting_port = Conf.peer['manager']['manager_waiting_port']
     if manager_waiting_port.nil? or !Network.port_available?(Conf.peer['manager']['ip'], manager_waiting_port)
       manager_waiting_port = Network.find_port Conf.peer['manager']['ip'], :TCP

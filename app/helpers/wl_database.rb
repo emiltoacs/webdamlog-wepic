@@ -36,9 +36,9 @@ module WLDatabase
           msg = "Need to create the database #{db_name} in the database server postgreSQL"
           WLLogger.logger.debug msg
           if Conf.manager?
-            PostgresHelper.create_manager_db db_name
+            PostgresHelper.create_manager_db Conf.db
           else
-            PostgresHelper.create_user_db db_name
+            PostgresHelper.create_user_db Conf.db
           end
         end
       end
@@ -280,7 +280,7 @@ module WLDatabase
         @relation_classes['Contact'] = con
       end
 
-      # XXX some bootstrap relations
+      # XXX some bootstrap relations defined as ActiveRecord model
       @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
       @wlschema.new(:name=>Peer.table_name, :schema=>Peer.schema.to_json).save

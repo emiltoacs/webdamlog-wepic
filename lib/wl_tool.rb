@@ -23,7 +23,8 @@ module Conf
     unless @@init
       @@peer = read_yaml_file 'config/peer.yml', @@current_env
       @@db = read_yaml_file 'config/database.yml', @@current_env
-      # store all parameter for manager db usefull for peer that change database
+      # store all parameter for manager db useful for regular peer that change
+      # database
       @@db['manager_db']=@@db.clone
       @@env = {}
       
@@ -38,6 +39,7 @@ module Conf
         @@env['USERNAME'] = ENV['USERNAME']
         @@peer['peer']['username'] = @@env['USERNAME']
       end
+      
       # setup port from env or conf file
       if ENV['PORT'].nil?
         if @@peer['peer']['web_port'].nil?
@@ -58,6 +60,7 @@ module Conf
         end
       end
 
+      #define manager
       if @@env['USERNAME'] == 'manager'
         @@manager = true
       else
@@ -78,7 +81,7 @@ module Conf
             @@env['MANAGER_PORT'] = @@env['PORT']
           else
             @@standalone = true
-            WLLogger.logger.info "without manager_port given, it is supposed that this peer should be launched in stand-alone mode"
+            WLLogger.logger.info "a new peer in standalone mode is launched"
           end
         else
           @@env['MANAGER_PORT'] = mport
@@ -292,20 +295,21 @@ module PostgresHelper
   end
 
   # Create the manager db as a child of postgres db
-  def self.create_manager_db db_name
+  def self.create_manager_db config={'adapter'=>'postgresql', 'username'=>'postgres', 'password'=>'', 'database'=>'postgres'}
     # if there is no database for the manager you should create one
-    unless PostgresHelper.db_exists?(db_name)
-      ActiveRecord::Base.establish_connection adapter:'postgresql', username:'postgres', password:'', database:'postgres'
-      ActiveRecord::Base.connection.create_database db_name
+    unless PostgresHelper.db_exists?(Conf.db['manager_db']['database'])
+      ActiveRecord::Base.establish_connection({'adapter'=>'postgresql', 'username'=>'postgres', 'password'=>'', 'database'=>'postgres'})
+      ActiveRecord::Base.connection.create_database Conf.db['manager_db']['database']
     end
   end
 
   # Create the regular peer db as a child of the manager db
-  def self.create_user_db db_name
+  def self.create_user_db config={'adapter'=>'postgresql', 'username'=>'wepic', 'password'=>'', 'database'=>'wepic'}
     # if there is no database for the peer you should create one
-    unless PostgresHelper.db_exists?(db_name)
+    unless PostgresHelper.db_exists?(config['database'])
       ActiveRecord::Base.establish_connection Conf.db['manager_db']
-      ActiveRecord::Base.connection.create_database db_name
+      ActiveRecord::Base.connection.create_database config['database']
     end
   end
+  
 end
