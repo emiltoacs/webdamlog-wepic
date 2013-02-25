@@ -73,12 +73,12 @@ module WLBud
       # * 'localhost'
       # * 'me'
       #
-      @localpeername = Set.new([@peername,'localhost','me'])
+      @localpeername = Set.new([@peername,'local','me'])
       # List of known peers
       #
       @wlpeers={}
       @wlpeers[@peername]=my_address
-      @wlpeers['localhost']=my_address
+      @wlpeers['local']=my_address
       @wlpeers['me']=my_address
       # List of bootstrap facts ie. the facts given in the program file
       # === data struct

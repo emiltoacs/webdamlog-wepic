@@ -52,7 +52,8 @@ module EngineHelper
 
     def run
       @engine.run_bg
-      @enginelogger.info("internal webdamlog engine start running listeining on port #{@port}")
+      @enginelogger.info("internal webdamlog engine start running listening on port #{@port}")
+      @engine
     end
 
     private
