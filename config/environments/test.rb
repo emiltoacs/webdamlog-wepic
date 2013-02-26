@@ -40,5 +40,5 @@ WepimApp::Application.configure do
   else
     require 'ruby-debug'
     Debugger.start
-  end
+  end if ENV['DEBUG']
 end

@@ -37,10 +37,9 @@ WepimApp::Application.configure do
   config.assets.debug = true
 
   if RUBY_VERSION =~ /^1.9/
-    require 'debugger'
+    require 'debugger' 
   else
     require 'ruby-debug'
     Debugger.start
-  end
-  
+  end if ENV['DEBUG']
 end
