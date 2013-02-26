@@ -49,9 +49,10 @@ class UsersController < ApplicationController
     flash[:notice] = params.inspect
     respond_to do |format|
       begin
-        WLDatabase.setup_database_server        
+        WLDatabase.setup_database_server
+        require 'debugger' ; debugger 
         if @user.save          
-          EngineHelper::WLENGINE.run
+          EngineHelper::WLHELPER.run
           #When user is created, he is automatically logged in, which means
           #we need to start his webdamlog session.
           format.html { redirect_to(:wepic, :notice => "Registration successfull") }
@@ -60,13 +61,12 @@ class UsersController < ApplicationController
           format.html { render :action => "new" , :notice => params.inspect}
           format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
         end        
-      rescue => error
+      rescue Exception => error
         format.html { render :action => "new", :alert => error.message }
         format.xml { render :xml => {setup: error.message}, :status => :unprocessable_entity}
       end
     end
   end
-
 
   # PUT /users/1
   # PUT /users/1.json

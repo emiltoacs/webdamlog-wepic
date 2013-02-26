@@ -24,7 +24,7 @@ module WLDatabase
   # do since their are just files) )
   #
   def self.setup_database_server
-    unless @@databases[Conf.env['username']]
+    unless @@databases[Conf.env['USERNAME']]
       db_name = Conf.db['database']
       # Connect to postgres database with admin user postgres that always
       # exist. Then create the first database for the manager
@@ -42,7 +42,7 @@ module WLDatabase
           end
         end
       end
-      WLDatabase.establish_orm_db_connection(Conf.env['username'], db_name, Conf.db)
+      WLDatabase.establish_orm_db_connection(Conf.env['USERNAME'], db_name, Conf.db)
     end
   end
   

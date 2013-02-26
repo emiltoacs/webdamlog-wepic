@@ -1,28 +1,28 @@
 <script type="text/javascript">
-function getPictures(element) {
-  var contacts = 'contacts/';
-  var html = '';
-  $.ajax({
-    url: contacts.concat(element.innerHTML,'/pictures'),
-    data : { id : element.value},
-    dataType : 'json',
-    success: function(data) {
-      if (data) {
-		for (var key in data) {
-  			if (data.hasOwnProperty(key)) {
-    			html += '<a href="' + data[key]['href'] + '">';
-    			html += '<div class="entry">';
-    			html += '<div class="title">'+ data[key]['title'] +'</div>'
-    			html += '<div class="image"><img alt="' + data[key]['alt']+ '" src="' + data[key]['src']+ '"></div>';
-    			html += '</div></a>';
-    			console.log(html);
-  			}  		
-		}
-		$('#contact_pictures').html(html);
+  function getPictures(element) {
+    var contacts = 'contacts/';
+    var html = '';
+    $.ajax({
+      url: contacts.concat(element.innerHTML,'/pictures'),
+      data : { id : element.value},
+      dataType : 'json',
+      success: function(data) {
+        if (data) {
+          for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+              html += '<a href="' + data[key]['href'] + '">';
+              html += '<div class="entry">';
+              html += '<div class="title">'+ data[key]['title'] +'</div>'
+              html += '<div class="image"><img alt="' + data[key]['alt']+ '" src="' + data[key]['src']+ '"></div>';
+              html += '</div></a>';
+              console.log(html);
+            }
+          }
+          $('#contact_pictures').html(html);
+        }
       }
-    }
-  });
-}
+    });
+  }
 	
   function Select(element) {
     jQuery('.selected').attr('class', 'contact');
@@ -35,7 +35,9 @@ function getPictures(element) {
   <%@contacts.each do |contact| %>
     <tr>
       <td class="<%if contact.online%>online<%else%>offline<%end%>"></td>
-      <td><a name="contact" value="<%=contact.id%>" onclick="Select(this);" class="contact"><%= contact.username%></a></td>
+      <td>
+        <a name="contact" value="<%=contact.id%>" onclick="Select(this);" class="contact"><%= contact.username%></a>
+      </td>
     </tr>
   <%end%>
 </table>

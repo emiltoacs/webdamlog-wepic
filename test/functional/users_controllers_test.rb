@@ -28,7 +28,7 @@ class UsersControllerTest < ActionController::TestCase
     
     assert_not_nil @response.body
     
-    #EngineHelper::WLENGINE.running_async
+    # EngineHelper::WLENGINE    
     # assert_redirected_to(:controller => "wepic")
     # assert_redirected_to(page_url(:title => 'wepic'))    
   end

@@ -8,8 +8,6 @@ require 'test_helper'
 class EngineControllerTest < ActionController::TestCase
   tests EngineController
 
-  test ""
-
   test "index" do
     get(:index)
     assert_response :success
