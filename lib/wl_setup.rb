@@ -161,7 +161,7 @@ WHERE
       opt.on("-c", "--config=file", String,
         "Use custom rackup configuration file") { |v| options.config = v }
       opt.on("-d", "--daemon", "Make server run as a Daemon.") { options.daemonize = true }
-      opt.on("-u", "--debugger", "Enable ruby-debugging for the server.") { options.debugger = true }
+      opt.on("-u", "--debugger", "Enable ruby-debugging for the server.") { options.debugger = true; ENV['DEBUG'] = true }
       opt.on("-e", "--environment=name", String,
         "Specifies the environment to run this server under (test/development/production).",
         "Default: development") { |v| options.environment = v }
