@@ -1,4 +1,3 @@
-#This is a dummy contact active record, the final result should be generated in WL.
 class Contact < AbstractDatabase
   
   def self.setup

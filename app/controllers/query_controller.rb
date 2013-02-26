@@ -3,7 +3,7 @@ class QueryController < ApplicationController
   
   def index
     #Fetches relation from schema
-    @relation_classes = database(Conf.env[:name]).relation_classes
+    @relation_classes = database(Conf.env['USERNAME']).relation_classes
   end
   
   #Insert a tuple in the instance database
@@ -13,14 +13,15 @@ class QueryController < ApplicationController
         format.html {redirect_to '/query', :notice => "No relation was selected"}
       end
     else
-      @relation_classes = database(Conf.env[:name]).relation_classes
+      @relation_classes = database(Conf.env['USERNAME']).relation_classes
       rel_name = params[:relation][:name]
       values = params[:values].split(";")
       values_hash = Hash.new
-      #FIXME This temporary code takes the values inserted and matches them in order with
-      #the corresponding class schema. Ideally we would want to use the params variable
-      #to match the items directly.This requires calls to jquery to dynamically send
-      #the corresponding rows once a relation is selected.
+      # FIXME This temporary code takes the values inserted and matches them in
+      # order with the corresponding class schema. Ideally we would want to use
+      # the params variable to match the items directly.This requires calls to
+      # jquery to dynamically send the corresponding rows once a relation is
+      # selected.
       @relation_classes[rel_name].schema.keys.each_index do |i|
         values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
       end
@@ -45,16 +46,17 @@ class QueryController < ApplicationController
     rel_name = params[:relation_name]
     col_names = params[:column_names].split(";")
     col_types = params[:column_types].split(";")
-    #FIXME Here we would want use jquery to dynamically join the corresponding types 
-    #in a more elegant way. Alternatively, we can let the user specify his new relation
-    #in Webdamlog and convert from there. Discuss with Emilien. He might do this implementation
+    # FIXME Here we would want use jquery to dynamically join the corresponding
+    # types in a more elegant way. Alternatively, we can let the user specify
+    # his new relation in Webdamlog and convert from there. Discuss with
+    # Emilien. He might do this implementation
     if col_names.size == col_types.size
       col_names.each_index do |i|
         schema[col_names[i]]=col_types[i]
       end
     end
     # WLBUDinsert 
-    database(Conf.env[:name]).create_model(rel_name,schema)
+    database(Conf.env['USERNAME']).create_model(rel_name,schema)
     respond_to do |format|
       format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
       format.json { head :no_content }

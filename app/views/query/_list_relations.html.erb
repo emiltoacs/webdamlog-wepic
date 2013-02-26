@@ -10,9 +10,7 @@
 		</div>
 		<% end %>
 	</div>
-	<% #@relation_classes[name].open_connection #unless name='Pictures'%>
 	<% relation_tuples = @relation_classes[name].all%>
-	<% #@relation_classes[name].remove_connection #unless name='Pictures'%>
 	<%relation_tuples.each do |tuple| %>
 	<div class="row">
 		<%rel_class.schema.keys.each do |col| %>
