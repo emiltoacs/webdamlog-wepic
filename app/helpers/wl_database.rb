@@ -263,7 +263,7 @@ module WLDatabase
       # do not add the User class here or Authlogic will not be able to handle
       # sessions properly.
       #
-      # Init manually the two buildins relations created when rails has parsed
+      # Init manually the two builtins relations created when rails has parsed
       # the models
       pic = WLTool::class_exists("Picture", ActiveRecord::Base)
       if pic.nil?
@@ -279,8 +279,15 @@ module WLDatabase
       else
         @relation_classes['Contact'] = con
       end
+      pee = WLTool::class_exists("Peer", ActiveRecord::Base)
+      if pee.nil?
+        load 'peer.rb'
+        @relation_classes['Peer'] = Object.const_get("Peer")
+      else
+        @relation_classes['Peer'] = con
+      end
 
-      # XXX some bootstrap relations defined as ActiveRecord model
+      # XXX some bootstrap relations defined statically as ActiveRecord model
       @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
       @wlschema.new(:name=>Peer.table_name, :schema=>Peer.schema.to_json).save
@@ -296,19 +303,18 @@ module WLDatabase
     
     # The create relation method will create a new relation in the database as well.
     # as a new rails model class connected to that relation. It requires a schema
-    # that will correspond to the table's relationnal schema.
+    # that will correspond to the table's relational schema.
     #
     def create_model(name,schema)
       model_klass = create_model_class(name,schema)
       @relation_classes[name] = model_klass
       begin
-        if @wlschema.new(:name => model_klass.table_name,:schema => model_klass.schema.to_json).save
-        else
-          WLLogger.logger.warn "Relation wlschema was not properly updated, record should be invalid according to the model"
+        # new record in the wlshema table
+        unless @wlschema.new(:name => model_klass.table_name,:schema => model_klass.schema.to_json).save                    
+          raise WLDatabaseError.new "Relation wlschema was not properly updated, record should be invalid according to the model"
         end
       rescue => error
-        WLLogger.logger.warn "In create_model with #{name} #{schema} #{error}"
-        raise error
+        raise WLDatabaseError.new "Error in create_model with #{name} #{schema} #{error.message}"
       end
       return @relation_classes[name]
     end
@@ -327,7 +333,6 @@ module WLDatabase
         if table_name.nil? or table_name.empty?
           self.table_name = WLDatabase.to_table_name model_name
         end
-        #establish_connection config
         if !connection.table_exists?(table_name)
           connection.create_table table_name, :force => true do |t|
             schema.each_pair do |col_name,col_type|
@@ -385,5 +390,22 @@ module WLDatabase
     end # table_exists_for_model?
 
   end # class WLInstanceDatabase
+
+  class WLDatabaseError < StandardError
+    def initialize(msg)
+      super(msg)
+      @msg = msg
+      WLLogger.logger.fatal @msg      
+    end
+
+    def to_s
+      "#{super} : #{@msg}"
+    end
+
+#    alias :orig_to_s :to_s
+#    def to_s
+#      "#{orig_to_s} : #{@msg}"
+#    end
+  end
 
 end # module WLDatabase

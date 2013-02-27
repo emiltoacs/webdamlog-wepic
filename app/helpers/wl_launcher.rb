@@ -46,7 +46,7 @@ module WLLauncher
         WLLogger.logger.debug "execute: #{cmd}"
         child_pid = Process.spawn cmd
       else
-        WLLogger.logger.error "try to launch a new peer without username"
+        WLLogger.logger.fatal "try to launch a new peer without username"
       end
       b, msg = wait_for_acknowledgment(listener,new_peer_port)
       unless peer_record.nil?

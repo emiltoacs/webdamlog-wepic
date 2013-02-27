@@ -50,7 +50,6 @@ class UsersController < ApplicationController
     respond_to do |format|
       begin
         WLDatabase.setup_database_server
-        require 'debugger' ; debugger 
         if @user.save          
           EngineHelper::WLHELPER.run
           #When user is created, he is automatically logged in, which means
