@@ -11,7 +11,7 @@
 		<% end %>
 	</div>
 	<% relation_tuples = @relation_classes[name].all%>
-	<%relation_tuples.each do |tuple| %>
+	<% relation_tuples.each do |tuple| %>
 	<div class="row">
 		<%rel_class.schema.keys.each do |col| %>
 		<div class="column">

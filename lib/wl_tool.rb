@@ -31,7 +31,7 @@ module Conf
       # setup username from env or conf file
       if ENV['USERNAME'].nil?
         if @@peer['peer']['username'].nil?
-          WLLogger.logger.error "Variable ENV['USERNAME'] must not be nil or the peername should be set in peer.yml peer:username"
+          WLLogger.logger.fatal "Variable ENV['USERNAME'] must not be nil or the peername should be set in peer.yml peer:username"
         else
           @@env['USERNAME'] = @@peer['peer']['username']
         end
@@ -43,12 +43,12 @@ module Conf
       # setup port from env or conf file
       if ENV['PORT'].nil?
         if @@peer['peer']['web_port'].nil?
-          WLLogger.logger.error "Variable ENV['PORT'] must not be nil or the port for the current peer should be set in peer.yml peer:web_port"
+          WLLogger.logger.fatal "Variable ENV['PORT'] must not be nil or the port for the current peer should be set in peer.yml peer:web_port"
         else
           if @@peer['peer']['web_port'].is_i?
             @@env['PORT'] = @@peer['peer']['web_port']
           else
-            WLLogger.logger.error "web_port #{@@peer['peer']['web_port']} is not an integer"
+            WLLogger.logger.fatal "web_port #{@@peer['peer']['web_port']} is not an integer"
           end
         end
       else
@@ -56,7 +56,7 @@ module Conf
           @@env['PORT'] = ENV['PORT']
           @@peer['peer']['web_port'] = @@env['PORT']
         else
-          WLLogger.logger.error "PORT #{ENV['PORT']} is not an integer"
+          WLLogger.logger.fatal "PORT #{ENV['PORT']} is not an integer"
         end
       end
 
@@ -169,6 +169,32 @@ module WLTool
   rescue NameError
     return nil
   end
+
+    # Sanitize the string ie.
+  # + Remove leading and trailing whitespace
+  # + Downcase
+  # + Replace internal space by _
+  # + Remove " or '
+  #
+  def self.sanitize(string)
+    return string.strip.downcase.delete('"').delete("'").gsub(/\s+/, '_')
+  end
+
+  # Sanitize the string ie.
+  # + Remove leading and trailing whitespace
+  # + Downcase
+  # + Replace internal space by _
+  # + Remove " or '
+  #
+  def self.sanitize!(string)
+    string.strip!
+    string.downcase!
+    string.delete!('"')
+    string.delete!("'")
+    string.gsub!(/\s+/, '_')
+    return string
+  end
+
 end
 
 module Network
@@ -206,7 +232,7 @@ module Network
         end
       end
     rescue Timeout::Error, Exception => error
-      WLLogger.logger.error error.inspect
+      WLLogger.logger.fatal error.inspect
       return false
     end
     return false
@@ -225,7 +251,7 @@ module Network
           return addr.ip_port
         end
       rescue Timeout::Error, Exception => error
-        WLLogger.logger.error error.inspect
+        WLLogger.logger.fatal error.inspect
         return nil
       end
       
@@ -239,7 +265,7 @@ module Network
           return addr.ip_port
         end
       rescue Timeout::Error, Exception => error
-        WLLogger.logger.error error.inspect
+        WLLogger.logger.fatal error.inspect
         return nil
       end
 
@@ -257,7 +283,7 @@ module Network
     port = Integer(port)
     number_of_ports_required = Integer(number_of_ports_required)
     if port + number_of_ports_required > SOCKET_MAX_PORT
-      WLLogger.logger.error "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{port+number_of_ports_required}"
+      WLLogger.logger.fatal "not enough port number SOCKET_MAX_PORT=#{SOCKET_MAX_PORT} and you try #{port+number_of_ports_required}"
       return SOCKET_PORT_INVALID
     end
     increment = 0
@@ -313,3 +339,5 @@ module PostgresHelper
   end
   
 end
+
+

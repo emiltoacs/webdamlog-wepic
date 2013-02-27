@@ -1,4 +1,4 @@
-<%=form_tag({:controller => "query", :action=>"insert"},:method=>'post') do %>
+<%=form_tag({:controller => "query", :action=>"insert"},:method=>'post') do %>  
   <div class="field"> Relation Name :
     <%= select(:relation, :name,
       @relation_classes.keys.reject{|key| key.upcase == "WLSCHEMA" or key.upcase == "DATABASEMETUM" },

@@ -1,3 +1,5 @@
+require 'wl_tool'
+
 class QueryController < ApplicationController
   include WLDatabase
   
@@ -43,23 +45,42 @@ class QueryController < ApplicationController
   #Creates a new relation and adds it to the session database.
   def create
     schema = Hash.new
-    rel_name = params[:relation_name]
-    col_names = params[:column_names].split(";")
-    col_types = params[:column_types].split(";")
-    # FIXME Here we would want use jquery to dynamically join the corresponding
-    # types in a more elegant way. Alternatively, we can let the user specify
-    # his new relation in Webdamlog and convert from there. Discuss with
-    # Emilien. He might do this implementation
+    rel_name = WLTool::sanitize(params[:relation_name])
+    col_names = params[:column_names].split(";").map! { |i| WLTool::sanitize!(i) }
+    col_types = params[:column_types].split(";").map! { |i| WLTool::sanitize!(i) }
+    # field must be a valid type: http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html#method-i-column
+    type = ['string', 'text', 'integer', 'float', 'decimal', 'datetime', 'timestamp', 'time', 'date', 'binary', 'boolean']
+    err_message = ""
+    require 'debugger' ; debugger
     if col_names.size == col_types.size
       col_names.each_index do |i|
-        schema[col_names[i]]=col_types[i]
+        if type.include? col_types[i]
+          schema[col_names[i]] = col_types[i]
+        else
+          err_message = "type not conform, found #{col_names[i]} but expected one of #{type.inspect}"
+        end
+      end
+    else
+      err_message = "number of type and columns should be the same"
+    end
+    # WLBUDinsert
+    begin
+      if err_message.empty?
+        database(Conf.env['USERNAME']).create_model(rel_name,schema)
+      else
+        raise err_message
+      end
+    rescue => error
+      respond_to do |format|
+        format.html { redirect_to '/query', :notice => "Error: #{error.to_s} : #{error.message}" }
+        format.json { head :no_content }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to '/query', :notice => "Relation classes: #{@relation_classes.inspect}" }
+        format.json { head :no_content }
       end
     end
-    # WLBUDinsert 
-    database(Conf.env['USERNAME']).create_model(rel_name,schema)
-    respond_to do |format|
-      format.html { redirect_to '/query', :notice => "#{@relation_classes.inspect}"}
-      format.json { head :no_content }
-    end
-  end
-end
+  end # create
+
+end # QueryController
