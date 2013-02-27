@@ -103,7 +103,6 @@ module WLBud
       if options[:mesure]
         @start_time = Time.now        
       end
-      raise WLBud::WLError, 'peername is empty or not a string' if peername.nil? or !(peername.respond_to?(:to_s))
       @peername=peername
       @rule_dir = create_rule_dir(options[:rule_dir])
       raise WLError, "you must give or provide read and write access to a file for reading rules to provide to bud, but it seems impossible with: #{@rule_dir}" unless File.writable?(@rule_dir)

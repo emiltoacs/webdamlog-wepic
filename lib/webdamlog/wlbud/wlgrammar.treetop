@@ -89,7 +89,7 @@ module WLBud
                 end
                 # remove the comma and return an array of atoms
                 def list_atoms
-                  super.elements.map { |comma_and_atom| comma_and_atom.other_atom }
+                  super.elements.map{ |comma_and_atom| comma_and_atom.other_atom }
                 end
              }
         end
