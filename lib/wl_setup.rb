@@ -210,11 +210,12 @@ WHERE
             2.times{argv.delete_at id}
           end
         end
+
         # push switch -p to specify the port the rake server will use
         inter = ['-p', '--port'] & ARGV
         if inter.empty?
           argv.push '-p'
-          argv.push Conf.env['PORT']
+          argv.push ENV['PORT']
         end
         # setup the pid file
         argv.push('-P')

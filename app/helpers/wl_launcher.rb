@@ -38,8 +38,7 @@ module WLLauncher
     manager_waiting_port = Conf.peer['manager']['manager_waiting_port']
     if manager_waiting_port.nil? or !Network.port_available?(Conf.peer['manager']['ip'], manager_waiting_port)
       manager_waiting_port = Network.find_port Conf.peer['manager']['ip'], :TCP
-    end
-    listener = TCPServer.new(manager_waiting_port)
+    end    
     if Conf.manager?
       if !new_peer_name.nil?
         cmd = "rails server -p #{new_peer_port} -U #{new_peer_name} -m #{manager_waiting_port}"
@@ -48,22 +47,28 @@ module WLLauncher
       else
         WLLogger.logger.fatal "try to launch a new peer without username"
       end
-      b, msg = wait_for_acknowledgment(listener,new_peer_port)
-      unless peer_record.nil?
-        peer_record.active=true
-        peer_record.pid=child_pid
-        peer_record.msg=msg
+      status, msg = wait_for_acknowledgment(manager_waiting_port,new_peer_port)
+      if !peer_record.nil? and status
+        peer_record.active = true
+        peer_record.pid = child_pid
+        peer_record.msg = msg
+        peer_record.save
+      else
+        peer_record.active = false
+        peer_record.pid = child_pid
+        peer_record.msg = msg
         peer_record.save
       end
-      return b, msg
+      return status, msg
     else
       msg = "The non-manager #{peer_name} peer is trying to spawn a new peer"
       WLLogger.logger.warn msg
       return false, msg
     end
-  end
+  end # start_peer
   
-  def self.wait_for_acknowledgment(listener, new_peer_port)
+  def self.wait_for_acknowledgment(manager_waiting_port, new_peer_port)
+    listener = TCPServer.new(manager_waiting_port)
     begin
       Timeout::timeout(10000) do
         begin          
@@ -87,7 +92,7 @@ module WLLauncher
       WLLogger.logger.info msg
       return false, msg
     end
-  end
+  end # wait_for_acknowledgment
   
   def self.end_peer(port,type=:thin)
     pids = Set.new

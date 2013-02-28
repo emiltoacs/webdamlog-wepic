@@ -34,5 +34,6 @@ class User < AbstractDatabase
   setup
   before_validation :default_values
   acts_as_authentic do |c|
+    # optional block for Authlogic
   end
 end

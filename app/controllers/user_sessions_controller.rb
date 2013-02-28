@@ -1,10 +1,10 @@
 class UserSessionsController < ApplicationController
   include WLDatabase
+  
   # GET /user_sessions/new
   # GET /user_sessions/new.xml
   def new
     @user_session = UserSession.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.xml { render :xml => @user_session }
@@ -43,4 +43,5 @@ class UserSessionsController < ApplicationController
       format.xml { head :ok }
     end
   end
+  
 end

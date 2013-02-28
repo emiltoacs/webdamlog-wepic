@@ -1,5 +1,8 @@
 require 'wl_tool'
-
+# FIXME I wrote lots of code used for user input checking in this controller,
+# move that to client side or model
+# http://guides.rubyonrails.org/active_record_validations_callbacks.html
+#
 class QueryController < ApplicationController
   include WLDatabase
   
@@ -16,8 +19,8 @@ class QueryController < ApplicationController
       end
     else
       @relation_classes = database(Conf.env['USERNAME']).relation_classes
-      rel_name = params[:relation][:name]
-      values = params[:values].split(";")
+      rel_name = params[:relation][:name].map! { |i| WLTool::sanitize!(i) }
+      values = params[:values].split(";").map! { |i| WLTool::sanitize!(i) }
       values_hash = Hash.new
       # FIXME This temporary code takes the values inserted and matches them in
       # order with the corresponding class schema. Ideally we would want to use
@@ -27,9 +30,10 @@ class QueryController < ApplicationController
       @relation_classes[rel_name].schema.keys.each_index do |i|
         values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
       end
-      # WLBUDinsert 
+
+      # WLBUDinsert
+      
       respond_to do |format|
-        #@relation_classes[rel_name].open_connection
         if @relation_classes[rel_name].insert(values_hash)
           format.html { redirect_to '/query', :notice => "#{rel_name} : #{values_hash.inspect}"}
           format.json { head :no_content }
@@ -37,15 +41,15 @@ class QueryController < ApplicationController
           format.html {redirect_to '/query', :notice => "insert did not happen properly"}
           format.json {head :no_content}
         end
-        #@relation_classes[rel_name].remove_connection
       end
     end
   end
     
-  #Creates a new relation and adds it to the session database.
+  # Creates a new relation and adds it to the session database.
   def create
     schema = Hash.new
     rel_name = WLTool::sanitize(params[:relation_name])
+    # TODO jQuery to display nice form
     col_names = params[:column_names].split(";").map! { |i| WLTool::sanitize!(i) }
     col_types = params[:column_types].split(";").map! { |i| WLTool::sanitize!(i) }
     # field must be a valid type: http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html#method-i-column
@@ -67,6 +71,7 @@ class QueryController < ApplicationController
     begin
       if err_message.empty?
         database(Conf.env['USERNAME']).create_model(rel_name,schema)
+        @relation_classes = database(Conf.env['USERNAME']).relation_classes
       else
         raise err_message
       end

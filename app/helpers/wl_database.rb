@@ -330,9 +330,16 @@ module WLDatabase
       klass = create_class(model_name, ::AbstractDatabase) do
         @schema = schema
         @wl_database_instance = database_instance
+
+        # By default we impose that no field could be nil
+        schema.each_pair do |col_name,col_type|
+          eval "validates :#{col_name}, :presence => true"
+        end
+
         if table_name.nil? or table_name.empty?
           self.table_name = WLDatabase.to_table_name model_name
         end
+
         if !connection.table_exists?(table_name)
           connection.create_table table_name, :force => true do |t|
             schema.each_pair do |col_name,col_type|
@@ -343,6 +350,7 @@ module WLDatabase
         else
           WLLogger.logger.debug "try to create #{table_name} table in db #{config} for model #{model_name} but it already exists"
         end
+
         def self.insert(values)
           self.new(values).save
         end
@@ -362,9 +370,9 @@ module WLDatabase
         def self.schema
           @schema
         end
-        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} schema #{@schema} in database #{config}"
+        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} schema #{@schema} in database #{config}"        
       end
-      #klass.establish_connection config
+        
       return klass
     end
       
@@ -391,6 +399,8 @@ module WLDatabase
 
   end # class WLInstanceDatabase
 
+  
+
   class WLDatabaseError < StandardError
     def initialize(msg)
       super(msg)
@@ -402,10 +412,11 @@ module WLDatabase
       "#{super} : #{@msg}"
     end
 
-#    alias :orig_to_s :to_s
-#    def to_s
-#      "#{orig_to_s} : #{@msg}"
-#    end
-  end
+    # preferred to super
+    #    alias :orig_to_s :to_s
+    #    def to_s
+    #      "#{orig_to_s} : #{@msg}"
+    #    end
+  end # class WLDatabaseError
 
 end # module WLDatabase
