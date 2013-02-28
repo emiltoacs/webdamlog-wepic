@@ -32,6 +32,11 @@ WepimApp::Application.routes.draw do
   match 'list' => 'users#list'
   match 'admin' => 'admin#index', :as => :admin
 
-# The priority is based upon order of creation:
-# first created -> highest priority.
+  # The priority is based upon order of creation:
+  # first created -> highest priority.
+
+  # The priority is based upon order of creation: first created -> highest
+  # priority.
+  # Naming routes with :as see
+  # http://guides.rubyonrails.org/routing.html#naming-routes
 end

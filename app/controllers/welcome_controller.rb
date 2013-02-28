@@ -11,6 +11,7 @@ class WelcomeController < ApplicationController
   # Once clicked on the button go, launch or reconnect to a peer
   def login
     username = params[:username]
+    WLTool::sanitize!(username)
     @account = Peer.find(:first,:conditions => {:username=>username})
     
     if @account.nil?

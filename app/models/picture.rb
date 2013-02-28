@@ -2,8 +2,8 @@ class Picture < AbstractDatabase
   def self.setup
     unless @setup_done
       attr_accessible :title, :image, :owner
-      validates_uniqueness_of :title      
-      #validates :owner, :presence => true      
+      validates_uniqueness_of :title
+      #validates :owner, :presence => true
       #self.table_name = 'pictures'
       connection.create_table 'pictures', :force => true do |t|
         t.string :title

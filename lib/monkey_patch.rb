@@ -10,3 +10,9 @@ class NilClass
     false
   end
 end
+
+class Object
+  def is_i?
+    self.is_a? Integer
+  end
+end

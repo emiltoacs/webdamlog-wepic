@@ -2,6 +2,7 @@ require 'yaml'
 require 'active_support'
 require 'active_record'
 require './lib/wl_logger'
+require './lib/monkey_patch'
 
 module Conf  
   @@init = false
@@ -39,7 +40,8 @@ module Conf
         @@env['USERNAME'] = ENV['USERNAME']
         @@peer['peer']['username'] = @@env['USERNAME']
       end
-      
+
+      require 'debugger' ; debugger 
       # setup port from env or conf file
       if ENV['PORT'].nil?
         if @@peer['peer']['web_port'].nil?
@@ -56,7 +58,7 @@ module Conf
           @@env['PORT'] = ENV['PORT']
           @@peer['peer']['web_port'] = @@env['PORT']
         else
-          WLLogger.logger.fatal "PORT #{ENV['PORT']} is not an integer"
+          WLLogger.logger.fatal "port in ENV['PORT'] #{ENV['PORT']} is not an integer"
         end
       end
 
@@ -79,6 +81,7 @@ module Conf
         if mport.nil?
           if @@manager
             @@env['MANAGER_PORT'] = @@env['PORT']
+            @@standalone = false
           else
             @@standalone = true
             WLLogger.logger.info "a new peer in standalone mode is launched"
@@ -177,7 +180,7 @@ module WLTool
   # + Remove " or '
   #
   def self.sanitize(string)
-    return string.strip.downcase.delete('"').delete("'").gsub(/\s+/, '_')
+    return string.strip.downcase.delete('"').delete("'").delete!(".").gsub(/\s+/, '_')
   end
 
   # Sanitize the string ie.
@@ -191,6 +194,7 @@ module WLTool
     string.downcase!
     string.delete!('"')
     string.delete!("'")
+    string.delete!(".")
     string.gsub!(/\s+/, '_')
     return string
   end
