@@ -233,12 +233,12 @@ module WLBud
     # declared but I can also make my parser declare them automatically since
     # the type is not important.
     #
-    def parse (line,add_to_program=false,rewritten=false, options={})
+    def parse(line, add_to_program=false, rewritten=false, options={})
       raise WLErrorTyping, "I could only parse string not #{line.class}" unless line.is_a?(String)
       unless (output=@parser.parse(line))
         line_nb = options[:line_nb] ||= "unknown"
         raise WLErrorGrammarParsing, <<-MSG
-          "\r\nFailure reason: #{@parser.failure_reason}\r\n
+          "Failure reason: #{@parser.failure_reason}\r\n
             line in the file:#{line_nb}\r\n
             line in the rule #{@parser.failure_line}\r\n
             column:#{@parser.failure_column}\r\n
@@ -268,7 +268,7 @@ module WLBud
               else
                 @nonlocalrules << result
               end
-            end          
+            end
           end
         end
         return result

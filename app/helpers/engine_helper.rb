@@ -39,16 +39,22 @@ module EngineHelper
       klass = create_class("ClassWLEngineOf#{username}On#{@port}", WLBud::WL)
 
       program_file = create_program_dir Conf.peer['peer']['program']['file_path']
-      dir_rule = File.dirname program_file
-      @engine = klass.new(username, program_file, {:port => @port, :dir_rule => dir_rule})
+      @dir_rule = File.dirname program_file
+      @engine = klass.new(username, program_file, {:port => @port, :dir_rule => @dir_rule})
       
-      msg = "peer_name = #{@peer_name} program_file = #{program_file} dir_rule = #{dir_rule} on port #{@port}"
+      msg = "peer_name = #{@peer_name} program_file = #{program_file} dir_rule = #{@dir_rule} on port #{@port}"
       if @engine.nil?
         @enginelogger.fatal("creation of the webdamlog engine instance has failed:\n#{msg}")
       else
         @enginelogger.debug("new instance of webdamlog engine created:\n#{msg}")
       end
     end # initialize
+
+    # Helpers to check syntax of one line of webdamlog program
+    #
+    def parse line
+      @engine.program.parse line
+    end
 
     def run
       @engine.run_bg
@@ -78,5 +84,6 @@ module EngineHelper
       return pg_file
     end
     
-  end
-end
+  end # Class EngineHelper
+
+end # Module EngineHelper

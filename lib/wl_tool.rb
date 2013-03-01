@@ -40,8 +40,7 @@ module Conf
         @@env['USERNAME'] = ENV['USERNAME']
         @@peer['peer']['username'] = @@env['USERNAME']
       end
-
-      require 'debugger' ; debugger 
+      
       # setup port from env or conf file
       if ENV['PORT'].nil?
         if @@peer['peer']['web_port'].nil?

@@ -20,8 +20,8 @@ module WLDatabase
 
   @@databases = Hash.new
   
-  # This setup the database server (currently postgresql or sqlite3(nothing to
-  # do since their are just files) )
+  # This setup the database server (currently postgresql or sqlite3 (nothing to
+  # do since their are just files))
   #
   def self.setup_database_server
     unless @@databases[Conf.env['USERNAME']]
@@ -218,7 +218,7 @@ module WLDatabase
       unless @relation_classes.empty?
         WLLogger.logger.warn "try to recreate a object from the database but #{@relation_classes.length} models are left in memory #{@relation_classes}"
       end
-
+      require 'debugger' ; debugger 
       # The model of the schema itself stored in the database
       #
       # TODO write create_model_class with a block to introduced validators
@@ -249,7 +249,7 @@ module WLDatabase
       #Retrieve all the models. Requires to establish a connection.
       @wlschema.establish_connection @configuration
       @wlschema.all.each do |table|
-        klass = create_model_class(table.name,JSON.parse(table.schema))
+        klass = create_model_class(table.name, JSON.parse(table.schema))
         @relation_classes[klass.name] = klass
         @wlmeta = @relation_classes[klass.name] if klass.name == DATABASE_META
       end
@@ -306,7 +306,7 @@ module WLDatabase
     # that will correspond to the table's relational schema.
     #
     def create_model(name,schema)
-      model_klass = create_model_class(name,schema)
+      model_klass = create_model_class(name, schema)
       @relation_classes[name] = model_klass
       begin
         # new record in the wlshema table
@@ -323,10 +323,12 @@ module WLDatabase
     # class of the model created if succeed. it should be called by
     # create_relation
     #
-    def create_model_class(name,schema)
+    def create_model_class(name, schema)
+      raise WLDatabaseError.new "type error of name is #{name.class}" unless name.is_a? String
+      raise WLDatabaseError.new "type error of schema is #{schema.class}" unless schema.is_a? Hash
       database_instance = self
       config = Conf.db
-      model_name = WLDatabase.to_model_name("#{name}")
+      model_name = WLDatabase.to_model_name(name)
       klass = create_class(model_name, ::AbstractDatabase) do
         @schema = schema
         @wl_database_instance = database_instance
@@ -337,7 +339,7 @@ module WLDatabase
         end
 
         if table_name.nil? or table_name.empty?
-          self.table_name = WLDatabase.to_table_name model_name
+          self.table_name = WLDatabase.to_table_name(model_name)
         end
 
         if !connection.table_exists?(table_name)
