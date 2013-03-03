@@ -142,7 +142,7 @@ module Conf
   end
 end
 
-# General usefull tool for ruby
+# General useful tools for ruby
 #
 module WLTool
   def create_class(class_name, superclass, &block)
@@ -234,7 +234,7 @@ module Network
           return false
         end
       end
-    rescue Timeout::Error, Exception => error
+    rescue Timeout::Error, StandardError => error
       WLLogger.logger.fatal error.inspect
       return false
     end
@@ -253,7 +253,7 @@ module Network
           socket.close
           return addr.ip_port
         end
-      rescue Timeout::Error, Exception => error
+      rescue Timeout::Error, StandardError => error
         WLLogger.logger.fatal error.inspect
         return nil
       end
@@ -267,7 +267,7 @@ module Network
           socket.close
           return addr.ip_port
         end
-      rescue Timeout::Error, Exception => error
+      rescue Timeout::Error, StandardError => error
         WLLogger.logger.fatal error.inspect
         return nil
       end

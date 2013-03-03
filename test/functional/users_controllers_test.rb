@@ -20,20 +20,19 @@ class UsersControllerTest < ActionController::TestCase
     post(:create,
       :user=>{
         :username => "test_username",
-        :email => "test_user_email",
+        :email => "test_user_email@emailprovider.dom",
         :password => "test_user_password",
         :password_confirmation => "test_user_password"
       })
     assert_not_nil assigns(:user)
     assert !(assigns(:user).new_record?), "@user should have been saved in the db"
-    #p assigns(:user).methods
-    #assert !(assigns(:user).new?)
-    assert_response(200)  
+    assert_response(302)
     assert_not_nil @response.body
+    assert_redirected_to(:controller => "wepic")
     
-    # EngineHelper::WLENGINE    
-    # assert_redirected_to(:controller => "wepic")
-    # assert_redirected_to(page_url(:title => 'wepic'))    
+    assert_not_nil EngineHelper::WLENGINE
+    assert EngineHelper::WLENGINE.running_async
+    
   end
 
 end

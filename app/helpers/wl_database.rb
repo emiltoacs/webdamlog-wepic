@@ -218,7 +218,7 @@ module WLDatabase
       unless @relation_classes.empty?
         WLLogger.logger.warn "try to recreate a object from the database but #{@relation_classes.length} models are left in memory #{@relation_classes}"
       end
-      require 'debugger' ; debugger 
+      
       # The model of the schema itself stored in the database
       #
       # TODO write create_model_class with a block to introduced validators
@@ -246,8 +246,8 @@ module WLDatabase
       #        WLLogger.logger.debug "create a model #{self} with its table #{table_name} schema #{@schema} in database #{@wl_database_instance}"
       #      end
       @relation_classes[DATABASE_SCHEMA]=@wlschema
-      #Retrieve all the models. Requires to establish a connection.
-      @wlschema.establish_connection @configuration
+      #Retrieve all the models
+      #@wlschema.establish_connection @configuration
       @wlschema.all.each do |table|
         klass = create_model_class(table.name, JSON.parse(table.schema))
         @relation_classes[klass.name] = klass
@@ -259,38 +259,49 @@ module WLDatabase
       # Create the meta data for the current database, useful on reload
       @wlmeta = create_model(DATABASE_META,DATABASE_META_SCHEMA)
       @wlmeta.new(:id=>@id, :dbname=>@db_name, :configuration=>@configuration, :init=>true).save
-      # XXX The error was basically impossible to guess but finally found it
-      # do not add the User class here or Authlogic will not be able to handle
-      # sessions properly.
-      #
-      # Init manually the two builtins relations created when rails has parsed
-      # the models
-      pic = WLTool::class_exists("Picture", ActiveRecord::Base)
-      if pic.nil?
+      
+      # Init manually the builtins relations created when rails has parsed the
+      # models
+      classname = "Picture"
+      pict = WLTool::class_exists(classname , ActiveRecord::Base)
+      if pict.nil?
         load 'picture.rb'
-        @relation_classes['Picture'] = Object.const_get("Picture")
+        @relation_classes[classname] = Object.const_get(classname)
       else
-        @relation_classes['Picture'] = pic
+        @relation_classes[classname] = pict
       end
-      con = WLTool::class_exists("Contact", ActiveRecord::Base)
-      if con.nil?
+
+      classname = "Contact"
+      conn = WLTool::class_exists(classname, ActiveRecord::Base)
+      if conn.nil?
         load 'contact.rb'
-        @relation_classes['Contact'] = Object.const_get("Contact")
+        @relation_classes[classname] = Object.const_get(classname)
       else
-        @relation_classes['Contact'] = con
+        @relation_classes[classname] = conn
       end
-      pee = WLTool::class_exists("Peer", ActiveRecord::Base)
-      if pee.nil?
-        load 'peer.rb'
-        @relation_classes['Peer'] = Object.const_get("Peer")
+
+      classname = "User"
+      peer = WLTool::class_exists(classname, ActiveRecord::Base)
+      if peer.nil?
+        load 'user.rb'
+        @relation_classes[classname] = Object.const_get(classname)
       else
-        @relation_classes['Peer'] = con
+        @relation_classes[classname] = peer
+      end
+      
+      classname = "Program"
+      prog = WLTool::class_exists(classname, ActiveRecord::Base)
+      if prog.nil?
+        load 'program.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = prog
       end
 
       # XXX some bootstrap relations defined statically as ActiveRecord model
       @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
-      @wlschema.new(:name=>Peer.table_name, :schema=>Peer.schema.to_json).save
+      @wlschema.new(:name=>User.table_name, :schema=>User.schema.to_json).save
       @wlschema.new(:name=>Program.table_name, :schema=>Program.schema.to_json).save
 
       # XXX some bootstrap facts
@@ -332,7 +343,8 @@ module WLDatabase
       klass = create_class(model_name, ::AbstractDatabase) do
         @schema = schema
         @wl_database_instance = database_instance
-
+        establish_connection config
+        
         # By default we impose that no field could be nil
         schema.each_pair do |col_name,col_type|
           eval "validates :#{col_name}, :presence => true"
@@ -341,7 +353,7 @@ module WLDatabase
         if table_name.nil? or table_name.empty?
           self.table_name = WLDatabase.to_table_name(model_name)
         end
-
+        
         if !connection.table_exists?(table_name)
           connection.create_table table_name, :force => true do |t|
             schema.each_pair do |col_name,col_type|
