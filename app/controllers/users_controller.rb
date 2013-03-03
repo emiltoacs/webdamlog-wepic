@@ -1,5 +1,6 @@
 class UsersController < ApplicationController
   include WLDatabase
+  
   def list
     @users = User.all
     respond_to do |format|
@@ -65,12 +66,12 @@ class UsersController < ApplicationController
         end
       end
       
-    rescue Exception => error
+    rescue => error
       respond_to do |format|
         format.html { render :action => "new", :alert => error.message }
         format.xml { render :xml => {setup: error.message}, :status => :unprocessable_entity}
       end
-    end # rescue Exception => error
+    end # rescue => error
   end # create
 
 # PUT /users/1
