@@ -32,7 +32,6 @@ class UsersControllerTest < ActionController::TestCase
     
     assert_not_nil EngineHelper::WLENGINE
     assert EngineHelper::WLENGINE.running_async
-    
   end
 
 end

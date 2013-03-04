@@ -7,9 +7,9 @@ require './lib/monkey_patch'
 module Conf  
   @@init = false
   @@current_env = 'development'
-  # Store in one object all the configuration related to this peer
-  # + put :force => true in options to force reloading of conf
-  # + put :rails_env => [test,development,production] to change environment of configuration files
+  # Store in one object all the configuration related to this peer + put :force
+  # => true in options to force reloading of conf + put :rails_env =>
+  # [test,development,production] to change environment of configuration files
   #
   def self.init(options={})
     options[:force] ||= false
@@ -61,13 +61,12 @@ module Conf
         end
       end
 
-      #define manager
+      # #define manager
       if @@env['USERNAME'] == 'manager'
         @@manager = true
       else
         @@manager = false
-        # Special config for regular peers
-        # Change default db
+        # Special config for regular peers Change default db
         @@db['database']="wp_#{@@env['USERNAME']}"
       end
       
@@ -133,8 +132,7 @@ module Conf
   
   # This methods reads our Yaml configuration and return the corresponding hash
   #
-  # rails_env allow to return only the sub-hash that is concerned by the
-  # subtree
+  # rails_env allow to return only the sub-hash that is concerned by the subtree
   #
   def self.read_yaml_file(pathfile, rails_env)
     hash = YAML.load_file(pathfile)
@@ -160,6 +158,7 @@ module WLTool
       end
     end
   end
+  
   # Test if the class class_name of type klass exists in the current ObjectSpace
   # and return the class object if it exists
   #
@@ -172,33 +171,30 @@ module WLTool
     return nil
   end
 
-    # Sanitize the string ie.
-  # + Remove leading and trailing whitespace
-  # + Downcase
-  # + Replace internal space by _
-  # + Remove " or '
+  # Sanitize the string ie. + Remove leading and trailing whitespace + Downcase
+  # + Replace internal space by _ + Remove " or '
   #
   def self.sanitize(string)
-    return string.strip.downcase.delete('"').delete("'").delete!(".").gsub(/\s+/, '_')
+    str = string.strip.downcase
+    ['"', "'", "."].each do |c|
+      str.delete!(c)
+    end
+    return str.gsub(/\s+/, '_')
   end
 
-  # Sanitize the string ie.
-  # + Remove leading and trailing whitespace
-  # + Downcase
-  # + Replace internal space by _
-  # + Remove " or '
+  # Sanitize the string ie. + Remove leading and trailing whitespace + Downcase
+  # + Replace internal space by _ + Remove " or '
   #
   def self.sanitize!(string)
     string.strip!
     string.downcase!
-    string.delete!('"')
-    string.delete!("'")
-    string.delete!(".")
+    ['"', "'", "."].each do |c|
+      string.delete!(c)      
+    end
     string.gsub!(/\s+/, '_')
     return string
   end
-
-end
+end # module WLTool
 
 module Network
 
@@ -310,7 +306,8 @@ end
 module PostgresHelper
 
   def self.db_exists? db_name
-    #conn = PGconn.new('localhost', 5432, '', '', db_name, db_username, "") # to use when password needed
+    # #conn = PGconn.new('localhost', 5432, '', '', db_name, db_username, "") #
+    # to use when password needed
     conn = PGconn.open(:dbname => 'postgres', :user => 'postgres')
     sql = "select count(1) from pg_catalog.pg_database where datname = '#{db_name}'"
     rs = conn.exec(sql)
