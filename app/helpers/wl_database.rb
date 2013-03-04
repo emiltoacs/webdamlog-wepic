@@ -298,7 +298,8 @@ module WLDatabase
         @relation_classes[classname] = prog
       end
 
-      # XXX some bootstrap relations defined statically as ActiveRecord model
+      # XXX some bootstrap relations defined statically as ActiveRecord model.
+      # These are the required relations for the wepic_database_wrapper.
       @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
       @wlschema.new(:name=>User.table_name, :schema=>User.schema.to_json).save

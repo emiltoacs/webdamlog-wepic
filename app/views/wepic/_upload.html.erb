@@ -15,7 +15,7 @@
   </div>
   <div class="field">
   	<%= f.label :owner%> <br />
-  	<%= f.select(:owner,options_for_select(@contacts.map {|contact| contact.username}),{:prompt => 'Select Owner',:selected=>nil,:disable=>'Select Owner'})%>
+  	<%= f.select(:owner,options_for_select(@contacts.map {|contact| contact.username}), {:prompt => 'Select Owner',:selected=>nil,:disable=>'Select Owner'})%>
   </div>
   <div class="field">
     <%= f.label :image %><br />

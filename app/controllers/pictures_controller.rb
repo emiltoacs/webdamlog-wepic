@@ -27,7 +27,7 @@ class PicturesController < WepicController
   #but enough information to display the picture thumbnail).
   def contact
     username = params[:username]
-    @contact_pictures = Picture.find(:all,:conditions => {:owner=>username})    
+    @contact_pictures = Picture.find(:all,:conditions => {:owner=>username})  
     #Render the json data we need to send to the contact javascript/
     return_hash = {}
     @contact_pictures.each do |picture|

@@ -1,7 +1,4 @@
 peer sigmod_peer = localhost:10000;
-collection ext persistent contact@local(username*, );
-fact bootstrap@p0(1);
-fact bootstrap@p0(2);
-fact bootstrap@p0(3);
-fact bootstrap@p0(4);
+collection ext persistent contact@local(username*, peerlocation*, online*, email*, facebook*);
+rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);
 end
