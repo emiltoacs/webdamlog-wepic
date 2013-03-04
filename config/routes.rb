@@ -3,6 +3,7 @@ WepimApp::Application.routes.draw do
   if Conf.manager?
     root :to => 'welcome#index'
     match 'welcome/login' => 'welcome#login'
+    match 'welcome/scenario' => 'welcome#start_scenario'
     match "welcome/shutdown/:id" => "welcome#shutdown"
     match 'welcome/start/:id' => "welcome#start"
     match 'welcome/redirect/:id' => "welcome#redirect"

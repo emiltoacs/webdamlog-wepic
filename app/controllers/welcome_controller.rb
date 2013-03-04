@@ -2,10 +2,12 @@
 # Wepic Peers do not use this controller.
 #
 class WelcomeController < ApplicationController
+  
   def index
     @account = Peer.new if @account.nil?
     @accounts = Peer.all
     @protocol = Conf.peer['peer']['protocol']
+    @scenarios = Scenario.all
   end
 
   # Once clicked on the button go, launch or reconnect to a peer
@@ -50,7 +52,8 @@ class WelcomeController < ApplicationController
         end
       end
     end
-  end
+    
+  end # login
 
   def shutdown
     @account = Peer.find(params[:id])
@@ -65,7 +68,7 @@ class WelcomeController < ApplicationController
         format.html {redirect_to :welcome, :alert => "The WebdamLog Instance was not properly shut down. Reason : #{output_errors(@account)}"}
       end
     end
-  end
+  end # shutdown
 
   def start
     @account = Peer.find(params[:id])
@@ -75,7 +78,7 @@ class WelcomeController < ApplicationController
     @account.active=true
     @account.save
     respond_to do |format|
-      format.html {redirect_to :welcome, :notice => "The WebdamLog Instance is restarting...."}
+      format.html {redirect_to :welcome, :notice => "The WebdamLog Instance is restarting...." }
     end
   end
 
@@ -88,7 +91,7 @@ class WelcomeController < ApplicationController
       account.save
     end
     respond_to do |format|
-      format.html {redirect_to :welcome, :notice => "All peers were killed"}
+      format.html {redirect_to :welcome, :notice => "All peers were killed" }
     end
   end
 
@@ -97,19 +100,18 @@ class WelcomeController < ApplicationController
   def confirm_server_ready
     @account = Peer.find(params[:id])
     respond_to do |format|
-      format.json { render :json => @account.active }
+      format.json {render :json => @account.active }
     end
   end
 
-  #This method is used to redirect a user to a specific wepic peer homepage.
+  # This method is used to redirect a user to a specific wepic peer homepage.
   def redirect
     @account = Peer.find(params[:id])
     respond_to do |format|
-      format.html { redirect_to "#{Conf.peer['peer']['protocol']}://#{@account.ip}:#{@account.port}" }
+      format.html {redirect_to "#{Conf.peer['peer']['protocol']}://#{@account.ip}:#{@account.port}" }
     end
   end
 
-  #Restful method for waiting view.
   def waiting
     @account = Peer.find(params[:id])
   end
@@ -120,5 +122,21 @@ class WelcomeController < ApplicationController
       s+="\n\t#{msg}"
     end
     s
-  end
+  end # output_errors
+
+  # Handle the call to initialize the right scenario
+  def start_scenario
+    scenario = params[:scenario_opt][:scenario_selected]
+    case scenario
+    when 'sigmod'
+      respond_to do |format|
+        format.html {redirect_to '/', :notice => "Scenario #{scenario} is generated" }
+      end
+    else
+      respond_to do |format|
+        format.html {redirect_to '/', :notice => "Scenario #{scenario} unknown" }
+      end
+    end
+  end # start_scenario
+
 end
