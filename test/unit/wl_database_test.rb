@@ -6,16 +6,6 @@ require 'test/unit'
 require 'wl_tool'
 require 'wl_database'
 
-# Test the setup of the server
-#
-class WLDatabaseServerTest < Test::Unit::TestCase
-
-  def test_setup_database_server
-  
-  end
-
-end
-
 # This class is meant to test and explain the database API to be used by the
 # rails controllers and WebdamLog. The suppress warning messages are used to
 # avoid constant reassignment warnings.
