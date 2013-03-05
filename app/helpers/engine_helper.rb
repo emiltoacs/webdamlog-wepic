@@ -6,7 +6,7 @@ require 'fileutils'
 # There is the set of function used to manage the webdamlog engine from the
 # wepic app
 #
-# See the engine_initializer that define the constant used thoughout the
+# See the engine_initializer that define the constant used throughout the
 # project to refere to this webdamlog engine.
 #
 module EngineHelper

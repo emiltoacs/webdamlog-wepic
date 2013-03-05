@@ -41,7 +41,7 @@ test:
     web_port : 10000
     wdl_engine_port : 20000
     program:
-      file_path : app/assets/wlprogram/bootstrap_program.wl
+      file_path: app/assets/wlprogram/bootstrap_program.wl
 
 production:
   <<: *base
