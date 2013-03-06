@@ -297,7 +297,8 @@ module WLDatabase
       else
         @relation_classes[classname] = prog
       end
-
+      
+      # All of these methods normally correspond to the WLProgram
       # XXX some bootstrap relations defined statically as ActiveRecord model.
       # These are the required relations for the wepic_database_wrapper.
       @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
@@ -311,6 +312,13 @@ module WLDatabase
       Contact.new(:username=>'Gerome',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"miklau@cs.umass.edu",:facebook=>"Gerome Miklau").save
       Contact.new(:username=>'Serge',:peerlocation=>'SIGMODpeer',:online=>false,:email=>"serge.abiteboul@inria.fr",:facebook=>"Serge Abiteboul").save
       Contact.new(:username=>'Jules',:peerlocation=>'localhost',:online=>true,:email=>"jules.testard@mail.mcgill.ca",:facebook=>"Jules Testard").save
+    
+      #Here are a few pictures to insert in the db
+      Picture.new(:image_url=>"app/assets/images/bear.jpg")
+      Picture.new(:image_url=>"app/assets/images/nemo.jpg")
+      Picture.new(:image_url=>"app/assets/images/tiger.jpg")
+      Picture.new(:image_url=>"app/assets/images/greenbird.jpg")
+      Picture.new(:image_url=>"app/assets/images/redbird.jpg")
     end
     
     # The create relation method will create a new relation in the database as well.
