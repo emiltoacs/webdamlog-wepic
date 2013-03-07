@@ -4,18 +4,6 @@ class Picture < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      attr_accessible :title, :image, :owner, :image_url
-      validates_uniqueness_of :title
-      has_attached_file :image,
-        :storage => :database, 
-        :styles => {
-        :thumb => "150x150>",
-        :small => "300x300>"
-      },
-        :url => '/:class/:id/:attachment?style=:style'
-      default_scope select_without_file_columns_for(:image)
-      before_validation :download_remote_image, :if => :image_url_provided?
-      validates :owner, :presence => true
       connection.create_table 'pictures', :force => true do |t|
         t.string :title
         t.string :owner
@@ -33,6 +21,8 @@ class Picture < AbstractDatabase
     end
   end
   
+  setup
+  
   def self.schema
     {'title'=>'string',
       'owner'=>'string',
@@ -47,16 +37,55 @@ class Picture < AbstractDatabase
     }
   end
   
-  setup
   
+  
+  attr_accessible :title, :image, :owner, :image_url
+  validates_uniqueness_of :title
+  validates :owner, :presence => true
+  
+  has_attached_file :image,
+    :storage => :database, 
+    :styles => {
+    :thumb => "150x150>",
+    :small => "300x300>"
+  },
+    :url => '/:class/:id/:attachment?style=:style'
+  
+  default_scope select_without_file_columns_for(:image)
+  
+  before_validation :download_image, :if => :image_url_provided?
+     
   private
+  
+  def url_provided_remote?
+    uri = URI.parse(self.image_url)
+    return uri.is_a?(URI::HTTP) || uri.is_a?(URI::FTP) || uri.is_a?(URI::HTTPS)
+  end
+  
+  def url_provided_local?
+    URI.parse(self.image_url).instance_of?(URI::Generic) 
+  end
   
   def image_url_provided?
     !self.image_url.blank?
   end
   
-  def download_remote_image
-    self.image = do_download_remote_image
+  def download_image
+    #self.image = do_download_remote_image
+    if url_provided_remote?
+      self.image = do_download_remote_image
+    elsif url_provided_local?
+      self.image = get_local_image
+    else
+      #Do nothing
+    end
+  end
+  
+  def get_local_image
+    io = File.new(URI.parse(image_url).path)
+#    def io.original_filename; base_uri.path.split('/').last; end
+#    io.original_filename.blank? ? nil : io
+  rescue
   end
   
   def do_download_remote_image
