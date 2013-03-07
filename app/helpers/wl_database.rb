@@ -314,11 +314,11 @@ module WLDatabase
       Contact.new(:username=>'Jules',:peerlocation=>'localhost',:online=>true,:email=>"jules.testard@mail.mcgill.ca",:facebook=>"Jules Testard").save
     
       #Here are a few pictures to insert in the db
-      Picture.new(:image_url=>"app/assets/images/bear.jpg")
-      Picture.new(:image_url=>"app/assets/images/nemo.jpg")
-      Picture.new(:image_url=>"app/assets/images/tiger.jpg")
-      Picture.new(:image_url=>"app/assets/images/greenbird.jpg")
-      Picture.new(:image_url=>"app/assets/images/redbird.jpg")
+      Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/bear.jpg",:owner=>"Emilien",:title=>"bear").save
+      Picture.new(:image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg",:owner=>"Emilien",:title=>"nemo").save
+      Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/tiger.jpg",:owner=>"Jules",:title=>"tiger").save
+      Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/greenbird.jpg",:owner=>"Emilien",:title=>"green bird").save
+      Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/redbird.jpg",:owner=>"Julia",:title=>"red bird").save
     end
     
     # The create relation method will create a new relation in the database as well.
