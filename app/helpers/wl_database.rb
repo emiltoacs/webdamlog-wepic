@@ -30,7 +30,7 @@ module WLDatabase
       # exist. Then create the first database for the manager
       if Conf.db['adapter'] == 'postgresql'
         if PostgresHelper.db_exists? db_name
-          msg = "Database connection via ORM WLDatabase absent but the database #{db_name} exists in the database server postgreSQL"
+          msg = "#{db_name} exists postgreSQL: create object relational mapper"
           WLLogger.logger.debug msg
         else
           msg = "Need to create the database #{db_name} in the database server postgreSQL"
@@ -111,7 +111,7 @@ module WLDatabase
 
     def need_bootstrap?
       meta = DATABASE_META
-      if table_exists_for_model? meta and relation_classes[meta].where(:init=>true).first.init
+      if table_exists_for_model? meta and !relation_classes[meta].where(:init=>true).first.nil?
         false
       else
         true
@@ -385,7 +385,7 @@ module WLDatabase
         def self.schema
           @schema
         end
-        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} schema #{@schema} in database #{config}"        
+        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} and schema #{@schema} in database #{config['database']}"
       end
         
       return klass
@@ -417,6 +417,7 @@ module WLDatabase
   
 
   class WLDatabaseError < StandardError
+    
     def initialize(msg)
       super(msg)
       @msg = msg
@@ -427,11 +428,12 @@ module WLDatabase
       "#{super} : #{@msg}"
     end
 
-    # preferred to super
+    # if you need to keep the original method accessible
     #    alias :orig_to_s :to_s
     #    def to_s
     #      "#{orig_to_s} : #{@msg}"
     #    end
+    
   end # class WLDatabaseError
 
 end # module WLDatabase

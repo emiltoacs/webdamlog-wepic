@@ -12,8 +12,8 @@ require 'ostruct'
 
 module WLSetup
   
-  # If the manager has no database it erase all other database since it would
-  # be old peer database not belonging to any known manager.
+  # If the manager has no database it erase all other database since it would be
+  # old peer database not belonging to any known manager.
   #
   # TODO dbsetup should also check the consistency between the databases present
   # and those that are cited in the account table for the manager database.
@@ -133,8 +133,10 @@ WHERE
   def self.parse!(argv)
     # Assign default value
     options = OpenStruct.new
-    options.peername = "manager"
-    options.port = "4000"
+    #options.peername = "manager"
+    #options.port = "4000"
+    options.peername = nil
+    options.port = nil
     options.debug = false
     options.manager_port = nil
     # Parse from command line
@@ -155,6 +157,7 @@ WHERE
       opt.on("-m", "--manager-port MPORT", "give the port on which the manager is waiting your answer") do |mport|
         options.manager_port = mport
       end
+      opt.on("-C", "--ymlconf path", "if not specified the default is config/") { |path| options.ymlconf = path }
       # options for server: see rails/commands/server
       opt.on("-b", "--binding=ip", String,
         "Binds Rails to the specified ip.", "Default: 0.0.0.0") { |v| options.Host = v }
@@ -171,8 +174,8 @@ WHERE
     end
     
     # All the options parsed previously are removed from the ARGV parameter tab
-    # only -p for port is usefull for server
-    # 
+    # only -p for port is useful for server
+    #
     opts.parse(argv)
     start_server = true
     
@@ -189,22 +192,29 @@ WHERE
     else # continue to rails/command
 
       # setup kind of peer: will be stored in Conf
-      if options.peername.nil? or options.peername.downcase == 'manager'
-        WLLogger.logger.info "Setup a manager"
-        options.peername = 'manager'
-      else
-        WLLogger.logger.info "Setup a regular peer"
-      end
-      # setup this environment variable are useful to avoid Conf file to fail when loading
-      # TODO remove these and test
+      #      if options.peername.nil? or options.peername.downcase == 'manager'
+      #        WLLogger.logger.info "Setup a manager"
+      #        options.peername = 'manager'
+      #      else
+      #        WLLogger.logger.info "Setup a regular peer"
+      #      end
+      # setup this environment variable are useful to avoid Conf file to fail
+      # when loading
       ENV['USERNAME'] = options.peername
       ENV['PORT'] = options.port
       ENV['MANAGER_PORT'] = options.manager_port
-      Conf.init({force: true})
-      
-      if argv[0] == 'server' or argv[0] == 's'      
+      Conf.init({force: true, ymlconf: options.ymlconf })
+
+      if Conf.peer['peer']['username'].downcase == 'manager'
+        WLLogger.logger.info "Setup a manager"
+      else
+        WLLogger.logger.info "Setup a regular peer"
+      end
+
+      if argv[0] == 'server' or argv[0] == 's'
         start_server = true
-        ['-U', '--username', '-m', '--manager-port'].each do |switch|
+        # purge custom options from command line for rails server
+        ['-U', '--username', '-m', '--manager-port', '-C', '--ymlconf'].each do |switch|
           id = argv.index(switch)
           unless id.nil?
             2.times{argv.delete_at id}
@@ -215,7 +225,7 @@ WHERE
         inter = ['-p', '--port'] & ARGV
         if inter.empty?
           argv.push '-p'
-          argv.push ENV['PORT']
+          argv.push Conf.peer['peer']['web_port'].to_s
         end
         # setup the pid file
         argv.push('-P')

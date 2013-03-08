@@ -1,5 +1,4 @@
-# The controller of the manager
-# Wepic Peers do not use this controller.
+# The controller of the manager Wepic Peers do not use this controller.
 #
 class WelcomeController < ApplicationController
   
@@ -17,36 +16,38 @@ class WelcomeController < ApplicationController
     @account = Peer.find(:first,:conditions => {:username=>username})
     
     if @account.nil?
-      #If the account is new
-      @account, launched, msg = WLLauncher.create_peer(username, Conf.peer)
+      # If the account is new
+      @account, launched, msg = WLLauncher.create_peer(username)
       if launched
-        #The peer is being launched, we send the user to the waiting until the peer is ready.
+        # The peer is being launched, we send the user to the waiting until the
+        # peer is ready.
         respond_to do |format|
           format.html {redirect_to "/waiting/#{@account.id}", :notice => "Please wait while your wepic instance is being created..."}
         end
       else
-        #The peer was not launched
+        # The peer was not launched
         respond_to do |format|
           format.html {redirect_to '/', :alert => "New WebdamLog Instance was not set properly. Reason #{msg}"}
         end
       end
     else
-      #If the account already exists
+      # If the account already exists
       url, accessible, available = WLLauncher.access_peer(@account)
       if accessible
         if available
-          #The peer is already up an running, we just need to access it.
+          # The peer is already up an running, we just need to access it.
           respond_to do |format|
             format.html {redirect_to url}
           end
         else
-          #The peer is accessible but has to be rebooted
+          # The peer is accessible but has to be rebooted
           respond_to do |format|
             format.html {redirect_to "/waiting/#{@account.id}", :notice => "Server is rebooting..."}
           end
         end
       else
-        #Worst case, peer cannot even be accessed (data missing, remote location unreachable...)
+        # Worst case, peer cannot even be accessed (data missing, remote
+        # location unreachable...)
         respond_to do |format|
           format.html {redirect_to '/', :alert => "The specified peer cannot be accessed. Please contact the service administrator."}
         end
@@ -82,7 +83,7 @@ class WelcomeController < ApplicationController
     end
   end
 
-  #Kill all peers for which this manager is responsible.
+  # Kill all peers for which this manager is responsible.
   def killall
     @accounts = Peer.all
     @accounts.each do |account|
@@ -126,17 +127,18 @@ class WelcomeController < ApplicationController
 
   # Handle the call to initialize the right scenario
   def start_scenario
-    scenario = params[:scenario_opt][:scenario_selected]
-    case scenario
-    when 'sigmod'
+    scenario = Scenario.new( params[:scenario_opt][:scenario_selected] )
+    sigmodpeer, launched, msg = scenario.run
+    @account = sigmodpeer
+    if launched
       respond_to do |format|
-        format.html {redirect_to '/', :notice => "Scenario #{scenario} is generated" }
+        format.html {redirect_to "/waiting/#{sigmodpeer.id}", :notice => "Please wait while your sigmodpeer instance is being created..."}
       end
     else
       respond_to do |format|
-        format.html {redirect_to '/', :notice => "Scenario #{scenario} unknown" }
+        format.html {render :index, :alert => "sigmodpeer instance was not set properly. Reason #{msg}"}
       end
     end
   end # start_scenario
 
-end
+end # class WelcomeController < ApplicationController

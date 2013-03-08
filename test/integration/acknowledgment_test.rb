@@ -23,7 +23,7 @@ class AcknowledgmentTest < Test::Unit::TestCase
     puts "TEST A"
     return_peer_value = true
     peer_thread = Thread.new do
-      return_peer_value = WLLauncher.start_peer('manager',nil,@manager_port,@port)
+      return_peer_value = WLLauncher.start_peer('manager',@port)
     end 
     sleep(0.5)
     WepicPeer.send_acknowledgment(@name,@manager_port,@port)
@@ -34,7 +34,7 @@ class AcknowledgmentTest < Test::Unit::TestCase
   
   def test_b_start_peer_with_server
     puts "TEST B"
-    assert_equal(true,WLLauncher.start_peer('manager','JULES',@manager_port,@port))
+    assert_equal(true,WLLauncher.start_peer('JULES',@port))
     print "----------\n#{@name} has connected on port #{@port}!\n-----------"
     WLLauncher.end_peer(@port)
   end

@@ -3,8 +3,8 @@
   <% if flash[:notice] %>
     <div class="notice"><%= flash[:notice] %></div>
   <% end %>
-  <% if flash[:error] %>
-    <div class="error"><%= flash[:error] %></div>
+  <% if flash[:alert] %>
+    <div class="error"><%= flash[:alert] %></div>
   <% end %>
   <h2>No account yet? Sign up!</h2><%= render 'form' %>
 </div>

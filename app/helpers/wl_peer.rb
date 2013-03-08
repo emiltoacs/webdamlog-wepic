@@ -12,10 +12,9 @@ module WepicPeer
   #
   def self.send_acknowledgment(name,manager_port,port)
     if Conf.manager?
-      WLLogger.logger.warn "trying to send a acknowledgement from the manager"
+      WLLogger.logger.warn "unexpected behavior trying to send a acknowledgement from the manager"
     else
       unless Conf.standalone?
-        #port = Network.find_ports('localhost', 1, Integer(manager_port)+1)
         socket = TCPSocket.open('localhost', manager_port)
         socket.puts "Peer #{name} on port #{port} ready"
         socket.close

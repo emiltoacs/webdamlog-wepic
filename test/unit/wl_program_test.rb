@@ -27,9 +27,8 @@ class WlProgramTest < Test::Unit::TestCase
           pg_file,
           'localhost',
           '11111',
-          {:debug => true} )
+          {:debug => true})
       end
     end
   end
-
 end

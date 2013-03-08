@@ -4,8 +4,8 @@ class Peer < AbstractDatabase
     unless @setup_done
       attr_accessible :ip, :port, :username, :protocol, :pid, :msg
       attr_accessible :active
-      validates :username, :format => { :with => /\A[a-zA-Z]+\z/,
-                                        :message => "Only letters allowed (between 5 and 30)",
+      validates :username, :format => { :with => /\A[a-zA-Z_]+\z/,
+                                        :message => "Only letters or underscore _ allowed (between 5 and 30)",
                                         :length => {:minimum => 5, :maximum => 30} }
       self.table_name = "peers"
       connection.create_table 'peers', :force => true do |t|
