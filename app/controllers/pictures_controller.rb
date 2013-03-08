@@ -4,6 +4,7 @@ class PicturesController < WepicController
   # form in wepic/_upload.html.erb is pressed. This convention is enforced
   # because the form is sent with an http POST requests.
   def create
+    config.logger.info "Picture Parameters : #{params[:picture].inspect}"
     @picture = Picture.new(params[:picture])
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
