@@ -7,9 +7,11 @@ require './lib/monkey_patch'
 module Conf  
   @@init = false
   @@current_env = 'development'
-  # Store in one object all the configuration related to this peer + put :force
-  # => true in options to force reloading of conf + put :rails_env =>
-  # [test,development,production] to change environment of configuration files
+  # Store in one object all the configuration related to this peer
+  # * :force=> true in options to force reloading of conf
+  # * :rails_env => [test,development,production] to change environment of
+  #   configuration files
+  # * :ymlconf => path_to_conf to specify a custom path to scenarios
   #
   def self.init(options={})
     options[:force] ||= false
@@ -22,7 +24,16 @@ module Conf
     end
     # Reload configuration if needed
     unless @@init
-      @@peer = read_yaml_file 'config/peer.yml', @@current_env
+      path_to_conf = options[:ymlconf] ||= 'config'
+      if !File.exists? path_to_conf
+        if defined?(Rails) and File.exists?( File.join(Rails.root, path_to_conf) )
+          path_to_conf = File.join(Rails.root, path_to_conf)
+        else          
+          path_to_conf = 'config'
+          WLLogger.logger.warn "custom path to config file does not exists fall back to default #{path_to_conf}"
+        end
+      end      
+      @@peer = read_yaml_file File.join(path_to_conf, 'peer.yml'), @@current_env
       @@db = read_yaml_file 'config/database.yml', @@current_env
       # store all parameter for manager db useful for regular peer that change
       # database
@@ -32,7 +43,10 @@ module Conf
       # setup username from env or conf file
       if ENV['USERNAME'].nil?
         if @@peer['peer']['username'].nil?
+          #WLLogger.logger.warn "No name for the peer in ENV['USERNAME'] or in peer.yml peer:username hence it will launch a manager"
           WLLogger.logger.fatal "Variable ENV['USERNAME'] must not be nil or the peername should be set in peer.yml peer:username"
+          #@@env['USERNAME'] = 'manager'
+          #@@peer['peer']['username'] = 'manager'
         else
           @@env['USERNAME'] = @@peer['peer']['username']
         end
@@ -61,7 +75,7 @@ module Conf
         end
       end
 
-      # #define manager
+      # define manager
       if @@env['USERNAME'] == 'manager'
         @@manager = true
       else

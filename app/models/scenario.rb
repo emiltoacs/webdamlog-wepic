@@ -1,3 +1,5 @@
+# These model implements the basic scaffold needed to start a scenario which
+# usually is a list of peer to launch to start a ready-to-play environment
 class Scenario
   include ActiveModel::Validations
   include ActiveModel::Conversion
@@ -6,8 +8,11 @@ class Scenario
   SCENARIO = ['sigmod']
 
   attr_reader :name
+  attr_reader   :errors
 
   def initialize(name)
+    @errors = ActiveModel::Errors.new(self)
+    @errors.add() unless SCENARIO.include? name
     @name = name.downcase
   end
 
@@ -23,9 +28,9 @@ class Scenario
     @name.downcase
   end
 
-#  def self.model_name
-#    ActiveModel::Name.new(self)
-#  end
+  #  def self.model_name
+  #    ActiveModel::Name.new(self)
+  #  end
 
   # Scenario are never persisted in the DB
   def persisted?
@@ -35,13 +40,47 @@ class Scenario
   # This override the needed method id for ActiveRecord classes that I choose to
   # not use here since I don't need a DB table
   def id
-    #SCENARIO.index @name
     @name
   end
 
-  # override to-key from ActiveModel::Conversion
-#  def to_key
-#    SCENARIO.index @name
-#  end
+  # The 3 following methods are needed to be minimally implemented for error source from:
+  # http://api.rubyonrails.org/classes/ActiveModel/Errors.html
+  # It allows to do:
+  # 
+  # p = Person.new
+  # p.validate!             # => ["can not be nil"]
+  # p.errors.full_messages  # => ["name can not be nil"]
+  #
+  def read_attribute_for_validation(attr)
+    send(attr)
+  end
+  def self.human_attribute_name(attr, options = {})
+    attr
+  end
+  def self.lookup_ancestors
+    [self]
+  end
 
+  # Dispatcher to run the currently selected scenario
+  def run
+    case @name
+    when 'sigmod'
+      self.extend SigmodScenario
+      return start
+    end
+  end
+end
+
+
+module SigmodScenario
+
+  PEERNAME = 'sigmod_peer'
+  CONF_DIR = File.expand_path('config/scenario/sigmod')
+
+  # Run the sigmod scenario, i.e. needs to run a sigmod peer which centralize
+  # the contacts
+  # TODO: pass the properties
+  def start
+    return WLLauncher.create_peer(PEERNAME,CONF_DIR)
+  end  
 end

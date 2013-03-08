@@ -18,7 +18,7 @@ class User < AbstractDatabase
   end
   
   def default_values
-    self.username ||= ENV['USERNAME']
+    self.username ||= Conf.peer['peer']['username']
   end
   
   def self.schema

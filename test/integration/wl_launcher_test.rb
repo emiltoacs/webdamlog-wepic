@@ -62,7 +62,7 @@ class WLLauncherTest < ActionController::IntegrationTest
     username = "new_peer_for_testing"
     p Conf.env
     p ENV['USERNAME']
-    peer, st, msg = WLLauncher.create_peer(username, Conf.peer)
+    peer, st, msg = WLLauncher.create_peer(username)
     sleep(2)
     assert st
     assert_not_nil peer

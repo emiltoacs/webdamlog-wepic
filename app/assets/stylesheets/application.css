@@ -105,7 +105,6 @@ body {
     padding : 10px;
 }
 
-
 #user_prompt {
     position : relative;
     text-align: center;
@@ -166,17 +165,4 @@ body {
     background-color : #fff;
     opacity:0.85;
     filter:alpha(opacity=85);      
-}
-
-/*************************PROGRAM*********************/
-
-#program .body {
-}
-
-#program {
-    margin: 20px;
-    border: 1px solid #aaa ;
-    background-color:#bbb;
-    padding : 10px;
-    width : 60%;    
 }

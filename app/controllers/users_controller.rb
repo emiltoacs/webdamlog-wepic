@@ -49,7 +49,6 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     flash[:notice] = params.inspect
     begin
-      
       WLDatabase.setup_database_server
       if @user.save
         EngineHelper::WLHELPER.run
@@ -67,8 +66,9 @@ class UsersController < ApplicationController
       end
       
     rescue => error
+      flash[:alert] = error.message
       respond_to do |format|
-        format.html { render :action => "new", :alert => error.message }
+        format.html { render :action => "new" }
         format.xml { render :xml => {setup: error.message}, :status => :unprocessable_entity}
       end
     end # rescue => error
