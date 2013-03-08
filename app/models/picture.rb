@@ -1,10 +1,9 @@
+require 'open-uri'
+
 class Picture < AbstractDatabase
+  
   def self.setup
     unless @setup_done
-      attr_accessible :title, :image, :owner
-      validates_uniqueness_of :title
-      #validates :owner, :presence => true
-      #self.table_name = 'pictures'
       connection.create_table 'pictures', :force => true do |t|
         t.string :title
         t.string :owner
@@ -15,11 +14,14 @@ class Picture < AbstractDatabase
         t.binary :image_file
         t.binary :image_small_file
         t.binary :image_thumb_file
+        t.string :image_url
         t.timestamps
       end if !connection.table_exists?('pictures')
       @setup_done = true
     end
   end
+  
+  setup
   
   def self.schema
     {'title'=>'string',
@@ -30,11 +32,17 @@ class Picture < AbstractDatabase
       'image_updated_at'=>'datetime',
       'image_file'=>'binary',
       'image_small_file'=>'binary',
-      'image_thumb_file'=>'binary'
+      'image_thumb_file'=>'binary',
+      'image_url' => 'string'
     }
   end
   
-  setup
+  
+  
+  attr_accessible :title, :image, :owner, :image_url
+  validates_uniqueness_of :title
+  validates :owner, :presence => true
+  
   has_attached_file :image,
     :storage => :database, 
     :styles => {
@@ -42,5 +50,48 @@ class Picture < AbstractDatabase
     :small => "300x300>"
   },
     :url => '/:class/:id/:attachment?style=:style'
+  
   default_scope select_without_file_columns_for(:image)
+  
+  before_validation :download_image, :if => :image_url_provided?
+     
+  private
+  
+  def url_provided_remote?
+    uri = URI.parse(self.image_url)
+    return uri.is_a?(URI::HTTP) || uri.is_a?(URI::FTP) || uri.is_a?(URI::HTTPS)
+  end
+  
+  def url_provided_local?
+    URI.parse(self.image_url).instance_of?(URI::Generic) 
+  end
+  
+  def image_url_provided?
+    !self.image_url.blank?
+  end
+  
+  def download_image
+    #self.image = do_download_remote_image
+    if url_provided_remote?
+      self.image = do_download_remote_image
+    elsif url_provided_local?
+      self.image = get_local_image
+    else
+      #Do nothing
+    end
+  end
+  
+  def get_local_image
+    io = File.new(URI.parse(image_url).path)
+#    def io.original_filename; base_uri.path.split('/').last; end
+#    io.original_filename.blank? ? nil : io
+  rescue
+  end
+  
+  def do_download_remote_image
+    io = open(URI.parse(image_url))
+    def io.original_filename; base_uri.path.split('/').last; end
+    io.original_filename.blank? ? nil : io
+  rescue # catch url errors with validations instead of exceptions (Errno::ENOENT, OpenURI::HTTPError, etc...)
+  end
 end
