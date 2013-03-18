@@ -81,7 +81,17 @@ class WelcomeController < ApplicationController
     respond_to do |format|
       format.html {redirect_to :welcome, :notice => "The WebdamLog Instance is restarting...." }
     end
-  end
+  end # start
+
+  def refresh
+    @accounts = Peer.all
+    @accounts.each do |account|
+      account.refresh_active_field
+    end
+    respond_to do |format|
+      format.js # use welcome.js.erb to render
+    end
+  end # refresh
 
   # Kill all peers for which this manager is responsible.
   def killall
@@ -129,14 +139,20 @@ class WelcomeController < ApplicationController
   def start_scenario
     scenario = Scenario.new( params[:scenario_opt][:scenario_selected] )
     sigmodpeer, launched, msg = scenario.run
-    @account = sigmodpeer
+    @accounts = Peer.all
+    @protocol = Conf.peer['peer']['protocol']
+    @scenarios = Scenario.all
     if launched
+      @account = sigmodpeer
       respond_to do |format|
         format.html {redirect_to "/waiting/#{sigmodpeer.id}", :notice => "Please wait while your sigmodpeer instance is being created..."}
       end
     else
+      @account = Peer.new
+      @account.errors[:base] << "Scenario have failed to start the new peer created is empty and won't be saved. Reason: #{msg}"
+      flash[:alert] = "sigmodpeer instance failed to start see the log and following."
       respond_to do |format|
-        format.html {render :index, :alert => "sigmodpeer instance was not set properly. Reason #{msg}"}
+        format.html {render :index}
       end
     end
   end # start_scenario

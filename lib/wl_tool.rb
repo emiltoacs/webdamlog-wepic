@@ -43,10 +43,11 @@ module Conf
       # setup username from env or conf file
       if ENV['USERNAME'].nil?
         if @@peer['peer']['username'].nil?
-          #WLLogger.logger.warn "No name for the peer in ENV['USERNAME'] or in peer.yml peer:username hence it will launch a manager"
+          # #WLLogger.logger.warn "No name for the peer in ENV['USERNAME'] or in
+          # peer.yml peer:username hence it will launch a manager"
           WLLogger.logger.fatal "Variable ENV['USERNAME'] must not be nil or the peername should be set in peer.yml peer:username"
-          #@@env['USERNAME'] = 'manager'
-          #@@peer['peer']['username'] = 'manager'
+          # #@@env['USERNAME'] = 'manager' #@@peer['peer']['username'] =
+          # 'manager'
         else
           @@env['USERNAME'] = @@peer['peer']['username']
         end
@@ -208,6 +209,12 @@ module WLTool
     string.gsub!(/\s+/, '_')
     return string
   end
+
+  # Work under UNIX, special signal 0 send nothing but return errors if any
+  def self.pid_exists? (pid)
+    system "kill -0 #{pid}"
+    return $? == 0
+  end
 end # module WLTool
 
 module Network
@@ -315,7 +322,8 @@ module Network
       find_ports(ip,number_of_ports_required,port+increment)
     end
   end
-end
+end # end module Network
+
 
 module PostgresHelper
 
@@ -351,7 +359,6 @@ module PostgresHelper
       ActiveRecord::Base.connection.create_database config['database']
     end
   end
-  
-end
+end # module PostgresHelper
 
 
