@@ -2,8 +2,9 @@
 </div>
 <div class="content">
   <div id="engine">
-       <div class="ap_object">
-      <%= raw ap(@engine, {raw: true, html: true}) %>
+    <div class="ap_object">
+      <%# display thanks to awesome_print gem %>
+      <%= raw ap(@engine, {raw: true, html: true, limit: 5}) %>
     </div>
   </div>
 </div>

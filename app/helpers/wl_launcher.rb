@@ -130,7 +130,7 @@ module WLLauncher
       WLLogger.logger.info "Process #{pid} terminated"
     end
     pids.size
-  end
+  end # end_peer
   
   # Check if URL specified is local.
   def self.local?(url)

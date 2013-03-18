@@ -229,13 +229,13 @@ WHERE
         end
         # setup the pid file
         argv.push('-P')
-        argv.push("tmp/pids/#{options.peername}.pid")
+        argv.push("tmp/pids/#{Conf.peer['peer']['username']}.pid")
 
         clean_orphaned_peer if Conf.manager?
         setup_storage Conf.manager?, Conf.db
       end # end if server
       
-    end # end continue to rails/command
+    end # end if options.reset
 
     return start_server, options
   end

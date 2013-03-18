@@ -7,6 +7,7 @@ WepimApp::Application.routes.draw do
     match "welcome/shutdown/:id" => "welcome#shutdown"
     match 'welcome/start/:id' => "welcome#start"
     match 'welcome/redirect/:id' => "welcome#redirect"
+    match 'welcome/refresh' => 'welcome#refresh'
     match 'welcome/killall' => "welcome#killall"
     match 'welcome' => 'welcome#index'
     match 'waiting/:id' => 'welcome#waiting', :as => :waiting

@@ -3,10 +3,10 @@
 </div>
 <div class="content">
   <%if current_user%>
-    <div class="notice"><%=  notice %></div>
-    <div class="alert"><%=  alert %></div>
+    <div class="notice"><%=notice%></div>
+    <div class="alert"><%=alert%></div>
     <%if @program%>
-      <div class="program" id="name"><%=@program.name%></div>
+      <div class="program" id="name"><%= @program.name%></div>
       <div class="program" id="source">From file : <%="#{@program.source}#{@program.name}" %></div>
       <div class="program">Program :
         <pre id="text">

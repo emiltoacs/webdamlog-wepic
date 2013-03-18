@@ -22,10 +22,11 @@
   <div class="signin">
     <%= render 'login'%>
   </div>
-  <div class="list" style="margin-top:30px;">
+  <div class="list" id="peerlist" style="margin-top:30px;">
     <%= render 'list'%>
   </div>
   <div class="field">
+    <%= button_to('Refresh', {:action => 'refresh'}, :method => :get, :remote => true) %>
     <%=form_tag({:controller => "welcome", :action=>"killall"},:method=>'post') do %>
       <%= submit_tag 'Kill all wepic peers'%>
     <%end%>

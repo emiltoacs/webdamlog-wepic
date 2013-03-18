@@ -39,7 +39,7 @@ module WepimApp
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
     
-    config.active_record.logger = nil
+    #config.active_record.logger = nil
 
     # Enable escaping HTML in JSON.
     config.active_support.escape_html_entities_in_json = true
@@ -63,7 +63,7 @@ module WepimApp
 
     # The standard logger for this application
     #    require 'WLLogger'
-    #    config.logger = WLLogger::WLLogger.new STDOUT
+    config.logger = WLLogger::WLLogger.new STDOUT
       
   end
   
