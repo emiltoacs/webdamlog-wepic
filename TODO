@@ -1,0 +1,9 @@
+TODOs:
+
+fix redirection (does not work well)
+
+test all GUI features
+using rake test or ruby -Itest.
+exception when reconnecting to host.
+
+figure out how rake works

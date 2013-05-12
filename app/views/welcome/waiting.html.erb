@@ -1,27 +1,33 @@
 <script>
-  function executeQuery() {
-    $.ajax({
-      url: "confirm/<%= @account.id%>",
-      data : { id : <%= @account.id %>},
-      dataType : 'json',
-      success: function(data) {
-        if (data) {
-          window.location = "http://<%=@account.ip%>:<%=@account.port%>"
-        }
-      }
-    });
-    setTimeout(executeQuery, 3000); // you could choose not to continue on failure...
-  }
+(function($) {
+ //we can now rely on $ within the safety of our "bodyguard" function
+function executeQuery() {
+	$.ajax({
+		url: "confirm/<%= @account.id%>",
+  		data : { id : <%= @account.id %>},
+		dataType : 'json',
+		success: function(data) {
+			if (data) {
+				window.location = "http://<%= @account.ip%>:<%= @account.port%>"
+				}
+			}
+  	});
+  	console.log("Attempting to reach server...")
+  	setTimeout(executeQuery, 3000); // you could choose not to continue on failure...
+}
+ //we can now rely on $ within the safety of our "bodyguard" function
+ $(document).ready(function() {
+ // run the first time; all subsequent calls will take care of themselves
+ setTimeout(executeQuery, 1000);
+ });
+} ) ( jQuery );
 
-
-$(document).ready(function() {
-    // run the first time; all subsequent calls will take care of themselves
-    setTimeout(executeQuery, 1000);
-  });
 </script>
 
 <div class="opacity"></div>
 <div class="content">
-  <h1>Waiting</h1>
-  <div class="notice"><%= notice%></div>
+	<h1>Waiting</h1>
+	<div class="notice">
+		<%= notice%>
+	</div>
 </div>
