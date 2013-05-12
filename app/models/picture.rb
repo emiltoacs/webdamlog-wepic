@@ -83,8 +83,7 @@ class Picture < AbstractDatabase
   
   def get_local_image
     io = File.new(URI.parse(image_url).path)
-#    def io.original_filename; base_uri.path.split('/').last; end
-#    io.original_filename.blank? ? nil : io
+W
   rescue
   end
   

@@ -1,34 +1,4 @@
 <script type="text/javascript">
-  function getPictures(element) {
-    var contacts = 'contacts/';
-    var html = '';
-    $.ajax({
-      url: contacts.concat(element.innerHTML,'/pictures'),
-      data : { id : element.value},
-      dataType : 'json',
-      success: function(data) {
-        if (data) {
-          for (var key in data) {
-            if (data.hasOwnProperty(key)) {
-              html += '<a href="' + data[key]['href'] + '">';
-              html += '<div class="entry">';
-              html += '<div class="title">'+ data[key]['title'] +'</div>'
-              html += '<div class="image"><img alt="' + data[key]['alt']+ '" src="' + data[key]['src']+ '"></div>';
-              html += '</div></a>';
-              console.log(html);
-            }
-          }
-          $('#contact_pictures').html(html);
-        }
-      }
-    });
-  }
-	
-  function Select(element) {
-    jQuery('.selected').attr('class', 'contact');
-    element.className='selected';
-    getPictures(element);
-  }
 </script>
 
 <table id="contacts">

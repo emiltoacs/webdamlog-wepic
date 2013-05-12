@@ -1,43 +1,102 @@
 <% if current_user%>
-  <div id="pictures">
-  <% end %>
-  <div class="opacity">
-  </div>
-  <div class="content">
-    <%if current_user%>
-      <%= notice %>
-      <div class="upload">
-        <%= render 'upload'%>
-      </div>
-      <h2>My Pictures</h2>
-      <div id="my_pictures" class="images">
-        <% @pictures.each do |picture| %>
-          <a href="<%='/pictures/'+picture.id.to_s%>">
-            <div class="entry">
-              <div class="title"><%=picture.title%></div>
-              <div class="image"><%=image_tag picture.image.url(:thumb)%></div>
-            </div>
-          </a>
-        <% end %>
-      </div>
-      <h2>Contact Pictures</h2>
-      <div id="contact_pictures" class="images">
+<script type="text/javascript">
+	function getPictures(element) {
+		var contacts = 'contacts/';
+		var html = '';
+		$.ajax({
+			url : contacts.concat(element.innerHTML, '/pictures'),
+			data : {
+				id : element.value
+			},
+			dataType : 'json',
+			success : function(data) {
+				if (data) {
+					for (var key in data) {
+						if (data.hasOwnProperty(key)) {
+							html += '<a href="' + data[key]['href'] + '">';
+							html += '<div class="entry">';
+							html += '<div class="title">' + data[key]['title'] + '</div>'
+							html += '<div class="image"><img alt="' + data[key]['alt'] + '" src="' + data[key]['src'] + '"></div>';
+							html += '</div></a>';
+							console.log(html);
+						}
+					}
+					$('#contact_pictures').html(html);
+				}
+			}
+		});
+	}
 
-      </div>
-    <%else%>
-      <div id="notlogged">You are not logged in! <%=link_to "Log in",:login%> </div>
-    <%end%>
-  </div>
-  <% if current_user %>
-  </div>
+	function Select(element) {
+		jQuery('.selected').attr('class', 'contact');
+		element.className = 'selected';
+		getPictures(element);
+	}
+</script>
+<div id="pictures">
+	<% end %>
+	<div class="opacity"></div>
+	<div class="content">
+		<%if current_user%>
+		<%= notice %>
+		<div class="upload">
+			<%= render 'upload'%>
+		</div>
+		<!-- 		<h2>My Pictures</h2>
+		<div id="my_pictures" class="images">
+		<% @pictures.each do |picture| %>
+		<a href="<%= '/pictures/'+picture.id.to_s%>">
+		<div class="entry">
+		<div class="title">
+		<%= picture.title%>
+		</div>
+		<div class="image">
+		<%= image_tag picture.image.url(:thumb)%>
+		</div>
+		</div> </a>
+		<% end %>
+		</div> -->
+		<h2>My Pictures Lightbox</h2>
+		<div id="my_pictures" class="images">
+			<% @pictures.each do |picture| %>
+			<div class="entry">
+				<div class="image">
+					<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small), :title => picture.title, :class => "top_up") unless picture.image.nil? %>
+				</div>
+			</div>
+			<% end %>
+		</div>
+		<h2>Contact Pictures</h2>
+		<div id="contact_pictures" class="images">
+
+		</div>
+		<%else%>
+		<div id="notlogged">
+			You are not logged in! <%= link_to "Log in",:login%>
+		</div>
+		<%end%>
+	</div>
+	<% if current_user %>
+</div>
+
+<!-- <script type="text/javascript">
+TopUp.addPresets({
+"#my_pictures a" : {
+title : "Gallery {alt} ({current} of {total})",
+group : "examples",
+readAltText : 1,
+shaded : 1
+}
+});
+</script> -->
 <%end%>
 
 <% if current_user%>
-  <div id="contact_tab">
-    <div class="opacity"></div>
-    <div class="content">
-      <h2> Contacts </h2>
-      <%= render 'contacts'%>
-    </div>
-  </div>
+<div id="contact_tab">
+	<div class="opacity"></div>
+	<div class="content">
+		<h2> Contacts </h2>
+		<%= render 'contacts'%>
+	</div>
+</div>
 <% end %>
