@@ -319,6 +319,9 @@ module WLDatabase
       Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/tiger.jpg",:owner=>"Jules",:title=>"tiger").save
       Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/greenbird.jpg",:owner=>"Emilien",:title=>"green bird").save
       Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/redbird.jpg",:owner=>"Julia",:title=>"red bird").save
+      
+      WLLogger.logger.info "Samples added for user " + Conf.env['USERNAME'] + ": " + Conf.db['sample_content']
+      puts "Samples added for user " + Conf.env['USERNAME'] + ": " + Conf.db['sample_content']
     end
     
     # The create relation method will create a new relation in the database as well.

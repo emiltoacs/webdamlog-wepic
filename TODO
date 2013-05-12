@@ -1,9 +1,5 @@
 TODOs:
 
-fix redirection (does not work well)
-
-test all GUI features
-using rake test or ruby -Itest.
-exception when reconnecting to host.
-
-figure out how rake works
+	-	test all GUI features : understand why rake test:unit does not work (Logger exception).
+	-	exception when reconnecting to host.
+	-	investigate incorrect behavior when signup fails.
