@@ -43,4 +43,10 @@ WepimApp::Application.configure do
     Debugger.start
   end
   
+  #This disables SQL logging for images
+  config.after_initialize do
+    ActiveRecord::Base.logger = Rails.logger.clone
+    ActiveRecord::Base.logger.level = Logger::INFO
+  end
+  
 end
