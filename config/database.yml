@@ -14,6 +14,7 @@ development:
   encoding: unicode
   pool: 5
   database: wp_manager
+  sample_content: true
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -28,6 +29,7 @@ test:
   encoding: unicode
   pool: 5
   database: wp_manager
+  sample_content: true
 
 #production:
 #  adapter: sqlite3
@@ -39,4 +41,5 @@ production:
   encoding: unicode
   pool: 5
   database: wp_manager
+  sample_content: false
   

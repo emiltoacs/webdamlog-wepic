@@ -124,6 +124,10 @@ WHERE
         conn.exec d
       end
     end
+    
+    #Cleanup the rule_dir directory
+    cleanup_cmd = "rm -rf #{File.expand_path File.dirname(__FILE__)}/../tmp/rule_dir/*"
+    system cleanup_cmd
   end
 
   # Parse the options given in the command line and modify it for subsequent
