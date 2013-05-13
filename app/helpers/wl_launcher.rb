@@ -9,21 +9,30 @@ module WLLauncher
   # the newly created active record for the peer as well as if the creation
   # process has been successful.
   #
-  def self.create_peer(username, ymlconf=nil)
+  def self.create_peer(username, ymlconf=nil,directory=nil)
     ip=Conf.peer['manager']['ip']
     # FIXME here I use the protocol of the local default peer conf file instead
     # of the possible ymlconf ; also check if protocol is really necessary
     protocol=Conf.peer['peer']['protocol']
+
     if peername_valid? username
-      web_port = Network::find_port ip, :TCP
+      if ymlconf && ymlconf[Conf.current_env]['peer']['web_port'] #If web_port is configured for a scenario, we will use it.
+        web_port = ymlconf[Conf.current_env]['peer']['web_port']
+      else
+        web_port = Network::find_port ip, :TCP
+      end
       if web_port==Network::SOCKET_PORT_INVALID
-        return nil, false, "no port available to deploy this peer for #{username}"
+        WLLogger.logger.warn "Webport #{web_port} specified in #{directory} is invalid."
+        return nil, false, "port not available to deploy this peer for #{username}. Try to remove webport configuration from scenario configuration file in case of wl scenario."
       else
         # Create the peer active record
         peer = Peer.new(:username => username, :ip=> ip, :port => web_port, :active => false, :protocol => protocol)
+        WLLogger.logger.debug "New peer record created with port #{web_port}..."
         if peer.save
           Thread.new do
-            st, msg = WLLauncher.start_peer(username, web_port, peer, ymlconf)
+            WLLogger.logger.debug "Start peer thread launching..."
+            st, msg = WLLauncher.start_peer(username, web_port, peer, ymlconf, directory)
+            WLLogger.logger.debug "Start peer thread launched..."
           end
           return peer, true, "peer starting"
         else
@@ -37,20 +46,29 @@ module WLLauncher
   
   # Start a new peer or restart a peer <peer_record> saved in the db
   #
-  def self.start_peer(new_peer_name, new_peer_port, peer_record=nil, ymlconf=nil)
-    manager_waiting_port = Conf.peer['manager']['manager_waiting_port']
+  def self.start_peer(new_peer_name, new_peer_port, peer_record=nil, ymlconf=nil, directory=nil)
+    #TODO : investigate why this code is buggy. In the meantime, use a randomly generated port.
+    # unless ymlfconf.nil?
+      # manager_waiting_port = ymlconf[Conf.current_env]['manager']['manager_waiting_port']
+    # else
+      # manager_waiting_port = Conf.peer['manager']['manager_waiting_port']
+    # end
+    manager_waiting_port = Network.find_port Conf.peer['manager']['ip'], :TCP
     if manager_waiting_port.nil? or !Network.port_available?(Conf.peer['manager']['ip'], manager_waiting_port)
       manager_waiting_port = Network.find_port Conf.peer['manager']['ip'], :TCP
     end
+    WLLogger.logger.debug "Manager waiting port #{manager_waiting_port} chosen.."    
     listener = TCPServer.new(manager_waiting_port)
+    WLLogger.logger.debug "Listener Server created..."
     if Conf.manager?
+      WLLogger.logger.debug "#{new_peer_name} : #{new_peer_port}"
       if !new_peer_name.nil? and !new_peer_port.nil?
         cmd = "rails server -p #{new_peer_port} -U #{new_peer_name} -m #{manager_waiting_port}"
-        if !ymlconf.nil?
-          if File.exists?(ymlconf) or File.exists?( File.join(Rails.root, ymlconf) )
-            cmd << " -C #{ymlconf}"
+        if !directory.nil?
+          if File.exists?(directory) or File.exists?( File.join(Rails.root, directory) )
+            cmd << " -C #{directory}"
           else
-            WLLogger.logger.warn "you specified an invalid path for -C, --ymlconf #{File.join(Rails.root, ymlconf)}"
+            WLLogger.logger.warn "you specified an invalid path for -C, --ymlconf #{File.join(Rails.root, directory)}"
           end
         else
           WLLogger.logger.debug "start a peer with default configuration file"
@@ -79,6 +97,7 @@ module WLLauncher
       return false, msg
     end
     listener.close
+    WLLogger.logger.debug "Listener closed..."
   end # start_peer
   
   def self.wait_for_acknowledgment(tcp_server_socket, new_peer_port)

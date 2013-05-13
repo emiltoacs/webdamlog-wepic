@@ -144,6 +144,9 @@ module Conf
     end
     @@env
   end
+  def self.current_env
+    @@current_env
+  end
   
   # This methods reads our Yaml configuration and return the corresponding hash
   #

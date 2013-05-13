@@ -126,7 +126,7 @@ WHERE
     end
     
     #Cleanup the rule_dir directory
-    cleanup_cmd = "rm -rf #{File.expand_path File.dirname(__FILE__)}/../tmp/rule_dir/*"
+    cleanup_cmd = "rm -rf #{File.expand_path File.dirname(__FILE__)}/../tmp/rule_dir/* && rm -rf #{File.expand_path File.dirname(__FILE__)}/webdamlog/wlrule_to_bud/*"
     system cleanup_cmd
   end
 

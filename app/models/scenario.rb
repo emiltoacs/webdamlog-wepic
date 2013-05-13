@@ -76,11 +76,11 @@ module SigmodScenario
 
   PEERNAME = 'sigmod_peer'
   CONF_DIR = File.expand_path('config/scenario/sigmod')
+  YML_CONF = YAML.load(File.open("#{CONF_DIR}/peer.yml"))
 
   # Run the sigmod scenario, i.e. needs to run a sigmod peer which centralize
   # the contacts
-  # TODO: pass the properties
   def start
-    return WLLauncher.create_peer(PEERNAME,CONF_DIR)
+    return WLLauncher.create_peer(PEERNAME,YML_CONF,"#{CONF_DIR}")
   end  
 end
