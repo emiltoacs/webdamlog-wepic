@@ -143,10 +143,10 @@ module WLBud
         @test_send_on_chan = []
         @wl_callback = {}
         @wl_callback_id = 0
-        @wl_callback_step = Set[ :callback_step_received_on_chan, 
+        @wl_callback_step = Set[:callback_step_received_on_chan, 
           :callback_step_write_on_chan, 
           :callback_step_write_on_chan_2, 
-          :callback_step_end_tick ]
+          :callback_step_end_tick]
       end
       ### WLBud:End adding to Bud
       options[:dump_rewrite] ||= ENV["BUD_DUMP_REWRITE"].to_i > 0

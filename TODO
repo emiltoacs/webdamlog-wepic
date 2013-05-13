@@ -1,6 +1,4 @@
 TODOs:
 
 	-	test all GUI features : understand why rake test:unit does not work (Logger exception).
-	-	exception when reconnecting to host.
-	-	investigate incorrect behavior when signup fails
-	-	fix bug when renamed without reset
+	-	WebdamLog has no add_peer method.
