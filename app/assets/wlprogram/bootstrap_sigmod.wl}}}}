@@ -1,3 +1,0 @@
-W, [2013-05-13T15:37:14.800361 #4663]  WARN -- : sigmod_peer:custom path to config file does not exists fall back to default config
-I, [2013-05-13T15:37:14.801904 #4663]  INFO -- : sigmod_peer:Setup a regular peer
-Exiting
