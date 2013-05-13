@@ -306,20 +306,6 @@ module WLDatabase
       @wlschema.new(:name=>User.table_name, :schema=>User.schema.to_json).save
       @wlschema.new(:name=>Program.table_name, :schema=>Program.schema.to_json).save
 
-      # XXX some bootstrap facts
-      # Contact.new(:username=>'Emilien',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"emilien.antoine@inria.fr",:facebook=>"Emilien Antoine").save
-      # Contact.new(:username=>'Julia',:peerlocation=>'SIGMODpeer', :online=>false,:email=>"stoyanovich@drexel.edu",:facebook=>"stoyanovich@drexel.edu").save
-      # Contact.new(:username=>'Gerome',:peerlocation=>'SIGMODpeer',:online=>true,:email=>"miklau@cs.umass.edu",:facebook=>"Gerome Miklau").save
-      # Contact.new(:username=>'Serge',:peerlocation=>'SIGMODpeer',:online=>false,:email=>"serge.abiteboul@inria.fr",:facebook=>"Serge Abiteboul").save
-      # Contact.new(:username=>'Jules',:peerlocation=>'localhost',:online=>true,:email=>"jules.testard@mail.mcgill.ca",:facebook=>"Jules Testard").save
-
-      # #Here are a few pictures to insert in the db
-      # Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/bear.jpg",:owner=>"Emilien",:title=>"bear").save
-      # Picture.new(:image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg",:owner=>"Emilien",:title=>"nemo").save
-      # Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/tiger.jpg",:owner=>"Jules",:title=>"tiger").save
-      # Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/greenbird.jpg",:owner=>"Emilien",:title=>"green bird").save
-      # Picture.new(:image_url=>"file://#{Rails.root}/app/assets/images/redbird.jpg",:owner=>"Julia",:title=>"red bird").save
-      
       WLLogger.logger.info "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
       
       if Conf.db['sample_content']
