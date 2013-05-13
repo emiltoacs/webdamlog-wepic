@@ -1,0 +1,28 @@
+contacts:
+  contact1:
+    name: Emilien
+    peerlocation : SIGMOD_peer
+    email: Emilien.antoine@inria.fr
+    facebook : Emilien Antoine
+  contact2:
+    name: Julia
+    peerlocation : SIGMOD_peer
+    email: stoyanovich@drexel.edu
+    facebook : stoyanovich@drexel.edu
+  contact3:
+    name: Gerome
+    peerlocation : SIGMOD_peer
+    email: miklau@cs.umass.edu
+    facebook : Gerome Miklau
+  contact4:
+    name: Serge
+    peerlocation : SIGMOD_peer
+    email: serge.abiteboul@inria.fr
+    facebook : Serge Abiteboul
+pictures:
+  picture1:
+    title: nemo
+    url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture2:
+    title: wave
+    url : http://fc3arch.files.wordpress.com/2011/08/big_wave.jpg
