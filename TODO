@@ -2,3 +2,13 @@ TODOs:
 
 	-	test all GUI features : understand why rake test:unit does not work (Logger exception).
 	-	WebdamLog has no add_peer method.
+	-	create_model wlschema : wepic.  
+
+	-	wepic donne le fichier prog a wl, en reponse wl donne les relations crees pour que 
+		1)	wepic donne prog.wl a webdamlog => webdamlog renvoie le nom et le schema des tables (collection persistentes) format de create_model
+		2)	wepic envoie un fait (une image ou un contact) qu'il souhaite inserer dans la bd, il l`envoie a webdamlog
+		3)	webdamlog a genere un fait qu'il souhaite inserer dans la base donnees => il l'envoie a wepic en utilisant le format approprie.
+		4)	webdamlog a webdamlog : inserer ou informer webdamlog qu'il y a des nouvelles images. Webdamlog n'est pas conscient des champs binaires images. Il y a
+			donc a ce niveau une communication wepic to wepic.
+			
+	contact : changer la relation pour contenir le ip port.
