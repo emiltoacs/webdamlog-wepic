@@ -1,0 +1,28 @@
+contacts:
+  contact1:
+    name: Jules
+    peerlocation : SIGMOD_peer
+    email: jules.testard@mail.mcgill.ca
+    facebook : Jules Testard
+  contact2:
+    name: Julia
+    peerlocation : SIGMOD_peer
+    email: stoyanovich@drexel.edu
+    facebook : stoyanovich@drexel.edu
+  contact3:
+    name: Gerome
+    peerlocation : SIGMOD_peer
+    email: miklau@cs.umass.edu
+    facebook : Gerome Miklau
+  contact4:
+    name: Serge
+    peerlocation : SIGMOD_peer
+    email: serge.abiteboul@inria.fr
+    facebook : Serge Abiteboul
+pictures:
+  picture1:
+    title: fire
+    url : http://4.bp.blogspot.com/-tiN8G5YbB5g/UEj6Cf3HwuI/AAAAAAAAAVY/P8ockeqrJzI/s1600/FireBIG.jpg
+  picture2:
+    title: mountain
+    url : http://limchinwoon.files.wordpress.com/2013/02/mountain_7.jpg
