@@ -2,6 +2,8 @@ require 'open-uri'
 
 class Picture < AbstractDatabase
   
+  @storage = :database
+  
   def self.setup
     unless @setup_done
       connection.create_table 'pictures', :force => true do |t|
@@ -37,21 +39,25 @@ class Picture < AbstractDatabase
     }
   end
   
-  
+  def self.insert(values)
+    self.new(values).save
+  end  
   
   attr_accessible :title, :image, :owner, :image_url
   validates_uniqueness_of :title
   validates :owner, :presence => true
   
   has_attached_file :image,
-    :storage => :database, 
+    :storage => @storage, 
     :styles => {
     :thumb => "150x150>",
-    :small => "300x300>"
+    :small => "400x400>"
   },
     :url => '/:class/:id/:attachment?style=:style'
   
-  default_scope select_without_file_columns_for(:image)
+  if @storage==:database
+    default_scope select_without_file_columns_for(:image)
+  end
   
   before_validation :download_image, :if => :image_url_provided?
      
@@ -82,8 +88,7 @@ class Picture < AbstractDatabase
   end
   
   def get_local_image
-    io = File.new(URI.parse(image_url).path)
-W
+  io = File.new(URI.parse(image_url).path)
   rescue
   end
   

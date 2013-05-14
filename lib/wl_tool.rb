@@ -197,7 +197,8 @@ module WLTool
     ['"', "'", "."].each do |c|
       str.delete!(c)
     end
-    return str.gsub(/\s+/, '_')
+    str = str.gsub(/\s+/, '_')
+    return str
   end
 
   # Sanitize the string ie. + Remove leading and trailing whitespace + Downcase
