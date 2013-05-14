@@ -70,6 +70,8 @@ GEM
     eventmachine (1.0.1)
     execjs (1.4.0)
       multi_json (~> 1.0)
+    fancybox2-rails (0.2.4)
+      railties (>= 3.1.0)
     fastercsv (1.5.5)
     getopt (1.4.1)
     hike (1.2.1)
@@ -177,6 +179,7 @@ DEPENDENCIES
   coffee-rails (~> 3.2.1)
   dbm
   debugger
+  fancybox2-rails
   jquery-rails
   json
   pg

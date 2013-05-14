@@ -13,15 +13,17 @@ class QueryController < ApplicationController
   
   #Insert a tuple in the instance database
   def insert
-    if params[:relation][:name].nil?
+    puts "Parameters #{params}"
+    if params[:relation][:name].nil? || params[:relation][:name].empty?
       respond_to do |format|
         format.html {redirect_to '/query', :notice => "No relation was selected"}
       end
     else
       @relation_classes = database(Conf.env['USERNAME']).relation_classes
-      rel_name = params[:relation][:name].map! { |i| WLTool::sanitize!(i) }
+      rel_name = WLTool::sanitize(params[:relation][:name]).capitalize #All relation names in the relation classes should be capitalized
       values = params[:values].split(";").map! { |i| WLTool::sanitize!(i) }
       values_hash = Hash.new
+
       # FIXME This temporary code takes the values inserted and matches them in
       # order with the corresponding class schema. Ideally we would want to use
       # the params variable to match the items directly.This requires calls to

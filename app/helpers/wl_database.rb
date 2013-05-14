@@ -376,13 +376,23 @@ module WLDatabase
         else
           WLLogger.logger.debug "try to create #{table_name} table in db #{config} for model #{model_name} but it already exists"
         end
+        
+        def self.some_method
+          "some_method"
+        end
+        
+        def some_method
+          "some_method"
+        end
 
         def self.insert(values)
           self.new(values).save
         end
+        
         def self.find(id)
           super id
         end
+        
         def self.all
           super
         end
@@ -396,9 +406,9 @@ module WLDatabase
         def self.schema
           @schema
         end
-        WLLogger.logger.debug "create a model #{model_name} with its table #{table_name} and schema #{@schema} in database #{config['database']}"
+        WLLogger.logger.debug "Created a model #{model_name} with its table #{table_name} and schema #{@schema} in database #{config['database']}"
       end
-        
+      #klass << 
       return klass
     end
       
