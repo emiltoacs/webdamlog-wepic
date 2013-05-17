@@ -1,4 +1,12 @@
 jQuery.noConflict()
+js_location = {}
+<%unless @location.nil? %>
+<%@location.each do |title,location|%>
+js_location['<%=title%>'] = <%=location%>
+<%end%>
+<%end%>
+
+
 capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase()+string.slice(1)
 jQuery ->
@@ -9,12 +17,13 @@ jQuery ->
   	'titlePosition' : 'over'
   	'overayColor' : '#333'
   	'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
-  	  location = 'Jules Testard\'s house'
+  	  location = if js_location[title] then js_location[title] else "Unkown"
+  	  author = "Unkown"
   	  console.log("Title : " + title)
   	  console.log("Array : " + currentArray)
   	  console.log("Index : " + currentIndex)
   	  console.log("Opts : " + currentOpts)
-  	  '<div id="fancybox-title-over"><div><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></div><div>At <strong>'+location+'</strong></div></div>'
+  	  '<div id="fancybox-title-over"><div><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></div><div>By <strong>'+author+'</strong> at <strong>'+location+'</strong></div></div>'
   	'onComplete' : -> 
   		# #jQuery('#fancybox-title-over').style()
   		# jQuery('#fancybox-title-over').append('<div id="wepic-fancybox-location"> At Jules\' Place </div>')
