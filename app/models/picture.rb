@@ -51,7 +51,7 @@ class Picture < AbstractDatabase
     :storage => @storage, 
     :styles => {
     :thumb => "150x150>",
-    :small => "400x400>"
+    :small => "600x600>"
   },
     :url => '/:class/:id/:attachment.:extension?style=:style'
   
