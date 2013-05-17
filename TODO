@@ -2,7 +2,8 @@ TODOs:
 
 	-	test all GUI features : understand why rake test:unit does not work (Logger exception).
 	-	WebdamLog has no add_peer method.
-	-	create_model wlschema : wepic.  
+	-	create_model wlschema : wepic
+	-	peer not restarting properly if manager is shut down. Fix instance restart
 
 	-	wepic donne le fichier prog a wl, en reponse wl donne les relations crees pour que 
 		1)	wepic donne prog.wl a webdamlog => webdamlog renvoie le nom et le schema des tables (collection persistentes) format de create_model
