@@ -26,6 +26,9 @@ gem 'pg'
 gem 'json'
 gem 'awesome_print'
 
+gem 'jquery-rails'
+gem 'fancybox-rails'
+
 group :development, :test do
   # To use the debugger
   gem 'debugger', :platforms => :ruby_19
@@ -45,7 +48,6 @@ group :assets do
 end
 
 gem 'jquery-rails'
-gem 'fancybox2-rails'
 
 gem 'authlogic'
 
