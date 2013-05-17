@@ -53,7 +53,7 @@ class Picture < AbstractDatabase
     :thumb => "150x150>",
     :small => "400x400>"
   },
-    :url => '/:class/:id/:attachment?style=:style'
+    :url => '/:class/:id/:attachment.:extension?style=:style'
   
   if @storage==:database
     default_scope select_without_file_columns_for(:image)

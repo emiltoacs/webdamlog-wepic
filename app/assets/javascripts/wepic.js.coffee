@@ -1,3 +1,5 @@
-`jQuery.noConflict()`
+jQuery.noConflict
 jQuery ->
-  jQuery('a.fancybox').fancybox()
+  jQuery('a.fancybox').fancybox
+  	'hideOnContentClick' : true
+  	"hideOnOverlayClick" : true
