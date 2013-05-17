@@ -56,12 +56,13 @@
 		</div> </a>
 		<% end %>
 		</div> -->
-		<h2>My Pictures Lightbox</h2>
-		<div id="my_pictures" class="images">
+		<h2>My Pictures</h2>
+		<div id="my_pictures" class="images">	
 			<% @pictures.each do |picture| %>
 			<div class="entry">
 				<div class="image">
-					<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small), :title => picture.title, :class => "fancybox", :rel=>"gallery") unless picture.image.nil? %>
+					<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small), :title => picture.title, :class => "fancybox", :rel=>"myPictures") unless picture.image.nil? %>
+					<div class="<%=picture.title%>-metainf" style="display:none"><%=picture.owner%></div>
 				</div>
 			</div>
 			<% end %>
