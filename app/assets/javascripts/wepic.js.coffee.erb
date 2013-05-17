@@ -18,7 +18,9 @@ jQuery ->
   	'overayColor' : '#333'
   	'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
   	  location = if js_location[title] then js_location[title] else "Unkown"
-  	  author = "Unkown"
+  	  splitted_title = title.split("@")
+  	  title = splitted_title[0]
+  	  author = splitted_title[1]
   	  console.log("Title : " + title)
   	  console.log("Array : " + currentArray)
   	  console.log("Index : " + currentIndex)
