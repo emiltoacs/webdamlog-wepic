@@ -14,16 +14,6 @@
     <title>Wepic</title>
     <%= stylesheet_link_tag    "application", :media => "all" %>
     <%= javascript_include_tag "application" %>
-    <!-- This line should not refer to localhost. -->
-	<!-- Add fancyBox main JS and CSS files -->
-	<%=javascript_include_tag "/public/fancybox/jquery.fancybox.js?v=2.1.4" %>
-	<%=stylesheet_link_tag "/public/fancybox/jquery.fancybox.css?v=2.1.4"%>
-	<script type="text/javascript">
-		jQuery.noConflict();
-		jQuery(document).ready(function() {
-			jQuery(".fancybox").fancybox();
-		});
-	</script>
     <%= csrf_meta_tags %>
   </head>
   <body>
