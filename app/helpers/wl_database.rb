@@ -344,7 +344,7 @@ module WLDatabase
             imagelocation = content['locations'].values[index]
             PictureLocation.new(:title=>imagelocation['title'],:owner=>Conf.env['USERNAME'],:location=>imagelocation['location']).save
           end unless content['locations'].values.nil?
-          content['ratings'].values.each_index do |rating|
+          content['ratings'].values.each do |rating|
             Rating.new(:title=>rating['title'],:owner=>Conf.env['USERNAME'],:rating=>rating['rating'].to_i).save
           end unless content['ratings'].values.nil?
         end
