@@ -1,25 +1,27 @@
-class ImageLocation < ActiveRecord::Base
+class PictureLocation < ActiveRecord::Base
   attr_accessible :location, :owner, :title
+  has_one :picture
+  
   def self.setup
     unless @setup_done      
       validates :owner, :presence => true
       validates :location, :presence => true
       validates :title, :presence => true
       
-      self.table_name = "imagelcations"
-      connection.create_table 'imagelocations', :force => true do |t|
+      self.table_name = "PictureLocations"
+      connection.create_table 'PictureLocations', :force => true do |t|
         t.string :title
         t.string :owner
         t.string :location
         t.timestamps
-      end if !connection.table_exists?('imagelocations')
+      end if !connection.table_exists?('PictureLocations')
       
       @setup_done = true
     end # unless @setup_done
   end # self.setup
   
   def self.table_name
-    'imagelocations'
+    'PictureLocations'
   end
   
   def self.schema
