@@ -298,6 +298,15 @@ module WLDatabase
         @relation_classes[classname] = prog
       end
       
+      classname = "ImageLocation"
+      iml = WLTool::class_exists(classname , ActiveRecord::Base)
+      if iml.nil?
+        load 'image_location.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = iml
+      end      
+      
       # All of these methods normally correspond to the WLProgram
       # XXX some bootstrap relations defined statically as ActiveRecord model.
       # These are the required relations for the wepic_database_wrapper.
@@ -305,6 +314,7 @@ module WLDatabase
       @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
       @wlschema.new(:name=>User.table_name, :schema=>User.schema.to_json).save
       @wlschema.new(:name=>Program.table_name, :schema=>Program.schema.to_json).save
+      @wlschema.new(:name=>ImageLocation.table_name, :schema=>ImageLocation.schema.to_json).save
 
       WLLogger.logger.info "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
       
@@ -315,11 +325,16 @@ module WLDatabase
           content['contacts'].values.each do |contact|
             #We should check if users are online using Webdamlog rules.
             Contact.new(:username=>contact['name'],:peerlocation=>contact['peerlocation'],:online=>false,:email=>contact['email'],:facebook=>contact['facebook']).save
-          end
+          end unless content['contacts'].values.nil?
           content['pictures'].values.each do |picture|
             #We are only adding pictures here that belong to us
             Picture.new(:image_url=>picture['url'],:owner=>Conf.env['USERNAME'],:title=>picture['title']).save
-          end
+          end unless content['pictures'].values.nil?
+          WLLogger.logger.debug "Content locations in sample file : #{content['locations'].values}"
+          content['locations'].values.each_index do |index|
+            imagelocation = content['locations'].values[index]
+            ImageLocation.new(:title=>imagelocation['title'],:owner=>Conf.env['USERNAME'],:location=>imagelocation['location']).save
+          end unless content['locations'].values.nil?
         end
       end
     end
@@ -377,14 +392,6 @@ module WLDatabase
           WLLogger.logger.debug "try to create #{table_name} table in db #{config} for model #{model_name} but it already exists"
         end
         
-        def self.some_method
-          "some_method"
-        end
-        
-        def some_method
-          "some_method"
-        end
-
         def self.insert(values)
           self.new(values).save
         end

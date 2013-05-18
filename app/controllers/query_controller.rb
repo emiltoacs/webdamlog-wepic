@@ -50,14 +50,13 @@ class QueryController < ApplicationController
   # Creates a new relation and adds it to the session database.
   def create
     schema = Hash.new
-    rel_name = WLTool::sanitize(params[:relation_name])
+    rel_name = WLTool::sanitize(params[:relation_name]).capitalize
     # TODO jQuery to display nice form
     col_names = params[:column_names].split(";").map! { |i| WLTool::sanitize!(i) }
     col_types = params[:column_types].split(";").map! { |i| WLTool::sanitize!(i) }
     # field must be a valid type: http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html#method-i-column
     type = ['string', 'text', 'integer', 'float', 'decimal', 'datetime', 'timestamp', 'time', 'date', 'binary', 'boolean']
     err_message = ""
-    require 'debugger' ; debugger
     if col_names.size == col_types.size
       col_names.each_index do |i|
         if type.include? col_types[i]

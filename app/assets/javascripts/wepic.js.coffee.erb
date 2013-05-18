@@ -1,14 +1,9 @@
 jQuery.noConflict()
-js_location = {}
-<%unless @location.nil? %>
-<%@location.each do |title,location|%>
-js_location['<%=title%>'] = <%=location%>
-<%end%>
-<%end%>
 
 
 capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase()+string.slice(1)
+
 jQuery ->
   jQuery('a.fancybox').fancybox
   	'hideOnContentClick' : true
@@ -17,16 +12,18 @@ jQuery ->
   	'titlePosition' : 'over'
   	'overayColor' : '#333'
   	'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
-  	  location = if js_location[title] then js_location[title] else "Unkown"
-  	  splitted_title = title.split("@")
-  	  title = splitted_title[0]
-  	  author = splitted_title[1]
-  	  console.log("Title : " + title)
-  	  console.log("Array : " + currentArray)
-  	  console.log("Index : " + currentIndex)
-  	  console.log("Opts : " + currentOpts)
-  	  '<div id="fancybox-title-over"><div><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></div><div>By <strong>'+author+'</strong> at <strong>'+location+'</strong></div></div>'
+  	  splitted_inf = currentOpts.orig.context.parentElement.childNodes[3].innerHTML.split(";")
+  	  metainf = {}
+  	  for split_kv in splitted_inf
+  	    split_kv = split_kv.split("=")
+  	    metainf[split_kv[0]] = split_kv[1]
+  	  console.log("META-INF : " + metainf['owner'] + ", " + metainf['location'])
+  	  return '<div id="fancybox-title-over"><table><tr>'+
+  	  '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
+  	  '<td style="">On '+metainf['date']+'</td></tr>'+
+  	  '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location']+'</strong></td>'+
+  	  '<td style="">ratings</td></tr></table></div>'
   	'onComplete' : -> 
   		# #jQuery('#fancybox-title-over').style()
   		# jQuery('#fancybox-title-over').append('<div id="wepic-fancybox-location"> At Jules\' Place </div>')
-  		jQuery('#fancybox-wrap').hover ( -> jQuery("#fancybox-title").show()),( -> jQuery("#fancybox-title").hide())
+  		#jQuery('#fancybox-wrap').hover ( -> jQuery("#fancybox-title").show()),( -> jQuery("#fancybox-title").hide())
