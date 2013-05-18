@@ -26,3 +26,22 @@ pictures:
   picture2:
     title: wave
     url : http://fc3arch.files.wordpress.com/2011/08/big_wave.jpg
+  picture3:
+    title: fire
+    url : http://4.bp.blogspot.com/-tiN8G5YbB5g/UEj6Cf3HwuI/AAAAAAAAAVY/P8ockeqrJzI/s1600/FireBIG.jpg
+  picture4:
+    title: mountain
+    url : http://limchinwoon.files.wordpress.com/2013/02/mountain_7.jpg    
+locations:
+  location1:
+    title: nemo
+    location: Bali, Indonesia
+  location2:
+    title: wave
+    location: Sydney, Australia
+  location3:
+    title: fire
+    location: Somewhere far far away
+  location4:
+    title: mountain
+    location : Alberta, Canada
