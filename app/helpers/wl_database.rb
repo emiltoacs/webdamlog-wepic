@@ -298,14 +298,23 @@ module WLDatabase
         @relation_classes[classname] = prog
       end
       
-      classname = "ImageLocation"
+      classname = "PictureLocation"
       iml = WLTool::class_exists(classname , ActiveRecord::Base)
       if iml.nil?
-        load 'image_location.rb'
+        load 'picture_location.rb'
         @relation_classes[classname] = Object.const_get(classname)
       else
         @relation_classes[classname] = iml
-      end      
+      end
+      
+      classname = "Rating"
+      rate = WLTool::class_exists(classname , ActiveRecord::Base)
+      if rate.nil?
+        load 'rating.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = rate
+      end
       
       # All of these methods normally correspond to the WLProgram
       # XXX some bootstrap relations defined statically as ActiveRecord model.
@@ -314,7 +323,8 @@ module WLDatabase
       @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
       @wlschema.new(:name=>User.table_name, :schema=>User.schema.to_json).save
       @wlschema.new(:name=>Program.table_name, :schema=>Program.schema.to_json).save
-      @wlschema.new(:name=>ImageLocation.table_name, :schema=>ImageLocation.schema.to_json).save
+      @wlschema.new(:name=>PictureLocation.table_name, :schema=>PictureLocation.schema.to_json).save
+      @wlschema.new(:name=>Rating.table_name, :schema=>Rating.schema.to_json).save
 
       WLLogger.logger.info "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
       
@@ -330,11 +340,13 @@ module WLDatabase
             #We are only adding pictures here that belong to us
             Picture.new(:image_url=>picture['url'],:owner=>Conf.env['USERNAME'],:title=>picture['title']).save
           end unless content['pictures'].values.nil?
-          WLLogger.logger.debug "Content locations in sample file : #{content['locations'].values}"
           content['locations'].values.each_index do |index|
             imagelocation = content['locations'].values[index]
-            ImageLocation.new(:title=>imagelocation['title'],:owner=>Conf.env['USERNAME'],:location=>imagelocation['location']).save
+            PictureLocation.new(:title=>imagelocation['title'],:owner=>Conf.env['USERNAME'],:location=>imagelocation['location']).save
           end unless content['locations'].values.nil?
+          content['ratings'].values.each_index do |rating|
+            Rating.new(:title=>rating['title'],:owner=>Conf.env['USERNAME'],:rating=>rating['rating'].to_i).save
+          end unless content['ratings'].values.nil?
         end
       end
     end

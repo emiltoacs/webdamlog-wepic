@@ -20,9 +20,9 @@ jQuery ->
   	  console.log("META-INF : " + metainf['owner'] + ", " + metainf['location'])
   	  return '<div id="fancybox-title-over"><table><tr>'+
   	  '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
-  	  '<td style="">On '+metainf['date']+'</td></tr>'+
+  	  '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
   	  '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location']+'</strong></td>'+
-  	  '<td style="">ratings</td></tr></table></div>'
+  	  '<td style="text-align:right">ratings</td></tr></table></div>'
   	'onComplete' : -> 
   		# #jQuery('#fancybox-title-over').style()
   		# jQuery('#fancybox-title-over').append('<div id="wepic-fancybox-location"> At Jules\' Place </div>')

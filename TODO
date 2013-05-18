@@ -4,6 +4,7 @@ TODOs:
 	-	WebdamLog has no add_peer method.
 	-	create_model wlschema : wepic
 	-	peer not restarting properly if manager is shut down. Fix instance restart
+	-	investigate why picturelocation and rating tables are not on wp_jules, but on wp_manager.
 
 	-	wepic donne le fichier prog a wl, en reponse wl donne les relations crees pour que 
 		1)	wepic donne prog.wl a webdamlog => webdamlog renvoie le nom et le schema des tables (collection persistentes) format de create_model

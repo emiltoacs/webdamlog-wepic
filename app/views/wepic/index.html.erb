@@ -62,7 +62,7 @@
 			<div class="entry">
 				<div class="image">
 					<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small), :id => "#{picture.title}@#{picture.owner}",:title => "#{picture.title}", :class => "fancybox", :rel=>"myPictures") unless picture.image.nil? %>
-					<div class="metainf" style="display:none">location=<%=@imagelocation["#{picture.title}@#{picture.owner}"].location%>;owner=<%=picture.owner%>;date=<%=@imagelocation["#{picture.title}@#{picture.owner}"].created_at.strftime("%m/%d/%y")%></div>
+					<div class="metainf" style="display:none">location=<%=@picturelocation["#{picture.title}@#{picture.owner}"].location%>;owner=<%=picture.owner%>;date=<%=@picturelocation["#{picture.title}@#{picture.owner}"].created_at.strftime("%m/%d/%y")%></div>
 				</div>
 			</div>
 			<% end %>
