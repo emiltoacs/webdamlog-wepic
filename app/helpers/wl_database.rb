@@ -373,6 +373,7 @@ module WLDatabase
     # Create the relation as a model and a table in the database. Return the
     # class of the model created if succeed. it should be called by
     # create_relation
+    # create_relation, relation 
     #
     def create_model_class(name, schema)
       raise WLDatabaseError.new "type error of name is #{name.class}" unless name.is_a? String
