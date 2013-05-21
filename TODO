@@ -13,7 +13,6 @@ TODOs:
 		4)	webdamlog a webdamlog : inserer ou informer webdamlog qu'il y a des nouvelles images. Webdamlog n'est pas conscient des champs binaires images. Il y a
 			donc a ce niveau une communication wepic to wepic.
 			
-	webdamlog 
 	
 	write wepic relations in webdamlog for models : (required minimum for the gui)
 	
