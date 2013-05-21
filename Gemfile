@@ -29,6 +29,8 @@ gem 'awesome_print'
 gem 'jquery-rails'
 gem 'fancybox-rails'
 
+gem 'jquery-star-rating-rails'
+
 group :development, :test do
   # To use the debugger
   gem 'debugger', :platforms => :ruby_19
