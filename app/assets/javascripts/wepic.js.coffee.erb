@@ -24,11 +24,20 @@ jQuery ->
   	    split_kv = split_kv.split("=")
   	    metainf[sanitize(split_kv[0])] = split_kv[1] 
   	  console.log("META-INF : " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
+  	  
+  	  star_array = new Array(5)
+  	  for star in star_array
+  	    star += '<input name="star3" type="radio" class="star" disabled="disabled" '
+  	  star_array[parseInt(metainf['rating'])] += 'checked="checked"'
+  	  for star in star_array
+  	    star += " />"
+  	  star_s = star_array.join()
+  	  
   	  return '<div id="fancybox-title-over"><table><tr>'+
   	  '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
   	  '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
   	  '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
-  	  '<td style="text-align:right">'+metainf['rating'].toString()+'<div id="stars"></div></td></tr></table></div>'
+  	  '<td style="text-align:right">'+metainf['rating'].toString()+star_s+'</td></tr></table></div>'
   	'onComplete' : -> 
   		# #jQuery('#fancybox-title-over').style()
   		# jQuery('#fancybox-title-over').append('<div id="wepic-fancybox-location"> At Jules\' Place </div>')

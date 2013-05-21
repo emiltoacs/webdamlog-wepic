@@ -8,9 +8,17 @@ TODOs:
 
 	-	wepic donne le fichier prog a wl, en reponse wl donne les relations crees pour que 
 		1)	wepic donne prog.wl a webdamlog => webdamlog renvoie le nom et le schema des tables (collection persistentes) format de create_model
-		2)	wepic envoie un fait (une image ou un contact) qu'il souhaite inserer dans la bd, il l`envoie a webdamlog
+		2)	wepic envoie un fait (une image ou un contact) qu'il souhaite inserer dans la bd, il l`envoie a webdamlog, 
 		3)	webdamlog a genere un fait qu'il souhaite inserer dans la base donnees => il l'envoie a wepic en utilisant le format approprie.
 		4)	webdamlog a webdamlog : inserer ou informer webdamlog qu'il y a des nouvelles images. Webdamlog n'est pas conscient des champs binaires images. Il y a
 			donc a ce niveau une communication wepic to wepic.
+			
+	webdamlog 
+	
+	write wepic relations in webdamlog for models : (required minimum for the gui)
+	
+	
+	ajouter une methode paperclip dynamique.
+	Page query : afficher les faits obtenus dans le dernier tick/ derniere upload de facon differencte , flashy
 			
 	contact : changer la relation pour contenir le ip port.
