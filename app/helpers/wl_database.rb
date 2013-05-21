@@ -344,8 +344,9 @@ module WLDatabase
             PictureLocation.insert(:title=>imagelocation['title'],:owner=>Conf.env['USERNAME'],:location=>imagelocation['location'])
           end unless content['locations'].values.nil?
           content['ratings'].values.each do |rating|
-            WLLogger.logger.debug "Ratings : #{rating}"
+            WLLogger.logger.debug "Ratings : #{rating['title']}, #{rating['rating']}, #{rating.inspect}"
             Rating.insert(:title=>rating['title'],:owner=>Conf.env['USERNAME'],:rating=>rating['rating'].to_i)
+            WLLogger.logger.debug "Ratings : #{Rating.all}"
           end unless content['ratings'].values.nil?
         end
       end

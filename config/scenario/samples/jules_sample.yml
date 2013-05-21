@@ -47,14 +47,14 @@ locations:
     location : Alberta, Canada
 ratings:
   rating1:
-    title:nemo
-    rating:3
+    title: nemo
+    rating: 3
   rating2:
-    title:wave
-    rating:5
+    title: wave
+    rating: 5
   rating3:
-    title:fire
-    rating:4
+    title: fire
+    rating: 4
   rating4:
-    title:mountain
-    rating:3
+    title: mountain
+    rating: 3
