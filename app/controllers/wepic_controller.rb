@@ -1,31 +1,25 @@
 class WepicController < ApplicationController
   include WLDatabase
+  helper_method :find_picture_field
   
   def index    
     @picture = Picture.new
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     @pictures = @relation_classes['Picture'].all unless @relation_classes['Picture'].nil?    
-    @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
-    unless @relation_classes['PictureLocation'].nil?
-      @picturelocations = @relation_classes['PictureLocation'].all
-      @picturelocation = Hash.new
-      @pictures.each do |picture|
-        @picturelocation["#{picture.title}@#{picture.owner}"] = find_location(picture)
-      end
-    end  
+    @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?  
   end
   
-  #This method assumes a relation called location exists with fields title, owner and place.
-  def find_location(picture)
-    unless @picturelocations.nil?
-      @picturelocations.each do |picturelocation|
-        if picture.title==picturelocation.title and picture.owner==picturelocation.owner
-          return picturelocation
-        end
+  #This method could be enhanced to make sure caching is used.
+  def find_picture_field(picture, classname,field=:all)
+    unless @relation_classes[classname].nil?
+      unless field==:all
+        tuple = @relation_classes[classname].where(:title => picture.title, :owner => picture.owner)
+        if tuple.first then tuple.first[field] else nil end
+      else
+        @relation_classes[classname].where(:title => picture.title, :owner => picture.owner)
       end
-      nil
     else
       nil
     end
-  end  
+  end
 end

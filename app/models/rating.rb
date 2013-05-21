@@ -1,4 +1,4 @@
-class Rating < ActiveRecord::Base
+class Rating < AbstractDatabase
   attr_accessible :owner, :rating, :title
   def self.setup
     unless @setup_done      
@@ -30,10 +30,5 @@ class Rating < ActiveRecord::Base
      'rating' => 'integer'
      }
   end
-  
-  def self.insert(values)
-    self.new(values).save
-  end
-
   setup  
 end
