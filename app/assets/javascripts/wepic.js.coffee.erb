@@ -1,8 +1,13 @@
 jQuery.noConflict()
-
+regexWS = new RegExp(' ', 'g')
 
 capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase()+string.slice(1)
+
+sanitize = (string) ->
+  string = string.trim()
+  string.replace(regexWS,'') #removes all whitespace on keys
+
 
 jQuery ->
   jQuery('a.fancybox').fancybox
@@ -12,17 +17,18 @@ jQuery ->
   	'titlePosition' : 'over'
   	'overayColor' : '#333'
   	'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
-  	  splitted_inf = currentOpts.orig.context.parentElement.childNodes[3].innerHTML.split(";") #replace(/ /g,'').
+  	  
+  	  splitted_inf = currentOpts.orig.context.parentElement.childNodes[3].innerHTML.split(";") 
   	  metainf = {}
   	  for split_kv in splitted_inf
   	    split_kv = split_kv.split("=")
-  	    metainf[split_kv[0]] = split_kv[1]
-  	  console.log("META-INF : " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'].toString())
+  	    metainf[sanitize(split_kv[0])] = split_kv[1] 
+  	  console.log("META-INF : " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
   	  return '<div id="fancybox-title-over"><table><tr>'+
   	  '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
   	  '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
   	  '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
-  	  '<td style="text-align:right">'+metainf['rating'].toString()+'</td></tr></table></div>'
+  	  '<td style="text-align:right">'+metainf['rating'].toString()+'<div id="stars"></div></td></tr></table></div>'
   	'onComplete' : -> 
   		# #jQuery('#fancybox-title-over').style()
   		# jQuery('#fancybox-title-over').append('<div id="wepic-fancybox-location"> At Jules\' Place </div>')

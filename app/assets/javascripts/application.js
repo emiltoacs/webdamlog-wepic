@@ -12,6 +12,9 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require prototype
 //= require fancybox
+//= require starbox
+//= require jquery-star-rating
 //= require_tree .
 //= require_tree ./erb
