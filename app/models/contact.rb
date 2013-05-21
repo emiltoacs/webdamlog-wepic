@@ -35,10 +35,6 @@ class Contact < AbstractDatabase
      'email' => 'string',
      'facebook' => 'string'}
   end
-  
-  def self.insert(values)
-    self.new(values).save
-  end
 
   setup
 end

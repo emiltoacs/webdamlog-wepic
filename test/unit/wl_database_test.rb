@@ -4,7 +4,7 @@
 # regenerated from scratch
 require 'test/unit'
 require 'wl_tool'
-require 'wl_database'
+require File.expand_path('../../../app/helpers/wl_database', __FILE__) #require 'wl_database'
 
 # This class is meant to test and explain the database API to be used by the
 # rails controllers and WebdamLog. The suppress warning messages are used to
@@ -24,6 +24,7 @@ class WLDatabaseTest < Test::Unit::TestCase
     @id = @dbid
     @db_name = config[:database]
     @configuration = {:adapter => config[:adapter], :database => @db_name}
+    PostgresHelper::create_user_db @configuration
     @database = WLDatabase.establish_orm_db_connection(@id,@db_name,@configuration)
   end
   

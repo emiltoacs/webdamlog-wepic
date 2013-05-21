@@ -124,7 +124,6 @@ module WLDatabase
     #
     def initialized?
       if @initialized.nil?
-
         if db_exists? @db_name
           if @relation_classes.nil? or @relation_classes.empty?
             @initialized = false
@@ -342,10 +341,11 @@ module WLDatabase
           end unless content['pictures'].values.nil?
           content['locations'].values.each_index do |index|
             imagelocation = content['locations'].values[index]
-            PictureLocation.new(:title=>imagelocation['title'],:owner=>Conf.env['USERNAME'],:location=>imagelocation['location']).save
+            PictureLocation.insert(:title=>imagelocation['title'],:owner=>Conf.env['USERNAME'],:location=>imagelocation['location'])
           end unless content['locations'].values.nil?
           content['ratings'].values.each do |rating|
-            Rating.new(:title=>rating['title'],:owner=>Conf.env['USERNAME'],:rating=>rating['rating'].to_i).save
+            WLLogger.logger.debug "Ratings : #{rating}"
+            Rating.insert(:title=>rating['title'],:owner=>Conf.env['USERNAME'],:rating=>rating['rating'].to_i)
           end unless content['ratings'].values.nil?
         end
       end

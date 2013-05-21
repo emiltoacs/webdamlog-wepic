@@ -1,4 +1,4 @@
-class PictureLocation < ActiveRecord::Base
+class PictureLocation < AbstractDatabase
   attr_accessible :location, :owner, :title
   has_one :picture
   
@@ -29,10 +29,6 @@ class PictureLocation < ActiveRecord::Base
      'owner' => 'string',
      'location' => 'string'
      }
-  end
-  
-  def self.insert(values)
-    self.new(values).save
   end
 
   setup  

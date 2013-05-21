@@ -39,10 +39,6 @@ class Picture < AbstractDatabase
     }
   end
   
-  def self.insert(values)
-    self.new(values).save
-  end  
-  
   attr_accessible :title, :image, :owner, :image_url
   validates_uniqueness_of :title
   validates :owner, :presence => true
