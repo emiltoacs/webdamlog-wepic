@@ -42,11 +42,32 @@
 		<div class="upload">
 			<%= render 'upload'%>
 		</div>
-		<!-- <input name="star2" type="radio" class="star" disabled="disabled"/>
-<input name="star2" type="radio" class="star" disabled="disabled"/>
-<input name="star2" type="radio" class="star" checked="checked" disabled="disabled"/>
-<input name="star2" type="radio" class="star" disabled="disabled"/>
-<input name="star2" type="radio" class="star" disabled="disabled"/> -->
+		<span class="star-rating-control">
+<div class="rating-cancel">
+<a title="Cancel Rating"></a>
+</div>
+<div class="star-rating rater-0 star star-rating-applied star-rating-live star-rating-on" aria-label="" role="text" style="float: right;">
+<a title="on">on</a>
+</div>
+<div class="star-rating rater-0 star star-rating-applied star-rating-live star-rating-on" aria-label="" role="text" style="float: right;">
+<a title="on">on</a>
+</div>
+<div class="star-rating rater-0 star star-rating-applied star-rating-live" aria-label="" role="text" style="float: right;">
+<a title="on">on</a>
+</div>
+<div class="star-rating rater-0 star star-rating-applied star-rating-live" aria-label="" role="text" style="float: right;">
+<a title="on">on</a>
+</div>
+<div class="star-rating rater-0 star star-rating-applied star-rating-live" aria-label="" role="text" style="float: right;">
+<a title="on">on</a>
+</div>
+</span>
+<input class="star star-rating-applied" type="radio" name="star2" style="display: none;">
+<input class="star star-rating-applied" type="radio" name="star2" style="display: none;" checked="checked">
+<input class="star star-rating-applied" type="radio" name="star2" style="display: none;">
+<input class="star star-rating-applied" type="radio" name="star2" style="display: none;">
+<input class="star star-rating-applied" type="radio" name="star2" style="display: none;">
+
 		<h2>My Pictures</h2>
 		<div id="my_pictures" class="images">	
 			<% @pictures.each_with_index do |picture| %>
