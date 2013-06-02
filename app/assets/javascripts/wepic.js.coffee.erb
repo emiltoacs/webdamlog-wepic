@@ -27,7 +27,7 @@ jQuery ->
   	  
   	  list = [0,1,2,3,4]
   	  star_array = new Array(5)
-  	  star_s = ""
+  	  star_s = '<div class="star-wrapper">'
   	  # for i in list
   	    # star_array[i] = '<input name="star3" type="radio" class="star" disabled="disabled" '
   	  # star_array[parseInt(metainf['rating'])] += 'checked="checked"'
@@ -40,7 +40,7 @@ jQuery ->
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" aria-label="" role="text"><a title="on"></a></div>'
       for star in star_array
         star_s += star
-  	  
+  	  star_s += '</div>'
   	  return '<div id="fancybox-title-over"><table><tr>'+
   	  '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
   	  '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
