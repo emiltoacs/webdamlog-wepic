@@ -1,14 +1,38 @@
 jQuery.noConflict()
 starNumber = 0
 pictureId = 0
+metainf = {}
 regexWS = new RegExp(' ', 'g')
-
 capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase()+string.slice(1)
 
 sanitize = (string) ->
   string = string.trim()
   string.replace(regexWS,'') #removes all whitespace on keys
+
+getLatestComments = (idPicture)->
+    console.log('attempting to get latest comments')
+    html = ''
+    jQuery.ajax
+      'url' : window.location.href + '/comments'
+      'data' :
+        'id' : idPicture
+      'datatype' : 'json'
+      'success' : (data) ->
+        if data?
+          for key in data
+            console.log(key)
+            html += '<div class="fancybox-comment"><div class="comment-text">' + key['owner'] + " : "
+            html += key['text'] 
+            html += '</div><div class="small-date">'+key['date']+'</div>' + "</div>"
+            console.log(html)
+        jQuery('#fancybox-comment-wrapper').append(html)
+
+getMetaInf = ->
+  metainf = {}
+  for span in currentOpts.orig.context.parentElement.childNodes[3].children
+    metainf[span.id] = span.innerHTML
+  metainf
 
 addStar = ->
   if (starNumber<=3)
@@ -48,7 +72,6 @@ jQuery ->
     'titlePosition' : 'over'
     'overayColor' : '#333'
     'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
-      metainf = {}
       for span in currentOpts.orig.context.parentElement.childNodes[3].children
         metainf[span.id] = span.innerHTML
       console.log("META-INF : " + metainf['id'] + ", " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
@@ -79,5 +102,11 @@ jQuery ->
       jQuery('#minus').click ->
         console.log('removestar')
         removeStar()
+      jQuery('#fancybox-right').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
+      '<div id="add-comment-box" contenteditable="true"></div></div>')
+      getLatestComments(pictureId)
+    'onCleanup' : ->
+      jQuery('#fancybox-comments').remove()
+
 jQuery(document).ready ->
   console.log("Document ready function executing...")
