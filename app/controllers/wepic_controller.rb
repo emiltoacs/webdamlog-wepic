@@ -2,7 +2,7 @@ class WepicController < ApplicationController
   include WLDatabase
   helper_method :find_picture_field
   
-  def index    
+  def index
     @picture = Picture.new
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     @pictures = @relation_classes['Picture'].all unless @relation_classes['Picture'].nil?
@@ -11,6 +11,7 @@ class WepicController < ApplicationController
   
   #This method could be enhanced to make sure caching is used.
   def find_picture_field(picture, classname,field=:all)
+    @relation_classes = database(Conf.env['USERNAME']).relation_classes unless @relation_classes
     unless @relation_classes[classname].nil?
       unless field==:all
         tuple = @relation_classes[classname].where(:title => picture.title, :owner => picture.owner)
@@ -23,12 +24,39 @@ class WepicController < ApplicationController
     end
   end
   
+  #Updates the rating value when modified by the user
   def updateRating
-    ratingTuple = Rating.find(params[:id])
+    #TODO Think about if this is a performance issue.
+    picture = Picture.find(params[:id])
+    ratingTuple = Rating.where(:title => picture.title, :owner => picture.owner).first
     ratingTuple.rating = params[:rating]
     ratingTuple.save
     respond_to do |format|
       format.json {render :json => params.to_json }
     end    
+  end
+  
+  #Get all comments after specified date (if no date specified load all comments for picture)
+  def getLatestComments
+    logger.debug("Dump receiving info for getLatestComments : #{params.inspect}")
+    picture = Picture.find(params[:id])
+    @beforeAll = DateTime.new(2012) unless @beforeAll
+    if params[:date]
+      @date = params[:date]
+    else
+      @date = @beforeAll
+    end 
+    @comments = Comment.where(:title=>picture.title,:owner=>picture.owner).where("created_at > ?", @date).order('created_at ASC')
+    returnval = []
+    @comments.each do |comment|
+      small_hash = {}
+      small_hash['owner'] = comment.comment_owner
+      small_hash['text'] = comment.text
+      small_hash['date'] = comment.created_at.strftime('%H:%M:%D')
+      returnval << small_hash
+    end
+    respond_to do |format|
+      format.json {render :json => returnval.to_json }
+    end
   end
 end

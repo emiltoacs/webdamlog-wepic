@@ -8,20 +8,20 @@ class PictureLocation < AbstractDatabase
       validates :location, :presence => true
       validates :title, :presence => true
       
-      self.table_name = "PictureLocations"
-      connection.create_table 'PictureLocations', :force => true do |t|
+      self.table_name = "pictureLocations"
+      connection.create_table 'pictureLocations', :force => true do |t|
         t.string :title
         t.string :owner
         t.string :location
         t.timestamps
-      end if !connection.table_exists?('PictureLocations')
+      end if !connection.table_exists?('pictureLocations')
       
       @setup_done = true
     end # unless @setup_done
   end # self.setup
   
   def self.table_name
-    'PictureLocations'
+    'pictureLocations'
   end
   
   def self.schema

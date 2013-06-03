@@ -58,3 +58,20 @@ ratings:
   rating4:
     title: mountain
     rating: 3
+comments:
+  comment1:
+    title: nemo
+    text: C'est une super image!
+    owner: jules
+  comment2:
+    title: nemo
+    text: N'est ce pas?
+    owner: jules
+  comment3:
+    title: nemo
+    text: Je prefere celle de la montagne.
+    owner: emilien
+  comment4:
+    title: mountain
+    text: ah bon?
+    owner: jules    

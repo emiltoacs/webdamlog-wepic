@@ -1,5 +1,48 @@
 /*********************WEPIC************************************************/
-/*Wepic Images CSS*/
+#fancybox-comment-wrapper {
+   height:80%;
+   width:100%;
+   overflow-y:scroll;
+   overflow-x:hidden;
+   z-index:103;
+}
+
+#add-comment-box {
+  width: 100%;
+  height: 20%;
+  overflow-y: scroll;
+  overflow-x:hidden;
+  border-top: solid 2px #888;
+  z-index : 104;
+}
+
+#fancybox-comments{
+   width: 20%;
+   height: 100%;
+   position: fixed;
+   z-index: 102;
+   background: url("/assets/blank.gif") repeat scroll 0 0 #FFFFFF;
+   bottom: 0;
+   cursor: pointer;
+   display: inline;
+   outline: medium none;
+   right:0px;
+}
+
+.small-date {
+  font-size: 8px;
+  color: #333;
+  float: right;
+  width:100%;
+  text-align: right;
+  border-bottom: solid 1px #aaa;
+  
+}
+
+.fancybox-comment {
+  padding : 5px;  
+}
+
 .star-wrapper{
   float:right;
   padding: 2px;

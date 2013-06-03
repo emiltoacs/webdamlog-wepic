@@ -316,7 +316,7 @@ module WLDatabase
       end
       
       classname = "Comment"
-      com = WLTool::class_exists(classname. ActiveRecrod::Base)
+      com = WLTool::class_exists(classname , ActiveRecord::Base)
       if com.nil?
         load 'comment.rb'
         @relation_classes[classname] = Object.const_get(classname)
@@ -333,7 +333,7 @@ module WLDatabase
       @wlschema.new(:name=>Program.table_name, :schema=>Program.schema.to_json).save
       @wlschema.new(:name=>PictureLocation.table_name, :schema=>PictureLocation.schema.to_json).save
       @wlschema.new(:name=>Rating.table_name, :schema=>Rating.schema.to_json).save
-      @wlscheam.new(:name=>Comment.table_name, :schema=>Comment.schema.to_json).save
+      @wlschema.new(:name=>Comment.table_name, :schema=>Comment.schema.to_json).save
 
       WLLogger.logger.info "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
       
@@ -359,7 +359,9 @@ module WLDatabase
             WLLogger.logger.debug "Ratings : #{Rating.all}"
           end unless content['ratings'].values.nil?
           content['comments'].values.each do |comment|
-            Comment.insert(:title=>comment['title'],:owner=>Conf.env['USERNAME'],:text=>comment['text'])
+            WLLogger.logger.debug "Adding comment : #{comment.inspect}"
+            Comment.new(:title=>comment['title'],:owner=>Conf.env['USERNAME'],:text=>comment['text'],:comment_owner=>comment['owner']).save
+            WLLogger.logger.debug "Comment : #{comment.inspect} added"
           end
         end
       end
