@@ -1,4 +1,6 @@
 jQuery.noConflict()
+starNumber = 0
+pictureId = 0
 regexWS = new RegExp(' ', 'g')
 
 capitalizeFirstLetter = (string) ->
@@ -8,46 +10,74 @@ sanitize = (string) ->
   string = string.trim()
   string.replace(regexWS,'') #removes all whitespace on keys
 
+addStar = ->
+  if (starNumber<=3)
+    starNumber += 1
+    jQuery('#star-'+String(starNumber)).addClass('star-rating-on')
+    jQuery.ajax
+      'url' : window.location.href + '/ratings'
+      'data' :
+        'id' : pictureId
+        'rating' : starNumber
+      'datatype' : 'json'
+      'success' : (data) ->
+        if data?
+          jQuery('#metainf-'+String(pictureId)+' #rating').html(String(starNumber))
+  else
+    #don't do anything
+  
+removeStar = ->
+  if (starNumber>=0)
+    jQuery('#star-'+String(starNumber)).removeClass('star-rating-on')
+    starNumber -= 1
+    jQuery.ajax
+      'url' : window.location.href + '/ratings'
+      'data' :
+        'id' : pictureId
+        'rating' : starNumber
+      'datatype' : 'json'
+      'success' : (data) ->
+        if data?
+          jQuery('#metainf-'+String(pictureId)+' #rating').html(String(starNumber))
 
 jQuery ->
   jQuery('a.fancybox').fancybox
-  	'hideOnContentClick' : true
-  	'hideOnOverlayClick' : true
-  	'padding': 10
-  	'titlePosition' : 'over'
-  	'overayColor' : '#333'
-  	'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
-  	  
-  	  splitted_inf = currentOpts.orig.context.parentElement.childNodes[3].innerHTML.split(";") 
-  	  metainf = {}
-  	  for split_kv in splitted_inf
-  	    split_kv = split_kv.split("=")
-  	    metainf[sanitize(split_kv[0])] = split_kv[1] 
-  	  console.log("META-INF : " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
-  	  
-  	  list = [0,1,2,3,4]
-  	  star_array = new Array(5)
-  	  star_s = '<div class="star-wrapper">'
-  	  # for i in list
-  	    # star_array[i] = '<input name="star3" type="radio" class="star" disabled="disabled" '
-  	  # star_array[parseInt(metainf['rating'])] += 'checked="checked"'
-  	  # for i in list
-  	    # star_array[i] += " />"
-  	  for i in list
+    'hideOnContentClick' : true
+    'hideOnOverlayClick' : true
+    'padding': 10
+    'titlePosition' : 'over'
+    'overayColor' : '#333'
+    'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
+      metainf = {}
+      for span in currentOpts.orig.context.parentElement.childNodes[3].children
+        metainf[span.id] = span.innerHTML
+      console.log("META-INF : " + metainf['id'] + ", " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
+      starNumber = parseInt(metainf['rating'])
+      pictureId = parseInt(metainf['id'])
+      list = [0,1,2,3,4]
+      star_array = new Array(5)
+      star_s = "<a id=\"plus\" type=submit style=\"background: transparent url(<%= asset_path 'plus.png' %>) center no-repeat;\" class=\"star-button\"></a>"
+      star_s += "<a id=\"minus\" type=submit style=\"background: transparent url(<%= asset_path 'minus.png' %>) center no-repeat;\" class=\"star-button\"></a>"
+      for i in list
         if i <= parseInt(metainf['rating'])
-          star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" aria-label="" role="text"><a title="on"></a></div>'
+          star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
         else
-          star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" aria-label="" role="text"><a title="on"></a></div>'
+          star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
+      star_s += '<div class="star-wrapper">'
       for star in star_array
         star_s += star
-  	  star_s += '</div>'
-  	  return '<div id="fancybox-title-over"><table><tr>'+
-  	  '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
-  	  '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
-  	  '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
-  	  '<td style="text-align:right">'+star_s+'</td></tr></table></div>'
-  	'onComplete' : -> 
-  	  jQuery('.star-rating').css({'float':'right'})
-  		# #jQuery('#fancybox-title-over').style()
-  		# jQuery('#fancybox-title-over').append('<div id="wepic-fancybox-location"> At Jules\' Place </div>')
-  		#jQuery('#fancybox-wrap').hover ( -> jQuery("#fancybox-title").show()),( -> jQuery("#fancybox-title").hide())
+      star_s += '</div>'
+      return '<div id="fancybox-title-over"><table><tr>'+
+      '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
+      '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
+      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
+      '<td style="text-align:right">'+star_s+'</td></tr></table></div>'
+    'onComplete' : ->
+      jQuery('#plus').click ->
+        console.log('addstar')
+        addStar()
+      jQuery('#minus').click ->
+        console.log('removestar')
+        removeStar()
+jQuery(document).ready ->
+  console.log("Document ready function executing...")

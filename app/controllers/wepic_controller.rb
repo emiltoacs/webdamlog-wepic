@@ -5,8 +5,8 @@ class WepicController < ApplicationController
   def index    
     @picture = Picture.new
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    @pictures = @relation_classes['Picture'].all unless @relation_classes['Picture'].nil?    
-    @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?  
+    @pictures = @relation_classes['Picture'].all unless @relation_classes['Picture'].nil?
+    @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
   end
   
   #This method could be enhanced to make sure caching is used.
@@ -21,5 +21,14 @@ class WepicController < ApplicationController
     else
       nil
     end
+  end
+  
+  def updateRating
+    ratingTuple = Rating.find(params[:id])
+    ratingTuple.rating = params[:rating]
+    ratingTuple.save
+    respond_to do |format|
+      format.json {render :json => params.to_json }
+    end    
   end
 end

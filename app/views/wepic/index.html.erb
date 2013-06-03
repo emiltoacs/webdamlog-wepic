@@ -32,6 +32,8 @@
 		element.className = 'selected';
 		getPictures(element);
 	}
+	
+	
 </script>
 <div id="pictures">
 	<% end %>
@@ -42,21 +44,20 @@
 		<div class="upload">
 			<%= render 'upload'%>
 		</div>
-		<!-- <input name="star2" type="radio" class="star" disabled="disabled"/>
-<input name="star2" type="radio" class="star" disabled="disabled"/>
-<input name="star2" type="radio" class="star" checked="checked" disabled="disabled"/>
-<input name="star2" type="radio" class="star" disabled="disabled"/>
-<input name="star2" type="radio" class="star" disabled="disabled"/> -->
+		<div id="example"><span id="innerexample">example</span></div>
 		<h2>My Pictures</h2>
 		<div id="my_pictures" class="images">	
 			<% @pictures.each_with_index do |picture| %>
 			<div class="entry">
 				<div class="image">
-					<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small), :id => "#{picture.title}@#{picture.owner}",:title => "#{picture.title}", :class => "fancybox", :rel=>"myPictures") unless picture.image.nil? %>
-					<div class="metainf" style="display:none">location=<%=find_picture_field(picture,'PictureLocation',:location)%>;
-						owner=<%=picture.owner%>;
-						date=<%=picture.created_at.strftime("%m/%d/%y")%>;
-						rating=<%=find_picture_field(picture,'Rating',:rating)%></div>
+					<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small),:title => "#{picture.title}", :class => "fancybox", :rel=>"myPictures") unless picture.image.nil? %>
+					<div id="metainf-<%=picture.id%>" class="metainf" style="display:none">
+						<span id="location"><%=find_picture_field(picture,'PictureLocation',:location)%></span>
+						<span id="owner"><%=picture.owner%></span>
+						<span id="date"><%=picture.created_at.strftime("%m/%d/%y")%></span>
+						<span id="rating"><%=find_picture_field(picture,'Rating',:rating)%></span>
+						<span id="id"><%=picture.id%></span>
+					</div>
 				</div>
 			</div>
 			<% end %>
