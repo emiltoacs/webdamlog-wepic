@@ -315,6 +315,15 @@ module WLDatabase
         @relation_classes[classname] = rate
       end
       
+      classname = "Comment"
+      com = WLTool::class_exists(classname. ActiveRecrod::Base)
+      if com.nil?
+        load 'comment.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = com
+      end
+      
       # All of these methods normally correspond to the WLProgram
       # XXX some bootstrap relations defined statically as ActiveRecord model.
       # These are the required relations for the wepic_database_wrapper.
@@ -324,6 +333,7 @@ module WLDatabase
       @wlschema.new(:name=>Program.table_name, :schema=>Program.schema.to_json).save
       @wlschema.new(:name=>PictureLocation.table_name, :schema=>PictureLocation.schema.to_json).save
       @wlschema.new(:name=>Rating.table_name, :schema=>Rating.schema.to_json).save
+      @wlscheam.new(:name=>Comment.table_name, :schema=>Comment.schema.to_json).save
 
       WLLogger.logger.info "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
       
@@ -348,6 +358,9 @@ module WLDatabase
             Rating.insert(:title=>rating['title'],:owner=>Conf.env['USERNAME'],:rating=>rating['rating'].to_i)
             WLLogger.logger.debug "Ratings : #{Rating.all}"
           end unless content['ratings'].values.nil?
+          content['comments'].values.each do |comment|
+            Comment.insert(:title=>comment['title'],:owner=>Conf.env['USERNAME'],:text=>comment['text'])
+          end
         end
       end
     end
