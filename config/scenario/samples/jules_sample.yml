@@ -22,16 +22,20 @@ contacts:
 pictures:
   picture1:
     title: nemo
-    url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
   picture2:
     title: wave
-    url : http://fc3arch.files.wordpress.com/2011/08/big_wave.jpg
+    url : app/assets/images/redbird.jpg
+    #url : http://fc3arch.files.wordpress.com/2011/08/big_wave.jpg
   picture3:
     title: fire
-    url : http://4.bp.blogspot.com/-tiN8G5YbB5g/UEj6Cf3HwuI/AAAAAAAAAVY/P8ockeqrJzI/s1600/FireBIG.jpg
+    url : app/assets/images/tiger.jpg
+    #url : http://4.bp.blogspot.com/-tiN8G5YbB5g/UEj6Cf3HwuI/AAAAAAAAAVY/P8ockeqrJzI/s1600/FireBIG.jpg
   picture4:
     title: mountain
-    url : http://limchinwoon.files.wordpress.com/2013/02/mountain_7.jpg    
+    url : app/assets/images/greenbird.jpg
+    #url : http://limchinwoon.files.wordpress.com/2013/02/mountain_7.jpg    
 locations:
   location1:
     title: nemo
