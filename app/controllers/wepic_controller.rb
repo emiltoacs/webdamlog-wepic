@@ -37,16 +37,13 @@ class WepicController < ApplicationController
   end
   
   #Get all comments after specified date (if no date specified load all comments for picture)
-  def getLatestComments
+  def getLatestComments(args=nil)
+    arguments = if args then args else params end
     logger.debug("Dump receiving info for getLatestComments : #{params.inspect}")
     picture = Picture.find(params[:id])
     @beforeAll = DateTime.new(2012) unless @beforeAll
-    if params[:date]
-      @date = params[:date]
-    else
-      @date = @beforeAll
-    end 
-    @comments = Comment.where(:title=>picture.title,:owner=>picture.owner).where("created_at > ?", @date).order('created_at ASC')
+    date = if arguments[:date] then arguments[:date] else @beforeAll end
+    @comments = Comment.where(:title=>picture.title,:owner=>picture.owner).where("created_at > ?", date).order('created_at ASC')
     returnval = []
     @comments.each do |comment|
       small_hash = {}
@@ -57,6 +54,21 @@ class WepicController < ApplicationController
     end
     respond_to do |format|
       format.json {render :json => returnval.to_json }
+    end
+  end
+  
+  #Add a comment to a given picture
+  def addComment
+    picture = Picture.find(params[:id])
+    @comment = Comment.new(:title=>picture.title,:owner=>picture.owner,:comment_owner=>Conf.env['USERNAME'],:text => params[:text])
+    unless @comment.save #in case of failure
+      respond_to do |format|
+        format.html {render :action => :index, :notice => "Could not add comment!" }
+        format.json {render :json => @picture.errors, :status => :unprocessable_entity}
+      end
+    else #in case of success
+      params[:date] = @comment.created_at.-(0.0002) #take the date the comment was created - 1 second.
+      getLatestComments(params)
     end
   end
 end

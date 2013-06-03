@@ -10,13 +10,15 @@ sanitize = (string) ->
   string = string.trim()
   string.replace(regexWS,'') #removes all whitespace on keys
 
-getLatestComments = (idPicture)->
+addComment = (idPicture,text) ->
+    #This methods has no support for failure yet. FIXME
     console.log('attempting to get latest comments')
     html = ''
     jQuery.ajax
-      'url' : window.location.href + '/comments'
+      'url' : window.location.href + '/comments/add'
       'data' :
         'id' : idPicture
+        'text' : text
       'datatype' : 'json'
       'success' : (data) ->
         if data?
@@ -27,6 +29,45 @@ getLatestComments = (idPicture)->
             html += '</div><div class="small-date">'+key['date']+'</div>' + "</div>"
             console.log(html)
         jQuery('#fancybox-comment-wrapper').append(html)
+
+getLatestComments = (idPicture)->
+    console.log('attempting to get latest comments')
+    html = ''
+    jQuery.ajax
+      'url' : window.location.href + '/comments/latest'
+      'data' :
+        'id' : idPicture
+      'datatype' : 'json'
+      'success' : (data) ->
+        if data?
+          for key in data
+            html += '<div class="fancybox-comment"><div class="comment-text">' + key['owner'] + " : "
+            html += key['text'] 
+            html += '</div><div class="small-date">'+key['date']+'</div>' + "</div>"
+            console.log(html)
+          jQuery('#fancybox-comment-wrapper').append(html)
+        else
+          jQuery('#fancybox-comment-wrapper').append('<div class="fancybox-comment error"><div class="comment-text">Comments could not be obtained...</div></div>')
+
+#This function has to be rechecked
+chronJobComment = (idPicture) ->
+	date = getCurrentTime()
+	jQuery.ajax
+	  'url' : window.location.href + '/comments/latest'
+	  'data' :
+	    'id' : idPicture
+	    'date' : date
+	  'datatype' : 'json'
+	  'success' : (data) ->
+        if data?
+          for key in data
+            console.log(key)
+            html += '<div class="fancybox-comment"><div class="comment-text">' + key['owner'] + " : "
+            html += key['text'] 
+            html += '</div><div class="small-date">'+key['date']+'</div>' + "</div>"
+            console.log(html)
+        jQuery('#fancybox-comment-wrapper').append(html)	  	
+	    
 
 getMetaInf = ->
   metainf = {}
@@ -79,8 +120,8 @@ jQuery ->
       pictureId = parseInt(metainf['id'])
       list = [0,1,2,3,4]
       star_array = new Array(5)
-      star_s = "<a id=\"plus\" type=submit style=\"background: transparent url(<%= asset_path 'plus.png' %>) center no-repeat;\" class=\"star-button\"></a>"
-      star_s += "<a id=\"minus\" type=submit style=\"background: transparent url(<%= asset_path 'minus.png' %>) center no-repeat;\" class=\"star-button\"></a>"
+      star_s = "<a id=\"plus\" type=submit style=\"background: transparent url(/assets/plus.png) center no-repeat;\" class=\"star-button\"></a>"
+      star_s += "<a id=\"minus\" type=submit style=\"background: transparent url(/assets/minus.png) center no-repeat;\" class=\"star-button\"></a>"
       for i in list
         if i <= parseInt(metainf['rating'])
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
@@ -104,9 +145,23 @@ jQuery ->
         removeStar()
       jQuery('#fancybox-right').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
       '<div id="add-comment-box" contenteditable="true"></div></div>')
+      
+      #Setup comment listener
+      jQuery('#add-comment-box').keypress ( (keypressed) ->
+      	if keypressed.keyCode == 13
+      	  text = jQuery('#add-comment-box').html()
+      	  addComment(pictureId,text) #Add a comment with text entered up to now.
+      	  jQuery('#add-comment-box').html('') #Clear the comment line
+      )
+      
+      #Setup the chron job
+      
       getLatestComments(pictureId)
     'onCleanup' : ->
+      #Clear the entire comment section when leaving fancybox.
       jQuery('#fancybox-comments').remove()
+      
+      #Stop the chron job
 
 jQuery(document).ready ->
   console.log("Document ready function executing...")
