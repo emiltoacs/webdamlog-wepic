@@ -1,17 +1,14 @@
 class PictureLocation < AbstractDatabase
-  attr_accessible :location, :owner, :title
-  has_one :picture
+  attr_accessible :location, :_id
   
   def self.setup
     unless @setup_done      
-      validates :owner, :presence => true
-      validates :location, :presence => true
+      validates :_id, :presence => true
       validates :title, :presence => true
       
       self.table_name = "pictureLocations"
       connection.create_table 'pictureLocations', :force => true do |t|
-        t.string :title
-        t.string :owner
+        t.integer :_id
         t.string :location
         t.timestamps
       end if !connection.table_exists?('pictureLocations')
@@ -25,8 +22,7 @@ class PictureLocation < AbstractDatabase
   end
   
   def self.schema
-    {'title' => 'string',
-     'owner' => 'string',
+    {'_id' => 'integer',
      'location' => 'string'
      }
   end
