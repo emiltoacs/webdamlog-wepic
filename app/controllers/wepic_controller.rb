@@ -5,7 +5,7 @@ class WepicController < ApplicationController
   def index
     @picture = Picture.new
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    @pictures = @relation_classes['Picture'].all unless @relation_classes['Picture'].nil?
+    @pictures = @relation_classes['Picture'].where(:owner => Conf.env['USERNAME']) unless @relation_classes['Picture'].nil?
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
   end
   

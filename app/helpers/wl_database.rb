@@ -347,17 +347,21 @@ module WLDatabase
           end unless content['contacts'].values.nil?
           content['pictures'].values.each do |picture|
             #We are only adding pictures here that belong to us
-            Picture.new(:image_url=>picture['url'],:owner=>Conf.env['USERNAME'],:title=>picture['title']).save
+            owner = if picture['owner'] then picture['owner'] else Conf.env['USERNAME'] end
+            Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title']).save
           end unless content['pictures'].values.nil?
           content['locations'].values.each_index do |index|
             imagelocation = content['locations'].values[index]
-            PictureLocation.insert(:title=>imagelocation['title'],:owner=>Conf.env['USERNAME'],:location=>imagelocation['location'])
+            owner = if imagelocation['owner'] then imagelocation['owner'] else Conf.env['USERNAME'] end
+            PictureLocation.insert(:title=>imagelocation['title'],:owner=>owner,:location=>imagelocation['location'])
           end unless content['locations'].values.nil?
           content['ratings'].values.each do |rating|
-            Rating.insert(:title=>rating['title'],:owner=>Conf.env['USERNAME'],:rating=>rating['rating'].to_i)
+            owner = if rating['owner'] then rating['owner'] else Conf.env['USERNAME'] end
+            Rating.insert(:title=>rating['title'],:owner=>owner,:rating=>rating['rating'].to_i)
           end unless content['ratings'].values.nil?
           content['comments'].values.each do |comment|
-            Comment.new(:title=>comment['title'],:owner=>Conf.env['USERNAME'],:text=>comment['text'],:comment_owner=>comment['owner']).save
+            owner = if comment['owner'] then comment['owner'] else Conf.env['USERNAME'] end
+            Comment.new(:title=>comment['title'],:owner=>owner,:text=>comment['text'],:comment_owner=>comment['comment_owner']).save
           end
         end
       end
