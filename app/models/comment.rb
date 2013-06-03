@@ -1,17 +1,16 @@
 class Comment < AbstractDatabase
-  attr_accessible :owner, :text, :title, :comment_owner
+  attr_accessible :author, :text, :_id, :date
   def self.setup
     unless @setup_done      
-      validates :owner, :presence => true
+      validates :_id, :presence => true
       validates :text, :presence => true
-      validates :title, :presence => true
-      validates :comment_owner, :presence => true
+      validates :author, :presence => true
       
       self.table_name = "comments"
       connection.create_table 'comments', :force => true do |t|
-        t.string :title
-        t.string :owner
-        t.string :comment_owner
+        t.integer :_id
+        t.datetime :date
+        t.string :author
         t.string :text
         t.timestamps
       end if !connection.table_exists?('comments')
@@ -20,15 +19,19 @@ class Comment < AbstractDatabase
     end # unless @setup_done
   end # self.setup
   
+  def default_values
+    self.date = DateTime.now
+  end
+  
   def self.table_name
     'comments'
   end
   
   def self.schema
-    {'title' => 'string',
-     'owner' => 'string',
+    {'author' => 'string',
+     '_id' => 'integer',
      'text' => 'string',
-     'comment_owner' => 'string'
+     'date' => 'datetime'
      }
   end
   setup  

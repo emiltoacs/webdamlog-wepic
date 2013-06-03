@@ -7,6 +7,7 @@ class Picture < AbstractDatabase
   def self.setup
     unless @setup_done
       connection.create_table 'pictures', :force => true do |t|
+        t.integer :_id
         t.string :title
         t.string :owner
         t.string :image_file_name
@@ -26,7 +27,8 @@ class Picture < AbstractDatabase
   setup
   
   def self.schema
-    {'title'=>'string',
+    { '_id' => 'integer',
+      'title'=>'string',
       'owner'=>'string',
       'image_file_name'=>'string',
       'image_content_type'=>'string',
@@ -39,8 +41,8 @@ class Picture < AbstractDatabase
     }
   end
   
-  attr_accessible :title, :image, :owner, :image_url
-  validates_uniqueness_of :title
+  attr_accessible :title, :image, :owner, :image_url, :_id
+  validates :title, :presence => true
   validates :owner, :presence => true
   
   has_attached_file :image,
@@ -53,6 +55,10 @@ class Picture < AbstractDatabase
   
   if @storage==:database
     default_scope select_without_file_columns_for(:image)
+  end
+  
+  def default_values
+    self._id = rand(0xFFFFFF)
   end
   
   before_validation :download_image, :if => :image_url_provided?
