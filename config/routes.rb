@@ -27,6 +27,7 @@ WepimApp::Application.routes.draw do
     resources :query
     match 'query/insert' => 'query#insert'
     match 'contacts/:username/pictures' => 'pictures#contact'
+    match 'wepic/ratings' => 'wepic#updateRating'
   end
   resources :users, :user_sessions
   match 'login' => 'user_sessions#new', :as => :login
