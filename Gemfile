@@ -28,8 +28,8 @@ gem 'awesome_print'
 
 gem 'jquery-rails'
 gem 'fancybox-rails'
-
-gem 'jquery-star-rating-rails'
+#gem "coffee-script-redux-debugger", :git => "git://github.com/JetBrains/coffee-script-redux-debugger.git"
+#gem 'jquery-star-rating-rails'
 
 group :development, :test do
   # To use the debugger
