@@ -10,7 +10,6 @@
  *
  *= require_self
  *= require fancybox
- *= require starbox
  *= require jquery-star-rating
  *= require_tree .
 */
