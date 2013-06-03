@@ -3,6 +3,7 @@ starNumber = 0
 pictureId = 0
 metainf = {}
 regexWS = new RegExp(' ', 'g')
+
 capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase()+string.slice(1)
 
