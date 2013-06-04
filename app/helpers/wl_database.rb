@@ -223,7 +223,7 @@ module WLDatabase
       # TODO write create_model_class with a block to introduced validators
       # (validates_uniqueness_of :name) as in comments below
       #
-      @wlschema = create_model_class(DATABASE_SCHEMA, {"name"=>"string","schema"=>"string"})
+      @wlschema = create_model_class(DATABASE_SCHEMA, {"name"=>"string","schema"=>"binary"})
       #      @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
       #        @schema = {"name"=>"string","schema"=>"string"}
       #        @wl_database_instance = database_instance
@@ -359,12 +359,12 @@ module WLDatabase
           end unless content['locations'].values.nil?
           content['ratings'].values.each do |rating|
             owner = if rating['owner'] then rating['owner'] else Conf.env['USERNAME'] end
-            picture = Picture.where(:title=>imagelocation['title'],:owner=>owner).first
+            picture = Picture.where(:title=>rating['title'],:owner=>owner).first
             Rating.insert(:_id=>picture._id,:rating=>rating['rating'].to_i) if picture
           end unless content['ratings'].values.nil?
           content['comments'].values.each do |comment|
             owner = if comment['owner'] then comment['owner'] else Conf.env['USERNAME'] end
-            picture = Picture.where(:title=>imagelocation['title'],:owner=>owner).first
+            picture = Picture.where(:title=>comment['title'],:owner=>owner).first
             Comment.insert(:_id=>picture._id,:text=>comment['text'],:author=>comment['author']) if picture
           end
         end
