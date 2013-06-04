@@ -76,6 +76,9 @@ getMetaInf = ->
     metainf[span.id] = span.innerHTML
   metainf
 
+popUpMenu = ->
+  #jQuery('#')
+
 addStar = ->
   if (starNumber<=3)
     starNumber += 1
