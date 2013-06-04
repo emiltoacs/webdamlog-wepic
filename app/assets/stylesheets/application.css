@@ -42,10 +42,14 @@ body {
 }
 
 #nav {
-    width : 80%;
-    position : relative;
-    left : 10%;
     height : 100px;
+}
+
+.window960 {
+	min-width: 864px;
+    width : 90%;
+    left : 10px;
+    position : relative;	
 }
 
 #nav .content {
@@ -95,7 +99,6 @@ body {
 #main {
     position : relative;
     margin-top : 78px;
-    width : 80%;
 }
 
 #users {
@@ -105,7 +108,7 @@ body {
 #main .content {
     position : relative;
     margin : 10px;
-    padding : 10px;
+    padding : 10px 0px;
 }
 
 #user_prompt {
@@ -116,9 +119,6 @@ body {
 
 /* TAB CSS */
 #tabs {
-    position : relative;
-    width : 80%;
-    left : 10%;
     margin-top : 20px;   
 }
 

@@ -17,7 +17,7 @@
     <%= csrf_meta_tags %>
   </head>
   <body>
-    <div id="nav">
+    <div id="nav" class="window960">
       <div class="opacity"></div>
       <div class="logos">
         <div id="webdamlogo"></div>
@@ -56,7 +56,7 @@
       @program_tab = "selected_tab" if current_path=="/program"
       @engine_tab = "selected_tab" if current_path=="/engine"
     %>
-      <div id="tabs">
+      <div id="tabs" class="window960">
         <div id="wepic_tab" class="<%=@wepic_tab%>">
           <div class="opacity"></div>
           <div class="content"><a href="/wepic">Wepic</a></div>
@@ -75,7 +75,7 @@
         </div>
       </div>
     <% end %>
-    <div id="main" style="width:80%;left:10%;">
+    <div id="main" class="window960">
       <%= yield %>
     </div>
   </body>

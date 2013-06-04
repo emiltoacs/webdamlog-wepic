@@ -77,7 +77,7 @@ getMetaInf = ->
   metainf
 
 popUpMenu = ->
-  #jQuery('#')
+  jQuery('#popUpButton').html('<div id="popUpMenu">THis is the popup menu</div>')
 
 addStar = ->
   if (starNumber<=3)
@@ -124,8 +124,8 @@ jQuery ->
       pictureId = parseInt(metainf['_id'])
       list = [0,1,2,3,4]
       star_array = new Array(5)
-      star_s = "<a id=\"plus\" type=submit style=\"background: transparent url(/assets/plus.png) center no-repeat;\" class=\"star-button\"></a>"
-      star_s += "<a id=\"minus\" type=submit style=\"background: transparent url(/assets/minus.png) center no-repeat;\" class=\"star-button\"></a>"
+      star_s = "<a id=\"plus\" type=submit style=\"background: transparent url(/assets/plus.png) center no-repeat;\" class=\"nice-button\"></a>"
+      star_s += "<a id=\"minus\" type=submit style=\"background: transparent url(/assets/minus.png) center no-repeat;\" class=\"nice-button\"></a>"
       for i in list
         if i <= parseInt(metainf['rating'])
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'

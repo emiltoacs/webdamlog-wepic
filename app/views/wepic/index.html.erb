@@ -41,10 +41,11 @@
 	<div class="content">
 		<%if current_user%>
 		<%= notice %>
-		<div class="upload">
+		<!-- <div class="upload">
 			<%= render 'upload'%>
-		</div>
+		</div> -->
 		<h2>My Pictures</h2>
+		<a id="my_pictures_button" type="submit" class="popUpButton nice-button">+</a>
 		<div id="my_pictures" class="images">	
 			<% @pictures.each_with_index do |picture| %>
 			<div class="entry">
@@ -68,6 +69,7 @@
 			<% end %>
 		</div>
 		<h2>Contact Pictures</h2>
+		<a id="contact_pictures_button" type="submit" class="popUpButton nice-button">+</a>
 		<div id="contact_pictures" class="images">
 		</div>
 		<%else%>

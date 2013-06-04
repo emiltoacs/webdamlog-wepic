@@ -48,8 +48,8 @@ class Picture < AbstractDatabase
   has_attached_file :image,
     :storage => @storage, 
     :styles => {
-    :thumb => "150x150>",
-    :small => "600x600>"
+    :thumb => "206x206!",
+    :small => "600x600!"
   },
     :url => '/:class/:id/:attachment.:extension?style=:style'
   
