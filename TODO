@@ -15,9 +15,7 @@ TODOs:
 			
 	
 	write wepic relations in webdamlog for models : (required minimum for the gui)
-	
-	
 	ajouter une methode paperclip dynamique.
 	Page query : afficher les faits obtenus dans le dernier tick/ derniere upload de facon differencte , flashy
-			
 	contact : changer la relation pour contenir le ip port.
+    creer du image shrinkable css : min-width : 960px;	
