@@ -50,12 +50,18 @@
 			<div class="entry">
 				<div class="image">
 					<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small),:title => "#{picture.title}", :class => "fancybox", :rel=>"myPictures") unless picture.image.nil? %>
-					<div id="metainf-<%=picture.id%>" class="metainf" style="display:none">
-						<span id="location"><%=find_picture_field(picture,'PictureLocation',:location)%></span>
+					<div id="metainf-<%=picture._id%>" class="metainf" style="display:none">
+						<span id="location">
+							<%picturelocation = PictureLocation.where(:_id=>picture._id).first%>
+							<%=if picturelocation then picturelocation.location else 'unknown' end%>
+						</span>
 						<span id="owner"><%=picture.owner%></span>
 						<span id="date"><%=picture.created_at.strftime("%m/%d/%y")%></span>
-						<span id="rating"><%=find_picture_field(picture,'Rating',:rating)%></span>
-						<span id="id"><%=picture.id%></span>
+						<span id="rating">
+							<%ratingTuple = Rating.where(:_id=>picture._id).first%>
+							<%=if ratingTuple then ratingTuple.rating else 0 end%>
+						</span>
+						<span id="_id"><%=picture._id%></span>
 					</div>
 				</div>
 			</div>

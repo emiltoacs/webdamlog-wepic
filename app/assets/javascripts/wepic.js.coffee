@@ -18,7 +18,7 @@ addComment = (idPicture,text) ->
     jQuery.ajax
       'url' : window.location.href + '/comments/add'
       'data' :
-        'id' : idPicture
+        '_id' : idPicture
         'text' : text
       'datatype' : 'json'
       'success' : (data) ->
@@ -37,7 +37,7 @@ getLatestComments = (idPicture)->
     jQuery.ajax
       'url' : window.location.href + '/comments/latest'
       'data' :
-        'id' : idPicture
+        '_id' : idPicture
       'datatype' : 'json'
       'success' : (data) ->
         if data?
@@ -56,7 +56,7 @@ chronJobComment = (idPicture) ->
 	jQuery.ajax
 	  'url' : window.location.href + '/comments/latest'
 	  'data' :
-	    'id' : idPicture
+	    '_id' : idPicture
 	    'date' : date
 	  'datatype' : 'json'
 	  'success' : (data) ->
@@ -83,7 +83,7 @@ addStar = ->
     jQuery.ajax
       'url' : window.location.href + '/ratings'
       'data' :
-        'id' : pictureId
+        '_id' : pictureId
         'rating' : starNumber
       'datatype' : 'json'
       'success' : (data) ->
@@ -99,7 +99,7 @@ removeStar = ->
     jQuery.ajax
       'url' : window.location.href + '/ratings'
       'data' :
-        'id' : pictureId
+        '_id' : pictureId
         'rating' : starNumber
       'datatype' : 'json'
       'success' : (data) ->
@@ -116,9 +116,9 @@ jQuery ->
     'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
       for span in currentOpts.orig.context.parentElement.childNodes[3].children
         metainf[span.id] = span.innerHTML
-      console.log("META-INF : " + metainf['id'] + ", " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
+      console.log("META-INF : " + metainf['_id'] + ", " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
       starNumber = parseInt(metainf['rating'])
-      pictureId = parseInt(metainf['id'])
+      pictureId = parseInt(metainf['_id'])
       list = [0,1,2,3,4]
       star_array = new Array(5)
       star_s = "<a id=\"plus\" type=submit style=\"background: transparent url(/assets/plus.png) center no-repeat;\" class=\"star-button\"></a>"
@@ -145,7 +145,7 @@ jQuery ->
         console.log('removestar')
         removeStar()
       jQuery('#fancybox-right').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
-      '<div id="add-comment-box" contenteditable="true"></div></div>')
+      '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
       
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->

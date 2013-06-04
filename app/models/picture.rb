@@ -57,10 +57,16 @@ class Picture < AbstractDatabase
     default_scope select_without_file_columns_for(:image)
   end
   
+  # def initialize(args)
+    # self._id = rand(0xFFFFFF)
+    # super(args)
+  # end
+  
   def default_values
     self._id = rand(0xFFFFFF)
   end
   
+  before_validation :default_values
   before_validation :download_image, :if => :image_url_provided?
      
   private
