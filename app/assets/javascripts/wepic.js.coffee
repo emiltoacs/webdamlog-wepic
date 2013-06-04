@@ -3,6 +3,7 @@ starNumber = 0
 pictureId = 0
 metainf = {}
 regexWS = new RegExp(' ', 'g')
+menu_open = false
 
 capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase()+string.slice(1)
@@ -141,6 +142,8 @@ jQuery ->
       '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
       '<td style="text-align:right">'+star_s+'</td></tr></table></div>'
     'onComplete' : ->
+      
+      #Setup star interaction
       jQuery('#plus').click ->
         console.log('addstar')
         addStar()
@@ -166,6 +169,32 @@ jQuery ->
       jQuery('#fancybox-comments').remove()
       
       #Stop the chron job
-
 jQuery(document).ready ->
+  #Setup the wepic buttons
+  jQuery('#my_pictures_button').click ->
+    if menu_open
+      menu_open = false
+    else
+      html = '+<div id="my_pictures_menu" class="popUpMenu">'
+      html += '<a type="submit" id="my_pictures_menu_close" class="button-close"></a><table>'
+      html += '<tr><td><a type="submit" id="upload_new_picture">Upload New Picture</a></td></tr>'
+      html += '<tr><td><a type="submit" id="remove_picture">Remove Picture</a></td></tr>'
+      html += '</table></div>'
+      jQuery('#my_pictures_button').html(html)
+      menu_open = true
+      jQuery('#my_pictures_menu_close').click ->
+        console.log('close menu')
+        jQuery('#my_pictures_button').html('+')
+        menu_open = false
+      jQuery('#upload_new_picture').click ->
+        console.log('upload new pic')
+        jQuery('#my_pictures_button').html('+')
+        menu_open = false
+      jQuery('#remove_picture').click ->
+        console.log('remove pic')
+        jQuery('#my_pictures_button').html('+')
+        menu_open = false
+  
+  jQuery('#contact_pictures_button').click ->
+    console.log('button')
   console.log("Document ready function executing...")
