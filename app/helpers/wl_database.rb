@@ -336,6 +336,7 @@ module WLDatabase
       @wlschema.new(:name=>Comment.table_name, :schema=>Comment.schema.to_json).save
 
       WLLogger.logger.info "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
+      _ids = [] #ids of stored images
       
       if Conf.db['sample_content']
         sample_content_file_name = "#{Rails.root}/config/scenario/samples/#{Conf.env['USERNAME']}_sample.yml"
@@ -346,22 +347,25 @@ module WLDatabase
             Contact.new(:username=>contact['name'],:peerlocation=>contact['peerlocation'],:online=>false,:email=>contact['email'],:facebook=>contact['facebook']).save
           end unless content['contacts'].values.nil?
           content['pictures'].values.each do |picture|
-            #We are only adding pictures here that belong to us
             owner = if picture['owner'] then picture['owner'] else Conf.env['USERNAME'] end
-            Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title']).save
+            picture = Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title'])
+            picture.save
+            _ids << picture._id
           end unless content['pictures'].values.nil?
-          content['locations'].values.each_index do |index|
-            imagelocation = content['locations'].values[index]
+          content['locations'].values.each do |imagelocation|
             owner = if imagelocation['owner'] then imagelocation['owner'] else Conf.env['USERNAME'] end
-            PictureLocation.insert(:title=>imagelocation['title'],:owner=>owner,:location=>imagelocation['location'])
+            picture = Picture.where(:title=>imagelocation['title'],:owner=>owner).first
+            PictureLocation.insert(:_id => picture._id,:location=>imagelocation['location']) if picture
           end unless content['locations'].values.nil?
           content['ratings'].values.each do |rating|
             owner = if rating['owner'] then rating['owner'] else Conf.env['USERNAME'] end
-            Rating.insert(:title=>rating['title'],:owner=>owner,:rating=>rating['rating'].to_i)
+            picture = Picture.where(:title=>imagelocation['title'],:owner=>owner).first
+            Rating.insert(:_id=>picture._id,:rating=>rating['rating'].to_i) if picture
           end unless content['ratings'].values.nil?
           content['comments'].values.each do |comment|
             owner = if comment['owner'] then comment['owner'] else Conf.env['USERNAME'] end
-            Comment.new(:title=>comment['title'],:owner=>owner,:text=>comment['text'],:comment_owner=>comment['comment_owner']).save
+            picture = Picture.where(:title=>imagelocation['title'],:owner=>owner).first
+            Comment.insert(:_id=>picture._id,:text=>comment['text'],:author=>comment['author']) if picture
           end
         end
       end
