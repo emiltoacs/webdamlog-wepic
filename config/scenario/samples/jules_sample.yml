@@ -89,42 +89,46 @@ locations:
     title: nemo
     location: Bali, Indonesia
   location2:
-    title: wave
+    title: redbird
+    owner : Emilien
     location: Sydney, Australia
   location3:
-    title: fire
+    title: tiger
     location: Somewhere far far away
   location4:
-    title: mountain
+    title: greenbird
+    owner: Emilien
     location : Alberta, Canada
 ratings:
   rating1:
     title: nemo
     rating: 3
   rating2:
-    title: wave
+    title: redbird
+    owner: Emilien
     rating: 5
   rating3:
-    title: fire
+    title: tiger
     rating: 4
   rating4:
-    title: mountain
+    title: greenbird
+    owner: Emilien
     rating: 3
 comments:
   comment1:
     title: nemo
     text: C'est une super image!
-    owner: jules
+    author: jules
   comment2:
     title: nemo
     text: N'est ce pas?
-    owner: jules
+    author: jules
   comment3:
     title: nemo
     text: Je prefere celle de la montagne.
-    owner: emilien
+    author: emilien
   comment4:
-    title: mountain
+    title: greenbird
     text: ah bon?
     owner: Emilien
-    comment_owner: jules
+    author: jules

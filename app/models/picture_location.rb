@@ -4,7 +4,7 @@ class PictureLocation < AbstractDatabase
   def self.setup
     unless @setup_done      
       validates :_id, :presence => true
-      validates :title, :presence => true
+      validates :location, :presence => true
       
       self.table_name = "pictureLocations"
       connection.create_table 'pictureLocations', :force => true do |t|
