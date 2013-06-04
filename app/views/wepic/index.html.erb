@@ -72,6 +72,22 @@
 		<a id="contact_pictures_button" type="submit" class="popUpButton nice-button">+</a>
 		<div id="contact_pictures" class="images">
 		</div>
+        <div id="fancybox-wrap" class="box_wrapper" style="width: 356px; height: auto; top: 20px; left: 514px; display: none; position : fixed;">
+    		<div id="fancybox-outer">
+    			<div id="fancybox-bg-n" class="fancybox-bg"></div>
+    			<div id="fancybox-bg-ne" class="fancybox-bg"></div>
+    			<div id="fancybox-bg-e" class="fancybox-bg"></div>
+    			<div id="fancybox-bg-se" class="fancybox-bg"></div>
+    			<div id="fancybox-bg-s" class="fancybox-bg"></div>
+    			<div id="fancybox-bg-sw" class="fancybox-bg"></div>
+    			<div id="fancybox-bg-w" class="fancybox-bg"></div>
+    			<div id="fancybox-bg-nw" class="fancybox-bg"></div>
+    			<div id="fancybox-content" style="border-width: 10px; width: 336px; height: 336px;">
+    				
+    			</div>
+    			<a type="submit" id="box-wrapper-close" class="button-close"></a>
+    		</div>
+        </div>		
 		<%else%>
 		<div id="notlogged">
 			You are not logged in! <%= link_to "Log in",:login%>

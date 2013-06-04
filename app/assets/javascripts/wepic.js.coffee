@@ -189,6 +189,8 @@ jQuery(document).ready ->
       jQuery('#upload_new_picture').click ->
         console.log('upload new pic')
         jQuery('#my_pictures_button').html('+')
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
         menu_open = false
       jQuery('#remove_picture').click ->
         console.log('remove pic')
@@ -198,3 +200,5 @@ jQuery(document).ready ->
   jQuery('#contact_pictures_button').click ->
     console.log('button')
   console.log("Document ready function executing...")
+  
+  jQuery
