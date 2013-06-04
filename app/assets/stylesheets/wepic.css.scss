@@ -1,4 +1,43 @@
 /*********************WEPIC***********************/
+
+.button-close {
+  background: url("/assets/fancybox.png") repeat scroll -40px 0 transparent;
+  cursor: pointer;
+  display: block;
+  height: 30px;
+  position: absolute;
+  right: -15px;
+  top: -15px;
+  width: 30px;
+  z-index: 102;
+}
+.popUpMenu a {
+  color : #222;
+  z-index : 105;
+}
+
+.popUpMenu tr {
+  border-bottom : 1px solid #aaa;
+  background-color : #fff;
+}
+
+.popUpMenu tr:hover {
+  background-color : #ccc; 
+}
+
+.popUpMenu {
+  padding : 5px 8px;
+  width : 150px;
+  background-color: #fff;
+  z-index : 100;
+  top : 10px;
+  position : absolute;
+  font-size : 10px;
+  font-family : arial;
+  font-weight : normal;
+  text-shadow : none;
+}
+
 .half{
   width:50%;
   height:50%;
