@@ -23,6 +23,8 @@ class Comment < AbstractDatabase
     self.date = DateTime.now
   end
   
+  before_validation :default_values
+  
   def self.table_name
     'comments'
   end

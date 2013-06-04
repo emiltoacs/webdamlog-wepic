@@ -350,6 +350,7 @@ module WLDatabase
             owner = if picture['owner'] then picture['owner'] else Conf.env['USERNAME'] end
             picture = Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title'])
             picture.save
+            WLLogger.logger.debug "Newly saved picture : #{picture.inspect}"
             _ids << picture._id
           end unless content['pictures'].values.nil?
           content['locations'].values.each do |imagelocation|
