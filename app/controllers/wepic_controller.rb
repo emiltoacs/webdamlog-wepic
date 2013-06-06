@@ -7,26 +7,14 @@ class WepicController < ApplicationController
     @picture = Picture.new
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
-      @pictures = @relation_classes['Picture'].where(:owner => Conf.env['USERNAME']).order(order_criteria + ' DESC')
+      @pictures = Picture.where(:owner => Conf.env['USERNAME'])
+      @pictures.sort! {|a,b| b.send(order_criteria.to_sym) <=> a.send(order_criteria.to_sym)}
     end
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
-    flash[:notice] = "sample notice : current ordering = #{params[:order]}"
   end
+
   
-  #This method could be enhanced to make sure caching is used.
-  # def find_picture_field(picture, classname,field=:all)
-    # @relation_classes = database(Conf.env['USERNAME']).relation_classes unless @relation_classes
-    # unless @relation_classes[classname].nil?
-      # unless field==:all
-        # tuple = @relation_classes[classname].where(:title => picture.title, :owner => picture.owner)
-        # if tuple.first then tuple.first[field] else nil end
-      # else
-        # @relation_classes[classname].where(:title => picture.title, :owner => picture.owner)
-      # end
-    # else
-      # nil
-    # end
-  # end
+  #TODO Create a single function to update picture. modify routes.
   
   #Updates the rating value when modified by the user
   def updateRating
@@ -34,11 +22,16 @@ class WepicController < ApplicationController
     if ratingTuple
       ratingTuple.rating = params[:rating]
     else
-      ratingTuple = Rating.new(:_id => params[:id], :rating=>params[:rating])
+      ratingTuple = Rating.new(:_id => params[:_id], :rating=>params[:rating])
     end
-    ratingTuple.save
+    if ratingTuple.save
     respond_to do |format|
-      format.json {render :json => params.to_json }
+      format.json {render :json => {:saved => true}.to_json }
+    end      
+    else
+    respond_to do |format|
+      format.json {render :json => {:saved => false, :errors => ratingTuple.errors}.to_json }
+    end
     end
   end
   

@@ -34,13 +34,11 @@
 	}
 	
 	
-</script>
+</script><% end %>
+<%if current_user%>
 <div id="pictures">
-	<% end %>
 	<div class="opacity"></div>
 	<div class="content">
-		<%if current_user%>
-		<%= notice %>
 		<h2>My Pictures</h2>
 		<a id="my_pictures_button" type="submit" class="popUpButton nice-button">+</a>
 		<div id="my_pictures" class="images">	
