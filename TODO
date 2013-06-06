@@ -19,5 +19,5 @@ TODOs:
 	Page query : afficher les faits obtenus dans le dernier tick/ derniere upload de facon differencte , flashy
 	contact : changer la relation pour contenir le ip port.
     creer du image shrinkable css : min-width : 960px	
-    
+    enable rules to do sort statements.
     stablize the application : when launch of default data has errors, keep the system stable.

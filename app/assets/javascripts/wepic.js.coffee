@@ -4,6 +4,7 @@ pictureId = 0
 metainf = {}
 regexWS = new RegExp(' ', 'g')
 menu_open = false
+current_url = location.protocol + '//' + location.host + location.pathname
 
 capitalizeFirstLetter = (string) ->
   string.charAt(0).toUpperCase()+string.slice(1)
@@ -17,7 +18,7 @@ addComment = (idPicture,text) ->
     console.log('attempting to get latest comments')
     html = ''
     jQuery.ajax
-      'url' : window.location.href + '/comments/add'
+      'url' : current_url + '/comments/add'
       'data' :
         '_id' : idPicture
         'text' : text
@@ -36,7 +37,7 @@ getLatestComments = (idPicture)->
     console.log('attempting to get latest comments')
     html = ''
     jQuery.ajax
-      'url' : window.location.href + '/comments/latest'
+      'url' : current_url + '/comments/latest'
       'data' :
         '_id' : idPicture
       'datatype' : 'json'
@@ -55,7 +56,7 @@ getLatestComments = (idPicture)->
 chronJobComment = (idPicture) ->
 	date = getCurrentTime()
 	jQuery.ajax
-	  'url' : window.location.href + '/comments/latest'
+	  'url' : current_url + '/comments/latest'
 	  'data' :
 	    '_id' : idPicture
 	    'date' : date
@@ -78,8 +79,10 @@ getMetaInf = ->
   metainf
 
 sortBy = (attribute) ->
-  jQuery.get(window.location.href+'?attribute='+attribute)
-      
+  jQuery.get(current_url+'?attribute='+attribute)
+
+display_error = (error_msg) ->
+  "The following <strong>error</strong> has been encountered : <br>" + JSON.stringify(error_msg)      
 
 popUpMenu = ->
   jQuery('#popUpButton').html('<div id="popUpMenu">THis is the popup menu</div>')
@@ -87,32 +90,44 @@ popUpMenu = ->
 addStar = ->
   if (starNumber<=3)
     starNumber += 1
-    jQuery('#star-'+String(starNumber)).addClass('star-rating-on')
     jQuery.ajax
-      'url' : window.location.href + '/ratings'
+      'url' : current_url + '/ratings'
       'data' :
         '_id' : pictureId
         'rating' : starNumber
       'datatype' : 'json'
       'success' : (data) ->
-        if data?
+        if data.saved
+          jQuery('#star-'+String(starNumber)).addClass('star-rating-on')
           jQuery('#metainf-'+String(pictureId)+' #rating').html(String(starNumber))
+          jQuery('#fancybox-errors').css
+            'display' : 'none'
+        else
+          jQuery('#fancybox-errors').html(display_error(data.errors))
+          jQuery('#fancybox-errors').css
+            'display' : 'block'
   else
     #don't do anything
   
 removeStar = ->
   if (starNumber>=0)
-    jQuery('#star-'+String(starNumber)).removeClass('star-rating-on')
     starNumber -= 1
     jQuery.ajax
-      'url' : window.location.href + '/ratings'
+      'url' : current_url + '/ratings'
       'data' :
         '_id' : pictureId
         'rating' : starNumber
       'datatype' : 'json'
       'success' : (data) ->
-        if data?
+        if data.saved
+          jQuery('#star-'+String(starNumber+1)).removeClass('star-rating-on')
           jQuery('#metainf-'+String(pictureId)+' #rating').html(String(starNumber))
+          jQuery('#fancybox-errors').css
+            'display' : 'none'          
+        else
+          jQuery('#fancybox-errors').html(display_error(data.errors))
+          jQuery('#fancybox-errors').css
+            'display' : 'block'          
 
 jQuery ->
   jQuery('a.fancybox').fancybox
@@ -129,22 +144,22 @@ jQuery ->
       pictureId = parseInt(metainf['_id'])
       list = [0,1,2,3,4]
       star_array = new Array(5)
-      star_s = "<a id=\"plus\" type=submit style=\"background: transparent url(/assets/plus.png) center no-repeat;\" class=\"nice-button\"></a>"
-      star_s += "<a id=\"minus\" type=submit style=\"background: transparent url(/assets/minus.png) center no-repeat;\" class=\"nice-button\"></a>"
       for i in list
         if i <= parseInt(metainf['rating'])
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
         else
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
+      star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">+</a>"
+      star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">-</a>"
       star_s += '<div class="star-wrapper">'
       for star in star_array
         star_s += star
-      star_s += '</div>'
+      star_s += '</div>'      
       return '<div id="fancybox-title-over"><table><tr>'+
       '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
       '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
-      '<td style="text-align:right">'+star_s+'</td></tr></table></div>'
+      '<td style="text-align:right">'+star_s+'</td></tr></table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
       
       #Setup star interaction
@@ -220,21 +235,6 @@ jQuery(document).ready ->
         console.log('remove pic')
         jQuery('#my_pictures_button').html('+')
         menu_open = false
-      # jQuery('#sort_by_owner').click ->
-        # console.log('sort by owner')
-        # jQuery('#my_pictures_button').html('+')
-        # sortBy('owner')
-        # menu_open = false
-      # jQuery('#sort_by_rating').click ->
-        # console.log('sort by rating')
-        # jQuery('#my_pictures_button').html('+')
-        # sortBy('rating')
-        # menu_open = false
-      # jQuery('#sort_by_date').click ->
-        # console.log('sort by date')
-        # jQuery('#my_pictures_button').html('+')
-        # sortBy('date')
-        # menu_open = false
                 
   jQuery('#contact_pictures_button').click ->
     console.log('button')
