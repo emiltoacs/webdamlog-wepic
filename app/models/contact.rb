@@ -1,4 +1,5 @@
 class Contact < AbstractDatabase
+  #has_many :pictures, :dependent => :destroy
   
   def self.setup
     unless @setup_done

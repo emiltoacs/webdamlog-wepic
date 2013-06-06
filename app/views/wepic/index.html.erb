@@ -41,9 +41,6 @@
 	<div class="content">
 		<%if current_user%>
 		<%= notice %>
-		<!-- <div class="upload">
-			<%= render 'upload'%>
-		</div> -->
 		<h2>My Pictures</h2>
 		<a id="my_pictures_button" type="submit" class="popUpButton nice-button">+</a>
 		<div id="my_pictures" class="images">	
@@ -72,22 +69,23 @@
 		<a id="contact_pictures_button" type="submit" class="popUpButton nice-button">+</a>
 		<div id="contact_pictures" class="images">
 		</div>
-        <div id="fancybox-wrap" class="box_wrapper" style="width: 356px; height: auto; top: 20px; left: 514px; display: none; position : fixed;">
-    		<div id="fancybox-outer">
-    			<div id="fancybox-bg-n" class="fancybox-bg"></div>
-    			<div id="fancybox-bg-ne" class="fancybox-bg"></div>
-    			<div id="fancybox-bg-e" class="fancybox-bg"></div>
-    			<div id="fancybox-bg-se" class="fancybox-bg"></div>
-    			<div id="fancybox-bg-s" class="fancybox-bg"></div>
-    			<div id="fancybox-bg-sw" class="fancybox-bg"></div>
-    			<div id="fancybox-bg-w" class="fancybox-bg"></div>
-    			<div id="fancybox-bg-nw" class="fancybox-bg"></div>
-    			<div id="fancybox-content" style="border-width: 10px; width: 336px; height: 336px;">
-    				
+        <div id="wepicbox-wrap" class="box_wrapper" style="min-width: 150px; min-height: 150px; top: 20px; left: 514px; display: none; position : fixed;">
+    		<div id="wepicbox-outer">
+    			<div id="wepicbox-bg-n" class="wepicbox-bg"></div>
+    			<div id="wepicbox-bg-ne" class="wepicbox-bg"></div>
+    			<div id="wepicbox-bg-e" class="wepicbox-bg"></div>
+    			<div id="wepicbox-bg-se" class="wepicbox-bg"></div>
+    			<div id="wepicbox-bg-s" class="wepicbox-bg"></div>
+    			<div id="wepicbox-bg-sw" class="wepicbox-bg"></div>
+    			<div id="wepicbox-bg-w" class="wepicbox-bg"></div>
+    			<div id="wepicbox-bg-nw" class="wepicbox-bg"></div>
+    			<div id="wepicbox-content" style="border-width: 10px; min-width: 150px; min-height: 150px; width:auto;height:auto;">
+    				<div id = "upload_url" class=" box-content"><%= render 'upload_url'%></div>
+    				<div id = "upload_file" class="box-content"><%= render 'upload_file'%></div>
     			</div>
     			<a type="submit" id="box-wrapper-close" class="button-close"></a>
     		</div>
-        </div>		
+        </div>
 		<%else%>
 		<div id="notlogged">
 			You are not logged in! <%= link_to "Log in",:login%>

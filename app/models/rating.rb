@@ -1,5 +1,7 @@
 class Rating < AbstractDatabase
   attr_accessible :_id, :rating
+  belongs_to :picture
+  
   def self.setup
     unless @setup_done      
       validates :_id, :presence => true
@@ -11,6 +13,7 @@ class Rating < AbstractDatabase
       connection.create_table 'ratings', :force => true do |t|
         t.integer :_id
         t.integer :rating
+        t.integer :picture_id
         t.timestamps
       end if !connection.table_exists?('ratings')
       

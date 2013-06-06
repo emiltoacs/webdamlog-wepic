@@ -3,10 +3,14 @@ class WepicController < ApplicationController
   helper_method :find_picture_field
   
   def index
+    order_criteria = if params[:order] then params[:order] else 'date' end
     @picture = Picture.new
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    @pictures = @relation_classes['Picture'].where(:owner => Conf.env['USERNAME']) unless @relation_classes['Picture'].nil?
+    unless @relation_classes['Picture'].nil?
+      @pictures = @relation_classes['Picture'].where(:owner => Conf.env['USERNAME']).order(order_criteria + ' DESC')
+    end
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
+    flash[:notice] = "sample notice : current ordering = #{params[:order]}"
   end
   
   #This method could be enhanced to make sure caching is used.
