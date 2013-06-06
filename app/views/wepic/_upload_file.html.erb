@@ -14,8 +14,8 @@
     <%= f.text_field :title, :required => true %>
   </div>
   <div class="field">
-    <%= f.label :image_url %><br />
-    <%= f.url_field :image_url, :required => true %>
+    <%= f.label :image %><br />
+    <%= f.file_field :image, :required => true %>
   </div>  
   <div class="actions">
     <%= f.submit %>

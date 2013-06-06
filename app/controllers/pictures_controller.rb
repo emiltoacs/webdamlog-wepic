@@ -5,7 +5,8 @@ class PicturesController < WepicController
   # because the form is sent with an http POST requests.
   def create
     config.logger.info "Picture Parameters : #{params[:picture].inspect}"
-    @picture = Picture.new(params[:picture])
+    @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image_url=>params[:picture][:image_url]) if params[:picture][:image_url]
+    @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     @contacts = Contact.all
@@ -58,7 +59,7 @@ class PicturesController < WepicController
     @picture.destroy
     
     respond_to do |format|
-      format.html { redirect_to :admin }
+      format.html { render :action => :index, :notice => "Picture was successfully deleted." }
       format.json { head :no_content }
     end    
   end

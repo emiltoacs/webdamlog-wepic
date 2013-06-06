@@ -1,6 +1,10 @@
 require 'open-uri'
 
 class Picture < AbstractDatabase
+  #belongs_to :contact
+  # has_one :picture_location, :dependent => :destroy
+  has_one :rating, :dependent => :destroy
+  # has_many :comments, :dependent => :destroy
   
   @storage = :database
   
@@ -8,8 +12,10 @@ class Picture < AbstractDatabase
     unless @setup_done
       connection.create_table 'pictures', :force => true do |t|
         t.integer :_id
+        #t.integer  :contact_id
         t.string :title
         t.string :owner
+        t.datetime :date
         t.string :image_file_name
         t.string :image_content_type
         t.integer :image_file_size
@@ -41,9 +47,10 @@ class Picture < AbstractDatabase
     }
   end
   
-  attr_accessible :title, :image, :owner, :image_url, :_id
+  attr_accessible :title, :image, :owner, :image_url, :_id, :date
   validates :title, :presence => true
   validates :owner, :presence => true
+  #validates :image_url, :url => true
   
   has_attached_file :image,
     :storage => @storage, 
@@ -64,10 +71,17 @@ class Picture < AbstractDatabase
   
   def default_values
     self._id = rand(0xFFFFFF)
+    self.date = DateTime.now
+  end
+  
+  def create_defaults
+    create_rating(:_id => self._id, :rating => -1)
+    WLLogger.logger.debug "Rating for picture #{self} : #{rating}"
   end
   
   before_validation :default_values
   before_validation :download_image, :if => :image_url_provided?
+  before_create :create_defaults
      
   private
   

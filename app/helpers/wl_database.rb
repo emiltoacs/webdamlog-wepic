@@ -361,7 +361,8 @@ module WLDatabase
           content['ratings'].values.each do |rating|
             owner = if rating['owner'] then rating['owner'] else Conf.env['USERNAME'] end
             picture = Picture.where(:title=>rating['title'],:owner=>owner).first
-            Rating.insert(:_id=>picture._id,:rating=>rating['rating'].to_i) if picture
+            rate = picture.rating if picture
+            rate.rating = rating['rating'] if rate
           end unless content['ratings'].values.nil?
           content['comments'].values.each do |comment|
             owner = if comment['owner'] then comment['owner'] else Conf.env['USERNAME'] end
@@ -476,8 +477,6 @@ module WLDatabase
 
   end # class WLInstanceDatabase
 
-  
-
   class WLDatabaseError < StandardError
     
     def initialize(msg)
@@ -489,12 +488,6 @@ module WLDatabase
     def to_s
       "#{super} : #{@msg}"
     end
-
-    # if you need to keep the original method accessible
-    #    alias :orig_to_s :to_s
-    #    def to_s
-    #      "#{orig_to_s} : #{@msg}"
-    #    end
     
   end # class WLDatabaseError
 
