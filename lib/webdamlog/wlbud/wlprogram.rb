@@ -21,8 +21,9 @@ module WLBud
   # engine:
   # * <tt>--generate_schema</tt> Generates relations names.
   # * <tt>--generate_bootstrap</tt> Generates extensional facts.
-  # * <tt>--translate_rules</tt> Generates webdamlog rules. #A printing function
-  #   (showing information to the screen) is also avaible :
+  # * <tt>--translate_rules</tt> Generates webdamlog rules.
+  #
+  # A printing function (showing information to the screen) is also avaible :
   # * <tt>--print_content</tt> print all rules, facts and relations to the
   #   screen.
   #
@@ -62,12 +63,12 @@ module WLBud
       @port.freeze
       # A counter for this program to name rule with a uniq ID
       #
-      @next=0
+      @next=1
       @make_binary_rules=make_binary_rules #Use binary rule format (use Bloom pairs keyword instead of combos).
       my_address = "#{ip}:#{port}"
       # List of the webdamlog relation inserted in that peer
       #
-      @wlcollections={}       
+      @wlcollections={}
       # Define here some std alias for local peer
       # * @peername
       # * 'localhost'
@@ -91,7 +92,7 @@ module WLBud
       # Original rules are stored as key and rewriting of these ones as value in
       # an array
       #
-      @original_rules = Hash.new{ |h,k| h[k]=Set.new }
+      @rule_mapping = Hash.new{ |h,k| h[k]=Array.new }
       # The local rules straightforward to convert into bud (simple syntax
       # translation)
       # === data struct
@@ -166,12 +167,12 @@ module WLBud
 
     
     public
-    # REMOVE 
-    #    def add_peer(peername,ip,port)
-    #      @peername=peername
-    #      address = "#{ip}:#{port}"
-    #      @wlpeers[@peername]=address
-    #    end
+    
+    def add_peer(peername,ip,port)
+      @peername=peername
+      address = "#{ip}:#{port}"
+      @wlpeers[@peername]=address
+    end
 
     # The print_content method prints the content of the relations
     # declarations, extensional facts and rules of the program to the screen.
@@ -187,7 +188,7 @@ module WLBud
     end
     
     # Returns true if no rules are loaded for evaluation.
-    def rules_empty? ; return @localrules.empty?; end
+    def rules_empty? ; return @rule_mapping.empty?; end
 
     # Returns true if no facts are loaded for evaluation.
     def facts_empty? ; return @wlfacts.empty?; end
@@ -221,6 +222,7 @@ module WLBud
         l=lines[i]
         current << l
         next unless l =~ /;/
+        current << "\n"
         parse(current, add_to_program, false, {:line_nb=>i+1})
         current = "" #reset current line after parsing
       end
@@ -246,7 +248,10 @@ column:#{@parser.failure_column}
 In the string: #{line}
         MSG
       else
-        result = output.elements.first
+        #result = output.elements.first
+        result = output.get_inst
+        result.rule_id = rule_id_generator if result.is_a? WLBud::WLRule
+
         if add_to_program
           case result
           when WLBud::WLPeerName
@@ -263,7 +268,7 @@ In the string: #{line}
                 @delegations << result
               end
             else
-              @original_rules[result] << []
+              @rule_mapping[result.rule_id] << result
               if local?(result)
                 @localrules << result
               else
@@ -289,8 +294,8 @@ In the string: #{line}
     # declaration that should be created into bud to store intermediary local
     # results of non-local rules rewritten
     #
-    def rewrite_non_local(rule)
-      raise WLError, "local peername:#{@peername} is not defined yet while rewrite rule:#{rule}" if @peername.nil?
+    def rewrite_non_local(wlrule)
+      raise WLError, "local peername:#{@peername} is not defined yet while rewrite rule:#{wlrule}" if @peername.nil?
       intermediary_relation_declaration_for_local_peer = nil
       localstack=[]
       nonlocalstack=[]
@@ -299,7 +304,7 @@ In the string: #{line}
       to_delegate=false
 
       # Scan atoms and divide body in local and non-local
-      rule.body.each { |atom|
+      wlrule.body.each { |atom|
         if !to_delegate and local?(atom)
           localstack << atom
         else
@@ -331,17 +336,17 @@ In the string: #{line}
               localbody << "#{atom},"
             end
             localbody.slice!(-1)
-            tmp_name=generate_intermediary_relation_name
-            relation_name="#{tmp_name}"
+            relation_name = generate_intermediary_relation_name(wlrule.rule_id)
             # build the list of attributes for relation declaration (dec_fields)
             # removing the '$' of variable and create attributes names
             dec_fields=''
             var_fields=''
-            local_vars.each_index do |index|
-              local_var=local_vars[index]
-              dec_fields << local_var.gsub( /(^\$)(.*)/ , tmp_name+"_\\2_"+index.to_s+"\*," )
+            local_vars.each_index do |i|
+              local_var=local_vars[i]
+              dec_fields << local_var.gsub( /(^\$)(.*)/ , relation_name+"_\\2_"+i.to_s+"\*," )
               var_fields << local_var << ","
             end ; dec_fields.slice!(-1);var_fields.slice!(-1);
+            
             intermediary_relation_atom_in_rule = "#{relation_name}@#{destination_peer}(#{var_fields})"
             intermediary_relation_declaration_for_remote_peer = "collection inter persistent #{relation_name}@#{destination_peer}(#{dec_fields});"
             intermediary_relation_declaration_for_local_peer = intermediary_relation_declaration_for_remote_peer.gsub("persistent ", "")
@@ -350,19 +355,23 @@ In the string: #{line}
             @new_local_declaration << parse(intermediary_relation_declaration_for_local_peer,true,true)
             @new_relations_to_declare_on_remote_peer[addr_destination_peer] << intermediary_relation_declaration_for_remote_peer
             #Add local rule to the set of rewritten local rules
-            @new_rewritten_local_rule_to_install << parse(local_rule_which_delegate_facts, true, true)
+            @new_rewritten_local_rule_to_install << ru = parse(local_rule_which_delegate_facts, true, true)
+            @rule_mapping[wlrule.rule_id] << ru.rule_id
+            @rule_mapping[ru.rule_id] << ru
             #Create the delegation rule string
             nonlocalbody="" ;
             nonlocalstack.each { |atom| nonlocalbody << "#{atom}," } ; nonlocalbody.slice!(-1)
-            delegation="rule #{rule.head}:-#{intermediary_relation_atom_in_rule},#{nonlocalbody};"
+            delegation="rule #{wlrule.head}:-#{intermediary_relation_atom_in_rule},#{nonlocalbody};"
           elsif localstack.empty? # else if the whole body is non-local, no rewriting are needed just delegate all the rule
-            delegation="#{rule};"
+            delegation="#{wlrule};"
           end
           @new_delegations_to_send[addr_destination_peer] << delegation
+          @rule_mapping[wlrule.rule_id] << delegation
+          @rule_mapping[delegation] << delegation
         elsif nonlocalstack.empty?
           raise WLErrorProgram, "\nLocal rule found in nonlocal rule table. There may have been an error in previous processing"
         else # the last case where only the head is non-local and the body is only local, we can install it as it is
-          @new_rewritten_local_rule_to_install << rule
+          @new_rewritten_local_rule_to_install << wlrule
         end
         return intermediary_relation_declaration_for_local_peer
       end
@@ -541,7 +550,7 @@ In the string: #{line}
       # head
       #
       def local? (wlword)        
-        if wlword.is_a? WLBud::WLCollection
+        if wlword.is_a? WLBud::WLCollection or wlword.is_a? WLBud::WLAtom
           if @localpeername.include?(wlword.peername)
             return true
           else 
@@ -573,6 +582,14 @@ In the string: #{line}
         end
       end
 
+      # return true if wlcollection is sound compared to current program already
+      # running otherwise return false with error message
+      def valid_collection? wlcollection
+        return false, "" unless wlcollection.is_a? WLBud::WLCollection
+        return false, "peername #{wlcollection.peername} should have been declared before" unless @wlpeers[wlcollection.peername]
+        return true, "collection valid"
+      end
+
       private
 
       # Define the format of the name of the variable for the name of the
@@ -588,13 +605,13 @@ In the string: #{line}
       # For a bud rule like the following it produce the part between stars
       # marked with ** around
       #
-      # {descendant_at_emilien <= child_at_emilien {|atom0| *[atom0[0],
+      # !{descendant_at_emilien <= child_at_emilien {|atom0| *[atom0[0],
       # atom0[2]]*}
       def def_projection(wlrule)
-        str = ''
-        str << '['
-        # add location of the peer which should receive the fact and relation and
-        # the relation in which the fact should be added on the remote peer.
+        str = '['
+
+        # add the remote peer and relation name which should receive the fact.
+        # conform to facts to be sent via sbuffer
         unless local?(wlrule.head)
           destination = "#{@wlpeers[wlrule.head.peername]}"
           #add location specifier
@@ -605,10 +622,22 @@ In the string: #{line}
           str << "\"#{relation}\", "
           str << "["
         end
+        
         # add the list of variable and constant that should be projected
-        wlrule.head.fields.each_with_index do |f,i|
+        fields = wlrule.head.fields
+        fields.each_with_index do |f,i|
           # treat as a constant or a variable
-          unless f.include?('$')  #for constant
+          #unless f.include?('$')  #for constant
+          if f.variable?
+            var = f.text_value
+            if wlrule.dic_wlvar.has_key?(var)
+              relation , attribute = wlrule.dic_wlvar.fetch(var).first.split('.')
+              str << "#{WLBud::WLProgram.get_bud_var_by_pos(relation)}[#{attribute}], "
+            else
+              raise( WLErrorGrammarParsing,
+                "In rule "+wlrule.text_value+" #{f} is present in the head but not in the body. This is not WebdamLog syntax." )
+            end            
+          else
             str << "#{quotes(f)}, "
           else
             unless wlrule.dic_wlvar.include?(f)
@@ -620,22 +649,24 @@ In the string: #{line}
             end
           end
         end
-        str.slice!(-2..-1)
-        str << ']'
+        str.slice!(-2..-1) unless fields.empty?
+
         unless local?(wlrule.head)
           str << "]"
         end
+
+        str << ']'
         return str
       end
     
-=begin    
+=begin
     # Generates a string corresponding to the appropriate delegation.
-    # Ensure that the delegation string is created according to the specifications.    # 
+    # Ensure that the delegation string is created according to the specifications.    #
     #
-    def generate_delegation(delegation) 
+    def generate_delegation(delegation)
       ######## MANAGE DELEGATIONS ########
       # Pushes each atom of the body of the rule (left to right) into a stack until it finds a non local one.
-      # Take all the previous atoms and puts them into a temporary variable. 
+      # Take all the previous atoms and puts them into a temporary variable.
       # From : out@j($x,$y,$z):-f@j(alice,$x), f@e(alice,$y), f@a(alice,$z)
       # Get to : 
       # collection tmp_from_j@e($x)
