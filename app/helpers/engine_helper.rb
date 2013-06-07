@@ -35,12 +35,13 @@ module EngineHelper
       # Dynamic class ClassWLEngineOf#{username}On#{@port} subclass WLBud
       # Create a subclass of WL FIXME maybe useless to subclass here, since I
       # implement this as Singleton, no risk of border-effect in class varaible
-      #
-      klass = create_class("ClassWLEngineOf#{username}On#{@port}", WLBud::WL)
-
+      #      
       program_file = create_program_dir Conf.peer['peer']['program']['file_path']
       @dir_rule = File.dirname program_file
-      @engine = klass.new(username, program_file, {:port => @port, :dir_rule => @dir_rule})
+      #replace these two lines by create in webdamlog runner
+      klass = create_class("ClassWLEngineOf#{username}On#{@port}", WLBud::WL)
+      @engine = klass.new(username, program_file, {:port => @port, :rule_dir => @dir_rule})
+
       msg = "peer_name = #{@peer_name} program_file = #{program_file} dir_rule = #{@dir_rule} on port #{@port}"
       if @engine.nil?
         @enginelogger.fatal("creation of the webdamlog engine instance has failed:\n#{msg}")

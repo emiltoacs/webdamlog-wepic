@@ -1,5 +1,5 @@
 #!/bin/bash
-# not so awesome script to cpoy my webdamlog implementation into rails project
+# a not so awesome script to copy my webdamlog implementation into rails project
 
 FROMPATH="../webdamlogengine/lib/"
 FROMFILE="wlbud.rb"
