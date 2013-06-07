@@ -28,6 +28,7 @@ WepimApp::Application.routes.draw do
     match 'query/insert' => 'query#insert'
     match 'contacts/:username/pictures' => 'pictures#contact'
     match 'wepic/ratings' => 'wepic#updateRating'
+    match 'pictures/update' => 'pictures#update'
     match 'wepic/comments/latest' => 'wepic#getLatestComments'
     match 'wepic/comments/add' => 'wepic#addComment'
     match 'wepic/comments/remove' => 'wepic#removeComment'

@@ -110,7 +110,7 @@ addStar = ->
     #don't do anything
   
 removeStar = ->
-  if (starNumber>=0)
+  if (starNumber>=1)
     starNumber -= 1
     jQuery.ajax
       'url' : current_url + '/ratings'
@@ -131,7 +131,7 @@ removeStar = ->
 
 jQuery ->
   jQuery('a.fancybox').fancybox
-    'hideOnContentClick' : true
+    'hideOnContentClick' : false
     'hideOnOverlayClick' : true
     'padding': 10
     'titlePosition' : 'over'
@@ -172,6 +172,15 @@ jQuery ->
       jQuery('#fancybox-right').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
       '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
       
+      jQuery('#fancybox-content').append('<a id="edit_picture">edit</a>')
+      
+      jQuery('#edit_picture').click ->
+        console.log('edit')
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
+        jQuery('#edit_picture_form').css
+          'display' : 'block'
+      
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
       	if keypressed.keyCode == 13
@@ -202,12 +211,12 @@ jQuery(document).ready ->
       html += '<li><a type="submit" id="upload_from_file" class="active_action">from file</a></li>'
       html += '<li><a type="submit" id="upload_from_url" class="active_action" >from URL</a></li>'
       html += '</ul>'
-      html += '<li><a type="submit" id="remove_picture">Sort By...</a></li>'
-      html += '<ul>'
-      html += '<li><a href="/wepic?order=date" type="submit" id="sort_by_date" class="active_action">date</li>'
-      html += '<li><a href="/wepic?order=rating" type="submit" id="sort_by_rating" class="active_action">rating</li>'
-      html += '<li><a href="/wepic?order=owner" type="submit" id="sort_by_owner" class="active_action">owner</li>'
-      html += '</ul>'
+      html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
+      # html += '<ul>'
+      # html += '<li><a href="/wepic?order=date" type="submit" id="sort_by_date" class="active_action">date</li>'
+      # html += '<li><a href="/wepic?order=rating" type="submit" id="sort_by_rating" class="active_action">rating</li>'
+      # html += '<li><a href="/wepic?order=owner" type="submit" id="sort_by_owner" class="active_action">owner</li>'
+      # html += '</ul>'
       html += '</ul></div>'
       jQuery('#my_pictures_button').html(html)
       menu_open = true
@@ -231,8 +240,12 @@ jQuery(document).ready ->
         jQuery('#upload_url').css
           'display' : 'block'
         menu_open = false
-      jQuery('#remove_picture').click ->
-        console.log('remove pic')
+      jQuery('#sort_by').click ->
+        console.log('edit')
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
+        jQuery('#sort').css
+          'display' : 'block'
         jQuery('#my_pictures_button').html('+')
         menu_open = false
                 

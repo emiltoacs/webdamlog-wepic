@@ -25,6 +25,14 @@ class PicturesController < WepicController
     end
   end
   
+  def update
+    logger.debug "Update picture was called with arguments : #{params.inspect}"
+    respond_to do |format|
+      format.html { render :action => "show", :notice => 'Picture was successfully updated.' }
+      format.json { render :json => @picture, :status => :created, :location => :wepic }
+    end
+  end
+  
   #This method returns a json representation of the pictures of a contact (not the picture data itself,
   #but enough information to display the picture thumbnail).
   def contact

@@ -1,0 +1,15 @@
+<%=form_tag({ :controller => "pictures", :action => "update"},:method => 'put') do%>
+<ul>
+  <div class="field">
+    Title : <%=text_field_tag "title_field", nil, :required => false, :placeholder => 'What is the picture\'s name?'%>
+  </div>
+  <div class="field">
+  	Date : <%=datetime_select("date_field", "written_on", :prompt => {:day => 'Choose day', :month => 'Choose month', :year => 'Choose year',  :hour => false, :minute => false})%>
+  </div>
+  <div class="field">
+     Location : <%=text_field_tag "location_field", nil, :required => false, :placeholder => 'Where did you take this picture?'%>	
+  </div>
+  <div class="actions">
+    <%= submit_tag 'Update picture' %>
+  </div>
+<% end %>
