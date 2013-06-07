@@ -1,5 +1,5 @@
 <h2>Enter your username</h2>
 <%=form_tag({:controller => "welcome", :action=>"login"},:method=>'post') do %>
 	<div class="field"> Username : <%= text_field_tag "username", nil, :required => true %> </div>
-	<%= submit_tag 'Go!' %>
+	<div class="actions"><%= submit_tag 'Go!' %></div>
 <% end %>

@@ -1,4 +1,5 @@
 <%# TODO: modularize protocols for redirection (http or else and urls)%>
+<%if is_admin%>
 <div class="admin">
 <% @accounts.each do |account| %>
 	<div class="field">
@@ -12,3 +13,10 @@
 	</div>
 <% end %>
 </div>
+  <div class="field admin">
+    <%= button_to('Refresh', {:action => 'refresh'}, :method => :get, :remote => true) %>
+    <%=form_tag({:controller => "welcome", :action=>"killall"},:method=>'post') do %>
+      <%= submit_tag 'Kill all wepic peers'%>
+    <%end%>
+  </div>
+<%end%>

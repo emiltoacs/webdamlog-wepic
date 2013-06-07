@@ -1,5 +1,7 @@
-<h3>Choose a scenario to generate</h3>
+<%if is_admin%>
+<h2>Choose a scenario to generate</h2>
 <%=  form_tag({:controller => "welcome", :action=>"start_scenario"}, :method => :post) do %>
-  <%= collection_select(:scenario_opt, :scenario_selected, @scenarios, :id, :name) %>
-  <%= submit_tag 'Generate' %>
+  <div class="field"><%= collection_select(:scenario_opt, :scenario_selected, @scenarios, :id, :name) %></div>
+  <div class="actions"><%= submit_tag 'Generate' %></div>
 <% end %>
+<%end%>

@@ -20,6 +20,18 @@ body {
     background-image: url(/assets/background.png);   
 }
 
+.field {
+	text-align : center;
+}
+
+h2 {
+	text-align : center;
+}
+
+.actions {
+	text-align : center;
+}
+
 ul {
 	list-style : none;
 }
