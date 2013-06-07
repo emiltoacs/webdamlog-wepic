@@ -4,11 +4,18 @@ class WepicController < ApplicationController
   
   def index
     order_criteria = if params[:order] then params[:order] else 'date' end
+    sorting_order = if params[:sort] || (params[:sort]!='asc'  and params[:sort]!='desc') then params[:sort] else 'asc' end
     @picture = Picture.new
+    @order_options = ['rated','location','date']
+    @sort_options = ['asc','desc']
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
       @pictures = Picture.where(:owner => Conf.env['USERNAME'])
-      @pictures.sort! {|a,b| b.send(order_criteria.to_sym) <=> a.send(order_criteria.to_sym)}
+      if sorting_order=='desc'
+        @pictures.sort! {|a,b| b.send(order_criteria.to_sym) <=> a.send(order_criteria.to_sym)}
+      else
+        @pictures.sort! {|a,b| a.send(order_criteria.to_sym) <=> b.send(order_criteria.to_sym)}
+      end
     end
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
   end
