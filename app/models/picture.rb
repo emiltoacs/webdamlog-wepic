@@ -52,6 +52,16 @@ class Picture < AbstractDatabase
   validates :owner, :presence => true
   #validates :image_url, :url => true
   
+  def rated
+    return self.rating.rating if self.rating && self.rating.rating
+    0
+  end
+  
+  def location
+    return self.picture_location.location if self.picture_location && self.picture_location.location
+    0
+  end
+  
   has_attached_file :image,
     :storage => @storage, 
     :styles => {

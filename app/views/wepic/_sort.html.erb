@@ -1,23 +1,11 @@
-<%= form_for(@picture, :html =>  {:multipart => true }) do |f| %>
-  <% if @picture.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@picture.errors.count, "error") %> prohibited this picure from being saved:</h2>
-      <ul>
-      <% @picture.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+<%=form_tag({ :controller => "wepic", :action => "index"},:method => 'get') do%>
   <div class="field">
-    <%= f.label :title %><br />
-    <%= f.text_field :title, :required => true %>
+  	Sort By : <%=select_tag 'order' , options_for_select(@order_options.each_with_index {|o,i| [o,i]}) %>
   </div>
   <div class="field">
-    <%= f.label :image_url %><br />
-    <%= f.url_field :image_url, :required => true %>
+  	In order : <%=select_tag 'sort' , options_for_select(@sort_options.each_with_index {|o,i| [o,i]}) %>
   </div>  
   <div class="actions">
-    <%= f.submit %>
+    <%= submit_tag 'Sort' %>
   </div>
 <% end %>
