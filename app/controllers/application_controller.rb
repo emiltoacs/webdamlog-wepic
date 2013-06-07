@@ -26,8 +26,8 @@ class ApplicationController < ActionController::Base
     @current_user = current_user_session && current_user_session.record
   end
   
-  def is_admin(user_id)
-    return current_user.nil?#@@adminlist.include?(user_id)
+  def is_admin(user_id=nil)
+    return !current_user.nil?#@@adminlist.include?(user_id)
   end
   
 end
