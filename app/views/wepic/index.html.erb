@@ -40,7 +40,7 @@
 	<div class="opacity"></div>
 	<div class="content">
 		<h2>My Pictures</h2>
-		<a id="my_pictures_button" type="submit" class="popUpButton nice-button">+</a>
+		<a id="my_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
 		<div id="my_pictures" class="images">	
 			<% @pictures.each_with_index do |picture| %>
 			<div class="entry">
@@ -80,6 +80,8 @@
     			<div id="wepicbox-content" style="border-width: 10px; min-width: 150px; min-height: 150px; width:auto;height:auto;">
     				<div id = "upload_url" class=" box-content"><%= render 'upload_url'%></div>
     				<div id = "upload_file" class="box-content"><%= render 'upload_file'%></div>
+    				<div id = "edit_picture_form" class="box-content"><%= render 'edit_picture'%></div>
+    				<div id = "sort" class="box-content"><%= render 'sort'%></div>
     			</div>
     			<a type="submit" id="box-wrapper-close" class="button-close"></a>
     		</div>

@@ -2,7 +2,7 @@ require 'open-uri'
 
 class Picture < AbstractDatabase
   #belongs_to :contact
-  # has_one :picture_location, :dependent => :destroy
+  has_one :picture_location, :dependent => :destroy
   has_one :rating, :dependent => :destroy
   # has_many :comments, :dependent => :destroy
   
