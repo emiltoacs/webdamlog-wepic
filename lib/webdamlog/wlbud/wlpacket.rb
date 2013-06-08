@@ -21,16 +21,15 @@ module WLBud
 
     attr_accessor :dest, :data
 
-    #the default constructor
-    #parameter dest : should be the URL ipv4:port of the peer to reach
-    #TODO remove identifier if useless (not sure for now)
+    # #the default constructor #parameter dest : should be the URL ipv4:port of
+    # the peer to reach #TODO remove identifier if useless (not sure for now)
     def initialize(dest, peerName, srcTimeStamp, data={'facts'=>{},'rules'=>[],'declarations'=>[]})
-      #URL with [ipv4:port]
+      # #URL with [ipv4:port]
       valid_ip_address_regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$/
       valid_hostname_regex = /^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9]):[0-9]+$/
       raise WLErrorTyping, "Trying to create a packet with first field dest which should be a IP but found:'#{dest.to_s}' for peerName:#{peerName} and data:#{data.inspect}" unless ( dest.is_a?(String) and !(valid_ip_address_regex.match(dest.to_s)).nil? or !(valid_hostname_regex.match(dest.to_s)).nil? )
       @dest=dest
-      #data is an array of 4 fields
+      # #data is an array of 4 fields
       @data= WLPacketData.new(peerName, srcTimeStamp, data)
     end
 
@@ -73,25 +72,25 @@ module WLBud
   # communication channel used in WLPacket
   class WLPacketData
 
-    # Should follow the given structure {name of relation => [[tuple], [tuple], [tuple]]}
-    #TODO add flag for add or remove
-    attr_accessor :facts
-    
+    # Should follow the given structure !{name of relation => [[tuple], [tuple],
+    # [tuple]]} TODO add flag for add or remove
+    attr_accessor :facts    
     # Array of rules
     attr_accessor :rules
     # Array of collection declarations
     attr_accessor :declarations
 
-    #the default constructor
+    # the default constructor
     def initialize(peername, srcTimeStamp, payload={'facts'=>{},'rules'=>[],'declarations'=>[]})
             
-      #the peer which send the message: String
+      # #the peer which send the message: String
       raise WLErrorTyping, "peer name should be a string" unless peername.is_a?(String)
       @peer_name = peername
-      #the timeStamp when the source peer send the message: Integer      
+      # #the timeStamp when the source peer send the message: Integer
       @srcTimeStamp = srcTimeStamp.to_i
 
-      # TODO type check could be more elaborated here it is just hash or array or nil
+      # TODO type check could be more elaborated here it is just hash or array
+      # or nil
       raise WLErrorTyping, "Lacking facts entry in packet " unless payload.key?('facts')
       raise WLErrorTyping, "Incorret data type for facts : #{payload['facts'].class}" unless (payload['facts'].is_a?(Hash) or payload['facts'].nil?)
       @facts = payload['facts']
@@ -105,24 +104,43 @@ module WLBud
 
     public
 
-    # The specific builder for WLPackets from message payload when reading a
-    # WLChannel
-    # ===return
-    # a WLPacketData object
-    #
-    def WLPacketData.read_from_channel(array, debug=false)
-      #raise WLErrorTyping.new("I received a packet with wrong structure maybe payload != 1 length:" + array.length.to_s + " content:" + array.inspect.to_s) unless (array.length==1)
-      #puts "Warning! length of payloads different from 1!" unless debug and (array.length==1)
-      packet = array[0]
-      puts "packet is nil" if debug and packet.nil?
-      if debug
-        puts "inspect packet received"
-        puts packet.inspect
-        puts "inspect packet received"
-        puts y packet
+    class << self      
+    
+      # The specific builder for WLPackets from message payload when reading a
+      # WLChannel
+      # ===return
+      # a WLPacketData object
+      #
+      def read_from_channel(array, debug=false)
+        # #raise WLErrorTyping.new("I received a packet with wrong structure
+        # maybe payload != 1 length:" + array.length.to_s + " content:" +
+        # array.inspect.to_s) unless (array.length==1) #puts "Warning! length of
+        # payloads different from 1!" unless debug and (array.length==1)
+        packet = array[0]
+        puts "packet is nil" if debug and packet.nil?
+        if debug
+          puts "inspect packet received"
+          puts packet.inspect
+        end
+        return WLPacketData.new(packet[0], packet[1], packet[2])
       end
-      return WLPacketData.new(packet[0], packet[1], packet[2])
-    end
+
+      # Valid fact structure is Hash with relation name as key and array of
+      # tuple as value.
+      def valid_hash_of_facts hash
+        if hash.is_a? Hash
+          return true, "valid empty hash" if hash.empty?
+          hash.each_pair { |k,v|
+            return false, "keys in the hash should be String" unless k.is_a? String
+            return false, "values in the hash should be Array" unless v.is_a? Array
+          }
+          return true, "valid hash of facts to insert"
+        else
+          return false, "try to test a hash of fact that is not a hash"
+        end        
+      end
+      
+    end # end self
 
     def serialize_for_channel
       return [@peer_name.to_s,@srcTimeStamp.to_s,get_data]
@@ -143,7 +161,7 @@ module WLBud
     end
 
     # Return the hash with facts, rules and declaration with their values sorted
-    # in-place 
+    # in-place
     #
     def get_data_sorted!
       @declarations.sort!
@@ -152,14 +170,14 @@ module WLBud
       return get_data
     end
 
-    # Return the metadata in the packet
-    # @peer_name, @srcTimeStamp
+    # Return the metadata in the packet @peer_name, @srcTimeStamp
     #
     def print_meta_data
       return @peer_name.to_s + ' : ' + @srcTimeStamp.to_s
     end
 
-    #return the string representation of the content of the fields of this object
+    # #return the string representation of the content of the fields of this
+    # object
     #
     def to_s
       return @peer_name.to_s + ' : ' + @srcTimeStamp.to_s + ' : ' + get_data.inspect

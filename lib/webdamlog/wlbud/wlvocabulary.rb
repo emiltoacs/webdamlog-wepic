@@ -6,21 +6,21 @@ module WLBud
   # assigned a proper subclass of WLVocabulary.
   #
   class WLVocabulary < Treetop::Runtime::SyntaxNode
-    
-    public     
+    public
     def to_s
       self.text_value
     end
-    protected
-    #    #The firstchild class
-    #    def firstchild
-    #      self.elements.first
-    #    end
+    def get_inst
+      return instruction
+    end
+    # only node including {WLBud::WLComment} in their ancestry are comments
+    def comment?
+      false
+    end
   end
   
-  # #The WLrule class is used to store the content of parsed WLRules.
+  # The WLrule class is used to store the content of parsed WLRules
   class WLRule < WLVocabulary
-    @@index=0
     attr_accessor :has_self_join
     attr_reader :index, :dic_made
     # The budvar dictionary is a hash defines variables included in the
@@ -44,7 +44,7 @@ module WLBud
     # e.g. 'a' and as value it's location in the following format :
     # 'relation_position.field_position' Remark: position always start from 0
     #
-    attr_reader:dic_wlconst
+    attr_reader :dic_wlconst
     
     # Creates a new WLRule and instantiate empty dictionaries for that rule.
     #
@@ -55,22 +55,22 @@ module WLBud
     # * elements
     #
     def initialize (a1,a2,a3)
-      @dic_made=false
+      @dic_made = false
       # TODO add self-join detection and think of the structure to use to create
       # the symbolic predicates of linkage during joins instead of named
       # perspective. See function make_combos in wlprogram @has_self_join=false
-      @index=@@index+=1
-      @body=nil      
-      @dic_relation_name={}
-      @dic_invert_relation_name={}
-      @dic_wlvar={}
-      @dic_wlconst={}
+      @rule_id = nil
+      @body = nil
+      @dic_relation_name = {}
+      @dic_invert_relation_name = {}
+      @dic_wlvar = {}
+      @dic_wlconst = {}
       super(a1,a2,a3)
     end
     
     public
             
-    # #prints to the screen information about the rule
+    # prints to the screen information about the rule
     def show
       puts "Class name : #{self.class}"
       puts "Head : #{show_head}" 
@@ -114,7 +114,7 @@ module WLBud
     # populate the four dictionaries
     def make_dictionaries ()
       self.body.each_with_index do |atom,n|
-        # field variable goes to wlvar and constant to const dictionary
+        # field variable goes to dic_wlvar and constant to dic_wlconst
         atom.fields.each_with_index do |f,i|
           str = "#{n}.#{i}"
           # if the rule is not a temporary variable
@@ -123,35 +123,51 @@ module WLBud
           #          else
           #            str = "#{atom.name}.pos#{i}"
           #          end
-          unless f.=~ /'^$*'/.nil?
-            if self.dic_wlvar.has_key?(f)
-              self.dic_wlvar[f] << str
+          if f.variable? #f.=~ /'^$*'/.nil?
+            var = f.text_value
+            if self.dic_wlvar.has_key?(var)
+              self.dic_wlvar[var] << str
             else
-              self.dic_wlvar[f]=[str]
+              self.dic_wlvar[var]=[str]
             end
           else
-            if self.dic_wlconst.has_key?(f)
-              self.dic_wlconst[f] << str
+            const = f.text_value
+            if self.dic_wlconst.has_key?(const)
+              self.dic_wlconst[const] << str
             else
-              self.dic_wlconst[f]=[str]
+              self.dic_wlconst[const]=[str]
             end
           end
         end
+        
         # TODO list all the useful relation, a relation is useless if it's arity
-        # is more than zero and none variable and constant inside aren't used in
+        # is more than zero and none variable and constant inside are used in
         # other relation of this rule insert here the function
         if self.dic_relation_name.has_key?(atom.relname)
           self.dic_relation_name[atom.relname] << n
         else
           self.dic_relation_name[atom.relname]=[n]
         end
-        if self.dic_invert_relation_name.has_key?(n)
-          self.dic_invert_relation_name[n] << atom.relname
-        else
-          self.dic_invert_relation_name[n]=[atom.relname]
-        end
+        self.dic_invert_relation_name[n] = atom.relname
       end
       @dic_made = true
+    end
+
+    # Set a unique id for this rule for the peer which has parsed this rule
+    #
+    def rule_id= int
+      @rule_id = int
+      # #@rule_id.freeze
+    end
+
+    def rule_id
+      if @rule_id.nil?
+        raise WLError, <<-"EOS"
+this rule has been parsed but no valid id has been assigned for unknown reasons
+        EOS
+      else
+        return @rule_id
+      end
     end
 
     private
@@ -177,7 +193,7 @@ module WLBud
     end
   end
   
-  # #The WLrule class is used to store the content of parsed WL facts.
+  # The WLrule class is used to store the content of parsed WL facts.
   class WLFact < WLVocabulary
     public
     
@@ -185,7 +201,7 @@ module WLBud
       @contents=nil
       super(a1,a2,a3)
     end
-    # #prints to the screen information about the extensional fact.
+    # prints to the screen information about the extensional fact.
     def show
       puts "Class name : #{self.class}"
       puts "Content : #{self.text_value}"
@@ -194,7 +210,7 @@ module WLBud
       puts "Data content : #{self.fields.text_value}"
       puts "--------------------------------------------------------"
     end
-    # #return an array of strings containing each element of the Fact.
+    # return an array of strings containing each attribute value of the fact.
     def content
       if @contents.nil?
         array=[]
@@ -203,7 +219,7 @@ module WLBud
       end
       return @contents
     end
-    # #returns the name of the relation of the fact.
+    # returns the name of the relation of the fact.
     def relname
       return "#{self.relation_name.text_value}_at_#{self.peer_name.text_value}"
     end
@@ -225,7 +241,7 @@ module WLBud
     end
 
     public
-    # #prints to the screen information about the extensional fact.
+    # prints to the screen information about the extensional fact.
     def show
       puts "Class name : #{self.class}"
       puts "Content : #{self.text_value}"
@@ -235,18 +251,24 @@ module WLBud
       puts "--------------------------------------------------------"
     end
     
-    # #This method generates the schema corresponding to this 'collection'
+    # This method generates the schema corresponding to this 'collection'
     def schema
       if @schema.nil?
         keys = [];
         values=[];
-        self.col_fields.keys.text_value.split(',').each {|s| keys << s.split('*').first.to_sym}
-        self.col_fields.values.text_value.split(',').each {|s| values << s.to_sym}
+        self.col_fields.keys.text_value.split(',').each do |s|
+          key = s.split('*').first.strip.to_sym
+          keys << key unless key.empty?
+        end
+        self.col_fields.values.text_value.split(',').each do |s|
+          val = s.strip.to_sym
+          values << val unless val.empty?
+        end
         h = {keys => values}
         @schema=h
-      end
+      end # if @schema.nil?
       return @schema
-    end
+    end # schema
 
     # Return the relation type
     def get_type
@@ -257,18 +279,6 @@ module WLBud
     def persistent?
       return rel_type.persistent?
     end
-
-    # Return true if the relation is local.
-    #
-    # me is the
-    #
-    #    def local?(budinstance=nil)
-    #      if budinstance.nil?
-    #        self.peer.eql?('me')
-    #      else
-    #        self.peer.eql?('me') or self.peer.eql?(budinstance.peername)
-    #      end
-    #    end
 
     # Return the name of the peer
     #
@@ -287,8 +297,16 @@ module WLBud
       end
       return @fields
     end
+
+    # Number of fields for this relation
+    def arity
+      if @arity.nil?
+        @arity = self.col_fields.keys.elements.size + self.col_fields.values.elements.size
+      end
+      return @arity
+    end
     
-    # #This method gives the name of the relation.
+    # This method gives the name of the relation.
     def relname
       self.relation_name.text_value
     end
@@ -365,8 +383,11 @@ module WLBud
   class WLRelation < WLVocabulary
   end
 
+  # This is the text part of fields in relation, it could be a constant or a
+  # variable
   module WLRToken
-    # By default WLRtoken is not a variable unless it is override by WLVar
+    # By default WLRtoken is not a variable unless this method is override by
+    # WLVar
     def variable?
       if self.kind_of?(WLVar)
         true
@@ -389,7 +410,7 @@ module WLBud
     end
   end
   
-  # WebdamLog Atom, element of a WLrule.
+  # WebdamLog Atom, element of a WLrule: rrelation@rpeer(rfields)
   class WLAtom < WLVocabulary
     def initialize (a1,a2,a3)
       @name_choice=false
@@ -461,10 +482,10 @@ module WLBud
       end
       str << fields.inspect << "\n"
     end
-  end  
+  end
 
   class WLPeer < WLVocabulary
-  end  
+  end
   
   # The Rfields class corresponds contains the fields of atoms in rules.
   class WLRfields < WLVocabulary
@@ -498,14 +519,14 @@ module WLBud
       end
       return @variables
     end
-    # this methods hands in all fields (in text value)
+    # this methods hands in all fields as WLRToken
     def fields
       if @fields.nil?
         f = []
         # self.rtokens.elements.each {|t| f <<
         # t.elements.first.text_value.split(',').first}# unless
         # t.text_value.include?(',')} f << self.rtoken.text_value
-        get_rtokens.each { |t| f << t.text_value unless t.variable? }
+        get_rtokens.each { |t| f << t }
         @fields=f
       end
       return @fields
@@ -521,10 +542,14 @@ module WLBud
     end
   end
   
-  class WLComment < WLVocabulary
+  module WLComment
     def show
       puts "--------------------------------------------------------"
-      puts 'I am a comment :) .'
+      puts "comment: #{text_value}"
+    end
+
+    def comment?
+      true
     end
   end
 end
