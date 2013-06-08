@@ -1,11 +1,15 @@
 <div class="opacity"></div>
 <div class="content">
+  <%if flash[:notice]%>
   <div class="notice">
     <%= notice %>
   </div>
-  <div class="alert">
+  <%end%>
+  <%if flash[:alert]%>
+  <div class="errors">
     <%= alert %>
   </div>
+  <%end%>
   <% if @account.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@account.errors.count, "error") %> prohibited this user from being saved:</h2>
@@ -24,12 +28,6 @@
   </div>
   <div class="list" id="peerlist" style="margin-top:30px;">
     <%= render 'list'%>
-  </div>
-  <div class="field">
-    <%= button_to('Refresh', {:action => 'refresh'}, :method => :get, :remote => true) %>
-    <%=form_tag({:controller => "welcome", :action=>"killall"},:method=>'post') do %>
-      <%= submit_tag 'Kill all wepic peers'%>
-    <%end%>
   </div>
   <div class="signin">
     <%= render 'scenario'%>
