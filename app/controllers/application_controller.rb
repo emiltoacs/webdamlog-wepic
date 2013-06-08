@@ -9,7 +9,9 @@ class ApplicationController < ActionController::Base
   
   helper_method :current_user
   helper_method :is_admin
-  helper_method :port
+  
+  #filter_parameter_logging :password, :password_confirmation
+  helper_method :current_admin_session, :current_admin
   
   private
   #TODO : need to find a clean way to define our admin list.
@@ -28,6 +30,16 @@ class ApplicationController < ActionController::Base
   
   def is_admin(user_id=nil)
     return !current_user.nil?#@@adminlist.include?(user_id)
+  end
+
+  def current_admin_session
+    return @admin_user_session if defined?(@admin_user_session)
+    @admin_user_session = AdminSession.find
+  end
+
+  def current_admin
+    return @admin_user if defined?(@admin_user)
+    @admin_user = current_admin_session && current_admin_session.admin
   end
   
 end

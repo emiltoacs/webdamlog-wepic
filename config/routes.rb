@@ -2,6 +2,12 @@ WepimApp::Application.routes.draw do
 
   if Conf.manager?
     root :to => 'welcome#index'
+    resource :admin_session
+    match 'admin_logout' => 'admin_sessions#destroy', :as => :admin_logout
+    match 'admin/new' => 'admin#new'
+    match 'admin/edit' => 'admin#edit'
+    match 'admin/create' => 'admin#create'
+    match 'admin' => 'admin#index'
     match 'welcome/login' => 'welcome#login'
     match 'welcome/scenario' => 'welcome#start_scenario'
     match "welcome/shutdown/:id" => "welcome#shutdown"

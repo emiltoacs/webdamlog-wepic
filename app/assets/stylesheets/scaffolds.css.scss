@@ -57,6 +57,24 @@ div {
   width: 96.5%;
 }
 
+.notice {
+  background-color: #FFFFFF;
+  border: 2px solid #0000FF;
+  color: #000000;
+  margin: 20px;
+  min-width: 844px;
+  width: 96.5%;
+}
+
+.error {
+  background-color: #FFFFFF;
+  border: 2px solid #FF0000;
+  color: #000000;
+  margin: 20px;
+  min-width: 844px;
+  width: 96.5%;
+}
+
 .field_with_errors {
   padding: 2px;
   color: red;

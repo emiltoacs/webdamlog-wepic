@@ -1,0 +1,28 @@
+<div class="opacity"></div>
+<div class="content">
+<% if @admin_session %>
+<h2>Admin Login</h2>
+<%= form_for @admin_session, :url => admin_session_path do |f| %>
+  <% if @admin_session.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@admin_session.errors.count, "error") %> prohibited this admin_session from being saved:</h2>
+
+      <ul>
+      <% @admin_session.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= f.label :login %><br />
+  <%= f.text_field :login %><br />
+  <br />
+  <%= f.label :password %><br />
+  <%= f.password_field :password %><br />
+  <br />
+  <%= f.check_box :remember_me %><%= f.label :remember_me %><br />
+  <br />
+  <%= f.submit "Login" %>
+<% end %>
+<% end %>
+</div>
