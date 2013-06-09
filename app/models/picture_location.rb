@@ -1,6 +1,7 @@
 class PictureLocation < AbstractDatabase
   attr_accessible :location, :_id
   belongs_to :picture
+  
   def self.setup
     unless @setup_done      
       validates :_id, :presence => true

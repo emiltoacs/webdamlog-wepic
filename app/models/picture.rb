@@ -89,9 +89,10 @@ class Picture < AbstractDatabase
     WLLogger.logger.debug "Rating for picture #{self} : #{rating}"
   end
   
+  before_create :create_defaults
   before_validation :default_values
   before_validation :download_image, :if => :image_url_provided?
-  before_create :create_defaults
+  
      
   private
   
