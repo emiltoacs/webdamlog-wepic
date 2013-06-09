@@ -6,7 +6,7 @@ namespace :sample do
   desc "Create sample data for peer according to config/scenario/samples/username_sample.yml. For internal use only."
   task :create => [:environment, :clear] do
     WLLogger.logger.debug "Rails sample:create task loaded"
-    if defined?(Conf) and Conf.env['USERNAME']!='manager'
+    if defined?(Conf) #and Conf.env['USERNAME']!='manager'
       begin
         #WLLogger.logger.debug "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
         _ids = [] #ids of stored images

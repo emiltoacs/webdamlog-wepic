@@ -6,6 +6,10 @@ class Picture < AbstractDatabase
   has_one :rating, :dependent => :destroy
   # has_many :comments, :dependent => :destroy
   
+  attr_accessible :title, :image, :owner, :image_url, :_id, :date
+  validates :title, :presence => true
+  validates :owner, :presence => true  
+  
   @storage = :database
   
   def self.setup
@@ -47,9 +51,6 @@ class Picture < AbstractDatabase
     }
   end
   
-  attr_accessible :title, :image, :owner, :image_url, :_id, :date
-  validates :title, :presence => true
-  validates :owner, :presence => true
   #validates :image_url, :url => true
   
   def rated
