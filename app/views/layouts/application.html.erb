@@ -36,12 +36,6 @@
         </div>
         <div id="register_login">
         	<%if !current_user%>
-	        	<%if !current_admin%>
-	        		<a class="login" href="/admin_session/new">Admin login</a>
-	        	<%else%>
-	  			  | <a class="register" href="/admin/new">Add an admin</a>
-	  			  | <%= link_to "Logout", :admin_logout %>
-		        <% end %>
 	        <%else%>
 	              <%= link_to "Logout", :logout %>
             <% end %>

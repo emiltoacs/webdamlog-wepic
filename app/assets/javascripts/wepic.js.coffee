@@ -7,11 +7,51 @@ menu_open = false
 current_url = location.protocol + '//' + location.host + location.pathname
 
 capitalizeFirstLetter = (string) ->
-  string.charAt(0).toUpperCase()+string.slice(1)
+  if (typeof string)=='string'
+    string.charAt(0).toUpperCase()+string.slice(1)
+  else
+    string
 
 sanitize = (string) ->
   string = string.trim()
   string.replace(regexWS,'') #removes all whitespace on keys
+
+changeTitle = (idPicture,title) ->
+    html = title
+    jQuery.ajax
+      'url' : current_url + '/update'
+      'data' :
+        '_id' : idPicture
+        'title' : title
+      'datatype' : 'json'
+      'success' : (data) ->
+        #saved = (data.saved=='true') 
+        if data.saved
+          html = capitalizeFirstLetter(data.title)
+          jQuery('#image-title').html(html)
+          jQuery('#metainf-'+String(idPicture)+' #title').html(html)
+        else
+          jQuery('#fancybox-errors').html(display_error(data.errors))
+          jQuery('#fancybox-errors').css
+            'display' : 'block'
+            
+changeLocation = (idPicture,location) ->
+    html = location
+    jQuery.ajax
+      'url' : current_url + '/update'
+      'data' :
+        '_id' : idPicture
+        'location' : location
+      'datatype' : 'json'
+      'success' : (data) ->
+        if data.saved
+          html = capitalizeFirstLetter(data.location)
+          jQuery('#image-location').html(html)
+          jQuery('#metainf-'+String(idPicture)+' #location').html(html)
+        else
+          jQuery('#fancybox-errors').html(display_error(data.errors))
+          jQuery('#fancybox-errors').css
+            'display' : 'block'
 
 addComment = (idPicture,text) ->
     #This methods has no support for failure yet. FIXME
@@ -91,7 +131,7 @@ addStar = ->
   if (starNumber<=3)
     starNumber += 1
     jQuery.ajax
-      'url' : current_url + '/ratings'
+      'url' : current_url + '/update'
       'data' :
         '_id' : pictureId
         'rating' : starNumber
@@ -113,7 +153,7 @@ removeStar = ->
   if (starNumber>=1)
     starNumber -= 1
     jQuery.ajax
-      'url' : current_url + '/ratings'
+      'url' : current_url + '/update'
       'data' :
         '_id' : pictureId
         'rating' : starNumber
@@ -129,17 +169,30 @@ removeStar = ->
           jQuery('#fancybox-errors').css
             'display' : 'block'          
 
+resize_box = (box_type)->
+  console.log('Resizing ' + box_type + ' box.')
+  leftVal = jQuery('#'+box_type+'-wrap').css('left')
+  leftVal = parseInt(leftVal)
+  leftVal -= 300
+  leftVal = 0 if (leftVal < 0)
+  leftVal = String(leftVal) + "px"
+  jQuery('#'+box_type+'-wrap').css
+    'left' : leftVal
+
+
 jQuery ->
   jQuery('a.fancybox').fancybox
     'hideOnContentClick' : false
     'hideOnOverlayClick' : true
     'padding': 10
+    'autoScale' : false
+    'transitionIn' : 'none'
+    'transitionOut' : 'none'
     'titlePosition' : 'inside'
     'overayColor' : '#333'
     'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
       for span in currentOpts.orig.context.parentElement.childNodes[3].children
         metainf[span.id] = span.innerHTML
-      console.log("META-INF : " + metainf['_id'] + ", " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
       starNumber = parseInt(metainf['rating'])
       pictureId = parseInt(metainf['_id'])
       list = [0,1,2,3,4]
@@ -156,14 +209,18 @@ jQuery ->
         star_s += star
       star_s += '</div>'      
       return '<div id="fancybox-title-inside" class="fancybox-title"><table><tr>'+
-      '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
+      '<td style=""><strong id="image-title" contenteditable="true" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
-      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
+      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location" contenteditable="true">'+metainf['location'].toString()+'</strong></td>'+
       '<td style="text-align:right">'+star_s+'</td></tr></table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
+      # resize_box('fancybox')
       jQuery('#fancybox-wrap').css
-        'height'
-      
+        'position' : 'fixed'
+        
+      jQuery('#fancybox-wrap').draggable
+        'handle' : '#fancybox-content' 
+        
       #Setup star interaction
       jQuery('#plus').click ->
         console.log('addstar')
@@ -171,17 +228,30 @@ jQuery ->
       jQuery('#minus').click ->
         console.log('removestar')
         removeStar()
-      jQuery('#fancybox-right').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
+      jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
       '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
       
-      jQuery('#fancybox-content').append('<a id="edit_picture">edit</a>')
+      jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
+      
+      # edit_click = ->
+        # console.log('edit')
+        # hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
+        # jQuery('.edit-form').prepend(hidden)
+        # jQuery('.box_wrapper').css 
+          # 'display' : 'block'
+        # jQuery('#edit_picture_form').css
+          # 'display' : 'block'
+#       
+      # jQuery('#edit_picture').click = edit_click
       
       jQuery('#edit_picture').click ->
         console.log('edit')
+        hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
+        jQuery('.edit-form').prepend(hidden)
         jQuery('.box_wrapper').css 
           'display' : 'block'
         jQuery('#edit_picture_form').css
-          'display' : 'block'
+          'display' : 'block'        
       
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
@@ -190,7 +260,22 @@ jQuery ->
       	  addComment(pictureId,text) #Add a comment with text entered up to now.
       	  jQuery('#add-comment-box').html('') #Clear the comment line
       )
+
+      #image change forms
+      jQuery('#image-title').keypress ( (keypressed) ->
+        if keypressed.keyCode == 13
+          keypressed.preventDefault()
+          text = jQuery.trim(jQuery('#image-title').html())
+          changeTitle(pictureId,text)
+      )
       
+      jQuery('#image-location').keypress ( (keypressed) ->
+        if keypressed.keyCode == 13
+          keypressed.preventDefault()
+          text = jQuery.trim(jQuery('#image-location').html())
+          console.log(text)
+          changeLocation(pictureId,text)
+      )      
       #Setup the chron job
       
       getLatestComments(pictureId)
@@ -200,8 +285,15 @@ jQuery ->
       
       #Stop the chron job
       
+# jQuery(window).resize ->
+  # resize = ->
+    # resize_box('fancybox')
+    # resize_box('wepicbox')
+  # setInterval resize , 10
+  
 
 jQuery(document).ready ->
+  jQuery('#wepicbox-wrap').draggable()
   #Setup the wepic buttons
   jQuery('#my_pictures_button').click ->
     if menu_open
@@ -261,7 +353,7 @@ jQuery(document).ready ->
       'display' : 'none'
     # jQuery('.box_content').css
       # 'display' : 'none'
-    jQuery('#wepicbox-content').children().css
+    jQuery('#wepicbox-content').find('.content').children().css
       'display':'none'
 
   
