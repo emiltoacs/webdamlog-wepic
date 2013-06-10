@@ -5,35 +5,48 @@ FROMPATH="../webdamlogengine/lib/"
 FROMFILE="wlbud.rb"
 FROMFILE2="webdamlog_runner.rb"
 FROMSUBDIR="wlbud"
+FROMSUBDIR2="bud"
 FROMSUBSUBDIR="tools"
 
 TOLIB="lib"
 TOPATH="${TOLIB}/webdamlog"
 TOSUBPATH="${TOPATH}/${FROMSUBDIR}"
+TOSUBPATH2="${TOPATH}/${FROMSUBDIR2}"
 TOSUBSUBPATH="${TOSUBPATH}/${FROMSUBSUBDIR}"
 
 if [ -d  "${FROMPATH}" ] ; then
     if [ -f  "${FROMPATH}${FROMFILE}" -a -f  "${FROMPATH}${FROMFILE2}" -a -d "${FROMPATH}${FROMSUBDIR}" -a -d "${FROMPATH}${FROMSUBDIR}/${FROMSUBSUBDIR}" ] ; then
 	if ! [[ -d ${TOPATH} ]] ; then
 	    mkdir $TOPATH ;
+	else
+	    rm ${TOPATH}/*.rb
 	fi
-# clean rule directory
-        rm -r ${TOPATH}
-# copy root file
-        rm ${TOPATH}/*.rb
+	# clean rule directory
+	if [ -d  "${TOPATH}/wlrule_to_bud/" ] ; then
+            rm -r ${TOPATH}/wlrule_to_bud/
+	fi
+	# copy root file
 	cp ${FROMPATH}*.rb $TOPATH ;
 	if ! [[ -d ${TOSUBPATH} ]] ; then
 	    mkdir $TOSUBPATH ;
+	else
+	    rm ${TOSUBPATH}/*.rb ;
+	    rm ${TOSUBPATH}/*.treetop ;
 	fi
-# copy sub directories and content
-        rm ${TOSUBPATH}/*.rb ;
-	rm ${TOSUBPATH}/*.treetop ;
+	if ! [[ -d ${TOSUBPATH2} ]] ; then
+	    mkdir $TOSUBPATH2 ;
+	else
+	    rm ${TOSUBPATH2}/*.rb ;
+	fi
+	# copy sub directories and content
 	cp ${FROMPATH}${FROMSUBDIR}/*.rb ${TOSUBPATH} ;
 	cp ${FROMPATH}${FROMSUBDIR}/*.treetop $TOSUBPATH ;
+	cp ${FROMPATH}${FROMSUBDIR2}/*.rb ${TOSUBPATH2} ;
 	if ! [[ -d ${TOSUBSUBPATH} ]] ; then
 	    mkdir ${TOSUBSUBPATH}
+	else
+	    rm ${TOSUBSUBPATH}/* ;
 	fi
-        rm ${TOSUBSUBPATH}/* ;
 	cp ${FROMPATH}${FROMSUBDIR}/${FROMSUBSUBDIR}/* ${TOSUBSUBPATH} ;
 	exit 0 ;
     else

@@ -1,3 +1,4 @@
+# monkey patch is_i? 
 
 class String
   def is_i?
