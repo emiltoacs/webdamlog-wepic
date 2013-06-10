@@ -2,7 +2,9 @@
 # http://gembundler.com/man/gemfile.5.html
 source 'https://rubygems.org'
 
-gem 'rails'
+ruby '1.9.3'
+
+gem 'rails', '>= 3.2.0'
 gem 'rake'
 gem 'thin'
 gem 'rake'
@@ -16,7 +18,7 @@ gem 'cocaine'
 
 # dbm is useless but required by bud without being in the dependency of bud
 gem 'dbm'
-gem 'bud', '0.9.5'
+gem 'bud', '>= 0.9.7'
 
 gem 'rmagick'
 

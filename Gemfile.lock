@@ -33,14 +33,16 @@ GEM
       activerecord (>= 3.2)
       activesupport (>= 3.2)
     awesome_print (1.1.0)
-    bud (0.9.5)
+    backports (3.3.0)
+    bud (0.9.7)
+      backports
       eventmachine
       fastercsv
       getopt
       msgpack
       ruby-graphviz
       ruby2ruby (>= 2.0.1)
-      ruby_parser (>= 3.0.2)
+      ruby_parser (>= 3.1.0)
       superators19
       syntax
       uuid
@@ -174,7 +176,7 @@ PLATFORMS
 DEPENDENCIES
   authlogic
   awesome_print
-  bud (= 0.9.5)
+  bud (>= 0.9.7)
   cocaine
   coffee-rails (~> 3.2.1)
   dbm
@@ -184,7 +186,7 @@ DEPENDENCIES
   jquery-star-rating-rails
   json
   pg
-  rails
+  rails (>= 3.2.0)
   rake
   rmagick
   ruby-debug
