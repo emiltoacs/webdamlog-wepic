@@ -306,11 +306,7 @@ jQuery(document).ready ->
       html += '<li><a type="submit" id="upload_from_url" class="active_action" >from URL</a></li>'
       html += '</ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      # html += '<ul>'
-      # html += '<li><a href="/wepic?order=date" type="submit" id="sort_by_date" class="active_action">date</li>'
-      # html += '<li><a href="/wepic?order=rating" type="submit" id="sort_by_rating" class="active_action">rating</li>'
-      # html += '<li><a href="/wepic?order=owner" type="submit" id="sort_by_owner" class="active_action">owner</li>'
-      # html += '</ul>'
+      html += '<li><a type="submit" id="send_to_contact">Send To...</a></li>'
       html += '</ul></div>'
       jQuery('#my_pictures_button').html(html)
       menu_open = true
@@ -342,17 +338,52 @@ jQuery(document).ready ->
           'display' : 'block'
         jQuery('#my_pictures_button').html('+')
         menu_open = false
+      jQuery('#send_to_contact').click ->
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
+        jQuery('#send_to_form').css
+          'display' : 'block'        
+        jQuery('#my_pictures_button').html('+')
+        menu_open = false
                 
   jQuery('#contact_pictures_button').click ->
-    console.log('button')
+    if menu_open
+      menu_open = false
+    else
+      html = '+<div id="my_pictures_menu" class="popUpMenu">'
+      html += '<a type="submit" id="my_pictures_menu_close" class="button-close"></a><ul>'
+      html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
+      html += '<li><a type="submit" id="send_to_contact">Send To...</a></li>'
+      html += '</ul></div>'
+      jQuery('#my_pictures_button').html(html)
+      menu_open = true
+      jQuery('#my_pictures_menu_close').click ->
+        console.log('close menu')
+        jQuery('#my_pictures_button').html('+')
+        menu_open = false
+      jQuery('#sort_by').click ->
+        console.log('edit')
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
+        jQuery('#sort').css
+          'display' : 'block'
+        jQuery('#my_pictures_button').html('+')
+        menu_open = false
+      jQuery('#send_to_contact').click ->
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
+        jQuery('#send_to_form').css
+          'display' : 'block'        
+        jQuery('#my_pictures_button').html('+')
+        menu_open = false
+
+    
   console.log("Document ready function executing...")
   
   closeBoxWrapper = ->
     console.log('box wrapper close')
     jQuery('.box_wrapper').css
       'display' : 'none'
-    # jQuery('.box_content').css
-      # 'display' : 'none'
     jQuery('#wepicbox-content').find('.content').children().css
       'display':'none'
 
