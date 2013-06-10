@@ -1,5 +1,6 @@
 class Comment < AbstractDatabase
   attr_accessible :author, :text, :_id, :date
+  
   def self.setup
     unless @setup_done      
       validates :_id, :presence => true
