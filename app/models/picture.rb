@@ -1,14 +1,14 @@
 require 'open-uri'
 
 class Picture < AbstractDatabase
-  #belongs_to :contact
   has_one :picture_location, :dependent => :destroy
   has_one :rating, :dependent => :destroy
-  # has_many :comments, :dependent => :destroy
+  has_many :comments, :dependent => :destroy
   
   attr_accessible :title, :image, :owner, :image_url, :_id, :date
   validates :title, :presence => true
   validates :owner, :presence => true  
+  validates :image_url, :presence => true
   
   @storage = :database
   
@@ -51,14 +51,12 @@ class Picture < AbstractDatabase
     }
   end
   
-  #validates :image_url, :url => true
-  
   def rated
     return self.rating.rating if self.rating && self.rating.rating
     0
   end
   
-  def location
+  def located
     return self.picture_location.location if self.picture_location && self.picture_location.location
     0
   end
@@ -75,18 +73,14 @@ class Picture < AbstractDatabase
     default_scope select_without_file_columns_for(:image)
   end
   
-  # def initialize(args)
-    # self._id = rand(0xFFFFFF)
-    # super(args)
-  # end
-  
   def default_values
     self._id = rand(0xFFFFFF)
     self.date = DateTime.now
   end
   
   def create_defaults
-    create_rating(:_id => self._id, :rating => -1)
+    create_rating(:_id => self._id, :rating => 0)
+    create_picture_location(:_id => self._id, :location => "unknown")
     WLLogger.logger.debug "Rating for picture #{self} : #{rating}"
   end
   

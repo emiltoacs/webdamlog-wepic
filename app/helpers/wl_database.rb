@@ -337,37 +337,38 @@ module WLDatabase
 
       WLLogger.logger.info "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
       _ids = [] #ids of stored images
-      
-      if Conf.db['sample_content']
-        sample_content_file_name = "#{Rails.root}/config/scenario/samples/#{Conf.env['USERNAME']}_sample.yml"
-        if (File.exists?(sample_content_file_name))
-          content = YAML.load(File.open(sample_content_file_name))
-          content['contacts'].values.each do |contact|
-            #We should check if users are online using Webdamlog rules.
-            Contact.new(:username=>contact['name'],:peerlocation=>contact['peerlocation'],:online=>false,:email=>contact['email'],:facebook=>contact['facebook']).save
-          end unless content['contacts'].values.nil?
-          content['pictures'].values.each do |picture|
-            owner = if picture['owner'] then picture['owner'] else Conf.env['USERNAME'] end
-            picture = Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title'])
-            picture.save
-            WLLogger.logger.debug "Newly saved picture : #{picture.inspect}"
-            _ids << picture._id
-          end unless content['pictures'].values.nil?
-          content['locations'].values.each do |imagelocation|
-            owner = if imagelocation['owner'] then imagelocation['owner'] else Conf.env['USERNAME'] end
-            picture = Picture.where(:title=>imagelocation['title'],:owner=>owner).first
-            PictureLocation.insert(:_id => picture._id,:location=>imagelocation['location']) if picture
-          end unless content['locations'].values.nil?
-          content['ratings'].values.each do |rating|
-            owner = if rating['owner'] then rating['owner'] else Conf.env['USERNAME'] end
-            picture = Picture.where(:title=>rating['title'],:owner=>owner).first
-            rate = picture.rating if picture
-            rate.rating = rating['rating'] if rate
-          end unless content['ratings'].values.nil?
-          content['comments'].values.each do |comment|
-            owner = if comment['owner'] then comment['owner'] else Conf.env['USERNAME'] end
-            picture = Picture.where(:title=>comment['title'],:owner=>owner).first
-            Comment.insert(:_id=>picture._id,:text=>comment['text'],:author=>comment['author']) if picture
+      unless Rails.env.production?
+        if Conf.db['sample_content']
+          sample_content_file_name = "#{Rails.root}/config/scenario/samples/#{Conf.env['USERNAME']}_sample.yml"
+          if (File.exists?(sample_content_file_name))
+            content = YAML.load(File.open(sample_content_file_name))
+            content['contacts'].values.each do |contact|
+              #We should check if users are online using Webdamlog rules.
+              Contact.new(:username=>contact['name'],:peerlocation=>contact['peerlocation'],:online=>false,:email=>contact['email'],:facebook=>contact['facebook']).save
+            end unless content['contacts'].values.nil?
+            content['pictures'].values.each do |picture|
+              owner = if picture['owner'] then picture['owner'] else Conf.env['USERNAME'] end
+              picture = Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title'])
+              picture.save
+              WLLogger.logger.debug "Newly saved picture : #{picture.inspect}"
+              _ids << picture._id
+            end unless content['pictures'].values.nil?
+            content['locations'].values.each do |imagelocation|
+              owner = if imagelocation['owner'] then imagelocation['owner'] else Conf.env['USERNAME'] end
+              picture = Picture.where(:title=>imagelocation['title'],:owner=>owner).first
+              PictureLocation.insert(:_id => picture._id,:location=>imagelocation['location']) if picture
+            end unless content['locations'].values.nil?
+            content['ratings'].values.each do |rating|
+              owner = if rating['owner'] then rating['owner'] else Conf.env['USERNAME'] end
+              picture = Picture.where(:title=>rating['title'],:owner=>owner).first
+              rate = picture.rating if picture
+              rate.rating = rating['rating'] if rate
+            end unless content['ratings'].values.nil?
+            content['comments'].values.each do |comment|
+              owner = if comment['owner'] then comment['owner'] else Conf.env['USERNAME'] end
+              picture = Picture.where(:title=>comment['title'],:owner=>owner).first
+              Comment.insert(:_id=>picture._id,:text=>comment['text'],:author=>comment['author']) if picture
+            end
           end
         end
       end
