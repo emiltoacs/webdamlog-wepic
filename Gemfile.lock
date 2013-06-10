@@ -78,11 +78,14 @@ GEM
     hike (1.2.2)
     i18n (0.6.1)
     journey (1.0.4)
-    jquery-rails (2.2.1)
+    jquery-rails (3.0.1)
       railties (>= 3.0, < 5.0)
       thor (>= 0.14, < 2.0)
     jquery-star-rating-rails (4.0.4)
       rails (>= 3.1.0)
+    jquery-ui-rails (4.0.3)
+      jquery-rails
+      railties (>= 3.1.0)
     json (1.8.0)
     libv8 (3.11.8.17)
     linecache (0.46)
@@ -184,6 +187,7 @@ DEPENDENCIES
   fancybox-rails
   jquery-rails
   jquery-star-rating-rails
+  jquery-ui-rails
   json
   pg
   rails (>= 3.2.0)

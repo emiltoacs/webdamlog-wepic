@@ -67,6 +67,26 @@ class Picture < AbstractDatabase
     "unknown"
   end
   
+  def dated
+    self.date
+  end
+  
+  def dated=(date)
+    self.date = date
+    self.save
+    WLLogger.logger.debug "Date for picture #{self._id} : #{dated}"
+  end
+  
+  def titled
+    self.title
+  end
+  
+  def titled=(title)
+    self.title = title
+    self.save
+    WLLogger.logger.debug "Title for picture #{self._id} : #{titled}"
+  end
+  
   def located=(location)
     self.picture_location.location = location
     self.picture_location.save

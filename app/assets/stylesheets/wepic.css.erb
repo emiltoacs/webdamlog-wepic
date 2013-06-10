@@ -1,4 +1,30 @@
 /*********************WEPIC***********************/
+#image-title {
+	position: relative;
+	z-index : 1119; 
+}
+
+#image-location {
+	position: relative;
+	z-index : 1119; 
+}
+
+#fancybox-left, #fancybox-right {
+	width : 15%;	
+}
+
+#fancybox-left:hover, #fancybox-right:hover {
+	background-color : #222;
+	opacity : 0.7;
+	opacity:0.7;
+	filter:alpha(opacity=77);
+	width : 15%;	
+}
+
+#fancybox-close {
+	z-index : 1120;
+}
+
 .fancybox-title-inside {
 	min-width : 480px;
 	margin-left : 0px;
@@ -10,22 +36,28 @@
 
 #fancybox-content {
 	border-color : #111;
+	margin : 0 auto;
 }
 
-
+#fancybox-wrap {
+	min-width : 500px;
+}
 
 #fancybox-outer {
 	background-color : #111;
 	min-width : 500px;
 	width : 100%;
+	z-index : 1100;
 }
 
 #my_pictures_button {
 	padding : 10px 10px;
+	width : 15px;
 }
 
 #contact_pictures_button {
 	padding : 10px 10px;
+	width : 15px;
 }
 
 
@@ -302,6 +334,7 @@
     color : #ddd;
     filter:alpha(opacity=80);
     top : 0px;
-    right : 150px;
+    right : 0px;
+    z-index : 1119;
     position : absolute;
 }

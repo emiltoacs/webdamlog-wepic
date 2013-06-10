@@ -51,6 +51,7 @@
 							<%picturelocation = PictureLocation.where(:_id=>picture._id).first%>
 							<%=if picturelocation then picturelocation.location else 'unknown' end%>
 						</span>
+						<span id="title"><%=picture.title%></span>
 						<span id="owner"><%=picture.owner%></span>
 						<span id="date"><%=picture.created_at.strftime("%m/%d/%y")%></span>
 						<span id="rating">
@@ -67,7 +68,7 @@
 		<a id="contact_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
 		<div id="contact_pictures" class="images">
 		</div>
-        <div id="wepicbox-wrap" class="box_wrapper" style="min-width: 150px; min-height: 150px; top: 20px; left: 514px; display: none; position : fixed;">
+        <div id="wepicbox-wrap" class="box_wrapper" style="min-width: 150px; min-height: 150px; top: 20px; left: 214px; display: none; position : fixed;">
     		<div id="wepicbox-outer">
     			<div id="wepicbox-bg-n" class="wepicbox-bg"></div>
     			<div id="wepicbox-bg-ne" class="wepicbox-bg"></div>
@@ -77,14 +78,19 @@
     			<div id="wepicbox-bg-sw" class="wepicbox-bg"></div>
     			<div id="wepicbox-bg-w" class="wepicbox-bg"></div>
     			<div id="wepicbox-bg-nw" class="wepicbox-bg"></div>
-    			<div id="wepicbox-content" style="border-width: 10px; min-width: 150px; min-height: 150px; width:auto;height:auto;">
+    			<div id="wepicbox-content" style="min-width: 150px; min-height: 150px; width:auto;height:auto;">
+    				<div class="opacity"></div>
+    				<div class="content">
     				<div id = "upload_url" class=" box-content"><%= render 'upload_url'%></div>
     				<div id = "upload_file" class="box-content"><%= render 'upload_file'%></div>
     				<div id = "edit_picture_form" class="box-content"><%= render 'edit_picture'%></div>
     				<div id = "sort" class="box-content"><%= render 'sort'%></div>
+    				</div>
     			</div>
     			<a type="submit" id="box-wrapper-close" class="button-close"></a>
+    			
     		</div>
+    		
         </div>
 		<%else%>
 		<div id="notlogged">

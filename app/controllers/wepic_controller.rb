@@ -22,6 +22,31 @@ class WepicController < ApplicationController
 
   
   #TODO Create a single function to update picture. modify routes.
+  def update
+    picture = Picture.find(:first, :conditions => [ "_id = ?", params[:_id]])
+    unless picture
+      flash[:alert] = "No pictures for #{params[:_id]}"
+      respond_to do |format| 
+        format.json {render :json => {:saved => false, :errors => "No pictures for #{params[:_id]}"}.to_json}
+        format.html {redirect_to :wepic, :notice => "No pictures for #{params[:_id]}"} 
+      end
+    else
+      picture.titled = params[:title] if params[:title] and !params[:title].empty?
+      picture.rated = params[:rating] if params[:rating] and !params[:rating].empty?
+      picture.located = params[:location] if params[:location] and !params[:location].empty?
+      if picture.errors.messages.empty? 
+        respond_to do |format|
+          format.json {render :json => {:saved => true, :title => picture.title, :rating => picture.rated, :location => picture.located}.to_json }
+          format.html {redirect_to :wepic }
+        end
+      else
+        respond_to do |format|
+          format.json {render :json => {:saved => false, :errors => picture.errors.messages}.to_json }
+          format.html {redirect_to :wepic, :alert => picture.errors.messages.inspect }
+        end
+      end      
+    end
+  end
   
   #Updates the rating value when modified by the user
   def updateRating
