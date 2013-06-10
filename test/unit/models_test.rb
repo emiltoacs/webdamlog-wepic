@@ -6,25 +6,28 @@ $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 require 'test/unit'
 require 'test_helper'
 
-#TODO understand why unknown attribute message
-class PicturesTest < Test::Unit::TestCase
+class ModelsTest < Test::Unit::TestCase
   
   def setup
     @dbid = (0...8).map{('a'..'z').to_a[rand(26)]}.join
     ENV['USERNAME'] = @dbid
 
     # reload the models to allow builtins tables to be created
-    config = Conf.db[:database]
     @id = @dbid
-    @db_name = config[:database]
-    @configuration = {:adapter => config[:adapter], :database => @db_name}
-    PostgresHelper::create_user_db @configuration
-    @database = WLDatabase.establish_orm_db_connection(@id,@db_name,@configuration)
+    @db_name = 'wp_test'
+    @configuration = {:adapter => 'postgresql', :database => @db_name}
+    puts "Configuration : id=#{@id.inspect}, db_name=#{@db_name.inspect}, configuration=#{@configuration.inspect}"
+    #PostgresHelper::create_user_db #@configuration
+    #@database = WLDatabase.establish_orm_db_connection(@id,@db_name,@configuration)
   end
   
   def teardown
-    @database.destroy
-  end  
+    #@database.destroy
+  end
+  
+  def test_simple
+    #Test environment
+  end
   
   def test_new_picture_remote
     #TODO: Write test
@@ -37,8 +40,8 @@ class PicturesTest < Test::Unit::TestCase
     assert_equal(picture.title,"nemo")
     picture.destroy
   end
-  
-  def test_new_picture_local
+#   
+  # def test_new_picture_local
     #TODO: Write test
     picture = Picture.new(:image_url=>"app/assets/images/tiger.jpg",:owner=>"Jules",:title=>"tiger")
     picture.save
@@ -47,5 +50,5 @@ class PicturesTest < Test::Unit::TestCase
     assert_equal(picture.owner,"Jules")
     assert_equal(picture.title,"tiger")
     picture.destroy
-  end  
+  # end  
 end

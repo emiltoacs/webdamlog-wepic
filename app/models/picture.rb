@@ -56,9 +56,21 @@ class Picture < AbstractDatabase
     0
   end
   
+  def rated=(rating)
+    self.rating.rating = rating
+    self.rating.save
+    WLLogger.logger.debug "Rating for picture #{self._id} : #{rated}"
+  end
+  
   def located
     return self.picture_location.location if self.picture_location && self.picture_location.location
-    0
+    "unknown"
+  end
+  
+  def located=(location)
+    self.picture_location.location = location
+    self.picture_location.save
+    WLLogger.logger.debug "Location for picture #{self._id} : #{located}"
   end
   
   has_attached_file :image,
@@ -81,7 +93,6 @@ class Picture < AbstractDatabase
   def create_defaults
     create_rating(:_id => self._id, :rating => 0)
     create_picture_location(:_id => self._id, :location => "unknown")
-    WLLogger.logger.debug "Rating for picture #{self} : #{rating}"
   end
   
   before_create :create_defaults
