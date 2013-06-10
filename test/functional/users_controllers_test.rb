@@ -1,3 +1,5 @@
+# setup environment before loading wltool.rb in wl_setup.rb
+ENV["RAILS_ENV"] = "test"
 ENV["USERNAME"] = "test_peer"
 ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
@@ -29,9 +31,21 @@ class UsersControllerTest < ActionController::TestCase
     assert_response(302)
     assert_not_nil @response.body
     assert_redirected_to(:controller => "wepic")
-    
-    assert_not_nil EngineHelper::WLENGINE
-    assert EngineHelper::WLENGINE.running_async
-  end
 
+    engine = EngineHelper::WLENGINE
+    assert_not_nil engine
+    assert engine.running_async
+    assert_kind_of WLRunner, engine
+    assert_equal([["sigmod_peer", "localhost:4100"], ["test_peer", "localhost:5100"]], engine.wl_program.wlpeers.sort)
+    assert_equal 5, engine.wl_program.wlcollections.size
+    assert_equal ["comment_at_test_peer",
+      "contact_at_test_peer",
+      "picture_at_test_peer",
+      "picturelocation_at_test_peer",
+      "rating_at_test_peer"], engine.wl_program.wlcollections.keys.sort
+    assert_equal 2, engine.wl_program.rule_mapping.size
+    assert_equal [1,
+      "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);"],
+      engine.wl_program.rule_mapping.keys
+  end
 end
