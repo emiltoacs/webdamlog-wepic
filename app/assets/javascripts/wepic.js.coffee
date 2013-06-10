@@ -134,7 +134,7 @@ jQuery ->
     'hideOnContentClick' : false
     'hideOnOverlayClick' : true
     'padding': 10
-    'titlePosition' : 'over'
+    'titlePosition' : 'inside'
     'overayColor' : '#333'
     'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
       for span in currentOpts.orig.context.parentElement.childNodes[3].children
@@ -155,12 +155,14 @@ jQuery ->
       for star in star_array
         star_s += star
       star_s += '</div>'      
-      return '<div id="fancybox-title-over"><table><tr>'+
+      return '<div id="fancybox-title-inside" class="fancybox-title"><table><tr>'+
       '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
       '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
       '<td style="text-align:right">'+star_s+'</td></tr></table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
+      jQuery('#fancybox-wrap').css
+        'height'
       
       #Setup star interaction
       jQuery('#plus').click ->
