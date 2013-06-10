@@ -1,6 +1,7 @@
 require 'wl_logger'
 require 'wl_tool'
 require 'webdamlog/wlbud'
+require 'webdamlog/webdamlog_runner'
 require 'fileutils'
 
 # There is the set of function used to manage the webdamlog engine from the
@@ -19,30 +20,33 @@ module EngineHelper
     include WLTool
 
     attr_accessor :engine, :enginelogger
+
+    attr_reader :dir_rule, :port, :peername, :bootstrap_program, :rule_dir
         
     def initialize
       @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       username = Conf.peer['peer']['username']
       #web_port = Integer(Conf.peer['peer']['web_port'])
-      @port = Network.find_port Conf.peer['peer']['ip'], :UDP
-      unless @port
+      port = Network.find_port Conf.peer['peer']['ip'], :UDP
+      unless port
         @enginelogger.fatal("unable to find a UDP port for the webdamlog engine")
         raise StandardError, "unable to find a UDP port for the webdamlog engine"
       end
-      Conf.peer['peer']['wdl_engine_port'] = Integer(@port)
-      @peer_name = "peername_#{username}on#{@port}"
-
-      # Dynamic class ClassWLEngineOf#{username}On#{@port} subclass WLBud
-      # Create a subclass of WL FIXME maybe useless to subclass here, since I
-      # implement this as Singleton, no risk of border-effect in class varaible
-      #      
       program_file = create_program_dir Conf.peer['peer']['program']['file_path']
-      @dir_rule = File.dirname program_file
-      #replace these two lines by create in webdamlog runner
-      klass = create_class("ClassWLEngineOf#{username}On#{@port}", WLBud::WL)
-      @engine = klass.new(username, program_file, {:port => @port, :rule_dir => @dir_rule})
-
-      msg = "peer_name = #{@peer_name} program_file = #{program_file} dir_rule = #{@dir_rule} on port #{@port}"
+      rule_dir = File.dirname program_file
+      @engine = ::WLRunner.create(username, program_file, port, {:rule_dir => rule_dir})
+      # peername in webdamlog
+      @peername = @engine.peername
+      # port on which webdamlog is listening
+      @port = @engine.port
+      # bootstrap program read by webdamlog to start
+      @bootstrap_program = @engine.filename
+      # rules created by webdamlog
+      @rule_dir = @engine.rule_dir
+      
+      msg = "\tpeer_name = #{@peername}\n\tprogram_file = #{File.basename(@bootstrap_program)}\n\tdir_rule = #{@rule_dir}\n\ton port #{@port}"
+      Conf.peer['peer']['wdl_engine_port'] = Integer(@port)
+      
       if @engine.nil?
         @enginelogger.fatal("creation of the webdamlog engine instance has failed:\n#{msg}")
       else
@@ -67,22 +71,22 @@ module EngineHelper
     # Create the directory in which to put the program that must be writing into
     # files because of bud methods to parse bloom blocks.
     #
-    # Return the absolute path to the program file
+    # Return the absolute path to the program file created for bootstrap
     #
     def create_program_dir program_file
       program_file_dir = File.expand_path('../../../tmp/rule_dir', __FILE__)
       unless (File::directory?(program_file_dir))
         Dir.mkdir(program_file_dir)
       end
-      peer_program_dir = File.join(program_file_dir, @peer_name)
+      username = Conf.peer['peer']['username']
+      peer_program_dir = File.join(program_file_dir, username)
       unless (File::directory?(peer_program_dir))
         Dir.mkdir(peer_program_dir)
       end
-      # TODO write content of the file instead of filename
       pg_file = File.join(peer_program_dir, File.basename(program_file))
       FileUtils.cp program_file, pg_file
       return pg_file
-    end
+    end # create_program_dir
     
   end # Class EngineHelper
 

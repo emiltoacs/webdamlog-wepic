@@ -1,4 +1,5 @@
 root = File.expand_path('../../',  __FILE__)
+require "#{root}/lib/monkey_patch"
 require "#{root}/lib/wl_logger"
 require "#{root}/lib/wl_tool"
 require "#{root}/lib/monkey_patch"
@@ -8,7 +9,6 @@ require 'sqlite3'
 require 'pg'
 require 'optparse'
 require 'ostruct'
-
 
 module WLSetup
   

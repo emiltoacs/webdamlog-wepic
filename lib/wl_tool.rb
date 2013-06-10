@@ -6,7 +6,7 @@ require './lib/monkey_patch'
 
 module Conf  
   @@init = false
-  @@current_env = 'development'
+  @@current_env = ENV["RAILS_ENV"] || 'development'
   # Store in one object all the configuration related to this peer
   # * :force=> true in options to force reloading of conf
   # * :rails_env => [test,development,production] to change environment of
@@ -90,7 +90,7 @@ module Conf
       # will be copied from peer:web_port if it is itself a manager.
       mport = ENV['MANAGER_PORT'] if ENV['MANAGER_PORT'].is_i?
       if mport.nil?
-        mport = @@peer['manager']['manager_port'] if @@peer['manager']['manager_port'].is_i?
+        mport = @@peer['manager']['manager_port'] if not @@peer['manager'].nil? and @@peer['manager']['manager_port'].is_i?
         if mport.nil?
           if @@manager
             @@env['MANAGER_PORT'] = @@env['PORT']

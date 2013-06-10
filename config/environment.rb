@@ -19,5 +19,5 @@ else
     WepicPeer.send_acknowledgment(Conf.env['USERNAME'],Conf.env['MANAGER_PORT'],Conf.env['PORT'])
   end
   
-end # Conf.manager?
+end # if Conf.manager?
 
