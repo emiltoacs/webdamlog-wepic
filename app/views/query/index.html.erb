@@ -2,17 +2,22 @@
 </div>
 <div class="content"><%=notice%><%=alert%>
   <%if current_user%>
-  <h3>Create relation</h3>
-    <div id="query_forms">
-      <div id="create_relation"><%= render 'create_relation'%></div>
-    </div>
-  <h3>Insert tuple</h3>
-    <div id="query_forms">
-      <div id="insert_tuple"><%= render 'insert_tuple'%></div>
-    </div>
-  <h3>Relations in your database</h3>
-    <div id="list_relations"><%= render 'list_relations' %></div>
+  <%= render 'query_examples'%>
+  <%= render 'update_examples'%>
+  <%= render 'rule_for_query'%>
+  <%= render 'results'%>
   <%else%>
     <div id="notlogged">You are not logged in! <%=link_to "Log in",:login%></div>
   <%end%>
 </div>
+
+  <!-- <h3>Create relation</h3>
+    <div id="query_forms">
+      <div id="create_relation"><% render 'create_relation'%></div>
+    </div>
+  <h3>Insert tuple</h3>
+    <div id="query_forms">
+      <div id="insert_tuple"><% render 'insert_tuple'%></div>
+    </div>
+  <h3>Relations in your database</h3>
+    <div id="list_relations"><% render 'list_relations' %></div> -->
