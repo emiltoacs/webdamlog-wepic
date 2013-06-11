@@ -58,8 +58,14 @@ class PicturesController < WepicController
       value['href']="/pictures/#{picture.id}"
       value['src']=picture.image.url(:thumb)
       value['alt']="Images?#{value['src'].split('?').last}"
+      value['src_small']=picture.image.url(:small)
+      value['alt_small']="Images?#{value['src_small'].split('?').last}"      
       value['id']=picture.id
       value['_id']=picture._id
+      value['location']=picture.located
+      value['date']=picture.dated
+      value['rating']=picture.rated
+      value['owner']=picture.owner
       return_hash[key]=value
     end  
     respond_to do |format|
