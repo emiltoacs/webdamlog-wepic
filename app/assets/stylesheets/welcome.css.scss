@@ -1,0 +1,30 @@
+//For welcome pages
+
+#peerlist-wrap {
+  border : #111 solid 1px;
+  background-color : #fff;
+}
+
+#peerlist {
+  border-bottom : #111 solid 1px;
+  overflow-x : hidden;
+  overflow-y : scroll;
+  max-height : 250px;
+  background-color : #fff;
+  color : #111;
+  padding-top : 10px;
+  padding-bottom : 10px;
+  padding-left : 10px;
+}
+
+fields {
+  text-align : left;
+  width : 100%;
+}
+
+#peerlist a {
+  background-color : #111;
+  padding-left : 5px;
+  padding-right : 5px;
+  color : #fff;
+}

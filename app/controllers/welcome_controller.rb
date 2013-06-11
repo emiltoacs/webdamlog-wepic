@@ -25,6 +25,7 @@ class WelcomeController < ApplicationController
           format.html {redirect_to "/waiting/#{@account.id}", :notice => "Please wait while your wepic instance is being created..."}
         end
       else
+        logger.warn "Login : failed to launch peer!"
         # The peer was not launched
         respond_to do |format|
           format.html {redirect_to '/', :alert => "New WebdamLog Instance was not set properly. Reason #{msg}"}
@@ -149,7 +150,7 @@ class WelcomeController < ApplicationController
       end
     else
       @account = Peer.new
-      @account.errors[:base] << "Scenario have failed to start the new peer created is empty and won't be saved. Reason: #{msg}"
+      @account.errors[:base] << "Scenario have failed to start; the new peer created is empty and won't be saved. Reason: #{msg}"
       flash[:alert] = "sigmodpeer instance failed to start see the log and following."
       respond_to do |format|
         format.html {render :index}
