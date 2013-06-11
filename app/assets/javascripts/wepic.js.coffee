@@ -149,25 +149,38 @@ addStar = ->
   else
     #don't do anything
 
-getPicturesForContact = (contact,div_id) ->
+getPicturesForContact = (contact,div_id,_html,_order,_sort) ->
+  _order = _order ? 'dated'
+  _sort = _sort ? 'asc'
+  _html = _html ? false
   contact = String(contact)
   html = ''
   jQuery.ajax
     url : 'contacts/' + contact + '/pictures'
     data :
       action : 'send'
+      order : _order
+      sort : _sort
     dataType : 'json'
     success : (data) ->
       if data
-        html += '<div class="images choose">'
-        for key,value of data
-          html += '<div class="entry-select">'
-          html += '<input type="checkbox" name="'+data[key]['title']+'" value="'+data[key]['id']+'">'
-          html += '<div class="title-select">' + data[key]['title'] + '</div>'
-          html += '<div class="image"><img alt="' + data[key]['alt'] + '" src="' + data[key]['src'] + '"></div>'
-          html += '</div>'#</a>'
-        html += '</div>'
-        console.log(html)
+        if _html
+          for key,value of data
+            # if data.hasOwnProperty(key)
+            html += '<a href="' + data[key]['href'] + '">'
+            html += '<div class="entry">'
+            html += '<div class="title">' + data[key]['title'] + '</div>'
+            html += '<div class="image"><img alt="' + data[key]['alt'] + '" src="' + data[key]['src'] + '"></div>'
+            html += '</div></a>'
+        else
+          html += '<div class="images choose">'
+          for key,value of data
+            html += '<div class="entry-select">'
+            html += '<input type="checkbox" name="'+data[key]['title']+'" value="'+data[key]['id']+'">'
+            html += '<div class="title-select">' + data[key]['title'] + '</div>'
+            html += '<div class="image"><img alt="' + data[key]['alt'] + '" src="' + data[key]['src'] + '"></div>'
+            html += '</div>'#</a>'
+          html += '</div>'
         jQuery(div_id).html(html)
 
   
@@ -380,10 +393,10 @@ jQuery(document).ready ->
         jQuery('#contact_pictures_button').html('+')
         menu_open = false
       jQuery('#sort_by').click ->
-        console.log('edit')
+        #jQuery('#sort-form-user').val(name)
         jQuery('.box_wrapper').css 
           'display' : 'block'
-        jQuery('#sort').css
+        jQuery('#contact-sort').css
           'display' : 'block'
         jQuery('#contact_pictures_button').html('+')
         menu_open = false
@@ -400,7 +413,7 @@ jQuery(document).ready ->
     contact = jQuery('#send-select option:selected').html()
     getPicturesForContact(contact,'#pictures-to-send')
   
-  getPicturesForContact('jules','#my-pictures-to-send')
+  getPicturesForContact(jQuery('#username').html(),'#my-pictures-to-send')
 
     
   console.log("Document ready function executing...")
@@ -416,4 +429,10 @@ jQuery(document).ready ->
   #Box wrapper close behavior
   jQuery('#box-wrapper-close').click ->
     closeBoxWrapper()
-
+    
+window.sort_contact = ->
+  contact = jQuery('#contact-name').html()
+  _sort = document.forms["contact-sort"]["sort"].value
+  _order = document.forms["contact-sort"]["order"].value
+  getPicturesForContact(contact,'#contact_pictures',true,_order,_sort)
+  false

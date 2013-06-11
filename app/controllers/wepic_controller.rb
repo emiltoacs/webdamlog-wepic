@@ -5,8 +5,10 @@ class WepicController < ApplicationController
   def index
     order_criteria = if params[:order] then params[:order] else 'dated' end
     sorting_order = if params[:sort] || (params[:sort]!='asc'  and params[:sort]!='desc') then params[:sort] else 'asc' end
+    # owner = if params[:username] then params[:username] else nil end
     @picture = Picture.new
-    @order_options = ['rated','located','dated']
+    #These sorting options rely on getter setters that can be found in the pictures model under app/models/pictures.rb
+    @order_options = ['rated','located','dated','titled'] 
     @sort_options = ['asc','desc']
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
@@ -16,6 +18,10 @@ class WepicController < ApplicationController
       else
         @pictures.sort! {|a,b| a.send(order_criteria.to_sym) <=> b.send(order_criteria.to_sym)}
       end
+      #useful when sorting
+      # if owner
+        # @contact_pictures = Picture.where(:owner => owner)
+      # end
     end
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
   end

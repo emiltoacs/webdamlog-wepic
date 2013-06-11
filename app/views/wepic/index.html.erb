@@ -22,6 +22,7 @@
 						}
 					}
 					jQuery('#contact_pictures').html(html);
+					jQuery('#contact-name').html(element.innerHTML)
 				}
 			}
 		});
@@ -64,9 +65,8 @@
 				</div>
 			</div>
 			<% end %>
-			<%= current_user.username.inspect %>
 		</div>
-		<h2>Contact Pictures</h2>
+		<h2><span id="contact-name">Contact</span>'s Pictures</h2>
 		<a id="contact_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
 		<div id="contact_pictures" class="images">
 		</div>
@@ -89,6 +89,7 @@
     				<div id = "sort" class="box-content"><%= render 'sort'%></div>
     				<div id = "send-contact-to-contact-form" class="box-content"><%= render 'send_from_contact_to_contact'%></div>
     				<div id = "send-mine-to-contact-form" class="box-content"><%= render 'send_mine_to_contact'%></div>
+    				<div id = "contact-sort" class="box-content"><%= render 'contact_sort'%></div>
     				</div>
     			</div>
     			<a type="submit" id="box-wrapper-close" class="button-close"></a>
