@@ -6,7 +6,7 @@ class Contact < AbstractDatabase
       attr_accessible :username
       # This describes where the contact can be found. This might be how to
       # contact it directly or might be an index location such as the sigmod
-      # peer. For now this should be a ip:port combination.
+      # peer. For now this should be an ip:port combination.
       attr_accessible :peerlocation
       attr_accessible :online
       attr_accessible :email
@@ -15,7 +15,6 @@ class Contact < AbstractDatabase
       validates :username, :presence => true, :uniqueness => true
       validates :peerlocation, :presence => true
       
-      #self.table_name = "contacts"
       connection.create_table 'contacts', :force => true do |t|
         t.string :username
         t.string :peerlocation
