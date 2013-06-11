@@ -1,7 +1,6 @@
 jQuery.noConflict()
 starNumber = 0
 pictureId = 0
-metainf = {}
 contact_id = undefined
 regexWS = new RegExp(' ', 'g')
 menu_open = false
@@ -234,6 +233,7 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
     'titlePosition' : 'inside'
     'overayColor' : '#333'
     'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
+      metainf={}
       for span in currentOpts.orig.context.parentElement.childNodes[3].children
         metainf[span.id] = span.innerHTML
           
@@ -268,7 +268,6 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       jQuery('#fancybox-wrap').draggable
         'handle' : '#fancybox-content' 
       
-      
       #Setup star interaction
       jQuery('#plus').click ->
         console.log('addstar')
@@ -279,18 +278,8 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
       '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
       
+      #Edit picture interaction
       jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
-      
-      # edit_click = ->
-        # console.log('edit')
-        # hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
-        # jQuery('.edit-form').prepend(hidden)
-        # jQuery('.box_wrapper').css 
-          # 'display' : 'block'
-        # jQuery('#edit_picture_form').css
-          # 'display' : 'block'
-#       
-      # jQuery('#edit_picture').click = edit_click
       
       jQuery('#edit_picture').click ->
         console.log('edit')
@@ -325,8 +314,8 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
           changeLocation(pictureId,text)
       )      
       #Setup the chron job
-      
       getLatestComments(pictureId)
+      
     'onCleanup' : ->
       #Clear the entire comment section when leaving fancybox.
       jQuery('#fancybox-comments').remove()
@@ -343,12 +332,12 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
     'overayColor' : '#333'
     'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
       has_contact = contact_id
+      metainf={}
       jQuery('#'+has_contact+" span").each ->
-        element = jQuery(this);
+        element = jQuery(this).context
+        console.log(String(element.id) + ":" + element.innerHTML)
         metainf[element.id] = element.innerHTML
-      # for span in jQuery('#'+has_contact).chidren
-          # metainf[span.id] = span.innerHTML
-          
+      
       starNumber = parseInt(metainf['rating'])
       pictureId = parseInt(metainf['_id'])
       list = [0,1,2,3,4]
@@ -358,16 +347,16 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
         else
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
-      star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">+</a>"
-      star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">-</a>"
-      star_s += '<div class="star-wrapper">'
+      # star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">+</a>"
+      # star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">-</a>"
+      star_s = '<div class="star-wrapper">'
       for star in star_array
         star_s += star
       star_s += '</div>'      
       return '<div id="fancybox-title-inside" class="fancybox-title"><table><tr>'+
-      '<td style=""><strong id="image-title" contenteditable="true" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
+      '<td style=""><strong id="image-title" contenteditable="false" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
-      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location" contenteditable="true">'+metainf['location'].toString()+'</strong></td>'+
+      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location" contenteditable="false">'+String(metainf['location'])+'</strong></td>'+
       '<td style="text-align:right">'+star_s+'</td></tr>'+
       '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK"><input type="submit" value="Download image"></form></td></tr>'+
       '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
@@ -381,37 +370,26 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
         'handle' : '#fancybox-content' 
       
       
-      #Setup star interaction
-      jQuery('#plus').click ->
-        console.log('addstar')
-        addStar()
-      jQuery('#minus').click ->
-        console.log('removestar')
-        removeStar()
-      jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
-      '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
-      
-      jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
-      
-      # edit_click = ->
+      # #Setup star interaction
+      # jQuery('#plus').click ->
+        # console.log('addstar')
+        # addStar()
+      # jQuery('#minus').click ->
+        # console.log('removestar')
+        # removeStar()
+      # jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
+      # '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
+#       
+      # jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
+            
+      # jQuery('#edit_picture').click ->
         # console.log('edit')
         # hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
         # jQuery('.edit-form').prepend(hidden)
         # jQuery('.box_wrapper').css 
           # 'display' : 'block'
         # jQuery('#edit_picture_form').css
-          # 'display' : 'block'
-#       
-      # jQuery('#edit_picture').click = edit_click
-      
-      jQuery('#edit_picture').click ->
-        console.log('edit')
-        hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
-        jQuery('.edit-form').prepend(hidden)
-        jQuery('.box_wrapper').css 
-          'display' : 'block'
-        jQuery('#edit_picture_form').css
-          'display' : 'block'        
+          # 'display' : 'block'        
       
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
@@ -421,21 +399,23 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
           jQuery('#add-comment-box').html('') #Clear the comment line
       )
 
-      #image change forms
-      jQuery('#image-title').keypress ( (keypressed) ->
-        if keypressed.keyCode == 13
-          keypressed.preventDefault()
-          text = jQuery.trim(jQuery('#image-title').html())
-          changeTitle(pictureId,text)
-      )
+      # #image change forms
+      # jQuery('#image-title').keypress ( (keypressed) ->
+        # if keypressed.keyCode == 13
+          # keypressed.preventDefault()
+          # text = jQuery.trim(jQuery('#image-title').html())
+          # changeTitle(pictureId,text)
+      # )
+#       
+      # jQuery('#image-location').keypress ( (keypressed) ->
+        # if keypressed.keyCode == 13
+          # keypressed.preventDefault()
+          # text = jQuery.trim(jQuery('#image-location').html())
+          # console.log(text)
+          # changeLocation(pictureId,text)
+      # )
       
-      jQuery('#image-location').keypress ( (keypressed) ->
-        if keypressed.keyCode == 13
-          keypressed.preventDefault()
-          text = jQuery.trim(jQuery('#image-location').html())
-          console.log(text)
-          changeLocation(pictureId,text)
-      )      
+      
       #Setup the chron job
       
       getLatestComments(pictureId)
@@ -536,7 +516,8 @@ jQuery(document).ready ->
     contact = jQuery('#send-select option:selected').html()
     getPicturesForContact(contact,'#pictures-to-send')
   
-  getPicturesForContact(jQuery('#username').html(),'#my-pictures-to-send')
+  jQuery('#my-pictures-to-send').change ->
+    getPicturesForContact(jQuery('#username').html(),'#my-pictures-to-send')
 
     
   console.log("Document ready function executing...")
@@ -552,7 +533,10 @@ jQuery(document).ready ->
   #Box wrapper close behavior
   jQuery('#box-wrapper-close').click ->
     closeBoxWrapper()
-    
+  
+  
+  #CONTACT PICTURES
+  #After sorting
   window.sort_contact = ->
     contact = jQuery('#contact-name').html()
     _sort = jQuery('#sort option:selected').html()
@@ -560,4 +544,13 @@ jQuery(document).ready ->
     _id = getPicturesForContact(contact,'#contact_pictures',true,_order,_sort)
     jQuery('#contact_pictures').on('focusin',fancybox_func_contact)
     closeBoxWrapper()  
-    false
+  
+  #When selecting a peer
+  window.select = (element)->
+    jQuery('.selected').attr('class', 'contact')
+    element.className = 'selected'
+    contact = element.innerHTML
+    getPicturesForContact(contact,'#contact_pictures',true)
+    jQuery('#contact_pictures').on('focusin',fancybox_func_contact)
+    jQuery('#contact-name').html(contact)
+    closeBoxWrapper()

@@ -19,6 +19,36 @@ contacts:
     peerlocation : SIGMOD_peer
     email: serge.abiteboul@inria.fr
     facebook : Serge Abiteboul
+  contact5:
+    name: Alice1
+    peerlocation : SIGMOD_peer
+    email: alice1@inria.fr
+    facebook : alice1sunni
+  contact6:
+    name: Alice2
+    peerlocation : SIGMOD_peer
+    email: alice2@inria.fr
+    facebook : alice2
+  contact7:
+    name: Alice3
+    peerlocation : SIGMOD_peer
+    email: alice3@inria.fr
+    facebook : alice3
+  contact8:
+    name: Alice3
+    peerlocation : SIGMOD_peer
+    email: alice3@inria.fr
+    facebook : alice3
+  contact9:
+    name: Alice4
+    peerlocation : SIGMOD_peer
+    email: alice4@inria.fr
+    facebook : alice4
+  contact10:
+    name: Alice5
+    peerlocation : SIGMOD_peer
+    email: alice5@inria.fr
+    facebook : alice5
 pictures:
   picture1:
     title: nemo

@@ -1,22 +1,22 @@
 <%# TODO: modularize protocols for redirection (http or else and urls)%>
-<%if is_admin%>
-<div class="admin">
+<div id="peerlist">
+<table style="width : 100%;">
 <% @accounts.each do |account| %>
-	<div class="field">
-		<%= account.username %> is using port <%= account.port%> on <%= account.ip %>,
-		<% if account.active %>
+<tr class="fields">
+		<td><%= account.username %> is using port <%= account.port%> on <%= account.ip %></td>
+		<td><% if account.active %>
 			<%= link_to "close server", :controller => "welcome", :action => "shutdown", :id => account %>
 			<%= link_to "go to server", "#{@protocol}://#{account.ip}:#{account.port}" %>
 		<% else %>
 			<%= link_to "start server", :controller => "welcome", :action => "start", :id => account %>
-		<% end%>
-	</div>
+		<% end%></td>
+</tr>
 <% end %>
+</table>
 </div>
-  <div class="field admin">
+  <div id="manage_peers">
     <%= button_to('Refresh', {:action => 'refresh'}, :method => :get, :remote => true) %>
     <%=form_tag({:controller => "welcome", :action=>"killall"},:method=>'post') do %>
       <%= submit_tag 'Kill all wepic peers'%>
     <%end%>
   </div>
-<%end%>
