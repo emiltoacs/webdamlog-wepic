@@ -1,3 +1,5 @@
+#TODO Need to modify the rating model : ratings are not unique => add owner field to rating
+#Have several ratings per picture.
 class Rating < AbstractDatabase
   attr_accessible :_id, :rating
   belongs_to :picture

@@ -322,6 +322,15 @@ module WLDatabase
       else
         @relation_classes[classname] = com
       end
+
+      classname = "DescribedRule"
+      com = WLTool::class_exists(classname , ActiveRecord::Base)
+      if com.nil?
+        load 'described_rule.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = com
+      end
       
       # FIXME All of these methods normally correspond to the WLProgram should
       # be removed after webdamlog program loading and refresh tables from
@@ -335,6 +344,7 @@ module WLDatabase
       @wlschema.new(:name=>PictureLocation.table_name, :schema=>PictureLocation.schema.to_json).save
       @wlschema.new(:name=>Rating.table_name, :schema=>Rating.schema.to_json).save
       @wlschema.new(:name=>Comment.table_name, :schema=>Comment.schema.to_json).save
+      @wlschema.new(:name=>DescribedRule.table_name, :schema=>DescribedRule.schema.to_json).save
    end
     
     # The create relation method will create a new relation in the database as well.

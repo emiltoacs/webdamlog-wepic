@@ -12,7 +12,7 @@ class Comment < AbstractDatabase
         t.integer :_id
         t.datetime :date
         t.string :author
-        t.string :text
+        t.text :text
         t.timestamps
       end if !connection.table_exists?('comments')
       
