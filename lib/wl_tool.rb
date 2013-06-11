@@ -367,7 +367,7 @@ module PostgresHelper
 end # module PostgresHelper
 
 module SampleHelper
-  def self.create
+  def self.wepic_create
       if defined?(Conf) #and Conf.env['USERNAME']!='manager'
         WLLogger.logger.debug "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
         sample_content_file_name = "#{Rails.root}/config/scenario/samples/#{Conf.env['USERNAME']}_sample.yml"
@@ -400,6 +400,27 @@ module SampleHelper
         end
       else
       raise "The Conf object has not been setup!"
-      end    
-  end  
+      end
+  end
+  
+  def self.query_create
+    if defined?(Conf) #and Conf.env['USERNAME']!='manager'
+      WLLogger.logger.debug "Query Samples for user : #{Conf.env['USERNAME']}"
+      sample_content_file_name = "#{Rails.root}/config/scenario/samples/query/sample.yml"
+      if (File.exists?(sample_content_file_name))
+        content = YAML.load(File.open(sample_content_file_name))
+        content['described_rules'].values.each do |drule|
+          DescribedRule.insert(:rule => drule['rule'],:description => drule['description'])
+        end
+      else
+        error = "File #{sample_content_file_name} does not exist!"
+        WLLogger.logger.warn error
+        raise error 
+      end
+    else
+      error =  "The Conf object has not been setup!"
+      WLLogger.logger.warn error
+      raise error    
+    end
+  end          
 end

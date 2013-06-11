@@ -9,6 +9,9 @@ class QueryController < ApplicationController
   def index
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
+    ContentHelper::query_create
+    @described_rules = DescribedRules.all
+    @described_rule = DescribedRule.new
   end
   
   #Insert a tuple in the instance database

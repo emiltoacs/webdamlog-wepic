@@ -26,8 +26,7 @@ class WepicController < ApplicationController
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
   end
 
-  
-  #TODO Create a single function to update picture. modify routes.
+  #Updates all fields deriving from a picture
   def update
     picture = Picture.find(:first, :conditions => [ "_id = ?", params[:_id]])
     unless picture
@@ -55,10 +54,11 @@ class WepicController < ApplicationController
   end
   
   #Updates the rating value when modified by the user
+  #FIXME : DEPRECATED
   def updateRating
-    ratingTuple = Rating.where(:_id => params[:_id]).first
+    ratingTuple = Picture.where(:_id => params[:_id]).first
     if ratingTuple
-      ratingTuple.rating = params[:rating]
+      ratingTuple.rated = params[:rating]
     else
       ratingTuple = Rating.new(:_id => params[:_id], :rating=>params[:rating])
     end

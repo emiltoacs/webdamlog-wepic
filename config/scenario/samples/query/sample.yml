@@ -1,0 +1,13 @@
+described_rules:
+  drule1:
+    description: Get all the titles for my pictures
+    rule : results@local($title):-pictures@local($title,$contact,$_id,$image_url);
+  drule2:
+    description: Get all pictures from all my friends
+    rule : results@local($title, $contact, $_id, $image_url):-contact@local($contact, $peerlocation, $online, $email, $facebook),pictures@$contact($title, $contact, $_id, $image_url);
+  drule3:
+    description: Get all my pictures with rating higher or equal to 5
+    rule : results@local($rating):-pictures@local($title,$contact,$_id,$image_url),rating@sigmod_peer($_id,$rating),rating>=5;
+  # drule4:
+    # description ; Get the ten best rated pictures #Find how to pick limited number of results syntax
+    # rule : 

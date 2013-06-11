@@ -1,3 +1,4 @@
+#TODO : Due to change in the rating model, need to change rated and rated= methods. 
 require 'open-uri'
 
 class Picture < AbstractDatabase
