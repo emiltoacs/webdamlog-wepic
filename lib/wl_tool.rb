@@ -161,6 +161,7 @@ end
 # General useful tools for ruby
 #
 module WLTool
+    
   def create_class(class_name, superclass, &block)
     klass_name = class_name.classify
     klass = Class.new superclass, &block
@@ -365,4 +366,40 @@ module PostgresHelper
   end
 end # module PostgresHelper
 
-
+module SampleHelper
+  def self.create
+      if defined?(Conf) #and Conf.env['USERNAME']!='manager'
+        WLLogger.logger.debug "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
+        sample_content_file_name = "#{Rails.root}/config/scenario/samples/#{Conf.env['USERNAME']}_sample.yml"
+        if (File.exists?(sample_content_file_name))
+          content = YAML.load(File.open(sample_content_file_name))
+          WLLogger.logger.info "Load sample specification from yaml file"
+          content['contacts'].values.each do |contact|
+            #We should check if users are online using Webdamlog rules.
+            Contact.new(:username=>contact['name'],:peerlocation=>contact['peerlocation'],:online=>false,:email=>contact['email'],:facebook=>contact['facebook']).save
+          end unless content['contacts'].values.nil?
+          content['pictures'].values.each do |picture|
+            owner = if picture['owner'] then picture['owner'] else Conf.env['USERNAME'] end
+            Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title']).save
+          end unless content['pictures'].values.nil?
+          content['locations'].values.each do |imagelocation|
+            owner = if imagelocation['owner'] then imagelocation['owner'] else Conf.env['USERNAME'] end
+            Picture.where(:title=>imagelocation['title'],:owner=>owner).first.located = imagelocation['location']
+          end unless content['locations'].values.nil?
+          content['ratings'].values.each do |rating|
+            owner = if rating['owner'] then rating['owner'] else Conf.env['USERNAME'] end
+            Picture.where(:title=>rating['title'],:owner=>owner).first.rated = rating['rating']
+          end unless content['ratings'].values.nil?
+          content['comments'].values.each do |comment|
+            owner = if comment['owner'] then comment['owner'] else Conf.env['USERNAME'] end
+            picture = Picture.where(:title=>comment['title'],:owner=>owner).first
+            Comment.insert(:_id=>picture._id,:text=>comment['text'],:author=>comment['author']) if picture
+          end
+        else
+          raise "file #{sample_content_file_name} does not exist!"
+        end
+      else
+      raise "The Conf object has not been setup!"
+      end    
+  end  
+end

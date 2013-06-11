@@ -3,10 +3,12 @@ class WepicController < ApplicationController
   helper_method :find_picture_field
   
   def index
-    order_criteria = if params[:order] then params[:order] else 'date' end
+    order_criteria = if params[:order] then params[:order] else 'dated' end
     sorting_order = if params[:sort] || (params[:sort]!='asc'  and params[:sort]!='desc') then params[:sort] else 'asc' end
+    # owner = if params[:username] then params[:username] else nil end
     @picture = Picture.new
-    @order_options = ['rated','location','date']
+    #These sorting options rely on getter setters that can be found in the pictures model under app/models/pictures.rb
+    @order_options = ['rated','located','dated','titled'] 
     @sort_options = ['asc','desc']
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
@@ -16,12 +18,41 @@ class WepicController < ApplicationController
       else
         @pictures.sort! {|a,b| a.send(order_criteria.to_sym) <=> b.send(order_criteria.to_sym)}
       end
+      #useful when sorting
+      # if owner
+        # @contact_pictures = Picture.where(:owner => owner)
+      # end
     end
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
   end
 
   
   #TODO Create a single function to update picture. modify routes.
+  def update
+    picture = Picture.find(:first, :conditions => [ "_id = ?", params[:_id]])
+    unless picture
+      flash[:alert] = "No pictures for #{params[:_id]}"
+      respond_to do |format| 
+        format.json {render :json => {:saved => false, :errors => "No pictures for #{params[:_id]}"}.to_json}
+        format.html {redirect_to :wepic, :notice => "No pictures for #{params[:_id]}"} 
+      end
+    else
+      picture.titled = params[:title] if params[:title] and !params[:title].empty?
+      picture.rated = params[:rating] if params[:rating] and !params[:rating].empty?
+      picture.located = params[:location] if params[:location] and !params[:location].empty?
+      if picture.errors.messages.empty? 
+        respond_to do |format|
+          format.json {render :json => {:saved => true, :title => picture.title, :rating => picture.rated, :location => picture.located}.to_json }
+          format.html {redirect_to :wepic }
+        end
+      else
+        respond_to do |format|
+          format.json {render :json => {:saved => false, :errors => picture.errors.messages}.to_json }
+          format.html {redirect_to :wepic, :alert => picture.errors.messages.inspect }
+        end
+      end      
+    end
+  end
   
   #Updates the rating value when modified by the user
   def updateRating
@@ -75,5 +106,9 @@ class WepicController < ApplicationController
       params[:date] = @comment.date.-(0.0002) #take the date the comment was created - 1 second.
       getLatestComments(params)
     end
+  end
+  
+  def send_picture
+    #have to send
   end
 end

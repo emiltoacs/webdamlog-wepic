@@ -1,0 +1,134 @@
+contacts:
+  contact1:
+    name: Emilien
+    peerlocation : SIGMOD_peer
+    email: Emilien.antoine@inria.fr
+    facebook : Emilien Antoine
+  contact2:
+    name: Julia
+    peerlocation : SIGMOD_peer
+    email: stoyanovich@drexel.edu
+    facebook : stoyanovich@drexel.edu
+  contact3:
+    name: Gerome
+    peerlocation : SIGMOD_peer
+    email: miklau@cs.umass.edu
+    facebook : Gerome Miklau
+  contact4:
+    name: Serge
+    peerlocation : SIGMOD_peer
+    email: serge.abiteboul@inria.fr
+    facebook : Serge Abiteboul
+pictures:
+  picture1:
+    title: nemo
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture2:
+    title: redbird
+    owner: Emilien
+    url : app/assets/images/redbird.jpg
+    #url : http://fc3arch.files.wordpress.com/2011/08/big_wave.jpg
+  picture3:
+    title: tiger
+    url : app/assets/images/tiger.jpg
+    #url : http://4.bp.blogspot.com/-tiN8G5YbB5g/UEj6Cf3HwuI/AAAAAAAAAVY/P8ockeqrJzI/s1600/FireBIG.jpg
+  picture4:
+    title: greenbird
+    url : app/assets/images/greenbird.jpg
+    owner: Emilien
+    #url : http://limchinwoon.files.wordpress.com/2013/02/mountain_7.jpg
+  picture5:
+    title: nemo2
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture6:
+    title: redbird2
+    owner: Emilien
+    url : app/assets/images/redbird.jpg
+    #url : http://fc3arch.files.wordpress.com/2011/08/big_wave.jpg
+  picture7:
+    title: tiger2
+    url : app/assets/images/tiger.jpg
+    #url : http://4.bp.blogspot.com/-tiN8G5YbB5g/UEj6Cf3HwuI/AAAAAAAAAVY/P8ockeqrJzI/s1600/FireBIG.jpg
+  picture8:
+    title: greenbird2
+    url : app/assets/images/greenbird.jpg
+    owner: Emilien
+    #url : http://limchinwoon.files.wordpress.com/2013/02/mountain_7.jpg
+  picture9:
+    title: nemo3
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture10:
+    title: nemo4
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture11:
+    title: nemo5
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture12:
+    title: nemo6
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture13:
+    title: nemo7
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture14:
+    title: nemo8
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+  picture15:
+    title: nemo9
+    url: app/assets/images/nemo.jpg
+    #url : http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg
+locations:
+  location1:
+    title: nemo
+    location: Bali, Indonesia
+  location2:
+    title: redbird
+    owner : Emilien
+    location: Sydney, Australia
+  location3:
+    title: tiger
+    location: Somewhere far far away
+  location4:
+    title: greenbird
+    owner: Emilien
+    location : Alberta, Canada
+ratings:
+  rating1:
+    title: nemo
+    rating: 3
+  rating2:
+    title: redbird
+    owner: Emilien
+    rating: 5
+  rating3:
+    title: tiger
+    rating: 4
+  rating4:
+    title: greenbird
+    owner: Emilien
+    rating: 3
+comments:
+  comment1:
+    title: nemo
+    text: C'est une super image!
+    author: jules
+  comment2:
+    title: nemo
+    text: N'est ce pas?
+    author: jules
+  comment3:
+    title: nemo
+    text: Je prefere celle de la montagne.
+    author: emilien
+  comment4:
+    title: greenbird
+    text: ah bon?
+    owner: Emilien
+    author: jules

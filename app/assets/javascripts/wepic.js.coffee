@@ -7,11 +7,51 @@ menu_open = false
 current_url = location.protocol + '//' + location.host + location.pathname
 
 capitalizeFirstLetter = (string) ->
-  string.charAt(0).toUpperCase()+string.slice(1)
+  if (typeof string)=='string'
+    string.charAt(0).toUpperCase()+string.slice(1)
+  else
+    string
 
 sanitize = (string) ->
   string = string.trim()
   string.replace(regexWS,'') #removes all whitespace on keys
+
+changeTitle = (idPicture,title) ->
+    html = title
+    jQuery.ajax
+      'url' : current_url + '/update'
+      'data' :
+        '_id' : idPicture
+        'title' : title
+      'datatype' : 'json'
+      'success' : (data) ->
+        #saved = (data.saved=='true') 
+        if data.saved
+          html = capitalizeFirstLetter(data.title)
+          jQuery('#image-title').html(html)
+          jQuery('#metainf-'+String(idPicture)+' #title').html(html)
+        else
+          jQuery('#fancybox-errors').html(display_error(data.errors))
+          jQuery('#fancybox-errors').css
+            'display' : 'block'
+            
+changeLocation = (idPicture,location) ->
+    html = location
+    jQuery.ajax
+      'url' : current_url + '/update'
+      'data' :
+        '_id' : idPicture
+        'location' : location
+      'datatype' : 'json'
+      'success' : (data) ->
+        if data.saved
+          html = capitalizeFirstLetter(data.location)
+          jQuery('#image-location').html(html)
+          jQuery('#metainf-'+String(idPicture)+' #location').html(html)
+        else
+          jQuery('#fancybox-errors').html(display_error(data.errors))
+          jQuery('#fancybox-errors').css
+            'display' : 'block'
 
 addComment = (idPicture,text) ->
     #This methods has no support for failure yet. FIXME
@@ -91,7 +131,7 @@ addStar = ->
   if (starNumber<=3)
     starNumber += 1
     jQuery.ajax
-      'url' : current_url + '/ratings'
+      'url' : current_url + '/update'
       'data' :
         '_id' : pictureId
         'rating' : starNumber
@@ -108,12 +148,47 @@ addStar = ->
             'display' : 'block'
   else
     #don't do anything
+
+getPicturesForContact = (contact,div_id,_html,_order,_sort) ->
+  _order = _order ? 'dated'
+  _sort = _sort ? 'asc'
+  _html = _html ? false
+  contact = String(contact)
+  html = ''
+  jQuery.ajax
+    url : 'contacts/' + contact + '/pictures'
+    data :
+      action : 'send'
+      order : _order
+      sort : _sort
+    dataType : 'json'
+    success : (data) ->
+      if data
+        if _html
+          for key,value of data
+            # if data.hasOwnProperty(key)
+            html += '<a href="' + data[key]['href'] + '">'
+            html += '<div class="entry">'
+            html += '<div class="title">' + data[key]['title'] + '</div>'
+            html += '<div class="image"><img alt="' + data[key]['alt'] + '" src="' + data[key]['src'] + '"></div>'
+            html += '</div></a>'
+        else
+          html += '<div class="images choose">'
+          for key,value of data
+            html += '<div class="entry-select">'
+            html += '<input type="checkbox" name="'+data[key]['title']+'" value="'+data[key]['id']+'">'
+            html += '<div class="title-select">' + data[key]['title'] + '</div>'
+            html += '<div class="image"><img alt="' + data[key]['alt'] + '" src="' + data[key]['src'] + '"></div>'
+            html += '</div>'#</a>'
+          html += '</div>'
+        jQuery(div_id).html(html)
+
   
 removeStar = ->
   if (starNumber>=1)
     starNumber -= 1
     jQuery.ajax
-      'url' : current_url + '/ratings'
+      'url' : current_url + '/update'
       'data' :
         '_id' : pictureId
         'rating' : starNumber
@@ -129,17 +204,30 @@ removeStar = ->
           jQuery('#fancybox-errors').css
             'display' : 'block'          
 
+resize_box = (box_type)->
+  console.log('Resizing ' + box_type + ' box.')
+  leftVal = jQuery('#'+box_type+'-wrap').css('left')
+  leftVal = parseInt(leftVal)
+  leftVal -= 300
+  leftVal = 0 if (leftVal < 0)
+  leftVal = String(leftVal) + "px"
+  jQuery('#'+box_type+'-wrap').css
+    'left' : leftVal
+
+
 jQuery ->
   jQuery('a.fancybox').fancybox
     'hideOnContentClick' : false
     'hideOnOverlayClick' : true
     'padding': 10
-    'titlePosition' : 'over'
+    'autoScale' : true
+    'transitionIn' : 'none'
+    'transitionOut' : 'none'
+    'titlePosition' : 'inside'
     'overayColor' : '#333'
     'titleFormat' : (title, currentArray, currentIndex, currentOpts) ->
       for span in currentOpts.orig.context.parentElement.childNodes[3].children
         metainf[span.id] = span.innerHTML
-      console.log("META-INF : " + metainf['_id'] + ", " + metainf['owner'] + ", " + metainf['location']  + ", " + metainf['date']  + ", " + metainf['rating'])
       starNumber = parseInt(metainf['rating'])
       pictureId = parseInt(metainf['_id'])
       list = [0,1,2,3,4]
@@ -155,12 +243,22 @@ jQuery ->
       for star in star_array
         star_s += star
       star_s += '</div>'      
-      return '<div id="fancybox-title-over"><table><tr>'+
-      '<td style=""><strong style="font-style:italic">'+capitalizeFirstLetter(title)+'</strong></td>'+
+      return '<div id="fancybox-title-inside" class="fancybox-title"><table><tr>'+
+      '<td style=""><strong id="image-title" contenteditable="true" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
-      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong>'+metainf['location'].toString()+'</strong></td>'+
-      '<td style="text-align:right">'+star_s+'</td></tr></table><div id="fancybox-errors" class="box-errors error"></div></div>'
+      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location" contenteditable="true">'+metainf['location'].toString()+'</strong></td>'+
+      '<td style="text-align:right">'+star_s+'</td></tr>'+
+      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK"><input type="submit" value="Download image"></form></td></tr>'+
+      '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
+      jQuery('#fancybox-wrap').css
+        'position' : 'fixed'
+        'left' : '100px'
+        'top' : '100px'
+        
+      jQuery('#fancybox-wrap').draggable
+        'handle' : '#fancybox-content' 
+      
       
       #Setup star interaction
       jQuery('#plus').click ->
@@ -169,17 +267,30 @@ jQuery ->
       jQuery('#minus').click ->
         console.log('removestar')
         removeStar()
-      jQuery('#fancybox-right').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
+      jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
       '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
       
-      jQuery('#fancybox-content').append('<a id="edit_picture">edit</a>')
+      jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
+      
+      # edit_click = ->
+        # console.log('edit')
+        # hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
+        # jQuery('.edit-form').prepend(hidden)
+        # jQuery('.box_wrapper').css 
+          # 'display' : 'block'
+        # jQuery('#edit_picture_form').css
+          # 'display' : 'block'
+#       
+      # jQuery('#edit_picture').click = edit_click
       
       jQuery('#edit_picture').click ->
         console.log('edit')
+        hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
+        jQuery('.edit-form').prepend(hidden)
         jQuery('.box_wrapper').css 
           'display' : 'block'
         jQuery('#edit_picture_form').css
-          'display' : 'block'
+          'display' : 'block'        
       
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
@@ -188,18 +299,32 @@ jQuery ->
       	  addComment(pictureId,text) #Add a comment with text entered up to now.
       	  jQuery('#add-comment-box').html('') #Clear the comment line
       )
+
+      #image change forms
+      jQuery('#image-title').keypress ( (keypressed) ->
+        if keypressed.keyCode == 13
+          keypressed.preventDefault()
+          text = jQuery.trim(jQuery('#image-title').html())
+          changeTitle(pictureId,text)
+      )
       
+      jQuery('#image-location').keypress ( (keypressed) ->
+        if keypressed.keyCode == 13
+          keypressed.preventDefault()
+          text = jQuery.trim(jQuery('#image-location').html())
+          console.log(text)
+          changeLocation(pictureId,text)
+      )      
       #Setup the chron job
       
       getLatestComments(pictureId)
     'onCleanup' : ->
       #Clear the entire comment section when leaving fancybox.
       jQuery('#fancybox-comments').remove()
-      
-      #Stop the chron job
-      
+  
 
 jQuery(document).ready ->
+  jQuery('#wepicbox-wrap').draggable()
   #Setup the wepic buttons
   jQuery('#my_pictures_button').click ->
     if menu_open
@@ -212,11 +337,7 @@ jQuery(document).ready ->
       html += '<li><a type="submit" id="upload_from_url" class="active_action" >from URL</a></li>'
       html += '</ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      # html += '<ul>'
-      # html += '<li><a href="/wepic?order=date" type="submit" id="sort_by_date" class="active_action">date</li>'
-      # html += '<li><a href="/wepic?order=rating" type="submit" id="sort_by_rating" class="active_action">rating</li>'
-      # html += '<li><a href="/wepic?order=owner" type="submit" id="sort_by_owner" class="active_action">owner</li>'
-      # html += '</ul>'
+      html += '<li><a type="submit" id="send-mine-to-contact">Send To...</a></li>'
       html += '</ul></div>'
       jQuery('#my_pictures_button').html(html)
       menu_open = true
@@ -248,22 +369,70 @@ jQuery(document).ready ->
           'display' : 'block'
         jQuery('#my_pictures_button').html('+')
         menu_open = false
+      jQuery('#send-mine-to-contact').click ->
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
+        jQuery('#send-mine-to-contact-form').css
+          'display' : 'block'        
+        jQuery('#my_pictures_button').html('+')
+        menu_open = false
                 
   jQuery('#contact_pictures_button').click ->
-    console.log('button')
+    if menu_open
+      menu_open = false
+    else
+      html = '+<div id="contact_pictures_menu" class="popUpMenu">'
+      html += '<a type="submit" id="contact_pictures_menu_close" class="button-close"></a><ul>'
+      html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
+      html += '<li><a type="submit" id="send-contact-to-contact">Send To...</a></li>'
+      html += '</ul></div>'
+      jQuery('#contact_pictures_button').html(html)
+      menu_open = true
+      jQuery('#contact_pictures_menu_close').click ->
+        console.log('close menu')
+        jQuery('#contact_pictures_button').html('+')
+        menu_open = false
+      jQuery('#sort_by').click ->
+        #jQuery('#sort-form-user').val(name)
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
+        jQuery('#contact-sort').css
+          'display' : 'block'
+        jQuery('#contact_pictures_button').html('+')
+        menu_open = false
+      jQuery('#send-contact-to-contact').click ->
+        jQuery('.box_wrapper').css 
+          'display' : 'block'
+        jQuery('#send-contact-to-contact-form').css
+          'display' : 'block'        
+        jQuery('#contact_pictures_button').html('+')
+        menu_open = false
+        
+  #Send file ui interactions
+  jQuery('#send-select').change ->
+    contact = jQuery('#send-select option:selected').html()
+    getPicturesForContact(contact,'#pictures-to-send')
+  
+  getPicturesForContact(jQuery('#username').html(),'#my-pictures-to-send')
+
+    
   console.log("Document ready function executing...")
   
   closeBoxWrapper = ->
     console.log('box wrapper close')
     jQuery('.box_wrapper').css
       'display' : 'none'
-    # jQuery('.box_content').css
-      # 'display' : 'none'
-    jQuery('#wepicbox-content').children().css
+    jQuery('#wepicbox-content').find('.content').children().css
       'display':'none'
 
   
   #Box wrapper close behavior
   jQuery('#box-wrapper-close').click ->
     closeBoxWrapper()
-
+    
+window.sort_contact = ->
+  contact = jQuery('#contact-name').html()
+  _sort = document.forms["contact-sort"]["sort"].value
+  _order = document.forms["contact-sort"]["order"].value
+  getPicturesForContact(contact,'#contact_pictures',true,_order,_sort)
+  false

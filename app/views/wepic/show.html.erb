@@ -1,6 +1,6 @@
 <div class="opacity"></div>
 <div class="content">
-	<p id="notice"><%= notice %></p>
+	<%if flash[:notice]%><p id="notice"><%= notice %></p><%end%>
 	<div class="field">Title : <%=@picture.title%></div>
 	<div class="field">Owner : <%=@picture.owner%></div>
 	<div class="field">Image : <%=image_tag @picture.image.url(:small)%></div>
