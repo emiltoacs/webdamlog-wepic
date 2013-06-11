@@ -39,7 +39,5 @@ class Contact < AbstractDatabase
 
   include WrapperHelper::ActiveRecordWrapper
 
-  bind
-
   setup
 end
