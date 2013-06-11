@@ -1,6 +1,64 @@
 // Place all the styles related to the Query controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+.query_view {
+  background : #eee;
+  border : 1px solid #111;
+  padding : 1%;
+  margin-top : 10px;
+  margin-bottom : 10px;
+  width : 98%;
+  min-width : 280px;
+  height : 100px;
+  overflow-x : hidden;
+  overflow-y : scroll;
+}
+
+#query_examples {
+  width : 49%;
+  margin-right : 1%;
+  float : left;
+  display : inline;
+  min-width : 300px; 
+}
+
+#query_examples div.query_view {
+  width : 90%;
+  height : 200px;
+}
+
+#update_examples{
+  width : 49%;
+  margin-left : 1%;
+  float : left;
+  display : inline;
+  min-width : 300px;  
+}
+
+#update_examples div.query_view {
+  width : 90%;
+  height : 200px;
+}
+
+#rule_for_query{
+  display : block;
+  min-width : 640px;
+  width : 100%; 
+}
+#rule_for_query div.query_view {
+  width : 94%;
+  height: 40px;
+}
+#results {
+  display : block;
+  min-width : 640px;
+  width : 100%;
+}
+
+#results div.query_view {
+  width : 94%;
+  height : 200px;
+}
 
 #create_relation {
     float:left;
