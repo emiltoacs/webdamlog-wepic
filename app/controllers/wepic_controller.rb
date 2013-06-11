@@ -3,10 +3,10 @@ class WepicController < ApplicationController
   helper_method :find_picture_field
   
   def index
-    order_criteria = if params[:order] then params[:order] else 'date' end
+    order_criteria = if params[:order] then params[:order] else 'dated' end
     sorting_order = if params[:sort] || (params[:sort]!='asc'  and params[:sort]!='desc') then params[:sort] else 'asc' end
     @picture = Picture.new
-    @order_options = ['rated','location','date']
+    @order_options = ['rated','located','dated']
     @sort_options = ['asc','desc']
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
@@ -100,5 +100,9 @@ class WepicController < ApplicationController
       params[:date] = @comment.date.-(0.0002) #take the date the comment was created - 1 second.
       getLatestComments(params)
     end
+  end
+  
+  def send_picture
+    #have to send
   end
 end

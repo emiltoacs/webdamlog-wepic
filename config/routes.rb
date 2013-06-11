@@ -38,6 +38,7 @@ WepimApp::Application.routes.draw do
     match 'wepic/comments/latest' => 'wepic#getLatestComments'
     match 'wepic/comments/add' => 'wepic#addComment'
     match 'wepic/comments/remove' => 'wepic#removeComment'
+    match 'wepic/send' => 'wepic#send_picture'
   end
   resources :users, :user_sessions
   match 'login' => 'user_sessions#new', :as => :login

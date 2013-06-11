@@ -16,7 +16,13 @@
   <div class="field">
     <%= f.label :image %><br />
     <%= f.file_field :image, :required => true %>
-  </div>  
+  </div>
+  <!-- <%= f.fields_for :picture_location do |loc| %>
+  <div class="field">
+    <%= loc.label :location %><br />
+    <%= loc.text_field :location, :required => false %>
+  </div> 
+  <%end%> -->
   <div class="actions">
     <%= f.submit %>
   </div>
