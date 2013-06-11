@@ -43,6 +43,7 @@ class UsersControllerTest < ActionController::TestCase
       "picture_at_test_peer",
       "picturelocation_at_test_peer",
       "rating_at_test_peer"], engine.wl_program.wlcollections.keys.sort
+    
     assert_equal 2, engine.wl_program.rule_mapping.size
     assert_equal [1,
       "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);"],
@@ -62,7 +63,5 @@ class UsersControllerTest < ActionController::TestCase
     engine = EngineHelper::WLENGINE
     assert_not_nil engine
     assert engine.running_async
-
-    
   end
 end
