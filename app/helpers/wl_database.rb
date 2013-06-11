@@ -5,24 +5,23 @@ require 'fileutils'
 require 'active_support/core_ext/string'
 require './lib/wl_tool'
 
-# This helper manage database connection for a peer
-#
-# @@databases is the set of databse on which the peer is connected. In our app
-# there is always exactly one.
+# This helper manage database connection for a peer. This is the wrapper of
+# wepic for the database postgres or SQLite of webdamlog relation to store in
+# tables.
 #
 # The class WLInstanceDatabase represent the object which provide methods to
 # alter the database schema (add table)
 #
-# TODO all the methods open_connection and remove_connection defined for every
-# model in this app are now totally useless. Think to remove them properly.
+# PENDING should be renamed in database_wrapper
 #
 module WLDatabase
 
+  # The set of database on which the peer is connected. In our app there is
+  # always exactly one.
   @@databases = Hash.new
   
   # This setup the database server (currently postgresql or sqlite3 (nothing to
   # do since their are just files))
-  #
   def self.setup_database_server
     unless @@databases[Conf.env['USERNAME']]
       db_name = Conf.db['database']
@@ -324,9 +323,11 @@ module WLDatabase
         @relation_classes[classname] = com
       end
       
-      # All of these methods normally correspond to the WLProgram
-      # XXX some bootstrap relations defined statically as ActiveRecord model.
-      # These are the required relations for the wepic_database_wrapper.
+      # FIXME All of these methods normally correspond to the WLProgram should
+      # be removed after webdamlog program loading and refresh tables from
+      # WLEngine FIXME some bootstrap relations defined statically as
+      # ActiveRecord model. These are the required relations for the
+      # wepic_database_wrapper.
       @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
       @wlschema.new(:name=>User.table_name, :schema=>User.schema.to_json).save
