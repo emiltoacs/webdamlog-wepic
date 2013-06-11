@@ -399,8 +399,8 @@ module WLDatabase
           self.new(values).save
         end
         
-        def self.find(id)
-          super id
+        def self.find(*args)
+          super *args
         end
         
         def self.all
