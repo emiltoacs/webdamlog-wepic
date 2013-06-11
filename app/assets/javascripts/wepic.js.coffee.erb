@@ -149,7 +149,7 @@ addStar = ->
   else
     #don't do anything
 
-getPicturesForContact = (contact) ->
+getPicturesForContact = (contact,div_id) ->
   contact = String(contact)
   html = ''
   jQuery.ajax
@@ -161,19 +161,14 @@ getPicturesForContact = (contact) ->
       if data
         html += '<div class="images choose">'
         for key,value of data
-          #consol
-          # if data.hasOwnProperty(key)
-            #<input type="checkbox" name="option1" value="Milk"> Milk<br> 
-          #html += '<a href="' + data[key]['href'] + '">'
           html += '<div class="entry-select">'
           html += '<input type="checkbox" name="'+data[key]['title']+'" value="'+data[key]['id']+'">'
           html += '<div class="title-select">' + data[key]['title'] + '</div>'
           html += '<div class="image"><img alt="' + data[key]['alt'] + '" src="' + data[key]['src'] + '"></div>'
           html += '</div>'#</a>'
-        
         html += '</div>'
-        console.log(html) 
-        jQuery('#pictures-to-send').html(html)
+        console.log(html)
+        jQuery(div_id).html(html)
 
   
 removeStar = ->
@@ -212,7 +207,7 @@ jQuery ->
     'hideOnContentClick' : false
     'hideOnOverlayClick' : true
     'padding': 10
-    'autoScale' : false
+    'autoScale' : true
     'transitionIn' : 'none'
     'transitionOut' : 'none'
     'titlePosition' : 'inside'
@@ -243,13 +238,15 @@ jQuery ->
       '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK"><input type="submit" value="Download image"></form></td></tr>'+
       '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
-      # resize_box('fancybox')
       jQuery('#fancybox-wrap').css
         'position' : 'fixed'
+        'left' : '100px'
+        'top' : '100px'
         
       jQuery('#fancybox-wrap').draggable
         'handle' : '#fancybox-content' 
-        
+      
+      
       #Setup star interaction
       jQuery('#plus').click ->
         console.log('addstar')
@@ -311,14 +308,6 @@ jQuery ->
     'onCleanup' : ->
       #Clear the entire comment section when leaving fancybox.
       jQuery('#fancybox-comments').remove()
-      
-      #Stop the chron job
-      
-# jQuery(window).resize ->
-  # resize = ->
-    # resize_box('fancybox')
-    # resize_box('wepicbox')
-  # setInterval resize , 10
   
 
 jQuery(document).ready ->
@@ -335,7 +324,7 @@ jQuery(document).ready ->
       html += '<li><a type="submit" id="upload_from_url" class="active_action" >from URL</a></li>'
       html += '</ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      html += '<li><a type="submit" id="send-contact-to-contact">Send To...</a></li>'
+      html += '<li><a type="submit" id="send-mine-to-contact">Send To...</a></li>'
       html += '</ul></div>'
       jQuery('#my_pictures_button').html(html)
       menu_open = true
@@ -367,10 +356,10 @@ jQuery(document).ready ->
           'display' : 'block'
         jQuery('#my_pictures_button').html('+')
         menu_open = false
-      jQuery('#send-contact-to-contact').click ->
+      jQuery('#send-mine-to-contact').click ->
         jQuery('.box_wrapper').css 
           'display' : 'block'
-        jQuery('#send-contact-to-contact-form').css
+        jQuery('#send-mine-to-contact-form').css
           'display' : 'block'        
         jQuery('#my_pictures_button').html('+')
         menu_open = false
@@ -406,9 +395,12 @@ jQuery(document).ready ->
         jQuery('#contact_pictures_button').html('+')
         menu_open = false
         
+  #Send file ui interactions
   jQuery('#send-select').change ->
     contact = jQuery('#send-select option:selected').html()
-    getPicturesForContact(contact)
+    getPicturesForContact(contact,'#pictures-to-send')
+  
+  getPicturesForContact('jules','#my-pictures-to-send')
 
     
   console.log("Document ready function executing...")
