@@ -54,12 +54,6 @@ module EngineHelper
       end
     end # initialize
 
-    # Helpers to check syntax of one line of webdamlog program
-    #
-    def parse line
-      @engine.program.parse line
-    end
-
     def run
       @engine.run_bg
       @enginelogger.info("internal webdamlog engine start running listening on port #{@port}")
@@ -89,5 +83,12 @@ module EngineHelper
     end # create_program_dir
     
   end # Class EngineHelper
+
+
+  module ActiveRecordWrapper
+
+    
+
+  end
 
 end # Module EngineHelper
