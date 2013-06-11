@@ -60,6 +60,11 @@ module EngineHelper
       @engine
     end
 
+    
+    def add_fact
+      
+    end
+
     private
 
     # Create the directory in which to put the program that must be writing into
@@ -82,13 +87,6 @@ module EngineHelper
       return pg_file
     end # create_program_dir
     
-  end # Class EngineHelper
-
-
-  module ActiveRecordWrapper
-
-    
-
-  end
+  end # Class EngineHelper  
 
 end # Module EngineHelper

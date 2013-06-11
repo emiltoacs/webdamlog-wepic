@@ -1,5 +1,6 @@
 class Contact < AbstractDatabase
-  #has_many :pictures, :dependent => :destroy
+  # #has_many :pictures, :dependent => :destroy
+   
   
   def self.setup
     unless @setup_done
@@ -30,11 +31,15 @@ class Contact < AbstractDatabase
   
   def self.schema
     {'username' => 'string',
-     'peerlocation' => 'string',
-     'online' => 'boolean',
-     'email' => 'string',
-     'facebook' => 'string'}
+      'peerlocation' => 'string',
+      'online' => 'boolean',
+      'email' => 'string',
+      'facebook' => 'string'}
   end
+
+  include WrapperHelper::ActiveRecordWrapper
+
+  bind
 
   setup
 end
