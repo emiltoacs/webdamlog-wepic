@@ -17,6 +17,14 @@
 	overflow : scroll;
 }
 
+#contacts {
+	overflow-y : scroll;
+	overflow-x : hidden;
+	max-height : 250px;
+	background-color : #fff;
+	border : #111 1px solid;
+}
+
 .entry-select {
     height : 198px;
     position : relative;
@@ -270,73 +278,45 @@
     width : 19%;
     margin-left : 1%;
     height : 100%;
-    
 }
 
 .contact{
   width : 85%;
-  -moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-  -webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-  box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-  background-color:#1d4c7a;
-  -moz-border-radius:6px;
-  -webkit-border-radius:6px;
-  border-radius:6px;
-  border:1px solid #84bbf3;
   display:inline-block;
-  color:#ffffff;
-  font-family:arial;
-  font-size:15px;
-  font-weight:bold;
+  color:#111;
   padding:6px 24px;
   text-decoration:none;
-  text-shadow:1px 1px 0px #528ecc;
 }
 .contact:hover {
-  background-color:#2e78c2;
+  background-color:#111;
+  opacity : 0.9;
+  color : #fff;
+}
+.selected:hover {
+  background-color:#111;
+  opacity : 0.9;
+  color : #fff;
 }
 .contact:active {
-  position:relative;
-  top:1px;
-}
-
-#contacts a {
-  color: #fff;
-  &:visited {
-    color: #fff;
-  }
-  &:hover {
-    color: #fff;
-    //background-color: transparent;
-  }
+  background-color:#111;
+  color : #fff;	
 }
 
 .selected {
   width : 85%;
-  -moz-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-  -webkit-box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-  box-shadow:inset 0px 1px 0px 0px #bbdaf7;
-  background-color:#120344;
-  -moz-border-radius:6px;
-  -webkit-border-radius:6px;
-  border-radius:6px;
-  border:1px solid #84bbf3;
   display:inline-block;
-  color:#ffffff;
-  font-family:arial;
-  font-size:15px;
-  font-weight:bold;
+  color:#fff;
+  background-color : #111;
   padding:6px 24px;
-  text-decoration:none;
-  text-shadow:1px 1px 0px #528ecc;  
+  text-decoration:none;  
 }
 
 .online {
-  background : url(/assets/online.png) center no-repeat;
+  background : url(/assets/online.png) center no-repeat #111;
   width : 15%;
 }
 .offline {
-  background : url(/assets/offline.png) center no-repeat;
+  background : url(/assets/offline.png) center no-repeat #111;
   width : 15%;
 }
 

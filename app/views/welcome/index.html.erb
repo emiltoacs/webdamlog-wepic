@@ -4,6 +4,7 @@
 	        	<%if !current_admin%>
 	        		<a class="login" href="/admin_session/new">Admin login</a>
 	        	<%else%>
+	        	  Logged in as <strong><%= current_admin.login %></strong>
 	  			  | <a class="register" href="/admin/new">Add an admin</a>
 	  			  | <%= link_to "Logout", :admin_logout %>
 		        <% end %>	
@@ -34,10 +35,12 @@
   <div class="signin">
     <%= render 'login'%>
   </div>
-  <div class="list" id="peerlist" style="margin-top:30px;">
+  <%if current_admin%>
+  <div class="list" id="peerlist-wrap" style="margin-top:30px;">
     <%= render 'list'%>
   </div>
   <div class="signin">
     <%= render 'scenario'%>
   </div>
+  <%end%>
 </div>

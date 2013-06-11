@@ -335,11 +335,6 @@ module WLDatabase
       @wlschema.new(:name=>PictureLocation.table_name, :schema=>PictureLocation.schema.to_json).save
       @wlschema.new(:name=>Rating.table_name, :schema=>Rating.schema.to_json).save
       @wlschema.new(:name=>Comment.table_name, :schema=>Comment.schema.to_json).save
-      
-      
-      # if Conf.db['sample_content'] #Check if sample content should be loaded
-        # SampleHelper::create
-      # end      
    end
     
     # The create relation method will create a new relation in the database as well.
