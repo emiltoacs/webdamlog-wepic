@@ -1,6 +1,6 @@
 # setup environment before loading wltool.rb in wl_setup.rb
 ENV["RAILS_ENV"] = "test"
-ENV["USERNAME"] = "test_peer"
+ENV["USERNAME"] = "test_username"
 ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
 require './lib/wl_setup'
@@ -10,7 +10,7 @@ require 'test_helper'
 class UsersControllerTest < ActionController::TestCase
   tests UsersController
 
-  test "index" do
+  test "1index" do
     get(:index)
     assert_response :success
     assert_not_nil assigns(:user)
@@ -18,7 +18,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_not_nil assigns(:user_session)
   end
 
-  test "create" do
+  test "2create" do
     post(:create,
       :user=>{
         :username => "test_username",
@@ -36,13 +36,13 @@ class UsersControllerTest < ActionController::TestCase
     assert_not_nil engine
     assert engine.running_async
     assert_kind_of WLRunner, engine
-    assert_equal([["sigmod_peer", "localhost:4100"], ["test_peer", "localhost:5100"]], engine.wl_program.wlpeers.sort)
+    assert_equal([["sigmod_peer", "localhost:4100"], ["test_username", "localhost:5100"]], engine.wl_program.wlpeers.sort)
     assert_equal 5, engine.wl_program.wlcollections.size
-    assert_equal ["comment_at_test_peer",
-      "contact_at_test_peer",
-      "picture_at_test_peer",
-      "picturelocation_at_test_peer",
-      "rating_at_test_peer"], engine.wl_program.wlcollections.keys.sort
+    assert_equal ["comment_at_test_username",
+      "contact_at_test_username",
+      "picture_at_test_username",
+      "picturelocation_at_test_username",
+      "rating_at_test_username"], engine.wl_program.wlcollections.keys.sort
     
     assert_equal 2, engine.wl_program.rule_mapping.size
     assert_equal [1,
@@ -50,7 +50,7 @@ class UsersControllerTest < ActionController::TestCase
       engine.wl_program.rule_mapping.keys
   end
 
-  test "add" do
+  test "3add" do
     post(:create,
       :user=>{
         :username => "test_username",
@@ -59,9 +59,17 @@ class UsersControllerTest < ActionController::TestCase
         :password_confirmation => "test_user_password"
       })
     assert_not_nil assigns(:user)
-    assert_redirected_to(:controller => "wepic")
+    assert_response(200) # no redirection since it has been created in previous test
     engine = EngineHelper::WLENGINE
     assert_not_nil engine
     assert engine.running_async
-  end
+    assert_equal 7, engine.app_tables.size
+    assert_equal 2, engine.tables[:contact_at_test_username].to_a.size
+    assert_equal [:username, :peerlocation, :online, :email, :facebook], engine.tables[:contact_at_test_username].schema
+    array = engine.tables[:contact_at_test_username].to_a.sort.map do |item|
+      item.values
+    end
+    assert_equal [["Jules", "SIGMOD_peer", "false", "", ""], ["Julia", "SIGMOD_peer", "false", "", ""]], array      
+    end
+  
 end
