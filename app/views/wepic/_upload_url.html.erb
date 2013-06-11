@@ -17,12 +17,10 @@
     <%= f.label :image_url %><br />
     <%= f.url_field :image_url, :required => true %>
   </div>
-  <!-- <%= f.fields_for :picture_location do |loc| %>
   <div class="field">
-    <%= loc.label :location %><br />
-    <%= loc.text_field :location, :required => false %>
-  </div> 
-  <%end%> -->
+  	<label for='location'>Location : </label>
+  	<input type="text" size="30" name="location">
+  </div>  
   <div class="actions">
     <%= f.submit %>
   </div>

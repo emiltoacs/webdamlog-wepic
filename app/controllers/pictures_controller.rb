@@ -1,42 +1,26 @@
 class PicturesController < WepicController
   
-  # def index
-    # @picture = Picture.new
-    # @order_options = ['rated','located','dated']
-    # @sort_options = ['asc','desc']
-    # @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    # unless @relation_classes['Picture'].nil?
-      # @pictures = Picture.where(:owner => Conf.env['USERNAME'])
-      # if sorting_order=='desc'
-        # @pictures.sort! {|a,b| b.send(order_criteria.to_sym) <=> a.send(order_criteria.to_sym)}
-      # else
-        # @pictures.sort! {|a,b| a.send(order_criteria.to_sym) <=> b.send(order_criteria.to_sym)}
-      # end
-    # end
-    # @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?    
-  # end
-  
   # By convention this method create is called when the submit button of the
   # form in wepic/_upload_from_[file/url].html.erb is pressed. This convention is enforced
   # because the form is sent with an http POST requests.
   def create
-    config.logger.info "Picture Parameters : #{params[:picture].inspect}"
+    config.logger.info "Picture Parameters : #{params[:picture].inspect}" #@picture.located = params[:location] if params[:location] #in case we have a location from the start
     @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image_url=>params[:picture][:image_url]) if params[:picture][:image_url]
     @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     @contacts = Contact.all
     if @picture.save
-      @picture.located = params[:location] if params[:location] #in case we have a location from the start 
+      @picture.located = params[:location] if params[:location] #in case we have a location from the start
       config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} successfully saved a new picture"
       respond_to do |format|
-        format.html { render :action => '/wepic', :notice => 'Picture was successfully created.' }
+        format.html { redirect_to :wepic, :notice => 'Picture was successfully created.' }
         format.json { render :json => @picture, :status => :created, :location => :wepic }
       end
     else
       config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} failed to save a new picture"
       respond_to do |format|        
-        format.html { render :action => :index, :alert => "Image creation was not successful : @picture.errors.inspect" } #@picture.errors.inspect
+        format.html { redirect_to :wepic, :notice => "Image creation was not successful. #{@picture.errors.messages.inspect}" }
         format.json { render :json => @picture.errors, :status => :unprocessable_entity }
       end
     end
@@ -45,7 +29,7 @@ class PicturesController < WepicController
   def update
     logger.debug "Update picture was called with arguments : #{params.inspect}"
     respond_to do |format|
-      format.html { render :action => :wepic, :notice => 'Picture was successfully updated.' }
+      format.html { redirect_to :wepic, :notice => 'Picture was successfully updated.' }
       format.json { render :json => @picture, :status => :created, :location => :wepic }
     end
   end
@@ -86,7 +70,7 @@ class PicturesController < WepicController
     @picture.destroy
     
     respond_to do |format|
-      format.html { render :action => :index, :notice => "Picture was successfully deleted." }
+      format.html { redirect_to :wepic, :notice => "Picture was successfully deleted." }
       format.json { head :no_content }
     end    
   end

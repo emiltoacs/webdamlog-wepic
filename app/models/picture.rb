@@ -8,7 +8,7 @@ class Picture < AbstractDatabase
   attr_accessible :title, :image, :owner, :image_url, :_id, :date
   validates :title, :presence => true
   validates :owner, :presence => true  
-  validates :image_url, :presence => true
+  #validates :image_url, :presence => true
   
   @storage = :database
   
