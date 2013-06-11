@@ -148,6 +148,33 @@ addStar = ->
             'display' : 'block'
   else
     #don't do anything
+
+getPicturesForContact = (contact) ->
+  contact = String(contact)
+  html = ''
+  jQuery.ajax
+    url : 'contacts/' + contact + '/pictures'
+    data :
+      action : 'send'
+    dataType : 'json'
+    success : (data) ->
+      if data
+        html += '<div class="images choose">'
+        for key,value of data
+          #consol
+          # if data.hasOwnProperty(key)
+            #<input type="checkbox" name="option1" value="Milk"> Milk<br> 
+          #html += '<a href="' + data[key]['href'] + '">'
+          html += '<div class="entry-select">'
+          html += '<input type="checkbox" name="'+data[key]['title']+'" value="'+data[key]['id']+'">'
+          html += '<div class="title-select">' + data[key]['title'] + '</div>'
+          html += '<div class="image"><img alt="' + data[key]['alt'] + '" src="' + data[key]['src'] + '"></div>'
+          html += '</div>'#</a>'
+        
+        html += '</div>'
+        console.log(html) 
+        jQuery('#pictures-to-send').html(html)
+
   
 removeStar = ->
   if (starNumber>=1)
@@ -212,7 +239,9 @@ jQuery ->
       '<td style=""><strong id="image-title" contenteditable="true" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
       '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location" contenteditable="true">'+metainf['location'].toString()+'</strong></td>'+
-      '<td style="text-align:right">'+star_s+'</td></tr></table><div id="fancybox-errors" class="box-errors error"></div></div>'
+      '<td style="text-align:right">'+star_s+'</td></tr>'+
+      '<td><tr><form action="/pictures/'+metainf['id']+'/images" method="LINK"><input type="submit" value="Download image"></form></td></tr>'+
+      '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
       # resize_box('fancybox')
       jQuery('#fancybox-wrap').css
@@ -306,7 +335,7 @@ jQuery(document).ready ->
       html += '<li><a type="submit" id="upload_from_url" class="active_action" >from URL</a></li>'
       html += '</ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      html += '<li><a type="submit" id="send_to_contact">Send To...</a></li>'
+      html += '<li><a type="submit" id="send-contact-to-contact">Send To...</a></li>'
       html += '</ul></div>'
       jQuery('#my_pictures_button').html(html)
       menu_open = true
@@ -338,10 +367,10 @@ jQuery(document).ready ->
           'display' : 'block'
         jQuery('#my_pictures_button').html('+')
         menu_open = false
-      jQuery('#send_to_contact').click ->
+      jQuery('#send-contact-to-contact').click ->
         jQuery('.box_wrapper').css 
           'display' : 'block'
-        jQuery('#send_to_form').css
+        jQuery('#send-contact-to-contact-form').css
           'display' : 'block'        
         jQuery('#my_pictures_button').html('+')
         menu_open = false
@@ -350,16 +379,16 @@ jQuery(document).ready ->
     if menu_open
       menu_open = false
     else
-      html = '+<div id="my_pictures_menu" class="popUpMenu">'
-      html += '<a type="submit" id="my_pictures_menu_close" class="button-close"></a><ul>'
+      html = '+<div id="contact_pictures_menu" class="popUpMenu">'
+      html += '<a type="submit" id="contact_pictures_menu_close" class="button-close"></a><ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      html += '<li><a type="submit" id="send_to_contact">Send To...</a></li>'
+      html += '<li><a type="submit" id="send-contact-to-contact">Send To...</a></li>'
       html += '</ul></div>'
-      jQuery('#my_pictures_button').html(html)
+      jQuery('#contact_pictures_button').html(html)
       menu_open = true
-      jQuery('#my_pictures_menu_close').click ->
+      jQuery('#contact_pictures_menu_close').click ->
         console.log('close menu')
-        jQuery('#my_pictures_button').html('+')
+        jQuery('#contact_pictures_button').html('+')
         menu_open = false
       jQuery('#sort_by').click ->
         console.log('edit')
@@ -367,15 +396,19 @@ jQuery(document).ready ->
           'display' : 'block'
         jQuery('#sort').css
           'display' : 'block'
-        jQuery('#my_pictures_button').html('+')
+        jQuery('#contact_pictures_button').html('+')
         menu_open = false
-      jQuery('#send_to_contact').click ->
+      jQuery('#send-contact-to-contact').click ->
         jQuery('.box_wrapper').css 
           'display' : 'block'
-        jQuery('#send_to_form').css
+        jQuery('#send-contact-to-contact-form').css
           'display' : 'block'        
-        jQuery('#my_pictures_button').html('+')
+        jQuery('#contact_pictures_button').html('+')
         menu_open = false
+        
+  jQuery('#send-select').change ->
+    contact = jQuery('#send-select option:selected').html()
+    getPicturesForContact(contact)
 
     
   console.log("Document ready function executing...")
