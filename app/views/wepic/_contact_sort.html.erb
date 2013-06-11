@@ -1,4 +1,4 @@
-<%=form_tag({ :controller => "wepic", :action => "index"},:method => 'get') do%>
+<%=form_tag :remote => true, :name=>'contact-sort' do%>
   <!-- <input type="hidden" value="<%=current_user.username%>" name="username" id="sort-form-user"> -->
   <div class="field">
   	Sort By : <%=select_tag 'order' , options_for_select(@order_options.each_with_index {|o,i| [o,i]}) %>
@@ -7,6 +7,6 @@
   	In order : <%=select_tag 'sort' , options_for_select(@sort_options.each_with_index {|o,i| [o,i]}) %>
   </div>  
   <div class="actions">
-    <%= submit_tag 'Sort' %>
+    <%= submit_tag 'Sort', :onclick => "return window.sort_contact()" %>
   </div>
 <% end %>
