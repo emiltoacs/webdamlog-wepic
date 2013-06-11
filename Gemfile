@@ -29,6 +29,7 @@ gem 'json'
 gem 'awesome_print'
 
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 gem 'fancybox-rails'
 
 gem 'jquery-star-rating-rails'

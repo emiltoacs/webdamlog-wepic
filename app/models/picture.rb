@@ -1,10 +1,14 @@
 require 'open-uri'
 
 class Picture < AbstractDatabase
-  #belongs_to :contact
   has_one :picture_location, :dependent => :destroy
   has_one :rating, :dependent => :destroy
-  # has_many :comments, :dependent => :destroy
+  has_many :comments, :dependent => :destroy
+  
+  attr_accessible :title, :image, :owner, :image_url, :_id, :date
+  validates :title, :presence => true
+  validates :owner, :presence => true  
+  #validates :image_url, :presence => true
   
   @storage = :database
   
@@ -47,19 +51,46 @@ class Picture < AbstractDatabase
     }
   end
   
-  attr_accessible :title, :image, :owner, :image_url, :_id, :date
-  validates :title, :presence => true
-  validates :owner, :presence => true
-  #validates :image_url, :url => true
-  
   def rated
     return self.rating.rating if self.rating && self.rating.rating
     0
   end
   
-  def location
+  def rated=(rating)
+    self.rating.rating = rating
+    self.rating.save
+    WLLogger.logger.debug "Rating for picture #{self._id} : #{rated}"
+  end
+  
+  def located
     return self.picture_location.location if self.picture_location && self.picture_location.location
-    0
+    "unknown"
+  end
+  
+  def dated
+    self.date
+  end
+  
+  def dated=(date)
+    self.date = date
+    self.save
+    WLLogger.logger.debug "Date for picture #{self._id} : #{dated}"
+  end
+  
+  def titled
+    self.title
+  end
+  
+  def titled=(title)
+    self.title = title
+    self.save
+    WLLogger.logger.debug "Title for picture #{self._id} : #{titled}"
+  end
+  
+  def located=(location)
+    self.picture_location.location = location
+    self.picture_location.save
+    WLLogger.logger.debug "Location for picture #{self._id} : #{located}"
   end
   
   has_attached_file :image,
@@ -74,24 +105,20 @@ class Picture < AbstractDatabase
     default_scope select_without_file_columns_for(:image)
   end
   
-  # def initialize(args)
-    # self._id = rand(0xFFFFFF)
-    # super(args)
-  # end
-  
   def default_values
     self._id = rand(0xFFFFFF)
     self.date = DateTime.now
   end
   
   def create_defaults
-    create_rating(:_id => self._id, :rating => -1)
-    WLLogger.logger.debug "Rating for picture #{self} : #{rating}"
+    create_rating(:_id => self._id, :rating => 0)
+    create_picture_location(:_id => self._id, :location => "unknown")
   end
   
+  before_create :create_defaults
   before_validation :default_values
   before_validation :download_image, :if => :image_url_provided?
-  before_create :create_defaults
+  
      
   private
   

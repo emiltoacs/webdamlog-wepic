@@ -1,0 +1,14 @@
+<%=form_tag({ :controller => "wepic", :action => "send_picture"},:method => 'post', :class => 'send-contact-to-contact-form') do%>
+  <div class="field" style="display:inline;">
+  	<%= label_tag "Send Pictures From : " %>
+  	<%= select(:contact, :username, @contacts.map {|contact| contact.username},{:prompt => 'Select Contact',:selected=>nil,:required=>true,:disable=>'Select Contact'}, :id => 'send-select')%>
+  </div>
+  <div class="field" style="display:inline;">
+  	<%= label_tag "To : " %>
+  	<%= select(:contact, :username, @contacts.map {|contact| contact.username},{:prompt => 'Select Contact',:selected=>nil,:required=>true,:disable=>'Select Contact'}, :id => 'send-select')%>
+  </div>  
+  <div id="pictures-to-send" class="field"></div>
+  <div class="actions">
+    <%= submit_tag 'Send To Contact' %>
+  </div>
+<% end %>

@@ -9,6 +9,7 @@ require 'sqlite3'
 require 'pg'
 require 'optparse'
 require 'ostruct'
+require 'rake'
 
 module WLSetup
   
@@ -240,7 +241,7 @@ WHERE
       end # end if server
       
     end # end if options.reset
-
+    
     return start_server, options
   end
 

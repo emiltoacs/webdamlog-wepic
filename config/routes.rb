@@ -33,11 +33,12 @@ WepimApp::Application.routes.draw do
     resources :query
     match 'query/insert' => 'query#insert'
     match 'contacts/:username/pictures' => 'pictures#contact'
-    match 'wepic/ratings' => 'wepic#updateRating'
+    match 'wepic/update' => 'wepic#update'
     match 'pictures/update' => 'pictures#update'
     match 'wepic/comments/latest' => 'wepic#getLatestComments'
     match 'wepic/comments/add' => 'wepic#addComment'
     match 'wepic/comments/remove' => 'wepic#removeComment'
+    match 'wepic/send_picture' => 'wepic#send_picture'
   end
   resources :users, :user_sessions
   match 'login' => 'user_sessions#new', :as => :login
