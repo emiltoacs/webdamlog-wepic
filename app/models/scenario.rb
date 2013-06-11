@@ -4,6 +4,7 @@ class Scenario
   include ActiveModel::Validations
   include ActiveModel::Conversion
   extend ActiveModel::Naming
+  extend ActiveModel::Translation
 
   SCENARIO = ['sigmod']
 
@@ -54,12 +55,13 @@ class Scenario
   def read_attribute_for_validation(attr)
     send(attr)
   end
-  def self.human_attribute_name(attr, options = {})
-    attr
-  end
-  def self.lookup_ancestors
-    [self]
-  end
+  # Implemented thanks to "extend ActiveModel::Translation"
+#  def self.human_attribute_name(attr, options = {})
+#    attr
+#  end
+#  def self.lookup_ancestors
+#    [self]
+#  end
 
   # Dispatcher to run the currently selected scenario
   def run

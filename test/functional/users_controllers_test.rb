@@ -48,4 +48,21 @@ class UsersControllerTest < ActionController::TestCase
       "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);"],
       engine.wl_program.rule_mapping.keys
   end
+
+  test "add" do
+    post(:create,
+      :user=>{
+        :username => "test_username",
+        :email => "test_user_email@emailprovider.dom",
+        :password => "test_user_password",
+        :password_confirmation => "test_user_password"
+      })
+    assert_not_nil assigns(:user)
+    assert_redirected_to(:controller => "wepic")
+    engine = EngineHelper::WLENGINE
+    assert_not_nil engine
+    assert engine.running_async
+
+    
+  end
 end
