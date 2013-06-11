@@ -1,5 +1,14 @@
 <div class="opacity"></div>
 <div class="content">
+ <div style='float:right;'>
+	        	<%if !current_admin%>
+	        		<a class="login" href="/admin_session/new">Admin login</a>
+	        	<%else%>
+	        	  Logged in as <strong><%= current_admin.login %></strong>
+	  			  | <a class="register" href="/admin/new">Add an admin</a>
+	  			  | <%= link_to "Logout", :admin_logout %>
+		        <% end %>	
+ </div>
 <h2>Add an admin</h2>
 <%= render 'form'%>
 </div>

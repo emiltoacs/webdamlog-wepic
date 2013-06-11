@@ -184,7 +184,7 @@ module WLLauncher
     end
 
     # Compose URL
-    url = "#{peer.protocol}://#{peer.ip}"
+    url = "#{peer.protocol}://#{peer.ip}:#{peer.port}"
 
     # Check if url reachable.
     if reachable?(url, peer.port)
