@@ -240,7 +240,7 @@ jQuery ->
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
       '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location" contenteditable="true">'+metainf['location'].toString()+'</strong></td>'+
       '<td style="text-align:right">'+star_s+'</td></tr>'+
-      '<td><tr><form action="/pictures/'+metainf['id']+'/images" method="LINK"><input type="submit" value="Download image"></form></td></tr>'+
+      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK"><input type="submit" value="Download image"></form></td></tr>'+
       '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
       # resize_box('fancybox')
