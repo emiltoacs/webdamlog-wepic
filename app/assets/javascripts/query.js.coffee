@@ -7,6 +7,10 @@
 #     "Column Name : <input id=\"col" + index + "\" name=\"col" + index + "\" type=\"text\"/><br/>" +
 #     "Column Type : <input id=\"type" + index + "\" name=\"type" + index + "\" type=\"text\"/>";
 #}
+
+#TODO remove need for description
+
+
 jQuery.noConflict()
 current_url = location.protocol + '//' + location.host + location.pathname
 
@@ -20,12 +24,31 @@ Object.size = (obj) ->
 display_error = (error_msg) ->
   "The following error has been encountered : " + JSON.stringify(error_msg)
 
+
+getRelationFields = (relation) ->
+  jQuery.ajax
+    'url' : current_url + '/relation'
+    'data' :
+      'relation' : relation
+      'content' : false
+    'datatype' : 'json'
+    'success' : (data) -> 
+      if data[0]
+        data = data[0]
+        columns = data.columns
+        html = '' 
+        for col in columns
+          input = '<input type="text" size="30" placeholder="'+typeof(col)+'" name="'+String(col)+'">'
+          html += '<div class="field">'+String(col)+':'+input+'</div>'
+        jQuery('#relation_select').after(html)
+
 getRelationContents = (relation,type)->
   jQuery('#display_relation_'+type).html('')
   jQuery.ajax
     'url' : current_url + '/relation'
     'data' :
       'relation' : relation
+      'content' : true
     'datatype' : 'json'
     'success' : (data) -> 
       if data[0]
@@ -89,6 +112,11 @@ window.relation_refresh = (type)->
   getRelationContents(relation,type)
 
 jQuery(document).ready ->
+  jQuery('#relation_select').change ->
+    relation = jQuery('#relation_select option:selected').html()
+    if relation!='Select Relation'
+      getRelationFields(relation)
+    
   jQuery('#relation_extensional').change ->
     relation = jQuery('#relation_extensional option:selected').html()
     getRelationContents(relation,'extensional')

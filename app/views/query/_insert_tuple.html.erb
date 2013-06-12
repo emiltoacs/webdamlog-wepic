@@ -2,10 +2,10 @@
   <div class="field"> Relation Name :
     <%= select(:relation, :name,
       @relation_classes.keys.reject{|key| key.upcase == "WLSCHEMA" or key.upcase == "DATABASEMETUM" },
-      {:prompt => 'Select Relation',:selected=>nil,:required=>true,:disable=>'Select Relation'}) %>
+      {:prompt => 'Select Relation',:selected=>nil,:required=>true,:disable=>'Select Relation'}, :id => 'relation_select') %>
   </div>
-  <div class="field"> Values to Insert :
+  <!-- <div class="field"> Values to Insert :
     <%= text_field_tag "values", nil, :required => true, :placeholder => "Values seperated by ';'", :size => 30 %>
-  </div>
+  </div> -->
   <%= submit_tag 'Insert tuple' %>
 <% end %>
