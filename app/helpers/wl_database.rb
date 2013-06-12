@@ -25,8 +25,8 @@ module WLDatabase
   def self.setup_database_server
     unless @@databases[Conf.env['USERNAME']]
       db_name = Conf.db['database']
-      # Connect to postgres database with admin user postgres that always
-      # exist. Then create the first database for the manager
+      # Connect to postgres database with admin user postgres that always exist.
+      # Then create the first database for the manager
       if Conf.db['adapter'] == 'postgresql'
         if PostgresHelper.db_exists? db_name
           msg = "#{db_name} exists postgreSQL: create object relational mapper"
@@ -61,7 +61,7 @@ module WLDatabase
     @@databases[database_id]
   end
 
-  #FIXME Do we want to destroy the object explicitly? classes?
+  # #FIXME Do we want to destroy the object explicitly? classes?
   def close_connection(database_id)
     @@databases[database_id].destroy_classes
     @@databases.delete(database_id)
@@ -80,8 +80,9 @@ module WLDatabase
     model_name.tableize
   end
   
-  #TODO Add namespace to WLSchema relation. The namespace is based on the database_id
-  #TODO: Datetime and binary format have to be managed to be viewed properly.
+  # #TODO Add namespace to WLSchema relation. The namespace is based on the
+  # database_id #TODO: Datetime and binary format have to be managed to be
+  # viewed properly.
   class WLInstanceDatabase
     include WLTool
     
@@ -154,10 +155,10 @@ module WLDatabase
       end # @initialized.nil?
     end # initialized?
 
-    #Resets instance schemas and relation_classes attributes.
-    #Remove all generated model classes.
+    # #Resets instance schemas and relation_classes attributes. #Remove all
+    # generated model classes.
     def destroy_classes
-      #Remove all generated model classes
+      # #Remove all generated model classes
       @relation_classes.values.each do |class_object|
         delete_class(class_object)
       end
@@ -170,9 +171,9 @@ module WLDatabase
     # instance schemas and relation_classes attributes. Use
     # create_or_retrieve_database to reinitialize.
     def destroy_classes_and_database
-      #Remove all generated model classes
+      # #Remove all generated model classes
       destroy_classes
-      #Destroy the db
+      # #Destroy the db
       case Conf.db['adapter']
       when 'sqlite3'
         path = Pathname.new(@db_name)
@@ -244,8 +245,7 @@ module WLDatabase
       #        WLLogger.logger.debug "create a model #{self} with its table #{table_name} schema #{@schema} in database #{@wl_database_instance}"
       #      end
       @relation_classes[DATABASE_SCHEMA]=@wlschema
-      #Retrieve all the models
-      #@wlschema.establish_connection @configuration
+      # #Retrieve all the models #@wlschema.establish_connection @configuration
       @wlschema.all.each do |table|
         klass = create_model_class(table.name, JSON.parse(table.schema))
         @relation_classes[klass.name] = klass
@@ -268,6 +268,9 @@ module WLDatabase
       else
         @relation_classes[classname] = pict
       end
+      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      wdl_tabname = "picture_at_#{EngineHelper::WLENGINE.peername}"
+      @relation_classes[classname].bind_wdl_relation wdl_tabname
 
       classname = "Contact"
       conn = WLTool::class_exists(classname, ActiveRecord::Base)
@@ -277,6 +280,10 @@ module WLDatabase
       else
         @relation_classes[classname] = conn
       end
+      # wdl linking
+      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      wdl_tabname = "contact_at_#{EngineHelper::WLENGINE.peername}"
+      @relation_classes[classname].bind_wdl_relation wdl_tabname
 
       classname = "User"
       peer = WLTool::class_exists(classname, ActiveRecord::Base)
@@ -304,6 +311,9 @@ module WLDatabase
       else
         @relation_classes[classname] = iml
       end
+      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      wdl_tabname = "picture_location_at_#{EngineHelper::WLENGINE.peername}"
+      @relation_classes[classname].bind_wdl_relation wdl_tabname
       
       classname = "Rating"
       rate = WLTool::class_exists(classname , ActiveRecord::Base)
@@ -313,6 +323,9 @@ module WLDatabase
       else
         @relation_classes[classname] = rate
       end
+      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      wdl_tabname = "rating_at_#{EngineHelper::WLENGINE.peername}"
+      @relation_classes[classname].bind_wdl_relation wdl_tabname
       
       classname = "Comment"
       com = WLTool::class_exists(classname , ActiveRecord::Base)
@@ -322,6 +335,9 @@ module WLDatabase
       else
         @relation_classes[classname] = com
       end
+      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      wdl_tabname = "comment_at_#{EngineHelper::WLENGINE.peername}"
+      @relation_classes[classname].bind_wdl_relation wdl_tabname
 
       classname = "DescribedRule"
       com = WLTool::class_exists(classname , ActiveRecord::Base)
@@ -345,11 +361,11 @@ module WLDatabase
       @wlschema.new(:name=>Rating.table_name, :schema=>Rating.schema.to_json).save
       @wlschema.new(:name=>Comment.table_name, :schema=>Comment.schema.to_json).save
       @wlschema.new(:name=>DescribedRule.table_name, :schema=>DescribedRule.schema.to_json).save
-   end
+    end
     
-    # The create relation method will create a new relation in the database as well.
-    # as a new rails model class connected to that relation. It requires a schema
-    # that will correspond to the table's relational schema.
+    # The create relation method will create a new relation in the database as
+    # well. as a new rails model class connected to that relation. It requires a
+    # schema that will correspond to the table's relational schema.
     #
     def create_model(name,schema)
       model_klass = create_model_class(name, schema)
@@ -367,8 +383,7 @@ module WLDatabase
 
     # Create the relation as a model and a table in the database. Return the
     # class of the model created if succeed. it should be called by
-    # create_relation
-    # create_relation, relation 
+    # create_relation create_relation, relation
     #
     def create_model_class(name, schema)
       raise WLDatabaseError.new "type error of name is #{name.class}" unless name.is_a? String
@@ -420,12 +435,12 @@ module WLDatabase
         end
         WLLogger.logger.debug "Created a model #{model_name} with its table #{table_name} and schema #{@schema} in database #{config['database']}"
       end
-      #klass << 
+      # #klass <<
       return klass
     end
       
-    # Test if the given model or relation name in @relation_classes has a corresponding table in
-    # the current database
+    # Test if the given model or relation name in @relation_classes has a
+    # corresponding table in the current database
     #
     def table_exists_for_model?(relation_name)
       if @relation_classes.key? relation_name
