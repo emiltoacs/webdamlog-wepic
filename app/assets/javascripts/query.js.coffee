@@ -65,6 +65,8 @@ add_described_rule = (rule,description,role) ->
         html += '<div class="rule">' + rule + '</div>'
         html += '</div>'
         jQuery('.'+role+'_examples').append(html)
+        jQuery('#description_edit_'+role).val('')
+        jQuery('#rule_edit_'+role).val('')
       else
         alert(display_error(data.errors))
 
@@ -96,14 +98,10 @@ jQuery(document).ready ->
   window.custom_query = ->
     rule = jQuery('#rule_edit_query').val()
     desc = jQuery('#description_edit_query').val()
-    jQuery('#description_edit_query').val('')
-    jQuery('#rule_edit_query').val('')
     add_described_rule(rule,desc,'query')
   window.custom_update = ->
     rule = jQuery('#rule_edit_update').val()
     desc = jQuery('#description_edit_update').val()
-    jQuery('#description_edit_update').val('')
-    jQuery('#rule_edit_update').val('')
     add_described_rule(rule,desc,'update')
   window.close_rule = (id) ->
     remove_described_rule(id)
