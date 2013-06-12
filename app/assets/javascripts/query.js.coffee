@@ -112,43 +112,25 @@ jQuery(document).ready ->
     else
       html = '+<div id="update_examples_menu" class="popUpMenu">'
       html += '<a type="submit" id="update_examples_menu_close" class="button-close"></a><ul>'
-      html += '<li><a type="submit" id="create_relation" class="active_action">from file</a></li>'
-      html += '<li><a type="submit" id="insert_tuple" class="active_action" >from URL</a></li>'
+      html += '<li><a type="submit" id="create_relation_button" class="active_action">Create Relation...</a></li>'
+      html += '<li><a type="submit" id="insert_tuple_button" class="active_action" >Insert Fact...</a></li>'
       html += '</ul></div>'
       jQuery('#update_examples_button').html(html)
       menu_open = true
       jQuery('#update_examples_menu_close').click ->
-        console.log('close menu')
         jQuery('#update_examples_button').html('+')
         menu_open = false
-      jQuery('#upload_from_file').click ->
-        console.log('upload new pic')
+      jQuery('#create_relation_button').click ->
         jQuery('#update_examples_button').html('+')
         jQuery('.box_wrapper').css 
           'display' : 'block'
-        jQuery('#upload_file').css
+        jQuery('#create_relation').css
           'display' : 'block'
         menu_open = false
-      jQuery('#upload_from_url').click ->
-        console.log('upload new pic')
+      jQuery('#insert_tuple_button').click ->
         jQuery('#update_examples_button').html('+')
         jQuery('.box_wrapper').css 
           'display' : 'block'
-        jQuery('#upload_url').css
+        jQuery('#insert_tuple').css
           'display' : 'block'
-        menu_open = false
-      jQuery('#sort_by').click ->
-        console.log('edit')
-        jQuery('.box_wrapper').css 
-          'display' : 'block'
-        jQuery('#sort').css
-          'display' : 'block'
-        jQuery('#update_examples_button').html('+')
-        menu_open = false
-      jQuery('#send-mine-to-contact').click ->
-        jQuery('.box_wrapper').css 
-          'display' : 'block'
-        jQuery('#send-mine-to-contact-form').css
-          'display' : 'block'        
-        jQuery('#update_examples_button').html('+')
         menu_open = false

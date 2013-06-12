@@ -2,6 +2,12 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+//Menu rules 
+#update_examples_menu {
+  right: 12px;
+}
+
+
 //display relations
 .record {
   // border-top : 1px #111 solid;
@@ -263,11 +269,11 @@ textarea{
 
 //Create relation
 #create_relation {
-    float:left;
+    //float:left;
 }
 
 #insert_tuple {
-    float:left;
+    //float:left;
 }
 
 #query_forms {
