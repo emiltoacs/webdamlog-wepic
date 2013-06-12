@@ -1,13 +1,24 @@
 described_rules:
   drule1:
     description: Get all the titles for my pictures
-    rule : results@local($title):-pictures@local($title,$contact,$_id,$image_url);
+    rule : results@local($title):-pictures@local($title,_,_,_);
+    role: query
   drule2:
     description: Get all pictures from all my friends
-    rule : results@local($title, $contact, $_id, $image_url):-contact@local($contact, $peerlocation, $online, $email, $facebook),pictures@$contact($title, $contact, $_id, $image_url);
+    rule : results@local($title, $contact, $_id, $image_url):-contact@local($contact, _, _, _, _),pictures@$contact($title, $contact, $_id, $image_url);
+    role: query
   drule3:
     description: Get all my pictures with rating higher or equal to 5
-    rule : results@local($rating):-pictures@local($title,$contact,$_id,$image_url),rating@sigmod_peer($_id,$rating),rating>=5;
+    rule : results@local($title,$contact,$_id,$image_url):-pictures@local($title,$contact,$_id,$image_url),rating@sigmod_peer($_id,$rating),rating>=5;
+    role: query
   # drule4:
     # description ; Get the ten best rated pictures #Find how to pick limited number of results syntax
-    # rule : 
+    # rule :
+  drule5:
+    description: Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself. 
+    rule : collection ext persistent friends@local(name*,group*);friends@local($name,'commenters'):-pictures@local(_,_,$_id,_),comments@local($id,$name,_,_);friends@local(local,'commenters'):-;
+    role: update
+  drule5: 
+    description: Send to contact all pictures taken last week by our common friends and me at a given location
+    rule : pictures@contact($title, $contact, $_id, $image_url):-friends@local(contact,$group),friends@local($peer,$group),pictures@$peer($title,$contact,$_id,$image_url),picturelocation@local($_id,"given location");
+    role: update
