@@ -2,6 +2,23 @@
 	<h3 class="query_title">Query Examples</h3>
 	<a id="query_examples_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
 	<div  class="query_view">
-		<%= @described_queries.inspect %>
+	<div class="query_examples">
+		<% @described_queries.each do |query| %>
+		<div class="drule">
+			<div class="description"><%=query.description%></div>
+			<div class="rule">
+				<%query.rule.split(";").each do |line|%>
+				<%= "#{line};"%> <br/>
+				<%end%>
+			</div>
+		</div>
+		<% end %>
 	</div>
+	<div id="custom_query">
+		    <%=hidden_field_tag 'role', 'query'%>
+			<%=text_area_tag 'rule' , nil, :placeholder => 'Write your own query here...', :height => 3, :escape=>false, :required => true%>
+			<%=text_field_tag 'description' , nil, :placeholder => 'Optional Description..', :required => false%>
+			<input type="submit" value="Submit" onclick="window.custom_query();">
+	</div>
+	</div>	
 </div>

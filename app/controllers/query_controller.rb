@@ -5,14 +5,18 @@ require 'wl_tool'
 #
 class QueryController < ApplicationController
   include WLDatabase
+  @setup_done = false
   
   def index
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    begin
-      ContentHelper::query_create
-    rescue => error
-      flash[:alert] = "Error occured : #{error.message}"
+    unless @setup_done
+      begin
+        ContentHelper::query_create
+      rescue => error
+        flash[:alert] = "Error occured : #{error.message}"
+      end
+      @setup_done = true
     end
     @described_queries = DescribedRule.where(:role=>'query')
     @described_updates = DescribedRule.where(:role=>'update')
@@ -104,6 +108,13 @@ class QueryController < ApplicationController
   
   def remove_described_rule
     
+  end
+  
+  def relation
+    relation_name = params[:relation]
+    respond_to do |format|
+      format.json {render :json => @relation_classes[relation_name].all}
+    end
   end
 
 end # QueryController

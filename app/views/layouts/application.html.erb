@@ -42,6 +42,8 @@
         </div>
       </div>
     </div>
+    <%if flash[:notice]%><div id="notice"><%= notice %></div><%end%>
+	<%if flash[:alert]%><div id="error"><%= alert %></div><%end%>
     <% if current_user %>
       <%
       @wepic_tab = "tab"
@@ -54,8 +56,6 @@
       @program_tab = "selected_tab" if current_path=="/program"
       @engine_tab = "selected_tab" if current_path=="/engine"
     %>
-    <%if flash[:notice]%><div id="notice"><%= notice %></div><%end%>
-	<%if flash[:alert]%><div id="error"><%= alert %></div><%end%>
       <div id="tabs" class="window960">
         <div id="wepic_tab" class="<%=@wepic_tab%>">
           <div class="opacity"></div>
