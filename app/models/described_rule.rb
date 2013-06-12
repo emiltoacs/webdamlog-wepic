@@ -22,8 +22,7 @@ class DescribedRule < AbstractDatabase
         ContentHelper::query_create
       rescue => error
         WLLogger.logger.warn "Error occured : #{error.message}"
-      end
-      
+      end      
       
       @setup_done = true
     end 
