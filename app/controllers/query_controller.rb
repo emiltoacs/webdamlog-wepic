@@ -9,9 +9,15 @@ class QueryController < ApplicationController
   def index
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    ContentHelper::query_create
-    @described_rules = DescribedRules.all
-    @described_rule = DescribedRule.new
+    begin
+      ContentHelper::query_create
+    rescue => error
+      flash[:alert] = "Error occured : #{error.message}"
+    end
+    @described_queries = DescribedRule.where(:role=>'query')
+    @described_updates = DescribedRule.where(:role=>'update')
+    @described_query = DescribedRule.new
+    @described_udpate = DescribedRule.new
   end
   
   #Insert a tuple in the instance database
@@ -91,5 +97,13 @@ class QueryController < ApplicationController
       end
     end
   end # create
+  
+  def add_described_rule
+    
+  end
+  
+  def remove_described_rule
+    
+  end
 
 end # QueryController
