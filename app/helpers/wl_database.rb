@@ -367,9 +367,26 @@ module WLDatabase
     # well. as a new rails model class connected to that relation. It requires a
     # schema that will correspond to the table's relational schema.
     #
-    def create_model(name,schema)
+    #  @options createwdl [boolean] :wdl set to true to create the binding with webdamlog
+    #
+    def create_model(name,schema,options={})
       model_klass = create_model_class(name, schema)
-      @relation_classes[name] = model_klass
+
+      if options[:wdl]
+        # wdl binding TODO add wdl declaration of new relation here
+        model_klass.extend WrapperHelper::ActiveRecordWrapper
+        wdl_tabname = "#{model_klass.table_name}_at_#{EngineHelper::WLENGINE.peername}"
+        nm, sch = model_klass.create_wdl_relation wdl_tabname, schema
+        # XXX when failed the model_klass should be garbage collected since we
+        # don't keep any reference to it
+        unless nm.is_a? WLBud::WLError
+          model_klass.bind_wdl_relation wdl_tabname
+          @relation_classes[name] = model_klass
+        end
+      else
+        @relation_classes[name] = model_klass
+      end
+      
       begin
         # new record in the wlshema table
         unless @wlschema.new(:name => model_klass.table_name,:schema => model_klass.schema.to_json).save                    
@@ -435,7 +452,6 @@ module WLDatabase
         end
         WLLogger.logger.debug "Created a model #{model_name} with its table #{table_name} and schema #{@schema} in database #{config['database']}"
       end
-      # #klass <<
       return klass
     end
       
