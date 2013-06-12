@@ -1,6 +1,4 @@
-class Contact < AbstractDatabase
-  # #has_many :pictures, :dependent => :destroy
-   
+class Contact < AbstractDatabase   
   
   def self.setup
     unless @setup_done
@@ -36,8 +34,6 @@ class Contact < AbstractDatabase
       'email' => 'string',
       'facebook' => 'string'}
   end
-
-  include WrapperHelper::ActiveRecordWrapper
-
-  setup
+  
+  setup    
 end

@@ -50,7 +50,7 @@ class UsersController < ApplicationController
     flash[:notice] = params.inspect
     begin
       WLDatabase.setup_database_server
-      if @user.save
+      if @user.save        
         EngineHelper::WLHELPER.run
         # When user is created, he is automatically logged in, which means we
         # need to start his Webdamlog session.
