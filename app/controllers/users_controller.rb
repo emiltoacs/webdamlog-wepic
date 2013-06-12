@@ -59,7 +59,7 @@ class UsersController < ApplicationController
           format.xml { render :xml => @user, :status => :created, :location => @user }
         end
       else
-        WLLogger.logger.debug "#{@user.errors.messages.inspect}"
+        WLLogger::WLLogger.logger.debug "#{@user.errors.messages.inspect}"
         respond_to do |format| 
           format.html { render :action => "new" , :alert => @user.errors.messages.inspect}
           format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
