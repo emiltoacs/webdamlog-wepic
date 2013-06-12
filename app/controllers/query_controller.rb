@@ -111,6 +111,7 @@ class QueryController < ApplicationController
   end
   
   def relation
+    @relation_classes = database(Conf.env['USERNAME']).relation_classes unless @relation_classes
     relation_name = params[:relation]
     respond_to do |format|
       format.json {render :json => @relation_classes[relation_name].all}
