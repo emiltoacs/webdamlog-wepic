@@ -29,12 +29,6 @@ module WLLauncher
         peer = Peer.new(:username => username, :ip=> ip, :port => web_port, :active => false, :protocol => protocol)
         WLLogger.logger.debug "New peer record created with port #{web_port}..."
         if peer.save
-          #Tell the peer record it should set remote peer offline when manager shuts down
-          at_exit do
-            WLLogger.logger.info "Peer : #{peer.username}[#{peer.ip}:#{peer.port}] is shutting down..."
-            peer.active = false
-            peer.save
-          end 
           Thread.new do
             WLLogger.logger.debug "Start peer thread launching..."
             st, msg = WLLauncher.start_peer(username, web_port, peer, ymlconf, directory)
@@ -52,13 +46,19 @@ module WLLauncher
   
   # Start a new peer or restart a peer <peer_record> saved in the db
   #
-  def self.start_peer(new_peer_name, new_peer_port, peer_record=nil, ymlconf=nil, directory=nil)
+  def self.start_peer(new_peer_name, new_peer_port, peer_record, ymlconf=nil, directory=nil)
     #TODO : investigate why this code is buggy. In the meantime, use a randomly generated port.
     # unless ymlfconf.nil?
       # manager_waiting_port = ymlconf[Conf.current_env]['manager']['manager_waiting_port']
     # else
       # manager_waiting_port = Conf.peer['manager']['manager_waiting_port']
     # end
+    #Tell the peer record it should set remote peer offline when manager shuts down
+    at_exit do
+      WLLogger.logger.info "Peer : #{peer_record.username}[#{peer_record.ip}:#{peer_record.port}] is shutting down..."
+      peer_record.active = false
+      peer_record.save
+    end
     manager_waiting_port = Network.find_port Conf.peer['manager']['ip'], :TCP
     if manager_waiting_port.nil? or !Network.port_available?(Conf.peer['manager']['ip'], manager_waiting_port)
       manager_waiting_port = Network.find_port Conf.peer['manager']['ip'], :TCP
