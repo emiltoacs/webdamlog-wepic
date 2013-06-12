@@ -401,12 +401,8 @@ module WLDatabase
           WLLogger.logger.debug "try to create #{table_name} table in db #{config} for model #{model_name} but it already exists"
         end
         
-        def self.insert(values)
-          self.new(values).save
-        end
-        
-        def self.find(id)
-          super id
+        def self.find(*args)
+          super *args
         end
         
         def self.all
