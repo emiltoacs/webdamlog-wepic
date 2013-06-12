@@ -1,5 +1,5 @@
 # Generic method to sync ActiveRecord with webdamlog relations
-module ActiveRecordWrapper
+module WrapperHelper::ActiveRecordWrapper
 
   attr_reader :engine, :enginelogger, :wdl_tabname
 

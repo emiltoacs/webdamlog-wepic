@@ -1,5 +1,5 @@
 # specific requirement of wepic database
-module DatabaseWepicSpec
+module WrapperHelper::DatabaseWepicSpec
 
   attr_reader :tables
 
