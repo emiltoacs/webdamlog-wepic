@@ -1,0 +1,11 @@
+<div id="extensional">
+	<h3 class="query_title">Extensional : </h3>
+	<div class="query_view">
+		<div id="select_relation">
+			<%=select_tag 'relation' , options_for_select(@relation_classes.map{|k,v| k}.each_with_index {|o,i| [o,i]}) %>
+			<input type="submit" id="refresh" value="refresh" onclick="window.relation_refresh();">
+		</div>
+		<div id="display_relation">
+		</div>
+	</div>
+</div>

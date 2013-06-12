@@ -9,16 +9,6 @@
 	  			  | <%= link_to "Logout", :admin_logout %>
 		        <% end %>	
  </div>
-  <%if flash[:notice]%>
-  <div class="notice">
-    <%= notice %>
-  </div>
-  <%end%>
-  <%if flash[:alert]%>
-  <div class="errors">
-    <%= alert %>
-  </div>
-  <%end%>
   <% if @account.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@account.errors.count, "error") %> prohibited this user from being saved:</h2>

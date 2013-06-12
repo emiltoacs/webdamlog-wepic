@@ -36,7 +36,7 @@ module WLLauncher
           end
           return peer, true, "peer starting"
         else
-          return peer, false, "fail to save user #{username} in database"
+          return peer, false, "fail to save user #{username} in database because #{peer.errors.messages.inspect}"
         end
       end
     else # peername_valid? username is wrong

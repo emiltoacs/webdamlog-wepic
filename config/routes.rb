@@ -25,13 +25,17 @@ WepimApp::Application.routes.draw do
     match 'program' => 'program#index', :as => :program
     match 'engine' => 'engine#index', :as => :engine
     match 'wepic' => 'wepic#index', :as => :wepic
+    match 'query' => 'query#index', :as => :query
     resources :pictures do
       member do
         get :images
       end
     end
-    resources :query
+    match 'query/create' => 'query#create'
     match 'query/insert' => 'query#insert'
+    match 'query/relation' => 'query#relation'
+    match 'query/described_rule/add' => 'query#add_described_rule'
+    match 'query/described_rule/remove' => 'query#remove_described_rule'
     match 'contacts/:username/pictures' => 'pictures#contact'
     match 'wepic/update' => 'wepic#update'
     match 'pictures/update' => 'pictures#update'
