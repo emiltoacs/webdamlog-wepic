@@ -72,7 +72,7 @@ class QueryController < ApplicationController
     else
       err_message = "number of type and columns should be the same"
     end
-    # WLBUDinsert
+    
     begin
       if err_message.empty?
         database(Conf.env['USERNAME']).create_model(rel_name,schema)
