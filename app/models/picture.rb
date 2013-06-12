@@ -114,6 +114,7 @@ class Picture < AbstractDatabase
   def create_defaults
     create_rating(:_id => self._id, :rating => 0)
     create_picture_location(:_id => self._id, :location => "unknown")
+    self.image_url = self.image_file_name unless self.image_url
   end
   
   before_create :create_defaults

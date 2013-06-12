@@ -5,18 +5,18 @@ require 'wl_tool'
 #
 class QueryController < ApplicationController
   include WLDatabase
-  @setup_done = false
+  @@setup_done = false
   
   def index
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    unless @setup_done
+    unless @@setup_done
       begin
         ContentHelper::query_create
       rescue => error
         flash[:alert] = "Error occured : #{error.message}"
       end
-      @setup_done = true
+      @@setup_done = true
     end
     @described_queries = DescribedRule.where(:role=>'query')
     @described_updates = DescribedRule.where(:role=>'update')
@@ -113,8 +113,11 @@ class QueryController < ApplicationController
   def relation
     @relation_classes = database(Conf.env['USERNAME']).relation_classes unless @relation_classes
     relation_name = params[:relation]
+    columns = @relation_classes[relation_name].column_names.select{|col| !['id','created_at','updated_at','picture_id','image_file_name','image_file_size','image_content_type','image_updated_at','image_file','image_small_file','image_thumb_file'].include?(col)}
+    content = @relation_classes[relation_name].all.map {|record| record.attributes.except('id','created_at','updated_at','picture_id','image_file_name','image_file_size','image_content_type','image_updated_at')}
+    #We remove the id, created_at and updated_at fields which are not part of webdamlog, if they are present. 
     respond_to do |format|
-      format.json {render :json => @relation_classes[relation_name].all}
+      format.json {render :json => [:columns=>columns,:content=>content].to_json}
     end
   end
 

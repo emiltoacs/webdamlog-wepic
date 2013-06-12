@@ -29,6 +29,12 @@ module WLLauncher
         peer = Peer.new(:username => username, :ip=> ip, :port => web_port, :active => false, :protocol => protocol)
         WLLogger.logger.debug "New peer record created with port #{web_port}..."
         if peer.save
+          #Tell the peer record it should set remote peer offline when manager shuts down
+          at_exit do
+            WLLogger.logger.info "Peer : #{peer.username}[#{peer.ip}:#{peer.port}] is shutting down..."
+            peer.active = false
+            peer.save
+          end 
           Thread.new do
             WLLogger.logger.debug "Start peer thread launching..."
             st, msg = WLLauncher.start_peer(username, web_port, peer, ymlconf, directory)
