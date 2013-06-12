@@ -1,20 +1,34 @@
 module WrapperHelper
 
   module ActiveRecordWrapper
+    
+    def bind_wdl_relation relation_name
 
-    # TODO should get the reference to the corresponding collection in wdl
-    def bind_wdl_relation relation
-      if EngineHelper::WLENGINE.nil?
-        errors.add(:webdamlog, "not initialized")
+      @engine = EngineHelper::WLENGINE
+      @enginelogger = EngineHelper::WLLOGGER
+      
+      if @engine.nil?
+        @enginelogger.fatal("bind_wdl_relation fails @engine not initialized")
         return false
       else
-        if EngineHelper::WLENGINE.wl_program.wl_colletion.include?(relation)
-          # TODO assign to proper variable for reuse
+        if @engine.wl_program.wlcollections.include?(relation_name)
+          cb_id = @engine.register_callback(relation_name.to_sym) do |tab|
+            send_deltas tab
+          end
+          @enginelogger.debug("bind_wdl_relation succed to register callback #{cb_id} for #{relation_name}")
           return true
         else
-          errros.add(:webdamlog, "no collection in webdamlog program called #{relation}")
+          @enginelogger.fatal("bind_wdl_relation fails to bind #{relation_name} not found in webdamlog collection")
           return false
         end
+      end
+    end
+    
+    def send_deltas tab
+      tab.each_from_sym([:delta]) do |t|   
+        tuple = Hash[t.each_pair.to_a]
+        ar = self.new(tuple)
+        ar.save
       end
     end
 
@@ -33,5 +47,7 @@ module WrapperHelper
         return false
       end
     end
+
   end
+  
 end
