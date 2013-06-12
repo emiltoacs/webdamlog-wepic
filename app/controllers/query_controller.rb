@@ -20,31 +20,31 @@ class QueryController < ApplicationController
     puts "Parameters #{params}"
     if params[:relation][:name].nil? || params[:relation][:name].empty?
       respond_to do |format|
-        format.html {redirect_to '/query', :notice => "No relation was selected"}
+        format.html {redirect_to '/query', :notice => "No relations were selected"}
       end
     else
       @relation_classes = database(Conf.env['USERNAME']).relation_classes
-      rel_name = WLTool::sanitize(params[:relation][:name]).capitalize #All relation names in the relation classes should be capitalized
-      values = params[:values].split(";").map! { |i| WLTool::sanitize!(i) }
-      values_hash = Hash.new
-
+      rel_name = params[:relation][:name] #All relation names in the relation classes should be capitalized
+      # values = params[:values].split(";").map! { |i| WLTool::sanitize!(i) }
+      # values_hash = Hash.new
+    
       # FIXME This temporary code takes the values inserted and matches them in
       # order with the corresponding class schema. Ideally we would want to use
       # the params variable to match the items directly.This requires calls to
       # jquery to dynamically send the corresponding rows once a relation is
       # selected.
-      @relation_classes[rel_name].schema.keys.each_index do |i|
-        values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
-      end
-
+      # @relation_classes[rel_name].schema.keys.each_index do |i|
+        # values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
+      # end
+    
       # WLBUDinsert
-      
+      tuple = @relation_classes[rel_name].new(params[:values])
       respond_to do |format|
-        if @relation_classes[rel_name].insert(values_hash)
-          format.html { redirect_to '/query', :notice => "#{rel_name} : #{values_hash.inspect}"}
+        if tuple.save
+          format.html { redirect_to :query}
           format.json { head :no_content }
         else
-          format.html {redirect_to '/query', :notice => "insert did not happen properly"}
+          format.html {redirect_to '/query', :alert => "Unable to insert fact : reason=#{tuple.error.messages.inspect}"}
           format.json {head :no_content}
         end
       end

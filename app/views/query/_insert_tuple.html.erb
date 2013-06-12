@@ -4,6 +4,8 @@
       @relation_classes.keys.reject{|key| key.upcase == "WLSCHEMA" or key.upcase == "DATABASEMETUM" },
       {:prompt => 'Select Relation',:selected=>nil,:required=>true,:disable=>'Select Relation'}, :id => 'relation_select') %>
   </div>
+  <div id="new_fact_columns" class="field">
+  </div>
   <!-- <div class="field"> Values to Insert :
     <%= text_field_tag "values", nil, :required => true, :placeholder => "Values seperated by ';'", :size => 30 %>
   </div> -->
