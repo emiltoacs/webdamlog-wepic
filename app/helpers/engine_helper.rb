@@ -21,9 +21,10 @@ module EngineHelper
 
     attr_accessor :engine, :enginelogger
 
-    attr_reader :dir_rule, :port, :peername, :bootstrap_program, :rule_dir
+    attr_reader :dir_rule, :port, :peername, :bootstrap_program, :rule_dir, :wdl_tables_binding, :wdl_tables_binding_rev
         
     def initialize
+      # Special logger for webdamlog engine
       @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       username = Conf.peer['peer']['username']
       #web_port = Integer(Conf.peer['peer']['web_port'])
@@ -34,6 +35,8 @@ module EngineHelper
       end
       program_file = create_program_dir Conf.peer['peer']['program']['file_path']
       rule_dir = File.dirname program_file
+
+      # the engine itself is WLRunner object
       @engine = ::WLRunner.create(username, program_file, port, {:rule_dir => rule_dir})
       # peername in webdamlog
       @peername = @engine.peername
@@ -43,7 +46,11 @@ module EngineHelper
       @bootstrap_program = @engine.filename
       # rules created by webdamlog
       @rule_dir = @engine.rule_dir
-      
+      # @!attribute [Hash] key wdl tables declared : value corresponding class bind in application
+      @wdl_tables_binding = {}
+      # @!attribute [hash] key corresponding class bind in application : value wdl tables declared
+      @wdl_tables_binding_rev = {}
+
       msg = "\tpeer_name = #{@peername}\n\tprogram_file = #{File.basename(@bootstrap_program)}\n\tdir_rule = #{@rule_dir}\n\ton port #{@port}"
       Conf.peer['peer']['wdl_engine_port'] = Integer(@port)
       
@@ -65,9 +72,11 @@ module EngineHelper
       # TODO write block for each collection that should send there content to wepic
       #@engine
     end
-    
-    def add_fact
-      
+
+    # setter for wdl_tables_binding
+    def register_new_binding wdl_table_name, application_class_name
+      @wdl_tables_binding[wdl_table_name] = application_class_name
+      @wdl_tables_binding_rev[application_class_name] = wdl_table_name
     end
 
     private

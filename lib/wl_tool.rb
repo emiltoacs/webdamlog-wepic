@@ -345,6 +345,7 @@ module PostgresHelper
     else
       return true
     end
+    conn.close
   end
 
   # Create the manager db as a child of postgres db
