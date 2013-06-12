@@ -189,6 +189,7 @@ module WLDatabase
         rescue PG::Error => err
           p "Wepic Warning #{err.inspect}"
         end
+        conn.close
       end
     end
 
@@ -268,9 +269,8 @@ module WLDatabase
       else
         @relation_classes[classname] = pict
       end
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      wdl_tabname = "picture_at_#{EngineHelper::WLENGINE.peername}"
-      @relation_classes[classname].bind_wdl_relation wdl_tabname
+      @relation_classes[classname].extend ActiveRecordWrapper
+      @relation_classes[classname].bind_wdl_relation
 
       classname = "Contact"
       conn = WLTool::class_exists(classname, ActiveRecord::Base)
@@ -281,10 +281,44 @@ module WLDatabase
         @relation_classes[classname] = conn
       end
       # wdl linking
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      wdl_tabname = "contact_at_#{EngineHelper::WLENGINE.peername}"
-      @relation_classes[classname].bind_wdl_relation wdl_tabname
+      @relation_classes[classname].extend ActiveRecordWrapper
+      @relation_classes[classname].extend ContactWrapper
+      @relation_classes[classname].bind_wdl_relation
 
+      classname = "PictureLocation"
+      iml = WLTool::class_exists(classname , ActiveRecord::Base)
+      if iml.nil?
+        load 'picture_location.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = iml
+      end
+      @relation_classes[classname].extend ActiveRecordWrapper
+      @relation_classes[classname].bind_wdl_relation
+
+      classname = "Rating"
+      rate = WLTool::class_exists(classname , ActiveRecord::Base)
+      if rate.nil?
+        load 'rating.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = rate
+      end
+      @relation_classes[classname].extend ActiveRecordWrapper
+      @relation_classes[classname].bind_wdl_relation
+
+      classname = "Comment"
+      com = WLTool::class_exists(classname , ActiveRecord::Base)
+      if com.nil?
+        load 'comment.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = com
+      end
+      @relation_classes[classname].extend ActiveRecordWrapper
+      @relation_classes[classname].bind_wdl_relation
+
+      # The following relation are not linked to webdamlog
       classname = "User"
       peer = WLTool::class_exists(classname, ActiveRecord::Base)
       if peer.nil?
@@ -302,42 +336,6 @@ module WLDatabase
       else
         @relation_classes[classname] = prog
       end
-      
-      classname = "PictureLocation"
-      iml = WLTool::class_exists(classname , ActiveRecord::Base)
-      if iml.nil?
-        load 'picture_location.rb'
-        @relation_classes[classname] = Object.const_get(classname)
-      else
-        @relation_classes[classname] = iml
-      end
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      wdl_tabname = "picture_location_at_#{EngineHelper::WLENGINE.peername}"
-      @relation_classes[classname].bind_wdl_relation wdl_tabname
-      
-      classname = "Rating"
-      rate = WLTool::class_exists(classname , ActiveRecord::Base)
-      if rate.nil?
-        load 'rating.rb'
-        @relation_classes[classname] = Object.const_get(classname)
-      else
-        @relation_classes[classname] = rate
-      end
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      wdl_tabname = "rating_at_#{EngineHelper::WLENGINE.peername}"
-      @relation_classes[classname].bind_wdl_relation wdl_tabname
-      
-      classname = "Comment"
-      com = WLTool::class_exists(classname , ActiveRecord::Base)
-      if com.nil?
-        load 'comment.rb'
-        @relation_classes[classname] = Object.const_get(classname)
-      else
-        @relation_classes[classname] = com
-      end
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      wdl_tabname = "comment_at_#{EngineHelper::WLENGINE.peername}"
-      @relation_classes[classname].bind_wdl_relation wdl_tabname
 
       classname = "DescribedRule"
       com = WLTool::class_exists(classname , ActiveRecord::Base)
@@ -374,22 +372,20 @@ module WLDatabase
 
       if options[:wdl]
         # wdl binding TODO add wdl declaration of new relation here
-        model_klass.extend WrapperHelper::ActiveRecordWrapper
-        wdl_tabname = "#{model_klass.table_name}_at_#{EngineHelper::WLENGINE.peername}"
-        nm, sch = model_klass.create_wdl_relation wdl_tabname, schema
+        model_klass.extend ActiveRecordWrapper
+        
+        nm, sch = model_klass.create_wdl_relation schema  
         # XXX when failed the model_klass should be garbage collected since we
         # don't keep any reference to it
-        unless nm.is_a? WLBud::WLError
-          model_klass.bind_wdl_relation wdl_tabname
-          @relation_classes[name] = model_klass
-        end
-      else
-        @relation_classes[name] = model_klass
+        return nm if nm.is_a? WLBud::WLError
+        
+        model_klass.bind_wdl_relation
       end
-      
+
+      @relation_classes[name] = model_klass      
       begin
         # new record in the wlshema table
-        unless @wlschema.new(:name => model_klass.table_name,:schema => model_klass.schema.to_json).save                    
+        unless @wlschema.new(:name => model_klass.table_name,:schema => model_klass.schema.to_json).save        
           raise WLDatabaseError.new "Relation wlschema was not properly updated, record should be invalid according to the model"
         end
       rescue => error

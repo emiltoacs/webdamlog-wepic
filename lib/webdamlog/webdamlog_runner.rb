@@ -28,8 +28,9 @@ module WLRunner
     run_bg
   end
 
-  # TODO should be called in callback when adding contact @return [String,
-  # String] peername, address as added in webdamlog
+  # TODO should be called in callback when adding contact
+  #
+  # @return [String,String] peername, address as added in webdamlog
   def update_add_peer peername, ip, port
     return self.wl_program.add_peer peername, ip, port
   end
@@ -38,11 +39,7 @@ module WLRunner
   def update_add_collection wl_relation
     name, schema = ""
     sync_do do
-      begin
-        name, schema = self.add_collection(wl_relation)
-      rescue WLError => err
-        name = err
-      end
+      name, schema = self.add_collection(wl_relation)
     end
     return name, schema
   end
@@ -56,7 +53,11 @@ module WLRunner
   def update_add_fact facts
     facts, err = {}
     sync_do do
-      self.add_facts facts
+      begin
+        facts, err = self.add_facts facts
+      rescue WLError => e
+        err = e
+      end
     end
     return facts, err
   end
