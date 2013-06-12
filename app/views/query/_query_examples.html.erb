@@ -5,7 +5,9 @@
 	<div class="query_examples">
 		<% @described_queries.each do |query| %>
 		<div class="drule">
+			<a class="close" onclick="window.close_rule(<%=query.id%>);">x</a>
 			<div class="description"><%=query.description%></div>
+			<div class="id"> <%= query.id%> </div>
 			<div class="rule">
 				<%query.rule.split(";").each do |line|%>
 				<%= "#{line};"%> <br/>
@@ -15,9 +17,8 @@
 		<% end %>
 	</div>
 	<div id="custom_query">
-		    <%=hidden_field_tag 'role', 'query'%>
-			<%=text_area_tag 'rule' , nil, :placeholder => 'Write your own query here...', :height => 3, :escape=>false, :required => true%>
-			<%=text_field_tag 'description' , nil, :placeholder => 'Optional Description..', :required => false%>
+			<%=text_area_tag 'rule' , nil, :placeholder => 'Write your own query here...', :height => 3, :escape=>false, :required => true, :id => 'rule_edit_query'%>
+			<%=text_field_tag 'description' , nil, :placeholder => 'Optional Description..', :required => false, :id => 'description_edit_query'%>
 			<input type="submit" value="Submit" onclick="window.custom_query();">
 	</div>
 	</div>	

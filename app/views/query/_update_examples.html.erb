@@ -5,7 +5,9 @@
 	<div class="update_examples">
 		<% @described_updates.each do |update| %>
 		<div class="drule">
+			<a class="close" onclick="window.close_rule(<%=update.id%>);">x</a>
 			<div class="description"><%=update.description%></div>
+			<div class="id"><%=update.id%></div>
 			<div class="rule">
 				<%update.rule.split(";").each do |line|%>
 				<%= "#{line};"%> <br/>
@@ -15,8 +17,8 @@
 		<% end %>
 	</div>
 	<div id="custom_update">
-			<%=text_area_tag 'rule' , nil, :placeholder => 'Write your own update here...', :height => 3, :escape=>false, :required => true%>
-			<%=text_field_tag 'description' , nil, :placeholder => 'Optional Description..', :required => false%>
+			<%=text_area_tag 'rule' , nil, :placeholder => 'Write your own update here...', :height => 3, :escape=>false, :required => true, :id => 'rule_edit_update'%>
+			<%=text_field_tag 'description' , nil, :placeholder => 'Optional Description..', :required => false, :id => 'description_edit_update'%>
 			<input type="submit" value="Submit" onclick="window.custom_update();">
 	</div>
 	</div>

@@ -49,7 +49,7 @@ class WepicController < ApplicationController
           format.json {render :json => {:saved => false, :errors => picture.errors.messages}.to_json }
           format.html {redirect_to :wepic, :alert => picture.errors.messages.inspect }
         end
-      end      
+      end
     end
   end
   

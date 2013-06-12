@@ -1,4 +1,11 @@
 <div id="intentional">
 	<h3 class="query_title">Intentional : </h3>
-	<div class="query_view"></div>
+	<div class="query_view">
+		<div id="select_relation_intentional"><!-- v.is_a?(ActiveRecord::Base) -->
+			<%=select_tag 'relation_intentional' , options_for_select(@relation_classes.select{|k,v| (v <= ActiveRecord::Base)==false}.keys.each_with_index {|o,i| [o,i]}) %>
+			<input type="submit" id="refresh" value="refresh" onclick="window.relation_refresh('intentional');">
+		</div>
+		<div id="display_relation_intentional">
+		</div>		
+	</div>
 </div>

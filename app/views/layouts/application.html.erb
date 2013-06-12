@@ -42,8 +42,10 @@
         </div>
       </div>
     </div>
-    <%if flash[:notice]%><div id="notice"><%= notice %></div><%end%>
-	<%if flash[:alert]%><div id="error"><%= alert %></div><%end%>
+    <%@display_notice = if flash[:notice] then 'block' else 'none' end%>
+    <%@display_alert = if flash[:alert] then 'block' else 'none' end%>
+    <div id="notice" style="display:<%=@display_notice%>"><%= notice %></div>
+    <div id="error" style="display:<%=@display_alert%>"><%= alert %></div>
     <% if current_user %>
       <%
       @wepic_tab = "tab"
