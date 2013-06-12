@@ -10,6 +10,10 @@ require 'test_helper'
 class UsersControllerTest < ActionController::TestCase
   tests UsersController
 
+  def teardown
+    WLSetup.setup_storage(Conf.manager?, Conf.db)
+  end
+
   test "1index" do
     get(:index)
     assert_response :success
@@ -43,7 +47,7 @@ class UsersControllerTest < ActionController::TestCase
       "picture_at_test_username",
       "picturelocation_at_test_username",
       "rating_at_test_username"], engine.wl_program.wlcollections.keys.sort
-    
+    assert_equal 2, engine.tables[:contact_at_test_username].values.size
     assert_equal 2, engine.wl_program.rule_mapping.size
     assert_equal [1,
       "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);"],
@@ -59,17 +63,18 @@ class UsersControllerTest < ActionController::TestCase
         :password_confirmation => "test_user_password"
       })
     assert_not_nil assigns(:user)
-    assert_response(200) # no redirection since it has been created in previous test
+    # #assert_response(200) # no redirection since it has been created in
+    # previous test
     engine = EngineHelper::WLENGINE
     assert_not_nil engine
-    assert engine.running_async
+    assert engine.running_async    
     assert_equal 7, engine.app_tables.size
     assert_equal 2, engine.tables[:contact_at_test_username].to_a.size
     assert_equal [:username, :peerlocation, :online, :email, :facebook], engine.tables[:contact_at_test_username].schema
     array = engine.tables[:contact_at_test_username].to_a.sort.map do |item|
       item.values
     end
-    assert_equal [["Jules", "SIGMOD_peer", "false", "", ""], ["Julia", "SIGMOD_peer", "false", "", ""]], array      
-    end
-  
+    assert_equal [["Jules", "SIGMOD_peer", "false", "", ""], ["Julia", "SIGMOD_peer", "false", "", ""]], array
+    assert_equal 2, Contact.all.size
+  end  
 end

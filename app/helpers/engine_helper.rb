@@ -60,6 +60,11 @@ module EngineHelper
       @engine
     end
 
+    # TODO initialize here all the variables needed to push wdl facts into models
+    def bind_to_wrappers
+      # TODO write block for each collection that should send there content to wepic
+      #@engine
+    end
     
     def add_fact
       
