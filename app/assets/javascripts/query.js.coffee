@@ -38,9 +38,9 @@ getRelationFields = (relation) ->
         columns = data.columns
         html = '' 
         for col in columns
-          input = '<input type="text" size="30" placeholder="'+typeof(col)+'" name="'+String(col)+'">'
+          input = '<input type="text" size="30" name="values['+String(col)+']">'
           html += '<div class="field">'+String(col)+':'+input+'</div>'
-        jQuery('#relation_select').after(html)
+        jQuery('#new_fact_columns').html(html)
 
 getRelationContents = (relation,type)->
   jQuery('#display_relation_'+type).html('')
