@@ -2,6 +2,31 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+//display relations
+.record {
+  // border-top : 1px #111 solid;
+  // border-bottom : 1px #111 solid;
+  height : 40px;
+  display : block;
+}
+
+.attribute {
+  font-size : 12px;
+  padding-top : 2px;
+  padding-bottom : 2px;
+  margin-left : 1px;
+  margin-right : 1px;
+  margin-top : 1px;
+  margin-bottom : 1px;
+  background-color : #eef;
+  float : left;
+  display : block;
+  text-align : center;
+  overflow : hidden;
+  height : 100%;
+}
+
+
 //Query entries rules
 .drule {
   width : 99%;
@@ -10,6 +35,7 @@
   border-bottom : 1px solid #111;
   padding : 2px;
   word-wrap: break-word;
+  position : relative;
 }
 
 .drule div.rule{
@@ -21,6 +47,24 @@
   display : block;
   font-style : italic;
 }
+
+.drule div.id {
+  display : none;
+}
+
+.drule a.close{
+  padding: 2px;
+  z-index : 5;
+  color : #606060;
+  position : absolute;
+  top : 0px;
+  right : 0px;
+  background-color : #fff;
+}
+.drule a.close:hover{
+  font-weight : bold;
+}
+
 
 //Text area and general query view rules
 textarea{
@@ -134,9 +178,10 @@ textarea{
   width : 94%;
   height: 250px;
   padding : 0px;
+  overflow : hidden;
 }
 
-#select_relation {
+#select_relation_extensional {
   height : 100%;
   width : 20%;
   min-width : 100px;
@@ -144,13 +189,14 @@ textarea{
   border-right : 1px #111 solid;
   float : left;
 }
-#display_relation {
+#display_relation_extensional {
   display : inline;
   height : 100%;
   width : 79.8%;
   min-width : 540px;
   background-color : #fff;
   float : right;
+  overflow-y : scroll;
 }
 #refresh {
   display : block;
@@ -159,7 +205,7 @@ textarea{
   margin-left : 25%;
   margin-right : 25%;
 }
-#relation {
+#relation_extensional {
   display : block;
   width : 50%;
   margin-top : 10px;
@@ -169,17 +215,53 @@ textarea{
 
 
 
-#intentional {
+//Rules for intentional partial
+#intentional{
   display : block;
   min-width : 640px;
-  width : 100%;
+  width : 100%; 
 }
 
 #intentional div.query_view {
-  width : 92.2%;
-  height : 200px;
+  width : 94%;
+  height: 250px;
+  padding : 0px;
+  overflow : hidden;
+}
+#select_relation_intentional {
+  height : 100%;
+  width : 20%;
+  min-width : 100px;
+  background-color : #ccc;
+  border-right : 1px #111 solid;
+  float : left;
+}
+#display_relation_intentional {
+  display : inline;
+  height : 100%;
+  width : 79.8%;
+  min-width : 540px;
+  background-color : #fff;
+  float : right;
+  overflow-y : scroll;
+}
+#refresh {
+  display : block;
+  width : 50%;
+  margin-top : 10px;
+  margin-left : 25%;
+  margin-right : 25%;
+}
+#relation_intentional {
+  display : block;
+  width : 50%;
+  margin-top : 10px;
+  margin-left : 25%;
+  margin-right : 25%;
 }
 
+
+//Create relation
 #create_relation {
     float:left;
 }

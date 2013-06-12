@@ -4,8 +4,8 @@
   <%if current_user%>
   <%= render 'query_examples'%>
   <%= render 'update_examples'%>
-  <%#= render 'intentional'%>
   <%= render 'extensional'%>
+  <%= render 'intentional'%>
   <%else%>
     <div id="notlogged">You are not logged in! <%=link_to "Log in",:login%></div>
   <%end%>

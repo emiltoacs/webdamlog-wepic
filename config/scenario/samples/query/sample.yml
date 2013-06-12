@@ -1,7 +1,7 @@
 described_rules:
   drule1:
     description: Get all the titles for my pictures
-    rule : collection int query1(title*);rule query2@local($title):-pictures@local($title,$_,$_,$_);
+    rule : collection int query1(title*);rule query1@local($title):-pictures@local($title,$_,$_,$_);
     role: query
   drule2:
     description: Get all pictures from all my friends
