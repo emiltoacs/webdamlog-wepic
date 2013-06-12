@@ -5,7 +5,9 @@
 	<div class="query_examples">
 		<% @described_queries.each do |query| %>
 		<div class="drule">
+			<a class="close" onclick="window.close_rule(<%=query.id%>);">x</a>
 			<div class="description"><%=query.description%></div>
+			<div class="id"> <%= query.id%> </div>
 			<div class="rule">
 				<%query.rule.split(";").each do |line|%>
 				<%= "#{line};"%> <br/>

@@ -5,7 +5,9 @@
 	<div class="update_examples">
 		<% @described_updates.each do |update| %>
 		<div class="drule">
+			<a class="close" onclick="window.close_rule(<%=update.id%>);">x</a>
 			<div class="description"><%=update.description%></div>
+			<div class="id"><%=update.id%></div>
 			<div class="rule">
 				<%update.rule.split(";").each do |line|%>
 				<%= "#{line};"%> <br/>
