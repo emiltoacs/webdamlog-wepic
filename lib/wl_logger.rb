@@ -43,5 +43,5 @@ module WLLogger
     def fatal message
       super "WLEngine::#{message.strip}"
     end
-  end  
+  end
 end
