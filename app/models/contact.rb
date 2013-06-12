@@ -34,6 +34,8 @@ class Contact < AbstractDatabase
       'email' => 'string',
       'facebook' => 'string'}
   end
+
+  # TODO add specific behavior to declare new peer when contacts are added
   
   setup    
 end
