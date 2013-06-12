@@ -4,16 +4,12 @@ ENV["USERNAME"] = "test_username"
 ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
 require './lib/wl_setup'
-WLSetup.setup_storage(Conf.manager?, Conf.db)
+WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
 require 'test_helper'
 
 class UsersControllerTest < ActionController::TestCase
   tests UsersController
-
-  def teardown
-    WLSetup.setup_storage(Conf.manager?, Conf.db)
-  end
-
+  
   test "1index" do
     get(:index)
     assert_response :success
@@ -74,7 +70,8 @@ class UsersControllerTest < ActionController::TestCase
     array = engine.tables[:contact_at_test_username].to_a.sort.map do |item|
       item.values
     end
-    assert_equal [["Jules", "SIGMOD_peer", "false", "", ""], ["Julia", "SIGMOD_peer", "false", "", ""]], array
+    assert_equal [["Jules", "SIGMOD_peer", "false", "jules.testard@mail.mcgill.ca", "Jules Testard"],
+      ["Julia", "SIGMOD_peer", "false", "stoyanovich@drexel.edu", "jstoy"]], array
     assert_equal 2, Contact.all.size
-  end  
+  end
 end

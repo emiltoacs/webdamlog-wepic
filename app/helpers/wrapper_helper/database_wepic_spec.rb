@@ -3,6 +3,8 @@ module DatabaseWepicSpec
 
   attr_reader :tables
 
+  # PENDING specify here all the needed wrapper for wepic and check implementation at loading
+
   def check_tables
     %w(
     Picture
