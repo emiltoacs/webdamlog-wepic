@@ -46,32 +46,41 @@ getRelationContents = (relation,type)->
         true
 
 add_described_rule = (rule,description,role) ->
-  jQuery('#notice').html('rule:' + rule + ",description: " + description + ",role: " + role)
-  jQuery('#notice').css
-    'display' : 'block'
+  # jQuery('#notice').html('rule:' + rule + ",description: " + description + ",role: " + role)
+  # jQuery('#notice').css
+    # 'display' : 'block'
   jQuery.ajax
-    html = location
-    jQuery.ajax
-      'url' : current_url + '/described_rule/add'
-      'data' :
-        'rule' : rule
-        'description' : description
-        'role' : role
-      'datatype' : 'json'
-      'success' : (data) ->
-        if data.saved
-          html = capitalizeFirstLetter(data.location)
-          jQuery('#image-location').html(html)
-          jQuery('#metainf-'+String(idPicture)+' #location').html(html)
-        else
-          alert(display_error(data.errors))
+    'url' : current_url + '/described_rule/add'
+    'data' :
+      'rule' : rule
+      'description' : description
+      'role' : role
+    'datatype' : 'json'
+    'success' : (data) ->
+      if data.saved
+        html = '<div class="drule">'
+        html += '<a class="close" onclick="window.close_rule('+data.id+');">x</a>'
+        html += '<div class="description">' + description+ '</div>'
+        html += '<div class="id">'+data.id+'</div>'
+        html += '<div class="rule">' + rule + '</div>'
+        html += '</div>'
+        jQuery('.'+role+'_examples').append(html)
+      else
+        alert(display_error(data.errors))
 
 
-remove_described_rule = (rule,description,role) ->
-  jQuery('#notice').html('rule:' + rule + ",description: " + description + ",role: " + role)
-  jQuery('#notice').css
-    'display' : 'block'
-  console.log('adding rule : ' + '[rule:' + rule + ",description: " + description + ",role: " + role + ']')
+remove_described_rule = (id) ->
+  # jQuery('#notice').html('rule:' + rule + ",description: " + description + ",role: " + role)
+  # jQuery('#notice').css
+    # 'display' : 'block'
+  jQuery.ajax
+    'url' : current_url + '/described_rule/remove'
+    'data' :
+      'id' : id
+    'datatype' : 'json'
+    'success' : (data) ->
+      if data.saved
+        jQuery('.id:contains("'+String(id)+'")').parent().remove()
 
 window.relation_refresh = (type)->
   relation = jQuery('#relation_'+type+' option:selected').html()
@@ -96,3 +105,5 @@ jQuery(document).ready ->
     jQuery('#description_edit_update').val('')
     jQuery('#rule_edit_update').val('')
     add_described_rule(rule,desc,'update')
+  window.close_rule = (id) ->
+    remove_described_rule(id)

@@ -103,11 +103,26 @@ class QueryController < ApplicationController
   end # create
   
   def add_described_rule
-    
+    described_rule = DescribedRule.new(:rule=>params[:rule],:description=>params[:description],:role=>params[:role])
+    if described_rule.save 
+      respond_to do |format|
+        format.json {render :json => {:saved => true, :id => described_rule.id}.to_json }
+        format.html {redirect_to :query }
+      end
+    else
+      respond_to do |format|
+        format.json {render :json => {:saved => false, :errors => save.errors.messages}.to_json }
+        format.html {redirect_to :query, :alert => picture.errors.messages.inspect }
+      end
+    end
   end
   
   def remove_described_rule
-    
+    described_rule = DescribedRule.find(params[:id])
+    described_rule.destroy
+    respond_to do |format|
+      format.json {render :json => {:saved => true}.to_json }
+    end    
   end
   
   def relation
