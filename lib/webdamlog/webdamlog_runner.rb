@@ -38,7 +38,11 @@ module WLRunner
   def update_add_collection wl_relation
     name, schema = ""
     sync_do do
-      name, schema = self.add_collection(wl_relation)
+      begin
+        name, schema = self.add_collection(wl_relation)
+      rescue WLError => err
+        name = err
+      end
     end
     return name, schema
   end
