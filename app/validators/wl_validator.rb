@@ -3,9 +3,15 @@ require 'webdamlog/wlbud'
 class WlValidator < ActiveModel::EachValidator
   
   def validate_each(record, attribute, value)
-    #response = EngineHelper::WLHELPER.parse(value)
-    unless true#response.is_a?(WLBud::WLVocabulary)
-      record.errors[attribute] << (options[:message] || response.message)
+    #Check all elements from response and check if there is an error.
+    response = EngineHelper::WLENGINE.parse(value)
+    WLLogger.logger.debug "Parsed #{record.id}: #{response.map {|e| e.class}}"
+    unless !response.first.is_a?(StandardError) or response.nil?
+      record.errors[attribute] << (options[:message] || if response and response.first and response.first.message then response.first.message.to_s else 'Unkown Error' end)
     end
   end
 end
+
+
+#WLrule model
+#WLValidator

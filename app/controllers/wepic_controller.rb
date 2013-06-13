@@ -13,6 +13,7 @@ class WepicController < ApplicationController
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
       @pictures = Picture.where(:owner => Conf.env['USERNAME'])
+      Picture.where(:owner => 'local').each {|pic| @pictures << pic}
       if sorting_order=='desc'
         @pictures.sort! {|a,b| b.send(order_criteria.to_sym) <=> a.send(order_criteria.to_sym)}
       else
@@ -39,15 +40,19 @@ class WepicController < ApplicationController
       picture.titled = params[:title] if params[:title] and !params[:title].empty?
       picture.rated = params[:rating] if params[:rating] and !params[:rating].empty?
       picture.located = params[:location] if params[:location] and !params[:location].empty?
-      if picture.errors.messages.empty? 
+      errors = []
+      errors << picture.errors unless picture.errors.empty?
+      errors << picture.picture_location.errors unless picture.errors.empty?
+      errors << picture.rating.errors unless picture.errors.empty?
+      if errors.empty?
         respond_to do |format|
           format.json {render :json => {:saved => true, :title => picture.title, :rating => picture.rated, :location => picture.located}.to_json }
           format.html {redirect_to :wepic }
         end
       else
         respond_to do |format|
-          format.json {render :json => {:saved => false, :errors => picture.errors.messages}.to_json }
-          format.html {redirect_to :wepic, :alert => picture.errors.messages.inspect }
+          format.json {render :json => {:saved => false, :errors => errors.inspect}.to_json }
+          format.html {redirect_to :wepic, :alert => errors.inspect }
         end
       end
     end

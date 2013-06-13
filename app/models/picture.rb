@@ -1,5 +1,5 @@
 #TODO : Due to change in the rating model, need to change rated and rated= methods. 
-require 'open-uri'
+require 'rest-open-uri'
 
 class Picture < AbstractDatabase
   has_one :picture_location, :dependent => :destroy
@@ -107,8 +107,8 @@ class Picture < AbstractDatabase
   end
   
   def default_values
-    self._id = rand(0xFFFFFF)
-    self.date = DateTime.now
+    self._id = rand(0xFFFFFF) unless self._id
+    self.date = DateTime.now unless self.date
   end
   
   def create_defaults
