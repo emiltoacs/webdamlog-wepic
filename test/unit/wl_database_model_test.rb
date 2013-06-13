@@ -11,6 +11,7 @@ require './lib/wl_setup'
 class WLDatabaseModelTest < Test::Unit::TestCase
   include WLDatabase
 
+  # test creation of relation via wdl program and via create_model
   def test_10_add_model
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require 'test_helper'
@@ -32,12 +33,13 @@ class WLDatabaseModelTest < Test::Unit::TestCase
         "picturelocation_at_databasemodeltest"=>"PictureLocation",
         "rating_at_databasemodeltest"=>"Rating",
         "comment_at_databasemodeltest"=>"Comment",
+        "describedrule_at_databasemodeltest"=>"DescribedRule",
         "testmodelcreated_at_databasemodeltest"=>"TestModelCreated"},
       helper.wdl_tables_binding)
     assert_equal 3, engine.tables[:testmodelcreated_at_databasemodeltest].to_a.size
   end
 
-  # TODO test activemodel for int
+  # TODO test activemodel for intensional
 
   # TODO test var remo
 

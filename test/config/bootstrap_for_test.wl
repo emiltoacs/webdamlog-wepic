@@ -1,11 +1,12 @@
 peer sigmod_peer = localhost:4100;
 peer local = localhost:5100;
-collection ext per picture@local(title*, owner*, _id*, image_url*); #image data fields not added
-collection ext per picturelocation@local(_id*, location*);
-collection ext per rating@local(_id*, rating*);
-collection ext per comment@local(_id*,author*,text*,date*);
-collection ext per contact@local(username*, peerlocation*, online*, email*, facebook*);
-fact contact@local(Jules, SIGMOD_peer, false, "jules.testard@mail.mcgill.ca", "Jules Testard");
-fact contact@local(Julia, SIGMOD_peer, false, "stoyanovich@drexel.edu", "jstoy");
+collection ext persistent picture@local(title*, owner*, _id*, image_url*); #image data fields not added
+collection ext persistent picturelocation@local(_id*, location*);
+collection ext persistent rating@local(_id*, rating*);
+collection ext persistent comment@local(_id*,author*,text*,date*);
+collection ext persistent contact@local(username*, peerlocation*, online*, email*, facebook*);
+collection ext persistent describedrule@local(wdlrule*, description*);
+fact contact@local(Jules, localhost:4100, false, "jules.testard@mail.mcgill.ca", "Jules Testard");
+fact contact@local(Julia, localhost:4100, false, "stoyanovich@drexel.edu", "jstoy");
 rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);
 end

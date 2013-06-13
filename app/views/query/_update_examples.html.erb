@@ -9,7 +9,7 @@
 			<div class="description"><%=update.description%></div>
 			<div class="id"><%=update.id%></div>
 			<div class="rule">
-				<%update.rule.split(";").each do |line|%>
+				<%update.wdlrule.split(";").each do |line|%>
 				<%= "#{line};"%> <br/>
 				<%end%>
 			</div>
