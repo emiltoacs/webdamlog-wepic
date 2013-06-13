@@ -243,7 +243,9 @@ Failure reason: #{@parser.failure_reason}
 line in the file:#{line_nb}
 line in the rule #{@parser.failure_line}
 column:#{@parser.failure_column}
-In the string: #{line}
+..........v...
+Around #{line[@parser.failure_column-3..@parser.failure_column+3]} 
+In the string: #{line}  
         MSG
       else
         result = output.get_inst

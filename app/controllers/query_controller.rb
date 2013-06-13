@@ -57,40 +57,44 @@ class QueryController < ApplicationController
     rel_name = WLTool::sanitize(params[:relation_name]).capitalize
     # TODO jQuery to display nice form
     col_names = params[:column_names].split(";").map! { |i| WLTool::sanitize!(i) }
-    col_types = params[:column_types].split(";").map! { |i| WLTool::sanitize!(i) }
-    # field must be a valid type: http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html#method-i-column
-    type = ['string', 'text', 'integer', 'float', 'decimal', 'datetime', 'timestamp', 'time', 'date', 'binary', 'boolean']
-    err_message = ""
-    if col_names.size == col_types.size
-      col_names.each_index do |i|
-        if type.include? col_types[i]
-          schema[col_names[i]] = col_types[i]
-        else
-          err_message = "type not conform, found #{col_names[i]} but expected one of #{type.inspect}"
-        end
-      end
-    else
-      err_message = "number of type and columns should be the same"
+    col_names.each do |name|
+      schema[name]='text'
     end
-    
-    begin
-      if err_message.empty?
-        database(Conf.env['USERNAME']).create_model(rel_name,schema)
-        @relation_classes = database(Conf.env['USERNAME']).relation_classes
-      else
-        raise err_message
-      end
-    rescue => error
-      respond_to do |format|
-        format.html { redirect_to '/query', :notice => "Error: #{error.to_s} : #{error.message}" }
-        format.json { head :no_content }
-      end
-    else
-      respond_to do |format|
-        format.html { redirect_to '/query', :notice => "Relation classes: #{@relation_classes.inspect}" }
-        format.json { head :no_content }
-      end
-    end
+    database(Conf.env['USERNAME']).create_model(rel_name,schema)
+    @relation_classes = database(Conf.env['USERNAME']).relation_classes
+    respond_to do |format|
+      format.html { redirect_to '/query', :notice => "Relation classes: #{@relation_classes.inspect}" }
+      format.json { head :no_content }
+    end    
+
+    # # field must be a valid type: http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html#method-i-column
+    # type = ['string', 'text', 'integer', 'float', 'decimal', 'datetime', 'timestamp', 'time', 'date', 'binary', 'boolean']
+    # err_message = ""
+    # if col_names.size == col_types.size
+      # col_names.each_index do |i|
+        # if type.include? col_types[i]
+          # schema[col_names[i]] = col_types[i]
+        # else
+          # err_message = "type not conform, found #{col_names[i]} but expected one of #{type.inspect}"
+        # end
+      # end
+    # else
+      # err_message = "number of type and columns should be the same"
+    # end
+    # begin
+      # if err_message.empty?
+# 
+      # else
+        # raise err_message
+      # end
+    # rescue => error
+      # respond_to do |format|
+        # format.html { redirect_to '/query', :notice => "Error: #{error.to_s} : #{error.message}" }
+        # format.json { head :no_content }
+      # end
+    # else
+# 
+    # end
   end # create
   
   def add_described_rule
@@ -102,7 +106,7 @@ class QueryController < ApplicationController
       end
     else
       respond_to do |format|
-        format.json {render :json => {:saved => false, :errors => save.errors.messages}.to_json }
+        format.json {render :json => {:saved => false, :errors => described_rule.errors.messages}.to_json }
         format.html {redirect_to :query, :alert => picture.errors.messages.inspect }
       end
     end

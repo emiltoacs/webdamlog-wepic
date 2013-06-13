@@ -4,8 +4,7 @@ class DescribedRule < AbstractDatabase
   attr_accessible :description, :wdlrule, :role
   
   def self.setup
-    unless @setup_done      
-      validates :description, :presence => false
+    unless @setup_done
       validates :wdlrule, :presence => true, :wl => true
       validates :role, :presence => true
       validates_inclusion_of :role, :in => ['query','update']
@@ -17,12 +16,6 @@ class DescribedRule < AbstractDatabase
         t.string :role
         t.timestamps
       end if !connection.table_exists?('describedRule')
-      
-      begin
-        ContentHelper::query_create
-      rescue => error
-        WLLogger.logger.warn "Error occured : #{error.message}"
-      end      
       
       @setup_done = true
     end 

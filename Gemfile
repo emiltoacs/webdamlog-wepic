@@ -19,6 +19,7 @@ gem 'cocaine'
 # dbm is useless but required by bud without being in the dependency of bud
 gem 'dbm'
 gem 'bud', '>= 0.9.7'
+gem 'rest-open-uri'
 
 gem 'rmagick'
 
