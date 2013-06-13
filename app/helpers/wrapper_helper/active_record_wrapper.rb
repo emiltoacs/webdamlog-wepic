@@ -65,27 +65,33 @@ module WrapperHelper::ActiveRecordWrapper
     return nm, sch
   end
 
-  # Override ActiveRecord save to perform some wdl velidation before calling
+  # Override ActiveRecord save to perform some wdl validation before calling
   # super to insert in database
   def save(*args)
+    require 'debugger' ; debugger 
     if valid?
-      if wdl_valid?
-        # TODO format for insert into webdamlog
+      if wdl_valid?        
+        # format for insert into webdamlog
         tuple = []
+        wdlfact = nil
         @wdl_table.cols.each_with_index do |col, i|
           if self.class.column_names.include?(col.to_s)
-            tuple[i]=self.send(col)
+            tuple[i] = self.send(col)
           else
             errros.add(:invalid, "tuple #{self} impossible to insert in webdalog it lacks attribute #{col}")
+            return false
           end
           wdlfact = { wdl_tabname => [tuple] }
         end
-        val, err = EngineHelper.WLENGINE.update_add_fact(wdlfact)
-        # TODO save only facts added that is the one in val
-        if super(*args)
-          
-        else
-          errors.add(:databasa, "fail to save record in the database")
+        # insert in database
+        unless wdlfact
+          val, err = EngineHelper.WLENGINE.update_add_fact(wdlfact)        
+          if super(*args)
+            return true
+          else
+            errors.add(:databasa, "fail to save record in the database")
+            return false
+          end
         end
       else
         errors.add(:tuple, "webdamlog considered it as invalid")
@@ -104,7 +110,6 @@ module WrapperHelper::ActiveRecordWrapper
     else
       false
     end
-  end
-  
+  end  
 end
   
