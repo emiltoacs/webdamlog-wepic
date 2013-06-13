@@ -37,9 +37,10 @@ class UsersControllerTest < ActionController::TestCase
     assert engine.running_async
     assert_kind_of WLRunner, engine
     assert_equal([["sigmod_peer", "localhost:4100"], ["test_username", "localhost:5100"]], engine.wl_program.wlpeers.sort)
-    assert_equal 5, engine.wl_program.wlcollections.size
+    assert_equal 6, engine.wl_program.wlcollections.size
     assert_equal ["comment_at_test_username",
       "contact_at_test_username",
+      "describedrule_at_test_username",
       "picture_at_test_username",
       "picturelocation_at_test_username",
       "rating_at_test_username"], engine.wl_program.wlcollections.keys.sort
@@ -50,6 +51,8 @@ class UsersControllerTest < ActionController::TestCase
       engine.wl_program.rule_mapping.keys
   end
 
+  # test initialization of new webdamlog engine after user creation and add new
+  # facts via async method
   test "3add" do
     post(:create,
       :user=>{
@@ -63,15 +66,20 @@ class UsersControllerTest < ActionController::TestCase
     # previous test
     engine = EngineHelper::WLENGINE
     assert_not_nil engine
-    assert engine.running_async    
-    assert_equal 7, engine.app_tables.size
+    assert engine.running_async
+    assert_equal 8, engine.app_tables.size
     assert_equal 2, engine.tables[:contact_at_test_username].to_a.size
     assert_equal [:username, :peerlocation, :online, :email, :facebook], engine.tables[:contact_at_test_username].schema
     array = engine.tables[:contact_at_test_username].to_a.sort.map do |item|
       item.values
     end
-    assert_equal [["Jules", "SIGMOD_peer", "false", "jules.testard@mail.mcgill.ca", "Jules Testard"],
-      ["Julia", "SIGMOD_peer", "false", "stoyanovich@drexel.edu", "jstoy"]], array
+    assert_equal [["Jules",
+        "localhost:4100",
+        "false",
+        "jules.testard@mail.mcgill.ca",
+        "Jules Testard"],
+      ["Julia", "localhost:4100", "false", "stoyanovich@drexel.edu", "jstoy"]], array
     assert_equal 2, Contact.all.size
   end
+  
 end

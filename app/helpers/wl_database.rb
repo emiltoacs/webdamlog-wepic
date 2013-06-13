@@ -261,6 +261,9 @@ module WLDatabase
       
       # Init manually the builtins relations created when rails has parsed the
       # models
+
+      # These are the relation to bind to webdalog relation that have already
+      # been created in webdamlog thanks to wdl program file in bootstrap
       classname = "Picture"
       pict = WLTool::class_exists(classname , ActiveRecord::Base)
       if pict.nil?
@@ -318,6 +321,19 @@ module WLDatabase
       @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
       @relation_classes[classname].bind_wdl_relation
 
+      # bind to webdamlog but not created in the bootstrap program
+      classname = "DescribedRule"
+      com = WLTool::class_exists(classname , ActiveRecord::Base)
+      if com.nil?
+        load 'described_rule.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = com
+      end
+      model_klass = @relation_classes[classname]
+      model_klass.extend WrapperHelper::ActiveRecordWrapper
+      model_klass.bind_wdl_relation
+
       # The following relation are not linked to webdamlog
       classname = "User"
       peer = WLTool::class_exists(classname, ActiveRecord::Base)
@@ -336,19 +352,6 @@ module WLDatabase
       else
         @relation_classes[classname] = prog
       end
-
-      classname = "DescribedRule"
-      com = WLTool::class_exists(classname , ActiveRecord::Base)
-      if com.nil?
-        load 'described_rule.rb'
-        @relation_classes[classname] = Object.const_get(classname)
-      else
-        @relation_classes[classname] = com
-      end
-      @wlrules = create_model_class("wlrules", {"wdlid"=>"string","content"=>"text"})
-      @wlrules.extend WrapperHelper::ActiveRecordWrapper
-      
-      
       
       # FIXME All of these methods normally correspond to the WLProgram should
       # be removed after webdamlog program loading and refresh tables from
@@ -377,12 +380,10 @@ module WLDatabase
       if options[:wdl]
         # wdl binding TODO add wdl declaration of new relation here
         model_klass.extend WrapperHelper::ActiveRecordWrapper
-        
-        nm, sch = model_klass.create_wdl_relation schema  
         # XXX when failed the model_klass should be garbage collected since we
         # don't keep any reference to it
-        return nm if nm.is_a? WLBud::WLError
-        
+        nm, sch = model_klass.create_wdl_relation schema          
+        return nm if nm.is_a? WLBud::WLError        
         model_klass.bind_wdl_relation
       end
 

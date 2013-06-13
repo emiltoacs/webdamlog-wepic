@@ -9,7 +9,7 @@ module ContentHelper
         content = YAML.load(File.open(sample_content_file_name))
         WLLogger.logger.debug 'Reseting described rules...' if DescribedRule.delete_all
         content['described_rules'].values.each do |drule|
-          drule = DescribedRule.new(:rule => drule['rule'],:description => drule['description'], :role=> drule['role'])
+          drule = DescribedRule.new(:wdlrule => drule['rule'],:description => drule['description'], :role=> drule['role'])
           if drule.save
             WLLogger.logger.debug "Rule : #{drule.description.inspect[0..9]}...[#{drule.rule.inspect[0..19]}] successfully added!"
           else

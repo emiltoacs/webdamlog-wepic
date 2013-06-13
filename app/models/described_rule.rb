@@ -1,19 +1,19 @@
 require 'wl_tool'
 
 class DescribedRule < AbstractDatabase
-  attr_accessible :description, :rule, :role
+  attr_accessible :description, :wdlrule, :role
   
   def self.setup
     unless @setup_done      
       validates :description, :presence => false
-      validates :rule, :presence => true, :wl => true
+      validates :wdlrule, :presence => true, :wl => true
       validates :role, :presence => true
       validates_inclusion_of :role, :in => ['query','update']
             
       self.table_name = "describedRule"
       connection.create_table 'describedRule', :force => true do |t|
         t.text :description
-        t.text :rule
+        t.text :wdlrule
         t.string :role
         t.timestamps
       end if !connection.table_exists?('describedRule')
@@ -35,10 +35,11 @@ class DescribedRule < AbstractDatabase
   def default_values
     self.description = "No description" unless self.description
   end
-  
+
+  # schema used by wdl
   def self.schema
-    {'rule' => 'string',
-     'description' => 'string'
+    {'wdlrule' => 'text',
+     'description' => 'text'
      }
   end
   
