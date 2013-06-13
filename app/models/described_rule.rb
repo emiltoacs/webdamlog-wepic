@@ -18,12 +18,6 @@ class DescribedRule < AbstractDatabase
         t.timestamps
       end if !connection.table_exists?('describedRule')
       
-      begin
-        ContentHelper::query_create
-      rescue => error
-        WLLogger.logger.warn "Error occured : #{error.message}"
-      end      
-      
       @setup_done = true
     end 
   end

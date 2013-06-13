@@ -366,6 +366,12 @@ module WLDatabase
       @wlschema.new(:name=>Rating.table_name, :schema=>Rating.schema.to_json).save
       @wlschema.new(:name=>Comment.table_name, :schema=>Comment.schema.to_json).save
       @wlschema.new(:name=>DescribedRule.table_name, :schema=>DescribedRule.schema.to_json).save
+      
+      begin
+        ContentHelper::query_create
+      rescue => error
+        WLLogger.logger.warn "Error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")}"
+      end
     end
     
     # The create relation method will create a new relation in the database as
