@@ -345,6 +345,10 @@ module WLDatabase
       else
         @relation_classes[classname] = com
       end
+      @wlrules = create_model_class("wlrules", {"wdlid"=>"string","content"=>"text"})
+      @wlrules.extend WrapperHelper::ActiveRecordWrapper
+      
+      
       
       # FIXME All of these methods normally correspond to the WLProgram should
       # be removed after webdamlog program loading and refresh tables from
