@@ -276,9 +276,9 @@ In the string: #{line}
               end
             end
           end
-        end
-        return result
+        end        
       end
+      return result
     end
 
     # This method creates a body-local rule with destination peer p and a
