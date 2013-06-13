@@ -79,7 +79,7 @@ module WLRunner
     ret = []
     begin
       ret = self.wl_program.parse_lines line, false
-    rescue WLError=> err
+    rescue WLError => err
       ret << err
     end
     return ret

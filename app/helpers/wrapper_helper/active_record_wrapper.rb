@@ -72,9 +72,11 @@ module WrapperHelper::ActiveRecordWrapper
       if wdl_valid?
         # TODO format for insert into webdamlog
         tuple = []
-        @wdl_table.cols.each_with_index do |col|
+        @wdl_table.cols.each_with_index do |col, i|
           if self.class.column_names.include?(col.to_s)
-            tuple[]=self.send(col)
+            tuple[i]=self.send(col)
+          else
+            errros.add(:invalid, "tuple #{self} impossible to insert in webdalog it lacks attribute #{col}")
           end
           wdlfact = { wdl_tabname => [tuple] }
         end
