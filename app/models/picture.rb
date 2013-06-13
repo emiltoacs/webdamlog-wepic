@@ -1,5 +1,5 @@
 #TODO : Due to change in the rating model, need to change rated and rated= methods. 
-require 'open-uri'
+require 'rest-open-uri'
 
 class Picture < AbstractDatabase
   has_one :picture_location, :dependent => :destroy
