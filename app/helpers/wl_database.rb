@@ -260,10 +260,8 @@ module WLDatabase
       @wlmeta.new(:id=>@id, :dbname=>@db_name, :configuration=>@configuration, :init=>true).save
       
       # Init manually the builtins relations created when rails has parsed the
-      # models
-      require 'debugger' ; debugger
-      # These are the relation to bind to webdalog relation that have already
-      # been created in webdamlog thanks to wdl program file in bootstrap
+      # models. These are the relation to bind to webdalog relation that have
+      # already been created in webdamlog thanks to wdl program file in bootstrap
       classname = "Picture"
       pict = WLTool::class_exists(classname , ActiveRecord::Base)
       if pict.nil?
@@ -273,8 +271,9 @@ module WLDatabase
         @relation_classes[classname] = pict
       end
       @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
       @relation_classes[classname].bind_wdl_relation
-
+      
       classname = "Contact"
       conn = WLTool::class_exists(classname, ActiveRecord::Base)
       if conn.nil?
@@ -285,6 +284,7 @@ module WLDatabase
       end
       # wdl linking
       @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
       @relation_classes[classname].extend WrapperHelper::ContactWrapper
       @relation_classes[classname].bind_wdl_relation
 
@@ -297,6 +297,7 @@ module WLDatabase
         @relation_classes[classname] = iml
       end
       @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
       @relation_classes[classname].bind_wdl_relation
 
       classname = "Rating"
@@ -308,6 +309,7 @@ module WLDatabase
         @relation_classes[classname] = rate
       end
       @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
       @relation_classes[classname].bind_wdl_relation
 
       classname = "Comment"
@@ -319,6 +321,7 @@ module WLDatabase
         @relation_classes[classname] = com
       end
       @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
       @relation_classes[classname].bind_wdl_relation
 
       # bind to webdamlog but not created in the bootstrap program
@@ -332,6 +335,7 @@ module WLDatabase
       end
       model_klass = @relation_classes[classname]
       model_klass.extend WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
       model_klass.bind_wdl_relation
 
       # The following relation are not linked to webdamlog
@@ -380,6 +384,7 @@ module WLDatabase
       if options[:wdl]
         # wdl binding TODO add wdl declaration of new relation here
         model_klass.extend WrapperHelper::ActiveRecordWrapper
+        model_klass.send :include, WrapperHelper::ActiveRecordOverridder
         # XXX when failed the model_klass should be garbage collected since we
         # don't keep any reference to it
         nm, sch = model_klass.create_wdl_relation schema          
@@ -432,12 +437,10 @@ module WLDatabase
           end
         else
           WLLogger.logger.debug "try to create #{table_name} table in db #{config} for model #{model_name} but it already exists"
-        end
-        
+        end        
         def self.find(*args)
           super *args
-        end
-        
+        end        
         def self.all
           super
         end

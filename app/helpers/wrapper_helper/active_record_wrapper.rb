@@ -1,4 +1,6 @@
+# wdl -> AR
 # Generic method to sync ActiveRecord with webdamlog relations
+# should extend the chosen ActiveRecord (class level)
 module WrapperHelper::ActiveRecordWrapper
 
   attr_reader :engine, :enginelogger, :wdl_tabname, :bound
@@ -64,13 +66,18 @@ module WrapperHelper::ActiveRecordWrapper
     end
     return nm, sch
   end
+end
 
+# AR -> wdl
+# tricks to plug some webdamlog in an ActiveRecord
+# should be include by the chosen ActiveRecord
+module WrapperHelper::ActiveRecordOverridder
+  
   # Override ActiveRecord save to perform some wdl validation before calling
   # super to insert in database
   def save(*args)
-    require 'debugger' ; debugger 
     if valid?
-      if wdl_valid?        
+      if wdl_valid?
         # format for insert into webdamlog
         tuple = []
         wdlfact = nil
@@ -85,7 +92,7 @@ module WrapperHelper::ActiveRecordWrapper
         end
         # insert in database
         unless wdlfact
-          val, err = EngineHelper.WLENGINE.update_add_fact(wdlfact)        
+          val, err = EngineHelper.WLENGINE.update_add_fact(wdlfact)
           if super(*args)
             return true
           else
@@ -105,11 +112,11 @@ module WrapperHelper::ActiveRecordWrapper
 
   # TODO add here some wdl guards
   def wdl_valid?
-    if bound
-      true
-    else
-      false
-    end
-  end  
+    #    if self.bound
+    #      true
+    #    else
+    #      false
+    #    end
+    return true
+  end
 end
-  
