@@ -37,7 +37,11 @@ module EngineHelper
       rule_dir = File.dirname program_file
 
       # the engine itself is WLRunner object
-      @engine = ::WLRunner.create(username, program_file, port, {:rule_dir => rule_dir})
+      begin
+        @engine = ::WLRunner.create(username, program_file, port, {:rule_dir => rule_dir})
+      rescue => error
+        WLLogger.logger.warn "Error occured while initializing WebdamLog runner : #{error.message}\nat\t#{error.backtrace[0..10].join("\n")}"
+      end
       # peername in webdamlog
       @peername = @engine.peername
       # port on which webdamlog is listening
