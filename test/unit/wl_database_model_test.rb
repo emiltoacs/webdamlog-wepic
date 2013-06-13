@@ -39,9 +39,9 @@ class WLDatabaseModelTest < Test::Unit::TestCase
       helper.wdl_tables_binding)
     assert_equal 3, engine.tables[:testmodelcreated_at_databasemodeltest].to_a.size    
   end
-
-  # TODO test activemodel for intensional
-
-  # TODO test var remo
-
 end
+
+# TODO test activemodel for intensional
+
+# TODO test var remo
+
