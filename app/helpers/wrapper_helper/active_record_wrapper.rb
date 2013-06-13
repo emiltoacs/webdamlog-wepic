@@ -72,9 +72,9 @@ module WrapperHelper::ActiveRecordWrapper
       if wdl_valid?
         # TODO format for insert into webdamlog
         tuple = []
-        @wdl_table.cols.each do |col|
+        @wdl_table.cols.each_with_index do |col|
           if self.class.column_names.include?(col.to_s)
-            tuple[]=self.col
+            tuple[]=self.send(col)
           end
           wdlfact = { wdl_tabname => [tuple] }
         end
