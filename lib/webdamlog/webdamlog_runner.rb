@@ -75,7 +75,7 @@ module WLRunner
   def parse pg
     ret = []
     begin
-      ret = self.program.parse_lines pg, false
+      ret = self.wl_program.parse_lines pg, false
     rescue WLError=> err
       ret << err
     end
