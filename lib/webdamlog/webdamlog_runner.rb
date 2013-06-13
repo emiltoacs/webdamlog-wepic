@@ -75,6 +75,7 @@ module WLRunner
   def parse pg
     file = StringIO.new("pg")
     line = file.readlines
+    WLLogger.logger.debug "Line contents : #{line.inspect}"
     ret = []
     begin
       ret = self.wl_program.parse_lines line, false
