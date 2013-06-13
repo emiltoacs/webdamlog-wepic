@@ -22,7 +22,7 @@ Object.size = (obj) ->
     size
 
 display_error = (error_msg) ->
-  "The following error has been encountered : " + JSON.stringify(error_msg)
+  "The following error has been encountered :\n" + error_msg
 
 
 getRelationFields = (relation) ->
@@ -88,10 +88,11 @@ add_described_rule = (rule,description,role) ->
         html += '<div class="rule">' + rule + '</div>'
         html += '</div>'
         jQuery('.'+role+'_examples').append(html)
+        jQuery('.id:contains("'+String(data.id)+'")').parent().focus()
         jQuery('#description_edit_'+role).val('')
         jQuery('#rule_edit_'+role).val('')
       else
-        alert(display_error(data.errors))
+        alert(display_error(data.errors.wdlrule[0]))
 
 
 remove_described_rule = (id) ->

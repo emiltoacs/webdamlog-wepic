@@ -1,7 +1,5 @@
 <%=form_tag({:controller => "query", :action=>"create"},:method=>'post') do %>  
   <div class="field"> Relation Name : <%= text_field_tag "relation_name",nil, :required=>true, :placeholder=>"Alphanumerical characters only", :size => 30 %> </div>
   <div class="field"> Column Names : <%= text_field_tag "column_names",nil, :required=>true, :placeholder=>"Seperated by ';'", :size => 30 %> </div>
-  <%# list the possible types for ActiveRecord http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html#method-i-column %>
-  <div class="field"> Column Types : <%= text_field_tag "column_types",nil, :required=>true, :placeholder=>"Seperated by ';'", :size => 30 %> </div>
   <%= submit_tag 'Add relation' %>
 <% end %>

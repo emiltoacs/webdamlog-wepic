@@ -167,7 +167,7 @@ getPicturesForContact = (contact,div_id,_html,_order,_sort) ->
         if _html
           for key,value of data
             html += '<div class="entry"><div class="image">'
-            html += '<a tabindex="1" class="contact_fancybox" title="'+value['title']+'" rel="contactPictures" href="'+value['src_small']+'">'
+            html += '<a tabindex="1" class="contact_fancybox" title="'+value['title']+'" href="'+value['src_small']+'">'
             html += '<img src="'+data[key]['src']+'" alt="Images">'
             html += '</a>'
             html += '<div id="metainf-'+String(data[key]['_id'])+'" class="metainf" style="display:none">'
@@ -315,10 +315,11 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       )      
       #Setup the chron job
       getLatestComments(pictureId)
-      
+      jQuery('#fancybox-wrap').unbind("keydown")
     'onCleanup' : ->
       #Clear the entire comment section when leaving fancybox.
       jQuery('#fancybox-comments').remove()
+      
 
 
 fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
@@ -369,27 +370,15 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
       jQuery('#fancybox-wrap').draggable
         'handle' : '#fancybox-content' 
       
-      
-      # #Setup star interaction
-      # jQuery('#plus').click ->
-        # console.log('addstar')
-        # addStar()
-      # jQuery('#minus').click ->
-        # console.log('removestar')
-        # removeStar()
-      # jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
-      # '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
-#       
-      # jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
-            
-      # jQuery('#edit_picture').click ->
-        # console.log('edit')
-        # hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
-        # jQuery('.edit-form').prepend(hidden)
-        # jQuery('.box_wrapper').css 
-          # 'display' : 'block'
-        # jQuery('#edit_picture_form').css
-          # 'display' : 'block'        
+      #Setup star interaction
+      jQuery('#plus').click ->
+        console.log('addstar')
+        addStar()
+      jQuery('#minus').click ->
+        console.log('removestar')
+        removeStar()
+      jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
+      '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
       
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->

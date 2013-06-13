@@ -107,8 +107,8 @@ class Picture < AbstractDatabase
   end
   
   def default_values
-    self._id = rand(0xFFFFFF)
-    self.date = DateTime.now
+    self._id = rand(0xFFFFFF) unless self._id
+    self.date = DateTime.now unless self.date
   end
   
   def create_defaults
