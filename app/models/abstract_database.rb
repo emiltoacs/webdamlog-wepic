@@ -8,4 +8,5 @@ class AbstractDatabase < ActiveRecord::Base
     tuple = self.new(values)
     WLLogger.logger.warn "Tuple could not be inserted properly into #{self.table_name} : #{tuple.errors.inspect}" unless tuple.save     
   end
+  
 end
