@@ -94,7 +94,7 @@ class QueryController < ApplicationController
   end # create
   
   def add_described_rule
-    described_rule = DescribedRule.new(:rule=>params[:rule],:description=>params[:description],:role=>params[:role])
+    described_rule = DescribedRule.new(:wdlrule=>params[:rule],:description=>params[:description],:role=>params[:role])
     if described_rule.save 
       respond_to do |format|
         format.json {render :json => {:saved => true, :id => described_rule.id}.to_json }

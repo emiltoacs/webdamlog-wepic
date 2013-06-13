@@ -411,7 +411,7 @@ module SampleHelper
       if (File.exists?(sample_content_file_name))
         content = YAML.load(File.open(sample_content_file_name))
         content['described_rules'].values.each do |drule|
-          DescribedRule.insert(:rule => drule['rule'],:description => drule['description'])
+          DescribedRule.insert(:wdlrule => drule['wdlrule'],:description => drule['description'])
         end
       else
         error = "File #{sample_content_file_name} does not exist!"
