@@ -15,7 +15,7 @@ class WLDatabaseModelTest < Test::Unit::TestCase
   def test_10_add_model
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require 'test_helper'
-    db = WLDatabase.setup_database_server    
+    db = WLDatabase.setup_database_server
     assert_not_nil db
     helper = EngineHelper::WLHELPER
     helper.run
@@ -23,7 +23,8 @@ class WLDatabaseModelTest < Test::Unit::TestCase
     db.create_model("test_model_created", {"name"=> "string", "other"=>"integer"}, {:wdl=> true})
     assert_not_nil engine.tables[:testmodelcreated_at_databasemodeltest]
     assert_equal 0, engine.tables[:testmodelcreated_at_databasemodeltest].to_a.size
-    # #TODO test add facts with 3 new facts
+    assert_equal ["name", "other"], engine.tables[:testmodelcreated_at_databasemodeltest].cols
+    # TODO test add facts with 3 new facts
     valid, err = engine.update_add_fact({ "testmodelcreated_at_databasemodeltest"=>[["other","1"], ["me","2"], ["guy","3"]] })    
     assert_equal 3, valid.first[1].size
     assert_equal [["other", "1"], ["me", "2"], ["guy", "3"]], valid.first[1]
@@ -36,7 +37,7 @@ class WLDatabaseModelTest < Test::Unit::TestCase
         "describedrule_at_databasemodeltest"=>"DescribedRule",
         "testmodelcreated_at_databasemodeltest"=>"TestModelCreated"},
       helper.wdl_tables_binding)
-    assert_equal 3, engine.tables[:testmodelcreated_at_databasemodeltest].to_a.size
+    assert_equal 3, engine.tables[:testmodelcreated_at_databasemodeltest].to_a.size    
   end
 
   # TODO test activemodel for intensional
