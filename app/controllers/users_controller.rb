@@ -12,6 +12,7 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
+    reset_session
     @user = User.new
     @users = User.all
     @user_session = UserSession.new
