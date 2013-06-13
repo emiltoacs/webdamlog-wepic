@@ -261,7 +261,7 @@ module WLDatabase
       
       # Init manually the builtins relations created when rails has parsed the
       # models
-
+      require 'debugger' ; debugger
       # These are the relation to bind to webdalog relation that have already
       # been created in webdamlog thanks to wdl program file in bootstrap
       classname = "Picture"
