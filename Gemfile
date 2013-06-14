@@ -9,6 +9,10 @@ gem 'rake'
 gem 'thin'
 gem 'rake'
 
+# dbm is useless but required by bud without being in the dependency of bud
+gem 'dbm'
+gem 'bud', '>= 0.9.7'
+
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
@@ -16,24 +20,20 @@ gem 'therubyracer'
 
 gem 'cocaine'
 
-# dbm is useless but required by bud without being in the dependency of bud
-gem 'dbm'
-gem 'bud', '>= 0.9.7'
-gem 'rest-open-uri'
+gem 'awesome_print'
 
 gem 'rmagick'
 
 gem 'sqlite3'
 gem 'pg'
 
+gem 'authlogic'
 gem 'json'
-gem 'awesome_print'
-
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'fancybox-rails'
-
 gem 'jquery-star-rating-rails'
+# gem 'rest-open-uri'
 
 group :development, :test do
   # To use the debugger
@@ -52,20 +52,3 @@ group :assets do
 
   gem 'uglifier', '>= 1.0.3'
 end
-
-gem 'jquery-rails'
-
-gem 'authlogic'
-
-# To use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
-
-# To use Jbuilder templates for JSON
-# gem 'jbuilder'
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Deploy with Capistrano
-#
-# gem 'capistrano'

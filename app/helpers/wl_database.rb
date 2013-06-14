@@ -270,8 +270,7 @@ module WLDatabase
       else
         @relation_classes[classname] = pict
       end
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
+      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
       @relation_classes[classname].bind_wdl_relation
       
       classname = "Contact"
@@ -283,9 +282,8 @@ module WLDatabase
         @relation_classes[classname] = conn
       end
       # wdl linking
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
-      @relation_classes[classname].extend WrapperHelper::ContactWrapper
+      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].send :include, WrapperHelper::ContactWrapper
       @relation_classes[classname].bind_wdl_relation
 
       classname = "PictureLocation"
@@ -296,8 +294,7 @@ module WLDatabase
       else
         @relation_classes[classname] = iml
       end
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
+      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
       @relation_classes[classname].bind_wdl_relation
 
       classname = "Rating"
@@ -308,8 +305,7 @@ module WLDatabase
       else
         @relation_classes[classname] = rate
       end
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
+      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
       @relation_classes[classname].bind_wdl_relation
 
       classname = "Comment"
@@ -320,8 +316,7 @@ module WLDatabase
       else
         @relation_classes[classname] = com
       end
-      @relation_classes[classname].extend WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
+      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
       @relation_classes[classname].bind_wdl_relation
 
       # bind to webdamlog but not created in the bootstrap program
@@ -334,8 +329,7 @@ module WLDatabase
         @relation_classes[classname] = com
       end
       model_klass = @relation_classes[classname]
-      model_klass.extend WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].class.send :include, WrapperHelper::ActiveRecordOverridder
+      model_klass.send :include, WrapperHelper::ActiveRecordWrapper
       model_klass.bind_wdl_relation
 
       # The following relation are not linked to webdamlog
@@ -389,8 +383,7 @@ module WLDatabase
 
       if options[:wdl]
         # wdl binding TODO add wdl declaration of new relation here
-        model_klass.extend WrapperHelper::ActiveRecordWrapper
-        model_klass.send :include, WrapperHelper::ActiveRecordOverridder
+        model_klass.include WrapperHelper::ActiveRecordWrapper
         # XXX when failed the model_klass should be garbage collected since we
         # don't keep any reference to it
         nm, sch = model_klass.create_wdl_relation schema          
