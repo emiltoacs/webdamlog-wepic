@@ -5,6 +5,19 @@ collection ext persistent rating@local(_id*, rating*);
 collection ext persistent comment@local(_id*,author*,text*,date*);
 collection ext persistent contact@local(username*, peerlocation*, online*, email*, facebook*);
 collection ext persistent describedrule@local(wdlrule*, description*);
+
+
+#Custom content
+collection ext persistent person@local(_id*,name*);
+collection ext persistent friend@local(_id1*,_id2*);
+fact person@local(12345,oscar);
+fact person@local(12346,hugo);
+fact person@local(12347,kendrick);
+fact friend@local(12345,12346);
+fact friend@local(12346,12347);
+
+
+
 fact contact@local(Jules, localhost:4100, false, "jules.testard@mail.mcgill.ca", "Jules Testard");
 fact contact@local(Julia, localhost:4100, false, "stoyanovich@drexel.edu", "jstoy");
 rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);
