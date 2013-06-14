@@ -2,12 +2,12 @@
 <div id="pictures">
 	<div class="opacity"></div>
 	<div class="content">
-		<h2><span id="contact-name">Contact</span>'s Pictures</h2>
+		<h3><span id="contact-name">Contact</span>'s Pictures</h3>
 		<a id="contact_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
 		<div id="contact_pictures" class="images">
 			Click on a contact name to show his pictures...
 		</div>		
-		<h2>My Pictures</h2>
+		<h3>My Pictures</h3>
 		<a id="my_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
 		<div id="my_pictures" class="images">	
 			<% @pictures.each_with_index do |picture| %>
@@ -74,8 +74,8 @@
 <div id="contact_tab">
 	<div class="opacity"></div>
 	<div class="content">
-		<h2> Contacts </h2>
-		<h3>SIGMOD group</h3>
+		<h3> Contacts </h3>
+		<!-- <h3>SIGMOD group</h3> -->
 		<%= render 'contacts'%>
 	</div>
 </div>
