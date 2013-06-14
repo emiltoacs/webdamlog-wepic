@@ -1,6 +1,6 @@
 module WrapperHelper::ActiveRecordWrapper
 
-  attr_reader :engine, :enginelogger, :wdl_tabname, :bound
+  attr_reader :engine, :enginelogger, :wdl_tabname, :bound, :wdl_table
 
   def self.included(base)
     base.extend(ClassMethods)
@@ -44,7 +44,7 @@ module WrapperHelper::ActiveRecordWrapper
     def send_deltas tab
       tab.each_from_sym([:delta]) do |t|
         tuple = Hash[t.each_pair.to_a]
-        ar = self.new(tuple).save :skip_ar_wrapper
+        self.new(tuple).save :skip_ar_wrapper
       end
     end
 
@@ -78,11 +78,11 @@ module WrapperHelper::ActiveRecordWrapper
   # Override ActiveRecord save to perform some wdl validation before calling
   # super to insert in database
   def save *args
-
-    require 'debugger' ; debugger
+    
     if args.first == :skip_ar_wrapper # skip when you want to call the original save or ActiveRecord in ClassMethods::send_deltas
-      args.shift
-      super args
+      # do not use argument here since save use argument only when mixed in with ActiveRecord::Validations
+      # http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end
+      super
     else
       if valid?
         if wdl_valid?
@@ -90,7 +90,7 @@ module WrapperHelper::ActiveRecordWrapper
           # format for insert into webdamlog
           tuple = []
           wdlfact = nil
-          @wdl_table.cols.each_with_index do |col, i|
+          self.class.wdl_table.cols.each_with_index do |col, i|
             if self.class.column_names.include?(col.to_s)
               tuple[i] = self.send(col)
             else
@@ -102,7 +102,7 @@ module WrapperHelper::ActiveRecordWrapper
           # insert in database
           unless wdlfact
             val, err = EngineHelper.WLENGINE.update_add_fact(wdlfact)
-            if super(*args)
+            if super
               return true
             else
               errors.add(:databasa, "fail to save record in the database")
