@@ -2,17 +2,79 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/*/
 
-.program {
-    margin-left: auto ;
-    margin-right: auto ;
-    margin-top: 10px ;
-    margin-bottom: 10px ;
-    border: 1px solid #aaa ;
-    background-color: #bbb ;
-    padding: 10px ;
-    width: 95% ;
+.program_view {
+  background : #eee;
+  border : 1px solid #111;
+  padding-left : 1%;
+  padding-right : 1%;
+  padding-top : 0px;
+  padding-bottom : 0px;
+  margin-top : 10px;
+  margin-bottom : 10px;
+  width : 98%;
+  min-width : 280px;
+  min-height : 100px;
+  max-height : 300px;
+  overflow-x : hidden;
+  overflow-y : scroll;
 }
 
-.program #text {
-    background-color: #bbb ;
+#program{
+  display : block;
+  min-width : 640px;
+  width : 100%; 
 }
+
+#program div.program_view {
+  width : 94%;
+  height: 250px;
+  padding : 0px;
+  overflow : hidden;
+}
+
+#select_relation_program {
+  height : 100%;
+  width : 20%;
+  min-width : 100px;
+  background-color : #ccc;
+  border-right : 1px #111 solid;
+  float : left;
+}
+#display_relation_program {
+  display : inline;
+  height : 100%;
+  width : 79.8%;
+  min-width : 540px;
+  background-color : #fff;
+  float : right;
+  overflow-y : scroll;
+}
+#refresh {
+  display : block;
+  width : 50%;
+  margin-top : 10px;
+  margin-left : 25%;
+  margin-right : 25%;
+}
+#relation_program {
+  display : block;
+  width : 50%;
+  margin-top : 10px;
+  margin-left : 25%;
+  margin-right : 25%;
+}
+
+// .program {
+    // margin-left: auto ;
+    // margin-right: auto ;
+    // margin-top: 10px ;
+    // margin-bottom: 10px ;
+    // border: 1px solid #aaa ;
+    // background-color: #bbb ;
+    // padding: 10px ;
+    // width: 95% ;
+// }
+// 
+// .program #text {
+    // background-color: #bbb ;
+// }
