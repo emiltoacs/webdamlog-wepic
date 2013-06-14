@@ -23,7 +23,6 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
 
     db.relation_classes['Contact'].new(:username=>'name',:peerlocation=>'peerlocation',:online=>false,:email=>'email',:facebook=>'facebook').save
 
-    require 'debugger' ; debugger
     assert_equal 3, engine.tables[:contact_at_databasemodeltest].to_a.size
     array = engine.tables[:contact_at_databasemodeltest].to_a.sort.map{ |item| item.values }
     assert_equal [["Jules","localhost:4100","false","jules.testard@mail.mcgill.ca","Jules Testard"],

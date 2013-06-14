@@ -66,7 +66,6 @@ module EngineHelper
     end # initialize
 
     def run
-      require 'debugger' ; debugger
       @engine.run_bg
       @enginelogger.info("internal webdamlog engine start running listening on port #{@port}")
       @engine
