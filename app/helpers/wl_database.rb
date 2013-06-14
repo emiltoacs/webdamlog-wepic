@@ -382,7 +382,7 @@ module WLDatabase
 
       if options[:wdl]
         # wdl binding
-        model_klass.include WrapperHelper::ActiveRecordWrapper
+        model_klass.send :include, WrapperHelper::ActiveRecordWrapper
         # XXX when failed the model_klass should be garbage collected since we
         # don't keep any reference to it
         nm, sch = model_klass.create_wdl_relation schema
