@@ -104,7 +104,6 @@ module WrapperHelper::ActiveRecordWrapper
               end
               wdlfact = { self.class.wdl_tabname => [tuple] }
             end
-            require 'debugger' ; debugger
             # insert in database
             if wdlfact
               val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
