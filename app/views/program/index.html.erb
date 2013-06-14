@@ -3,17 +3,30 @@
 </div>
 <div class="content">
   <%if current_user%>
-    <%if @program%>
-      <div class="program" id="name"><%= @program.name%></div>
-      <div class="program" id="source">From file : <%="#{@program.source}#{@program.name}" %></div>
-      <div class="program">Program :
-        <pre id="text">
-			<%=render :file => @program.source%>
-        </pre>
-      </div>
-    <%else%>
-      <div class="program" id="unavailable">Program unavailable!</div>
-    <%end%>
+  	<%= render 'program' %>
+  	<%= render 'delegations'%>
+	<div id="wepicbox-wrap" class="box_wrapper" style="min-width: 150px; min-height: 150px; top: 20px; left: 214px; display: none; position : fixed;">
+		<div id="wepicbox-outer">
+			<div id="wepicbox-bg-n" class="wepicbox-bg"></div>
+			<div id="wepicbox-bg-ne" class="wepicbox-bg"></div>
+			<div id="wepicbox-bg-e" class="wepicbox-bg"></div>
+			<div id="wepicbox-bg-se" class="wepicbox-bg"></div>
+			<div id="wepicbox-bg-s" class="wepicbox-bg"></div>
+			<div id="wepicbox-bg-sw" class="wepicbox-bg"></div>
+			<div id="wepicbox-bg-w" class="wepicbox-bg"></div>
+			<div id="wepicbox-bg-nw" class="wepicbox-bg"></div>
+			<div id="wepicbox-content" style="min-width: 150px; min-height: 150px; width:auto;height:auto;">
+				<div class="opacity"></div>
+				<div class="content">
+				<%if false%>
+					<div id = "create_relation" class=" box-content"><%= render 'create_relation'%></div>
+					<div id = "insert_tuple" class="box-content"><%= render 'insert_tuple'%></div>
+				<%end%>
+				</div>
+			</div>
+			<a type="submit" id="box-wrapper-close" class="button-close"></a>
+		</div>
+	</div>
   <%else%>
     <div class="program" id="notlogged">You are not logged in! <%=link_to "Log in",'/'%></div>
   <%end%>
