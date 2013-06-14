@@ -27,6 +27,7 @@ development: &base
     # default_spawn_port if this peer has been launched by a manager
     wdl_engine_port:
     #Which program is loaded by default by the peer.
+    #app/assets/wlprogram/bootstrap_program.wl
     program:
       file_path: app/assets/wlprogram/bootstrap_program.wl
       
