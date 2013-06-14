@@ -1,0 +1,27 @@
+<h3><span id="contact-name">Contact</span>'s Pictures</h3>
+<a id="contact_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
+<div id="contact_pictures" class="images">
+	Click on a contact name to show his pictures...
+</div>
+<h3>My Pictures</h3>
+<a id="my_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
+<div id="my_pictures" class="images">
+	<% @pictures.each_with_index do |picture| %>
+	<div class="entry">
+		<div class="image">
+			<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small),:title => "#{picture.title}", :rel => 'my_pictures', :class => "fancybox") unless picture.image.nil? %>
+			<div id="metainf-<%= picture._id%>" class="metainf" style="display:none">
+				<span id="location"> <% picturelocation = PictureLocation.where(:_id=>picture._id).first%>
+					<%= if picturelocation then picturelocation.location else 'unknown' end%> </span>
+				<span id="title"><%= picture.title%></span>
+				<span id="owner"><%= picture.owner%></span>
+				<span id="date"><%= picture.created_at.strftime("%m/%d/%y")%></span>
+				<span id="rating"> <% ratingTuple = Rating.where(:_id=>picture._id).first%>
+					<%= if ratingTuple then ratingTuple.rating else 0 end%> </span>
+				<span id="_id"><%= picture._id%></span>
+				<span id="id"><%= picture.id%></span>
+			</div>
+		</div>
+	</div>
+	<%end%>
+</div>

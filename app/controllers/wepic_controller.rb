@@ -116,4 +116,12 @@ class WepicController < ApplicationController
   def send_picture
     #have to send
   end
+  
+  #Returns who's online according to the records
+  def online
+    @contacts = Contact.all.map {|record| record.attributes.except('id','peerlocation','created_at','updated_at','facebook','email')}
+    respond_to do |format| 
+      format.json {render :json => @contacts.to_json}
+    end
+  end
 end

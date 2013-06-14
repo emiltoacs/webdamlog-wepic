@@ -2,71 +2,53 @@
 <div id="pictures">
 	<div class="opacity"></div>
 	<div class="content">
-		<h2><span id="contact-name">Contact</span>'s Pictures</h2>
-		<a id="contact_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
-		<div id="contact_pictures" class="images">
-			Click on a contact name to show his pictures...
-		</div>		
-		<h2>My Pictures</h2>
-		<a id="my_pictures_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
-		<div id="my_pictures" class="images">	
-			<% @pictures.each_with_index do |picture| %>
-			<div class="entry">
-				<div class="image">
-					<%= link_to(image_tag(picture.image.url(:thumb)), picture.image.url(:small),:title => "#{picture.title}", :class => "fancybox") unless picture.image.nil? %>
-					<div id="metainf-<%=picture._id%>" class="metainf" style="display:none">
-						<span id="location">
-							<%picturelocation = PictureLocation.where(:_id=>picture._id).first%>
-							<%=if picturelocation then picturelocation.location else 'unknown' end%>
-						</span>
-						<span id="title"><%=picture.title%></span>
-						<span id="owner"><%=picture.owner%></span>
-						<span id="date"><%=picture.created_at.strftime("%m/%d/%y")%></span>
-						<span id="rating">
-							<%ratingTuple = Rating.where(:_id=>picture._id).first%>
-							<%=if ratingTuple then ratingTuple.rating else 0 end%>
-						</span>
-						<span id="_id"><%=picture._id%></span>
-						<span id="id"><%=picture.id%></span>
+		<%= render 'pictures'%>
+		<div id="wepicbox-wrap" class="box_wrapper" style="min-width: 150px; min-height: 150px; top: 20px; left: 214px; display: none; position : fixed;">
+			<div id="wepicbox-outer">
+				<div id="wepicbox-bg-n" class="wepicbox-bg"></div>
+				<div id="wepicbox-bg-ne" class="wepicbox-bg"></div>
+				<div id="wepicbox-bg-e" class="wepicbox-bg"></div>
+				<div id="wepicbox-bg-se" class="wepicbox-bg"></div>
+				<div id="wepicbox-bg-s" class="wepicbox-bg"></div>
+				<div id="wepicbox-bg-sw" class="wepicbox-bg"></div>
+				<div id="wepicbox-bg-w" class="wepicbox-bg"></div>
+				<div id="wepicbox-bg-nw" class="wepicbox-bg"></div>
+				<div id="wepicbox-content" style="min-width: 150px; min-height: 150px; width:auto;height:auto;">
+					<div class="opacity"></div>
+					<div class="content">
+						<div id = "upload_url" class=" box-content">
+							<%= render 'upload_url'%>
+						</div>
+						<div id = "upload_file" class="box-content">
+							<%= render 'upload_file'%>
+						</div>
+						<div id = "edit_picture_form" class="box-content">
+							<%= render 'edit_picture'%>
+						</div>
+						<div id = "sort" class="box-content">
+							<%= render 'sort'%>
+						</div>
+						<div id = "send-contact-to-contact-form" class="box-content">
+							<%= render 'send_from_contact_to_contact'%>
+						</div>
+						<div id = "send-mine-to-contact-form" class="box-content">
+							<%= render 'send_mine_to_contact'%>
+						</div>
+						<div id = "contact-sort" class="box-content">
+							<%= render 'contact_sort'%>
+						</div>
 					</div>
 				</div>
+				<a type="submit" id="box-wrapper-close" class="button-close"></a>
 			</div>
-			<% end %>
 		</div>
-        <div id="wepicbox-wrap" class="box_wrapper" style="min-width: 150px; min-height: 150px; top: 20px; left: 214px; display: none; position : fixed;">
-    		<div id="wepicbox-outer">
-    			<div id="wepicbox-bg-n" class="wepicbox-bg"></div>
-    			<div id="wepicbox-bg-ne" class="wepicbox-bg"></div>
-    			<div id="wepicbox-bg-e" class="wepicbox-bg"></div>
-    			<div id="wepicbox-bg-se" class="wepicbox-bg"></div>
-    			<div id="wepicbox-bg-s" class="wepicbox-bg"></div>
-    			<div id="wepicbox-bg-sw" class="wepicbox-bg"></div>
-    			<div id="wepicbox-bg-w" class="wepicbox-bg"></div>
-    			<div id="wepicbox-bg-nw" class="wepicbox-bg"></div>
-    			<div id="wepicbox-content" style="min-width: 150px; min-height: 150px; width:auto;height:auto;">
-    				<div class="opacity"></div>
-    				<div class="content">
-    				<div id = "upload_url" class=" box-content"><%= render 'upload_url'%></div>
-    				<div id = "upload_file" class="box-content"><%= render 'upload_file'%></div>
-    				<div id = "edit_picture_form" class="box-content"><%= render 'edit_picture'%></div>
-    				<div id = "sort" class="box-content"><%= render 'sort'%></div>
-    				<div id = "send-contact-to-contact-form" class="box-content"><%= render 'send_from_contact_to_contact'%></div>
-    				<div id = "send-mine-to-contact-form" class="box-content"><%= render 'send_mine_to_contact'%></div>
-    				<div id = "contact-sort" class="box-content"><%= render 'contact_sort'%></div>
-    				</div>
-    			</div>
-    			<a type="submit" id="box-wrapper-close" class="button-close"></a>
-    			
-    		</div>
-    		
-        </div>
-		<%else%>
+<%else%>
 		<div id="notlogged">
 			You are not logged in! <%= link_to "Log in",:login%>
 		</div>
-		<%end%>
+<%end%>
+<%if current_user%>
 	</div>
-	<% if current_user %>
 </div>
 <%end%>
 
@@ -74,8 +56,8 @@
 <div id="contact_tab">
 	<div class="opacity"></div>
 	<div class="content">
-		<h2> Contacts </h2>
-		<h3>SIGMOD group</h3>
+		<h3> Contacts </h3>
+		<!-- <h3>SIGMOD group</h3> -->
 		<%= render 'contacts'%>
 	</div>
 </div>

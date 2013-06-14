@@ -20,6 +20,9 @@ gem 'therubyracer'
 
 gem 'cocaine'
 
+# # dbm is useless but required by bud without being in the dependency of bud
+# gem 'dbm'
+# gem 'bud', '>= 0.9.7'
 gem 'awesome_print'
 
 gem 'rmagick'
