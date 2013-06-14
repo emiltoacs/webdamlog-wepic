@@ -382,12 +382,12 @@ module WLDatabase
       model_klass = create_model_class(name, schema)
 
       if options[:wdl]
-        # wdl binding TODO add wdl declaration of new relation here
+        # wdl binding
         model_klass.include WrapperHelper::ActiveRecordWrapper
         # XXX when failed the model_klass should be garbage collected since we
         # don't keep any reference to it
-        nm, sch = model_klass.create_wdl_relation schema          
-        return nm if nm.is_a? WLBud::WLError        
+        nm, sch = model_klass.create_wdl_relation schema
+        return nm if nm.is_a? WLBud::WLError
         model_klass.bind_wdl_relation
       end
 
