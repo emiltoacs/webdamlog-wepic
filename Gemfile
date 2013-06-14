@@ -33,12 +33,10 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'fancybox-rails'
 gem 'jquery-star-rating-rails'
-# gem 'rest-open-uri'
 
 group :development, :test do
   # To use the debugger
   gem 'debugger', :platforms => :ruby_19
-  gem "ruby-debug", :platforms => :ruby_18
 end
 
 # Gems used only for assets and not required
