@@ -8,6 +8,7 @@ current_url = location.protocol + '//' + location.host + location.pathname
 
 capitalizeFirstLetter = (string) ->
   if (typeof string)=='string'
+    string = String.trim(string)
     string.charAt(0).toUpperCase()+string.slice(1)
   else
     string
@@ -28,7 +29,8 @@ changeTitle = (idPicture,title) ->
         #saved = (data.saved=='true') 
         if data.saved
           html = capitalizeFirstLetter(data.title)
-          jQuery('#image-title').html(html)
+          jQuery('#image-title').val(html)
+          jQuery('#image-title').blur()
           jQuery('#metainf-'+String(idPicture)+' #title').html(html)
         else
           jQuery('#fancybox-errors').html(display_error(data.errors))
@@ -46,7 +48,8 @@ changeLocation = (idPicture,location) ->
       'success' : (data) ->
         if data.saved
           html = capitalizeFirstLetter(data.location)
-          jQuery('#image-location').html(html)
+          jQuery('#image-location').val(html)
+          jQuery('#image-location').blur()
           jQuery('#metainf-'+String(idPicture)+' #location').html(html)
         else
           jQuery('#fancybox-errors').html(display_error(data.errors))
@@ -167,7 +170,7 @@ getPicturesForContact = (contact,div_id,_html,_order,_sort) ->
         if _html
           for key,value of data
             html += '<div class="entry"><div class="image">'
-            html += '<a tabindex="1" class="contact_fancybox" title="'+value['title']+'" href="'+value['src_small']+'">'
+            html += '<a tabindex="1" class="contact_fancybox" title="'+value['title']+'" href="'+value['src_small']+'" rel="contact_pictures">'
             html += '<img src="'+data[key]['src']+'" alt="Images">'
             html += '</a>'
             html += '<div id="metainf-'+String(data[key]['_id'])+'" class="metainf" style="display:none">'
@@ -246,18 +249,18 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
         else
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
-      star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">+</a>"
-      star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">-</a>"
+      star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #333;width:15px;\" class=\"nice-button\">+</a>"
+      star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #333;width:15px;\" class=\"nice-button\">-</a>"
       star_s += '<div class="star-wrapper">'
       for star in star_array
         star_s += star
       star_s += '</div>'      
       return '<div id="fancybox-title-inside" class="fancybox-title"><table><tr>'+
-      '<td style=""><strong id="image-title" contenteditable="true" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
+      '<td style=""><input id="image-title" style="font-style:italic" title="Click to edit" value="'+capitalizeFirstLetter(metainf['title'])+'"></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
-      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location" contenteditable="true">'+String(metainf['location'])+'</strong></td>'+
+      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <input title="Click to edit" id="image-location" value="'+capitalizeFirstLetter(String(metainf['location']))+'"></td>'+
       '<td style="text-align:right">'+star_s+'</td></tr>'+
-      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK"><input type="submit" value="Download image"></form></td></tr>'+
+      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK" style="text-align:left"><input type="submit" value="Download image" class="download"></form></td></tr>'+
       '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
       jQuery('#fancybox-wrap').css
@@ -302,15 +305,14 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       jQuery('#image-title').keypress ( (keypressed) ->
         if keypressed.keyCode == 13
           keypressed.preventDefault()
-          text = jQuery.trim(jQuery('#image-title').html())
+          text = jQuery.trim(jQuery('#image-title').val())
           changeTitle(pictureId,text)
       )
       
       jQuery('#image-location').keypress ( (keypressed) ->
         if keypressed.keyCode == 13
           keypressed.preventDefault()
-          text = jQuery.trim(jQuery('#image-location').html())
-          console.log(text)
+          text = jQuery.trim(jQuery('#image-location').val())
           changeLocation(pictureId,text)
       )      
       #Setup the chron job
@@ -348,18 +350,18 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
         else
           star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
-      # star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">+</a>"
-      # star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #aaa;width:15px;\" class=\"nice-button\">-</a>"
+      star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #333;width:15px;\" class=\"nice-button\">+</a>"
+      star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #333;width:15px;\" class=\"nice-button\">-</a>"
       star_s = '<div class="star-wrapper">'
       for star in star_array
         star_s += star
       star_s += '</div>'      
       return '<div id="fancybox-title-inside" class="fancybox-title"><table><tr>'+
-      '<td style=""><strong id="image-title" contenteditable="false" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
+      '<td style=""><strong id="image-title" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
-      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location" contenteditable="false">'+String(metainf['location'])+'</strong></td>'+
+      '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location">'+String(metainf['location'])+'</strong></td>'+
       '<td style="text-align:right">'+star_s+'</td></tr>'+
-      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK"><input type="submit" value="Download image"></form></td></tr>'+
+      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK" style="text-align:left"><input type="submit" value="Download image" class="download"></form></td></tr>'+
       '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
       jQuery('#fancybox-wrap').css
@@ -387,23 +389,6 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
           addComment(pictureId,text) #Add a comment with text entered up to now.
           jQuery('#add-comment-box').html('') #Clear the comment line
       )
-
-      # #image change forms
-      # jQuery('#image-title').keypress ( (keypressed) ->
-        # if keypressed.keyCode == 13
-          # keypressed.preventDefault()
-          # text = jQuery.trim(jQuery('#image-title').html())
-          # changeTitle(pictureId,text)
-      # )
-#       
-      # jQuery('#image-location').keypress ( (keypressed) ->
-        # if keypressed.keyCode == 13
-          # keypressed.preventDefault()
-          # text = jQuery.trim(jQuery('#image-location').html())
-          # console.log(text)
-          # changeLocation(pictureId,text)
-      # )
-      
       
       #Setup the chron job
       
