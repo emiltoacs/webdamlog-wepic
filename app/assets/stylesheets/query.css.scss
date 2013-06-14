@@ -86,7 +86,7 @@ textarea{
   padding-bottom : 0px;
   margin-top : 10px;
   margin-bottom : 10px;
-  width : 98%;
+  width : 100%;
   min-width : 280px;
   min-height : 100px;
   max-height : 300px;
@@ -100,11 +100,11 @@ textarea{
   margin-right : 1%;
   float : left;
   display : inline;
-  min-width : 300px; 
+  min-width : 300px;
+  position : relative; 
 }
 
 #query_examples div.query_view {
-  width : 90%;
   height : 300px;
   overflow-y : hidden;
   padding-left : 0px;
@@ -140,11 +140,11 @@ textarea{
   margin-right : 1%;
   float : left;
   display : inline;
-  min-width : 300px; 
+  min-width : 300px;
+  position : relative;
 }
 
 #update_examples div.query_view {
-  width : 90%;
   height : 300px;
   overflow-y : hidden;
   padding-left : 0px;
@@ -177,7 +177,8 @@ textarea{
 #extensional{
   display : block;
   min-width : 640px;
-  width : 100%; 
+  width : 100%;
+  position : relative;
 }
 
 #extensional div.query_view {
@@ -225,7 +226,8 @@ textarea{
 #intentional{
   display : block;
   min-width : 640px;
-  width : 100%; 
+  width : 100%;
+  position : relative;
 }
 
 #intentional div.query_view {
