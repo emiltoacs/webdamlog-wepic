@@ -80,6 +80,5 @@ class UsersControllerTest < ActionController::TestCase
         "Jules Testard"],
       ["Julia", "localhost:4100", "false", "stoyanovich@drexel.edu", "jstoy"]], array
     assert_equal 2, Contact.all.size
-  end
-  
+  end  
 end

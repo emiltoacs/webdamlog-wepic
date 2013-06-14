@@ -328,9 +328,8 @@ module WLDatabase
       else
         @relation_classes[classname] = com
       end
-      model_klass = @relation_classes[classname]
-      model_klass.send :include, WrapperHelper::ActiveRecordWrapper
-      model_klass.bind_wdl_relation
+      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].bind_wdl_relation
 
       # The following relation are not linked to webdamlog
       classname = "User"

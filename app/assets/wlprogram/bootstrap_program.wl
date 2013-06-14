@@ -1,5 +1,4 @@
 peer sigmod_peer = localhost:4100;
-peer local = localhost:4150;
 collection ext persistent picture@local(title*, owner*, _id*, image_url*); #image data fields not added  
 collection ext persistent picturelocation@local(_id*, location*);
 collection ext persistent rating@local(_id*, rating*);

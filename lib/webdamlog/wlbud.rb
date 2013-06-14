@@ -483,8 +483,8 @@ module WLBud
           inter_time = end_time
         end
         #
-        # ### WLBud:End adding to Bud
-        
+        # ### WLBud:End adding to Bud        
+        require 'debugger' ; debugger
         do_flush
           
         invoke_callbacks
@@ -898,6 +898,7 @@ module WLBud
               err[[k,tuple]] = "fact of arity #{tuple.size} in relation #{k} of arity #{arity}"
             else
               begin
+                require 'debugger' ; debugger
                 tables[k.to_sym] <+ [tuple]
                 (valid[k] ||= []) << tuple
               rescue StandardError => error
