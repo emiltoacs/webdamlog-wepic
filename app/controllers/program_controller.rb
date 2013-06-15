@@ -5,6 +5,9 @@ class ProgramController < ApplicationController
     
     # #TODO:This line assumes there is only one program. This assumption #should
     # be relaxed later.
+    
+    @described_rules = DescribedRule.all
+    
     @program = Program.first
     @program = load_program(Conf.peer['peer']['program']['file_path']) if @program.nil?
     

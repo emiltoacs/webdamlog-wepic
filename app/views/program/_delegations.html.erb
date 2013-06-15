@@ -1,6 +1,21 @@
 <div id="delegations">
 	<h3 class="program_title">Delegations : </h3>
 	<div class="program_view">
-		<div id="display_delegations"></div>
+		<div id="display_delegations">
+		<% @described_rules.each do |update| %>
+		<div class="delegation">
+			<a class="accept" onclick="window.accept_rule(<%=update.wdlrule%>,<%=update.id%>);">&#10003;</a>
+			<a class="refuse" onclick="window.refuse_rule(<%=update.wdlrule%>,<%=update.id%>);">x</a>
+			<%if false %><div class="description"><%=update.description%></div><%end%>
+			<div class="id"><%=update.id%></div>
+			<div class="rule">
+				<%update.wdlrule.split(";").each do |line|%>
+				<%= "#{line};"%><br/>
+				<%end%>
+			</div>
+		</div>
+		<% end %>
+			
+		</div>
 	</div>
 </div>

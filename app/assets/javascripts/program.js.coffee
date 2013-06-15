@@ -38,14 +38,14 @@ get_delegations = ->
     'datatype' : 'json'
     'success' : (data) ->
       if data.saved
-        html = '<div class="drule">'
-        html += '<a class="refuse" onclick="window.close_rule('+data.id+');">x</a>'
-        html += '<a class="accept" onclick="window.close_rule('+data.id+');">&#10003;</a>'
-        html += '<div class="description">' + description+ '</div>'
-        html += '<div class="id">'+data.id+'</div>'
-        html += '<div class="rule">' + rule + '</div>'
-        html += '</div>'
-        jQuery('.'+role+'_examples').append(html)
+        for delegation of data.delegations
+          html = '<div class="delegtion">'
+          html += '<a class="refuse" onclick="window.refuse_rule('+delegation.rule+','+delegation.id+');">x</a>'
+          html += '<a class="accept" onclick="window.accept_rule('+delegation.rule+','+delegation.id+');">&#10003;</a>'
+          html += '<div class="id">'+delegation.id+'</div>'
+          html += '<div class="rule">' + delegation.rule.split(";").join(";<br/>") + '</div>'
+          html += '</div>'
+          jQuery('#display_delegation').append(html)
 
 
 
@@ -53,7 +53,15 @@ window.program_refresh = (type)->
   relation = jQuery('#relation_'+type+' option:selected').html()
   getRelationContents(relation,type)
 
+window.refuse_rule = (rule,id) ->
+  jQuery('.id:contains("'+String(id)+'")').parent().remove()
+
+window.accept_rule = (rule,id) ->
+  jQuery('.id:contains("'+String(id)+'")').parent().remove()
+  add_described_rule(rule)
+
 jQuery(document).ready ->
+  get_delegations()
   
   jQuery('#update_examples_button').click ->
     if menu_open
