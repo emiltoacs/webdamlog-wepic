@@ -1,6 +1,5 @@
 class PictureLocation < AbstractDatabase
   attr_accessible :location, :_id
-  belongs_to :picture
   
   def self.setup
     unless @setup_done      
@@ -11,7 +10,6 @@ class PictureLocation < AbstractDatabase
       connection.create_table 'pictureLocations', :force => true do |t|
         t.integer :_id
         t.string :location
-        t.integer :picture_id
         t.timestamps
       end if !connection.table_exists?('pictureLocations')
       
