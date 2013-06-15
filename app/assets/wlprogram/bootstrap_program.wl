@@ -31,4 +31,5 @@ fact contact@local(Jules, localhost:4100, false, "jules.testard@mail.mcgill.ca",
 fact contact@local(Julia, localhost:4100, false, "stoyanovich@drexel.edu", "jstoy");
 
 rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);
+rule person@local($id,$name) :- friend@local($id,$name);
 end
