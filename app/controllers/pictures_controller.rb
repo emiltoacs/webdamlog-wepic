@@ -7,11 +7,23 @@ class PicturesController < WepicController
     config.logger.info "Picture Parameters : #{params[:picture].inspect}" 
     @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image_url=>params[:picture][:image_url]) if params[:picture][:image_url]
     @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
+    @picture = Picture.new if @picture.nil?
+    @picture.save
+    location = if params[:location] 
+      tuple = PictureLocation.new(:_id => @picture._id,:location => params[:location])
+      tuple.save
+      tuple
+    else
+      nil 
+    end
+    errors = {:picture => @picture.errors.messages}
+    errors[:location] = location.errors.messages if location.nil?
     @pictures = Picture.all if @pictures.nil?
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     @contacts = Contact.all
-    if @picture.save
-      @picture.located = params[:location] if params[:location] #in case we have a location from the start
+    no_errors = true
+    errors.values.each {|val| no_errors &&= val.empty?}
+    if no_errors
       config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} successfully saved a new picture"
       respond_to do |format|
         format.html { redirect_to :wepic, :notice => 'Picture was successfully created.' }
@@ -20,8 +32,8 @@ class PicturesController < WepicController
     else
       config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} failed to save a new picture"
       respond_to do |format|        
-        format.html { redirect_to :wepic, :notice => "Image creation was not successful. #{@picture.errors.messages.inspect}" }
-        format.json { render :json => @picture.errors, :status => :unprocessable_entity }
+        format.html { redirect_to :wepic, :notice => "Image creation was not successful. #{errors.inspect}" }
+        format.json { render :json => errors.to_json, :status => :unprocessable_entity }
       end
     end
   end
