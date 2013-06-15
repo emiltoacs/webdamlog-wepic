@@ -1,15 +1,13 @@
 class ProgramController < ApplicationController
+  include EngineHelper
   
   def index
     # #Do not load program if already in main memory
     
     # #TODO:This line assumes there is only one program. This assumption #should
     # be relaxed later.
-    
+    @program = WLENGINE.snapshot_collections
     @described_rules = DescribedRule.all
-    
-    @program = Program.first
-    @program = load_program(Conf.peer['peer']['program']['file_path']) if @program.nil?
     
     flash.now[:alert] = 'The program was not loaded properly.' unless @program
     
@@ -42,5 +40,14 @@ class ProgramController < ApplicationController
     return nil unless program.save
     program
   end # end load_program
+  
+  def get
+    @peers = WLENGINE.snapshot_peers
+    @collections = WLENGINE.snapshot_collections
+    @rules = WLENGINE.snapshot_rules
+    respond_to do |format|
+      format.json {render :json => {:peers => @peers , :collections => @collections, :rules => @rules}.to_json}
+    end
+  end
   
 end

@@ -2,6 +2,17 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/*/
 
+.statement {
+  width : 100%;
+  min-height : 30px;
+  background-color : #fff;
+  border-bottom : 1px solid #111;
+  padding : 2px;
+  padding-right : 12px;
+  word-wrap: break-word;
+  position : relative;
+}
+
 .program_view {
   background : #eee;
   border : 1px solid #111;
@@ -15,6 +26,7 @@
   max-height : 300px;
   overflow-x : hidden;
   overflow-y : scroll;
+  height : 300px;
 }
 
 #display_delegations {
@@ -71,9 +83,12 @@
   display : block;
   min-width : 640px;
   width : 100%;
-  position : relative;  
+  position : relative;
 }
 
+#delegations div.program_view{
+  height : 150px;
+}
 #program a.popUpButton {
   top : -15px;
 }

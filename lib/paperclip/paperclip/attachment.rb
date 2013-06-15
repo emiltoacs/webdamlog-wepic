@@ -221,8 +221,6 @@ module Paperclip
     # use #destroy.
     def clear
       puts "attachment#clear"
-      puts "Trace : #{caller[0..20].join("\n")}"
-      #require 'debugger' ; debugger
       queue_existing_for_delete
       @queued_for_write  = {}
       @errors            = {}
