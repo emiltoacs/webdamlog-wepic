@@ -1,9 +1,6 @@
 #TODO : Due to change in the rating model, need to change rated and rated= methods. 
 
 class Picture < AbstractDatabase
-  has_one :picture_location, :dependent => :destroy
-  has_one :rating, :dependent => :destroy
-  has_many :comments, :dependent => :destroy
   
   attr_accessible :title, :image, :owner, :image_url, :_id, :date
   validates :title, :presence => true
@@ -16,7 +13,6 @@ class Picture < AbstractDatabase
     unless @setup_done
       connection.create_table 'pictures', :force => true do |t|
         t.integer :_id
-        #t.integer  :contact_id
         t.string :title
         t.string :owner
         t.datetime :date
@@ -52,45 +48,22 @@ class Picture < AbstractDatabase
   end
   
   def rated
-    return self.rating.rating if self.rating && self.rating.rating
-    0
+    rated = 0
+    Rating.where(:_id => self._id).each {|rating| rated+=rating.rating}
+    rated
   end
-  
-  def rated=(rating)
-    self.rating.rating = rating
-    self.rating.save
-    WLLogger.logger.debug "Rating for picture #{self._id} : #{rated}"
-  end
-  
+
   def located
-    return self.picture_location.location if self.picture_location && self.picture_location.location
-    "unknown"
+    picture = PictureLocation.where(:_id => self._id)
+    if picture then picture.first else "unknown" end
   end
-  
+
   def dated
     self.date
   end
-  
-  def dated=(date)
-    self.date = date
-    self.save
-    WLLogger.logger.debug "Date for picture #{self._id} : #{dated}"
-  end
-  
+
   def titled
     self.title
-  end
-  
-  def titled=(title)
-    self.title = title
-    self.save
-    WLLogger.logger.debug "Title for picture #{self._id} : #{titled}"
-  end
-  
-  def located=(location)
-    self.picture_location.location = location
-    self.picture_location.save
-    WLLogger.logger.debug "Location for picture #{self._id} : #{located}"
   end
   
   has_attached_file :image,
@@ -111,9 +84,8 @@ class Picture < AbstractDatabase
   end
   
   def create_defaults
-    create_rating(:_id => self._id, :rating => 0)
-    create_picture_location(:_id => self._id, :location => "unknown")
-    self.image_url = self.image_file_name unless self.image_url
+    #TODO replace by better thing
+    #self.image_url = self.image_file_name unless self.image_url
   end
   
   before_create :create_defaults

@@ -39,7 +39,8 @@ get_delegations = ->
     'success' : (data) ->
       if data.saved
         html = '<div class="drule">'
-        html += '<a class="close" onclick="window.close_rule('+data.id+');">x</a>'
+        html += '<a class="refuse" onclick="window.close_rule('+data.id+');">x</a>'
+        html += '<a class="accept" onclick="window.close_rule('+data.id+');">&#10003;</a>'
         html += '<div class="description">' + description+ '</div>'
         html += '<div class="id">'+data.id+'</div>'
         html += '<div class="rule">' + rule + '</div>'
