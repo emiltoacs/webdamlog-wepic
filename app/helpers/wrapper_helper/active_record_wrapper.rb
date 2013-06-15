@@ -80,7 +80,8 @@ module WrapperHelper::ActiveRecordWrapper
     # function
     old_save = base.instance_method(:save)
     # Override ActiveRecord save to perform some wdl validation before calling
-    # super to insert in database
+    # super to insert in database AR -> wdl tricks to plug some webdamlog in an
+    # ActiveRecord should be include by the chosen ActiveRecord
     base.send :define_method, :save do |*args|
       
       if args.first == :skip_ar_wrapper # skip when you want to call the original save or ActiveRecord in ClassMethods::send_deltas
@@ -107,7 +108,8 @@ module WrapperHelper::ActiveRecordWrapper
             # insert in database
             if wdlfact
               val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
-              # useless to call super here since callback in table will do the job just check return value val to see if fact has be added
+              # useless to call super here since callback in table will do the
+              # job just check return value val to see if fact has be added
               unless val.nil? or val.empty?
                 return true
               else
@@ -127,58 +129,8 @@ module WrapperHelper::ActiveRecordWrapper
           return false
         end # if valid?
       end # if args.first == :skip_ar_wrapper  
-    end # define_method
-    
-  end
-  
-
-  # AR -> wdl tricks to plug some webdamlog in an ActiveRecord should be include
-  # by the chosen ActiveRecord
-
-  # Override ActiveRecord save to perform some wdl validation before calling
-  # super to insert in database
-  #  def save *args
-  #    if args.first == :skip_ar_wrapper # skip when you want to call the original save or ActiveRecord in ClassMethods::send_deltas
-  #      # do not use argument here since save use argument only when mixed in with
-  #      # ActiveRecord::Validations http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end
-  #      old_save
-  #    else
-  #      if valid?
-  #        if wdl_valid?
-  #
-  #          # format for insert into webdamlog
-  #          tuple = []
-  #          wdlfact = nil
-  #          self.class.wdl_table.cols.each_with_index do |col, i|
-  #            if self.class.column_names.include?(col.to_s)
-  #              tuple[i] = self.send(col)
-  #            else
-  #              errros.add(:invalid, "tuple #{self} impossible to insert in webdalog it lacks attribute #{col}")
-  #              return false
-  #            end
-  #            wdlfact = { self.class.wdl_tabname => [tuple] }
-  #          end
-  #          # insert in database
-  #          unless wdlfact
-  #            val, err = EngineHelper.WLENGINE.update_add_fact(wdlfact)
-  #            if super
-  #              return true
-  #            else
-  #              errors.add(:databasa, "fail to save record in the database")
-  #              return false
-  #            end
-  #          end
-  #
-  #        else
-  #          errors.add(:tuple, "webdamlog considered it as invalid")
-  #          return false
-  #        end # if wdl_valid?
-  #      else
-  #        errors.add(:tuple, "ActiveRecord considered it as invalid")
-  #        return false
-  #      end # if valid?
-  #    end # if args.first == :skip_ar_wrapper
-  #  end # def save *args
+    end # define_method    
+  end # self.included
 
   # TODO add here some wdl guards
   def wdl_valid?
