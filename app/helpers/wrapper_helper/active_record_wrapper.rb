@@ -21,6 +21,7 @@ module WrapperHelper::ActiveRecordWrapper
         @enginelogger.fatal("bind_wdl_relation fails @engine not initialized")
         return false
       else
+        # TODO change check already declard by dclaration automatic
         if @engine.wl_program.wlcollections.include?(@wdl_tabname)
           cb_id = @engine.register_callback(@wdl_tabname.to_sym) do |tab|
             send_deltas tab
