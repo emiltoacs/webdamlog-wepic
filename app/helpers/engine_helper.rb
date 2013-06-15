@@ -11,7 +11,8 @@ require 'fileutils'
 # project to refere to this webdamlog engine.
 #
 # * initialize with :delay_program_load = true
-# * add peer, collection, rule but facts that are forbidden until wrappers are bound and engine is running
+# * add peer, collection, rule but facts that are forbidden until wrappers are
+#   bound and engine is running
 # * bind wrapper#
 # * start engine
 # * add peer, collection, fact, rule
@@ -34,7 +35,7 @@ module EngineHelper
       # Special logger for webdamlog engine
       @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       username = Conf.peer['peer']['username']
-      #web_port = Integer(Conf.peer['peer']['web_port'])
+      # #web_port = Integer(Conf.peer['peer']['web_port'])
       port = Network.find_port Conf.peer['peer']['ip'], :UDP
       unless port
         @enginelogger.fatal("unable to find a UDP port for the webdamlog engine")
@@ -58,9 +59,11 @@ module EngineHelper
       @bootstrap_program = @engine.filename
       # rules created by webdamlog
       @rule_dir = @engine.rule_dir
-      # @!attribute [Hash] key wdl tables declared : value corresponding class bind in application
+      # @!attribute [Hash] key wdl tables declared : value corresponding class
+      # bind in application
       @wdl_tables_binding = {}
-      # @!attribute [hash] key corresponding class bind in application : value wdl tables declared
+      # @!attribute [hash] key corresponding class bind in application : value
+      # wdl tables declared
       @wdl_tables_binding_rev = {}
 
       msg = "\tpeer_name = #{@peername}\n\tprogram_file = #{File.basename(@bootstrap_program)}\n\tdir_rule = #{@rule_dir}\n\ton port #{@port}"
@@ -74,16 +77,19 @@ module EngineHelper
     end # initialize
 
     def run_engine
-      raise WLErrorRunner, "program has not been loaded" unless @engine.program_loaded
+      raise WLErrorRunner,<<-END if @engine.program_loaded
+       you have started webdamlog engine with option :delay_fact_loading but you have already load the facts you should have load the facts after having start the engine
+      END
       @engine.run_bg
       @enginelogger.info("internal webdamlog engine start running listening on port #{@port}")
       @engine
     end
 
-    # TODO initialize here all the variables needed to push wdl facts into models
+    # TODO initialize here all the variables needed to push wdl facts into
+    # models
     def bind_to_wrappers
-      # TODO write block for each collection that should send there content to wepic
-      #@engine
+      # TODO write block for each collection that should send there content to
+      # wepic #@engine
     end
 
     # setter for wdl_tables_binding
