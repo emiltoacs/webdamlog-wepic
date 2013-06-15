@@ -19,7 +19,7 @@ class UsersControllersTestComplexProgram < ActionController::TestCase
     assert_not_nil assigns(:user_session)
   end
 
-  test "2create" do    
+  test "2create" do
     post(:create,
       :user=>{
         :username => "test_username",
