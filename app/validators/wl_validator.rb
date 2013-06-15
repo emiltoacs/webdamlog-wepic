@@ -6,6 +6,7 @@ class WlValidator < ActiveModel::EachValidator
     #Check all elements from response and check if there is an error.
     response = EngineHelper::WLENGINE.parse(value)
     WLLogger.logger.debug "Parsed #{record.id}: #{response.map {|e| e.class}}"
+    WLLogger.logger.debug "Trace : #{caller[0..20].join("\n")}"
     unless !response.first.is_a?(StandardError) or response.nil?
       record.errors[attribute] << (options[:message] || if response and response.first and response.first.message then response.first.message.to_s else 'Unkown Error' end)
     end

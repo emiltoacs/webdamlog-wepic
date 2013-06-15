@@ -5,8 +5,6 @@
 .program_view {
   background : #eee;
   border : 1px solid #111;
-  padding-left : 1%;
-  padding-right : 1%;
   padding-top : 0px;
   padding-bottom : 0px;
   margin-top : 10px;
@@ -17,6 +15,49 @@
   max-height : 300px;
   overflow-x : hidden;
   overflow-y : scroll;
+}
+
+#display_delegations {
+  width : 100%;
+}
+
+.delegation {
+  width : 100%;
+  min-height : 30px;
+  background-color : #fff;
+  border-bottom : 1px solid #111;
+  padding : 2px;
+  padding-right : 12px;
+  word-wrap: break-word;
+  position : relative;
+}
+
+.delegation div.id {
+  display : none;
+}
+
+.accept {
+  position : absolute;
+  padding-right : 5px;
+  background-color : #fff;
+  right: 8px;
+  top: 18px;
+  &:hover {
+    font-weight : bold;
+    font-size : 14px;
+  }
+}
+
+.refuse {
+  position : absolute;
+  padding-right : 5px;
+  background-color : #fff;
+  right: 10px;
+  top: 0px;
+  &:hover {
+    font-weight : bold;
+    font-size : 14px;
+  }
 }
 
 #program{
@@ -35,5 +76,4 @@
 
 #program a.popUpButton {
   top : -15px;
-  
 }
