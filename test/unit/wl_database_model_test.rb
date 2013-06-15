@@ -18,7 +18,7 @@ class WLDatabaseModelTest < Test::Unit::TestCase
     db = WLDatabase.setup_database_server
     assert_not_nil db
     helper = EngineHelper::WLHELPER
-    helper.run
+    helper.run_engine
     engine = EngineHelper::WLENGINE
     db.create_model("test_model_created", {"name"=> "string", "other"=>"integer"}, {:wdl=> true})
     assert_not_nil engine.tables[:testmodelcreated_at_databasemodeltest]
