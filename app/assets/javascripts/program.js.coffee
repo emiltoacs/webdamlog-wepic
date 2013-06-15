@@ -62,11 +62,11 @@ get_program = ->
       jQuery('#collections_content').html(html)
       html = ""
       for id,rule of data.rules
-        html += '<div class="statement"><span class="rule_id">'+id+'</span>:'+rule+' </div>'
+        html += '<div class="statement"><span class="rule_id">'+id+'</span>:'+rule.split("_at_").join("@")+' </div>'
       jQuery('#rules_content').html(html)
 
 window.get = ->
-  
+  get_program()
 
 window.program_refresh = (type)->
   relation = jQuery('#relation_'+type+' option:selected').html()
@@ -84,31 +84,29 @@ jQuery(document).ready ->
   
   get_program()
   
-  jQuery('#update_examples_button').click ->
+  jQuery('#program_button').click ->
     if menu_open
       menu_open = false
     else
-      html = '+<div id="update_examples_menu" class="popUpMenu">'
-      html += '<a type="submit" id="update_examples_menu_close" class="button-close"></a><ul>'
-      html += '<li><a type="submit" id="create_relation_button" class="active_action">Create Relation...</a></li>'
-      html += '<li><a type="submit" id="insert_tuple_button" class="active_action" >Insert Fact...</a></li>'
+      html = '+<div id="program_menu" class="popUpMenu">'
+      html += '<a type="submit" id="program_menu_close" class="button-close"></a><ul>'
+      html += '<li><a type="submit" id="refresh_button" class="active_action">Refresh</a></li>'
+      html += '<li><a type="submit" id="add_rule_button" class="active_action">Add Rule...</a></li>'
       html += '</ul></div>'
-      jQuery('#update_examples_button').html(html)
+      jQuery('#program_button').html(html)
       menu_open = true
-      jQuery('#update_examples_menu_close').click ->
-        jQuery('#update_examples_button').html('+')
+      jQuery('#program_menu_close').click ->
+        jQuery('#program_button').html('+')
         menu_open = false
-      jQuery('#create_relation_button').click ->
-        jQuery('#update_examples_button').html('+')
+      jQuery('#refresh_button').click ->
+        jQuery('#program_button').html('+')
+        window.get()
+        menu_open = false
+      jQuery('#add_rule_button').click ->
+        jQuery('#program_button').html('+')
+        menu_open = false
         jQuery('.box_wrapper').css 
           'display' : 'block'
-        jQuery('#create_relation').css
+        jQuery('#add_rule').css
           'display' : 'block'
-        menu_open = false
-      jQuery('#insert_tuple_button').click ->
-        jQuery('#update_examples_button').html('+')
-        jQuery('.box_wrapper').css 
-          'display' : 'block'
-        jQuery('#insert_tuple').css
-          'display' : 'block'
-        menu_open = false
+        
