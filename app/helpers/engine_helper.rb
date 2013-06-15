@@ -10,6 +10,13 @@ require 'fileutils'
 # See the engine_initializer that define the constant used throughout the
 # project to refere to this webdamlog engine.
 #
+# * initialize with :delay_program_load = true
+# * add peer, collection, rule but facts that are forbidden until wrappers are bound and engine is running
+# * bind wrapper#
+# * start engine
+# * add peer, collection, fact, rule
+# * play
+#
 module EngineHelper
   
   # TODO add action on shutdown for the wlengine such as erase program file if
@@ -36,9 +43,10 @@ module EngineHelper
       program_file = create_program_dir Conf.peer['peer']['program']['file_path']
       rule_dir = File.dirname program_file
 
-      # the engine itself is WLRunner object
+      # the engine itself is WLRunner object with :delay_fact_loading to wait
+      # until wrappers has been bound to add facts
       begin
-        @engine = ::WLRunner.create(username, program_file, port, {:rule_dir => rule_dir})
+        @engine = ::WLRunner.create(username, program_file, port, {:rule_dir => rule_dir, :delay_fact_loading => true})
       rescue => error
         WLLogger.logger.warn "Error occured while initializing WebdamLog runner : #{error.message}\nat\t#{error.backtrace[0..10].join("\n")}"
       end
@@ -66,6 +74,7 @@ module EngineHelper
     end # initialize
 
     def run_engine
+      raise WLErrorRunner, "program has not been loaded" unless @engine.program_loaded
       @engine.run_bg
       @enginelogger.info("internal webdamlog engine start running listening on port #{@port}")
       @engine

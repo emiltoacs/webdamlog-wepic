@@ -46,11 +46,12 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     flash[:notice] = params.inspect
     begin
-      db = WLDatabase.setup_database_server
+      db = WLDatabase.setup_database_server      
       engine = EngineHelper::WLHELPER.run_engine
       if engine.running_async
+        db.create_base_fact_for_meta_data
+        engine.load_bootstrap_fact
         if @user.save
-          db.create_base_fact_for_meta_data
           respond_to do |format|
             format.html { redirect_to(:wepic, :notice => "Registration successfull") }
             format.xml { render :xml => @user, :status => :created, :location => @user }
