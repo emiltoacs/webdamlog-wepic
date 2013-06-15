@@ -18,7 +18,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_not_nil assigns(:user_session)
   end
 
-  test "2create" do
+  test "2create" do    
     post(:create,
       :user=>{
         :username => "test_username",
@@ -36,7 +36,7 @@ class UsersControllerTest < ActionController::TestCase
     assert_not_nil engine
     assert engine.running_async
     assert_kind_of WLRunner, engine
-    assert_equal([["sigmod_peer", "localhost:4100"], ["test_username", "localhost:5100"]], engine.wl_program.wlpeers.sort)
+    assert_equal([["sigmod_peer", "localhost:4100"], ["test_username", "127.0.0.1:#{engine.port}"]], engine.wl_program.wlpeers.sort)
     assert_equal 6, engine.wl_program.wlcollections.size
     assert_equal ["comment_at_test_username",
       "contact_at_test_username",
