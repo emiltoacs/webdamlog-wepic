@@ -37,21 +37,37 @@ class WepicController < ApplicationController
         format.html {redirect_to :wepic, :notice => "No pictures for #{params[:_id]}"} 
       end
     else
-      picture.titled = params[:title] if params[:title] and !params[:title].empty?
-      picture.rated = params[:rating] if params[:rating] and !params[:rating].empty?
-      picture.located = params[:location] if params[:location] and !params[:location].empty?
-      errors = []
-      errors << picture.errors unless picture.errors.empty?
-      errors << picture.picture_location.errors unless picture.errors.empty?
-      errors << picture.rating.errors unless picture.errors.empty?
+      if params[:title] and !params[:title].empty?
+        picture.title = params[:title]
+        picture.save
+      end
+      rating = if params[:rating]
+        tuple = Rating.where(:owner => Conf.env['USERNAME'],:_id => picture._id)
+        tuple = if tuple then tuple.first else Rating.new(:_id => picture._id, :owner => Conf.env['USERNAME']) end
+        tuple.rating = params[:rating].to_i
+        tuple.save
+        tuple
+      else
+        Rating.new
+      end
+      location = if params[:location]
+        tuple = PictureLocation.where(:_id => picture._id)
+        tuple = if tuple then tuple.first else PictureLocation.new(:_id => picture._id) end
+        tuple.location = params[:location]
+        tuple.save
+        tuple
+      else
+        PictureLocation.new
+      end
+      errors = picture.errors.messages.merge rating.errors.messages.merge location.errors.messages 
       if errors.empty?
         respond_to do |format|
-          format.json {render :json => {:saved => true, :title => picture.title, :rating => picture.rated, :location => picture.located}.to_json }
+          format.json {render :json => {:saved => true, :title => picture.title, :rating => picture.rated, :location => location.location, :my_rating => rating.rating }.to_json }
           format.html {redirect_to :wepic }
         end
       else
         respond_to do |format|
-          format.json {render :json => {:saved => false, :errors => errors.inspect}.to_json }
+          format.json {render :json => {:saved => false, :picture=> picture.nil?, :rating => rating.nil?, :location => location.nil? , :errors => errors}.to_json }
           format.html {redirect_to :wepic, :alert => errors.inspect }
         end
       end

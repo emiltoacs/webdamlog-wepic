@@ -24,6 +24,10 @@ module WLRunner
     WLEnginePool.delete self.class
   end
 
+  def run_engine
+    run_bg
+  end
+
   # TODO should be called in callback when adding contact
   #
   # @return [String,String] peername, address as added in webdamlog
