@@ -1,5 +1,5 @@
 peer sigmod_peer = localhost:4100;
-collection ext persistent picture@local(title*, owner*, _id*, image_url*); #image data fields not added  
+collection ext persistent picture@local(title*, owner*, _id*, image_url*); #image data fields not added
 collection ext persistent picturelocation@local(_id*, location*);
 collection ext persistent rating@local(_id*, rating*);
 collection ext persistent comment@local(_id*,author*,text*,date*);
@@ -31,4 +31,5 @@ fact contact@local(Jules, localhost:4100, false, "jules.testard@mail.mcgill.ca",
 fact contact@local(Julia, localhost:4100, false, "stoyanovich@drexel.edu", "jstoy");
 
 rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);
+rule person@local($id,$name) :- friend@local($id,$name);
 end
