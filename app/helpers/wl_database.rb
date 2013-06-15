@@ -41,7 +41,7 @@ module WLDatabase
           end
         end
       end
-      WLDatabase.establish_orm_db_connection(Conf.env['USERNAME'], db_name, Conf.db)
+      return WLDatabase.establish_orm_db_connection(Conf.env['USERNAME'], db_name, Conf.db)
     end
   end
   
@@ -103,7 +103,7 @@ module WLDatabase
       unless @initialized
         create_schema
         if need_bootstrap?
-          init_bootstrap
+          init_models
         end
         @initialized = true
       end      
@@ -254,10 +254,9 @@ module WLDatabase
       end
     end
 
-    def init_bootstrap
+    def init_models
       # Create the meta data for the current database, useful on reload
-      @wlmeta = create_model(DATABASE_META,DATABASE_META_SCHEMA)
-      @wlmeta.new(:id=>@id, :dbname=>@db_name, :configuration=>@configuration, :init=>true).save
+      @wlmeta = create_model(DATABASE_META,DATABASE_META_SCHEMA)      
       
       # Init manually the builtins relations created when rails has parsed the
       # models. These are the relation to bind to webdalog relation that have
@@ -349,12 +348,12 @@ module WLDatabase
       else
         @relation_classes[classname] = prog
       end
-      
-      # FIXME All of these methods normally correspond to the WLProgram should
-      # be removed after webdamlog program loading and refresh tables from
-      # WLEngine FIXME some bootstrap relations defined statically as
-      # ActiveRecord model. These are the required relations for the
-      # wepic_database_wrapper.
+    end
+
+    # some facts needed to store meta data
+    def create_base_fact_for_meta_data
+      @wlmeta.new(:id=>@id, :dbname=>@db_name, :configuration=>@configuration, :init=>true).save
+
       @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
       @wlschema.new(:name=>Contact.table_name, :schema=>Contact.schema.to_json).save
       @wlschema.new(:name=>User.table_name, :schema=>User.schema.to_json).save
@@ -370,7 +369,7 @@ module WLDatabase
         WLLogger.logger.warn "Error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")}"
       end
     end
-    
+
     # The create relation method will create a new relation in the database as
     # well. as a new rails model class connected to that relation. It requires a
     # schema that will correspond to the table's relational schema.
