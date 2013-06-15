@@ -32,7 +32,6 @@ add_described_rule = (rule) ->
 
 get_delegations = ->
   jQuery.ajax
-    type: "POST"
     'url' : current_url + '/delegations/get'
     'data': null
     'datatype' : 'json'
@@ -47,7 +46,27 @@ get_delegations = ->
           html += '</div>'
           jQuery('#display_delegation').append(html)
 
+get_program = ->
+  jQuery.ajax
+    'url' : current_url + '/get'
+    'data' : null
+    'datatype' : 'json'
+    'success' : (data) ->
+      html = ""
+      for peer in data.peers
+        html += '<div class="statement">'+peer+'</div>'
+      jQuery('#peers_content').html(html)
+      html = ""
+      for collection in data.collections
+        html += '<div class="statement">'+collection+'</div>'
+      jQuery('#collections_content').html(html)
+      html = ""
+      for id,rule of data.rules
+        html += '<div class="statement"><span class="rule_id">'+id+'</span>:'+rule+' </div>'
+      jQuery('#rules_content').html(html)
 
+window.get = ->
+  
 
 window.program_refresh = (type)->
   relation = jQuery('#relation_'+type+' option:selected').html()
@@ -62,6 +81,8 @@ window.accept_rule = (rule,id) ->
 
 jQuery(document).ready ->
   get_delegations()
+  
+  get_program()
   
   jQuery('#update_examples_button').click ->
     if menu_open
