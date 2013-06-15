@@ -18,7 +18,7 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
     db = WLDatabase.setup_database_server
     assert_not_nil db
     helper = EngineHelper::WLHELPER
-    helper.run
+    helper.run_engine
     engine = EngineHelper::WLENGINE
 
     db.relation_classes['Contact'].new(:username=>'name',:peerlocation=>'peerlocation',:online=>false,:email=>'email',:facebook=>'facebook').save
