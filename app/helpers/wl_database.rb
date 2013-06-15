@@ -22,6 +22,7 @@ module WLDatabase
   
   # This setup the database server (currently postgresql or sqlite3 (nothing to
   # do since their are just files))
+  # @return [WLInstanceDatabase] the object mapper for the new database created
   def self.setup_database_server
     unless @@databases[Conf.env['USERNAME']]
       db_name = Conf.db['database']
@@ -350,8 +351,8 @@ module WLDatabase
       end
     end
 
-    # some facts needed to store meta data
-    def create_base_fact_for_meta_data
+    # Some facts needed to store meta data saved in their respective ActiveRecord
+    def save_facts_for_meta_data
       @wlmeta.new(:id=>@id, :dbname=>@db_name, :configuration=>@configuration, :init=>true).save
 
       @wlschema.new(:name=>Picture.table_name, :schema=>Picture.schema.to_json).save
