@@ -309,9 +309,9 @@ module Paperclip
     # interpolations. Future access should use either Paperclip.interpolates
     # or extend the Paperclip::Interpolations module directly.
     def self.interpolations
-      warn('[DEPRECATION] Paperclip::Attachment.interpolations is deprecated ' +
-           'and will be removed from future versions. ' +
-           'Use Paperclip.interpolates instead')
+      # warn('[DEPRECATION] Paperclip::Attachment.interpolations is deprecated ' +
+           # 'and will be removed from future versions. ' +
+           # 'Use Paperclip.interpolates instead')
       Paperclip::Interpolations
     end
 
