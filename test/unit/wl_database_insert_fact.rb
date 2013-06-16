@@ -21,7 +21,7 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
     helper.run_engine
     engine = EngineHelper::WLENGINE
     engine.load_bootstrap_fact
-    db.save_facts_for_meta_data    
+    db.save_facts_for_meta_data
 
     db.relation_classes['Contact'].new(:username=>'name',:peerlocation=>'peerlocation',:online=>false,:email=>'email',:facebook=>'facebook').save
 
