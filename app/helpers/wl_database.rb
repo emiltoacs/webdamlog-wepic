@@ -19,6 +19,11 @@ module WLDatabase
   # The set of database on which the peer is connected. In our app there is
   # always exactly one.
   @@databases = Hash.new
+
+  # FIXME accessor for class variable see if attr-redaer can work
+  def self.databases
+    @@databases
+  end
   
   # This setup the database server (currently postgresql or sqlite3 (nothing to
   # do since their are just files))
@@ -329,6 +334,7 @@ module WLDatabase
         @relation_classes[classname] = com
       end
       @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].send :include, WrapperHelper::RuleWrapper
       @relation_classes[classname].bind_wdl_relation
 
       # The following relation are not linked to webdamlog
@@ -372,10 +378,11 @@ module WLDatabase
     end
 
     # The create relation method will create a new relation in the database as
-    # well. as a new rails model class connected to that relation. It requires a
+    # well as a new rails model class connected to that relation. It requires a
     # schema that will correspond to the table's relational schema.
     #
-    #  @options createwdl [boolean] :wdl set to true to create the binding with webdamlog
+    # @options createwdl [boolean] :wdl set to true to create the binding with
+    # webdamlog
     #
     def create_model(name,schema,options={})
       model_klass = create_model_class(name, schema)
@@ -390,7 +397,7 @@ module WLDatabase
         model_klass.bind_wdl_relation
       end
 
-      @relation_classes[name] = model_klass      
+      @relation_classes[name] = model_klass
       begin
         # new record in the wlshema table
         unless @wlschema.new(:name => model_klass.table_name,:schema => model_klass.schema.to_json).save        
@@ -406,6 +413,10 @@ module WLDatabase
     # class of the model created if succeed. it should be called by
     # create_relation create_relation, relation
     #
+    # @notice silently ignore empty fields that is if col_type or col_name is
+    # not specified in schema it will be skipped and continue with other
+    # attributes
+    #
     def create_model_class(name, schema)
       raise WLDatabaseError.new "type error of name is #{name.class}" unless name.is_a? String
       raise WLDatabaseError.new "type error of schema is #{schema.class}" unless schema.is_a? Hash
@@ -419,7 +430,7 @@ module WLDatabase
         
         # By default we impose that no field could be nil
         schema.each_pair do |col_name,col_type|
-          eval "validates :#{col_name}, :presence => true"
+          eval "validates :#{col_name}, :presence => true" unless col_name.empty?
         end
 
         if table_name.nil? or table_name.empty?
@@ -429,7 +440,7 @@ module WLDatabase
         if !connection.table_exists?(table_name)
           connection.create_table table_name, :force => true do |t|
             schema.each_pair do |col_name,col_type|
-              eval("t.#{col_type} :#{col_name}")
+              eval("t.#{col_type} :#{col_name}") unless col_name.empty? or col_type.empty?
             end
             t.timestamps
           end

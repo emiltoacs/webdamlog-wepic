@@ -4,7 +4,7 @@ collection ext persistent picturelocation@local(_id*, location*);
 collection ext persistent rating@local(_id*, rating*, owner*);
 collection ext persistent comment@local(_id*,author*,text*,date*);
 collection ext persistent contact@local(username*, peerlocation*, online*, email*, facebook*);
-collection ext persistent describedrule@local(wdlrule*, description*, role*);
+collection ext persistent describedrule@local(wdlrule*, description*, role*, wdl_rule_id*);
 fact picture@local(sigmod,Jules,12345,"http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif");
 fact picture@local(sigmod,Julia,12346,"http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif");
 fact picture@local(sigmod,Jules,12347,"http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif");
