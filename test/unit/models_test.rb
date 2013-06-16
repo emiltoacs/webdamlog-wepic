@@ -20,7 +20,6 @@ class ModelsTest < Test::Unit::TestCase
     engine = EngineHelper::WLENGINE
     engine.load_bootstrap_fact
     db.save_facts_for_meta_data
-
     
     rating = Rating.new(:rating => 3, :owner=>'jules', :_id => 12345)
     rating.save
@@ -29,14 +28,15 @@ class ModelsTest < Test::Unit::TestCase
   
   def test_new_picture_remote
     #TODO: Write test #:date => DateTime.now,
-#    picture = Picture.new(:owner=>"Emilien",:title=>"nemo") #:remote_image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg"
-#    picture.save
-#    assert_equal(picture.image_file_name,"Fish.jpeg")
-#    assert_equal(picture.image_file_size,32824)
-#    assert_equal(picture.image_content_type,"image/jpeg")
-#    assert_equal(picture.owner,"Emilien")
-#    assert_equal(picture.title,"nemo")
-#    picture.destroy
+    
+    picture = Picture.new(:owner=>"Emilien",:title=>"nemo") #:remote_image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg"
+    picture.save
+    assert_equal(picture.image_file_name,"Fish.jpeg")
+    assert_equal(picture.image_file_size,32824)
+    assert_equal(picture.image_content_type,"image/jpeg")
+    assert_equal(picture.owner,"Emilien")
+    assert_equal(picture.title,"nemo")
+    picture.destroy
   end
 #   
   # # def test_new_picture_local
