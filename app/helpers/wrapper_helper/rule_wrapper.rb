@@ -41,7 +41,6 @@ module WrapperHelper::RuleWrapper
             # FIXME should be only one database but still
             schema = {}
             budschema = inst.schema
-            require 'debugger' ; debugger 
             list = budschema.keys.map { |it| it.first.to_s } + budschema.values.map { |it| it.first.to_s }
             list.reject! { |item| item.empty? }
             list.each { |key| schema[key]="text" }

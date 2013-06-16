@@ -34,7 +34,7 @@ class WrapperRuleTest < Test::Unit::TestCase
       wdlrule: "rule person@local($id,$name) :- friend@local($id,$name);",
       role: "update" ).save
     
-    assert_equal "", DescribedRule.all
+    assert_equal [], DescribedRule.all
   end
   
 end
