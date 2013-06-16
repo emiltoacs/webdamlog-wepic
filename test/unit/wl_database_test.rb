@@ -9,7 +9,6 @@ require File.expand_path('../../../app/helpers/wl_database', __FILE__) #require 
 # This class is meant to test and explain the database API to be used by the
 # rails controllers and WebdamLog. The suppress warning messages are used to
 # avoid constant reassignment warnings.
-#
 class WLDatabaseTest < Test::Unit::TestCase
   include WLDatabase
   
