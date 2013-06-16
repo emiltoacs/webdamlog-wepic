@@ -19,7 +19,7 @@ class DescribedRule < AbstractDatabase
       end if !connection.table_exists?('describedRule')
       
       @setup_done = true
-    end 
+    end
   end
   
   def self.table_name
