@@ -24,7 +24,12 @@ module WrapperHelper::ActiveRecordWrapper
         # TODO change check already declared by declaration automatic
         if @engine.wl_program.wlcollections.include?(@wdl_tabname)
           cb_id = @engine.register_callback(@wdl_tabname.to_sym) do |tab|
-            send_deltas tab
+            # send_deltas tab # Callback sent to wdl
+            tab.each_from_sym([:delta]) do |t|
+              tuple = Hash[t.each_pair.to_a]
+              self.new(tuple).save_in_ar
+            end
+            tab.flush_deltas
           end
           @wdl_table = @engine.tables[@wdl_tabname.to_sym]          
           EngineHelper::WLHELPER.register_new_binding @wdl_tabname, self.name
@@ -40,19 +45,19 @@ module WrapperHelper::ActiveRecordWrapper
     end
 
     # Callback sent to wdl
-    def send_deltas tab
-      tab.each_from_sym([:delta]) do |t|
-        tuple = Hash[t.each_pair.to_a]
-        require 'debugger' ; debugger 
-        self.new(tuple).save :skip_ar_wrapper
-      end
-    end
+#    def send_deltas tab
+#      tab.each_from_sym([:delta]) do |t|
+#        tuple = Hash[t.each_pair.to_a]
+#        self.new(tuple).save_in_ar
+#      end
+#    end
 
     # Create the wdl relation @param name [String] wdl relation name
     #
     # @param schema [Hash] keys are fields name and values are their type
-    # 
-    # @return [String, Hash, String] name of relation, Hash of the schema, webamlog instruction
+    #
+    # @return [String, Hash, String] name of relation, Hash of the schema,
+    # webamlog instruction
     def create_wdl_relation schema
       @engine = EngineHelper::WLENGINE
       @enginelogger = EngineHelper::WLLOGGER
@@ -89,7 +94,7 @@ module WrapperHelper::ActiveRecordWrapper
         # do not use argument here since save use argument only when mixed in
         # with ActiveRecord::Validations http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end
         # .() is ruby1.9 syntax for call
-        #old_save.bind(base).()
+        # #old_save.bind(self).()
         super()
       else
         if valid?
@@ -109,7 +114,6 @@ module WrapperHelper::ActiveRecordWrapper
             end
             # insert in database
             if wdlfact
-              require 'debugger' ; debugger 
               val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
               # useless to call super here since callback in table will do the
               # job just check return value val to see if fact has be added
@@ -143,5 +147,9 @@ module WrapperHelper::ActiveRecordWrapper
       false
     end
     return true
+  end
+
+  def save_in_ar
+    self.class.superclass.instance_method(:save).bind(self).call
   end
 end

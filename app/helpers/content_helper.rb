@@ -4,12 +4,11 @@ module ContentHelper
   def self.query_create
     if defined?(Conf)
       WLLogger.logger.debug "Query Samples for user : #{Conf.env['USERNAME']}"
-      sample_content_file_name = "#{Rails.root}/config/scenario/samples/query/sample.yml"
+      sample_content_file_name = Conf.peer['peer']['program']['query_sample']
       if (File.exists?(sample_content_file_name))
         content = YAML.load(File.open(sample_content_file_name))
         #WLLogger.logger.debug 'Reseting described rules...' if DescribedRule.delete_all
         content['described_rules'].values.each do |idrule|
-          require 'debugger' ; debugger 
           drule = DescribedRule.new(:wdlrule => idrule['wdlrule'],:description => idrule['description'], :role=> idrule['role'])
           if drule.save
             WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"

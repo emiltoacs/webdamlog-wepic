@@ -30,6 +30,7 @@ development: &base
     #app/assets/wlprogram/bootstrap_program.wl
     program:
       file_path: app/assets/wlprogram/bootstrap_program.wl
+      query_sample: config/scenario/samples/query/sample.yml
       
 test:
   communication:
@@ -43,6 +44,7 @@ test:
     wdl_engine_port : 20000
     program:
       file_path: test/config/bootstrap_for_test.wl
+      query_sample: test/config/sample.yml
 
 production:
   <<: *base

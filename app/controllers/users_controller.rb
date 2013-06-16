@@ -45,26 +45,28 @@ class UsersController < ApplicationController
   def create
     @user = User.new(params[:user])
     flash[:notice] = params.inspect
-    begin
-      db = WLDatabase.setup_database_server
-      engine = EngineHelper::WLHELPER.run_engine
-      if engine.running_async
-        engine.load_bootstrap_fact
-        db.save_facts_for_meta_data
-        if @user.save
+    begin      
+      if @user.save
+        # all the big mechanics to load wdl
+        db = WLDatabase.setup_database_server
+        engine = EngineHelper::WLHELPER.run_engine
+        if engine.running_async
+          engine.load_bootstrap_fact
+          db.save_facts_for_meta_data
+          # TODO check if two previous are ok
           respond_to do |format|
             format.html { redirect_to(:wepic, :notice => "Registration successfull") }
             format.xml { render :xml => @user, :status => :created, :location => @user }
           end
         else
-          WLLogger::WLLogger.logger.debug "#{@user.errors.messages.inspect}"
+          WLLogger::WLLogger.logger.debug "fail to start running webdamlog engine"
           respond_to do |format|
             format.html { render :action => "new" , :alert => @user.errors.messages.inspect}
-            format.xml { render :xml => @user.errors, :status => :unprocessable_entity }
+            format.xml { render :xml => @user.errors, :status => :unprocessable_entity }            
           end
         end
       else
-        WLLogger::WLLogger.logger.debug "fail to start running webdamlog engine"
+        WLLogger::WLLogger.logger.debug "#{@user.errors.messages.inspect}"
         respond_to do |format|
           format.html { render :action => "new" , :alert => @user.errors.messages.inspect}
           format.xml { render :xml => @user.errors, :status => :unprocessable_entity }

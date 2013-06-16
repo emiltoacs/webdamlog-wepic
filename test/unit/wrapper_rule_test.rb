@@ -20,10 +20,8 @@ class WrapperRuleTest < Test::Unit::TestCase
     helper = EngineHelper::WLHELPER
     helper.run_engine
     engine = EngineHelper::WLENGINE
-    require 'debugger' ; debugger
     engine.load_bootstrap_fact
-    db.save_facts_for_meta_data    
-    require 'debugger' ; debugger 
+    db.save_facts_for_meta_data
     assert_not_nil db
     klassperson, relname, sch, instruction = db.create_model("persontest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassperson
@@ -41,14 +39,30 @@ class WrapperRuleTest < Test::Unit::TestCase
           "collection ext per query1@wrapperruletest(title*);",
           "collection"],
         [2,
+          "Get all the titles for my pictures",
+          "rule query1@wrapperruletest($title) :- picture@wrapperruletest($title, $_, $_, $_);",
+          "collection"],
+        [3,
+          "Get all pictures from all my friends",
+          "collection ext per query2@wrapperruletest(title*);",
+          "collection"],
+        [4,
           "Get all my pictures with rating of 5",
           "collection ext per query3@wrapperruletest(title*);",
           "collection"],
-        [3,
+        [5,
+          "Get all my pictures with rating of 5",
+          "rule deleg_from_wrapperruletest_4_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@wrapperruletest($title, $contact, $id, $image_url);",
+          "collection"],
+        [6,
           "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
           "collection ext per friend@wrapperruletest(name*);",
-          "collection"]],
-      DescribedRule.all.map { |tup| [tup[:id], tup[:description], tup[:wdlrule], tup[:role] ] })    
+          "collection"],
+        [7,
+          "first rule",
+          "rule persontest@wrapperruletest($id, $name) :- familytest@wrapperruletest($id, $name);",
+          "update"]],
+      DescribedRule.all.map { |tup| [tup[:id], tup[:description], tup[:wdlrule], tup[:role] ] })
   end
   
 end
