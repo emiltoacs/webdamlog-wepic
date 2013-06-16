@@ -3,7 +3,8 @@ ENV["RAILS_ENV"] = "test"
 ENV["USERNAME"] = "modelstesttest"
 ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
-require 'wl_tool'
+require './lib/wl_tool'
+#Put custom variables (such as db name) here.
 Conf.db['database']="wp_modelstesttest"
 require 'test/unit'
 require './lib/wl_setup'
@@ -12,7 +13,7 @@ class ModelsTest < Test::Unit::TestCase
   
   def test_rating
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
-    require 'test_helper'
+    require './test/test_helper'
     db = WLDatabase.setup_database_server
     assert_not_nil db
     helper = EngineHelper::WLHELPER
