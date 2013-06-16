@@ -9,9 +9,10 @@ module ContentHelper
         content = YAML.load(File.open(sample_content_file_name))
         #WLLogger.logger.debug 'Reseting described rules...' if DescribedRule.delete_all
         content['described_rules'].values.each do |idrule|
+          require 'debugger' ; debugger 
           drule = DescribedRule.new(:wdlrule => idrule['wdlrule'],:description => idrule['description'], :role=> idrule['role'])
           if drule.save
-            WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..29]}] successfully added!"
+            WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"
           else
             error = "Rule : #{drule.description.inspect[0..9]}...[#{drule.wdlrule.inspect[0..19]}] was not saved because :"
             drule.errors.messages.each do |msg_k,msg_v|
