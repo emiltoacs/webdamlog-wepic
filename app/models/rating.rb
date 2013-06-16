@@ -2,6 +2,7 @@
 #Have several ratings per picture.
 class Rating < AbstractDatabase
   attr_accessible :_id, :rating, :owner
+  before_validation :default_values
   # belongs_to :picture
   
   def self.setup
@@ -27,6 +28,10 @@ class Rating < AbstractDatabase
   
   def self.table_name
     'ratings'
+  end
+  
+  def default_values
+    self._id = rand(0xFFFFFF) unless self._id
   end
   
   def self.schema
