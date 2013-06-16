@@ -29,20 +29,26 @@ class ModelsTest < Test::Unit::TestCase
     #Test environment
   end
   
+  def test_rating
+    rating = Rating.new(:rating => 3, :owner=>'jules', :_id => 12345)
+    rating.save
+    assert_equal(3,rating.rating)
+  end
+  
   def test_new_picture_remote
-    #TODO: Write test
-    # picture = Picture.new(:image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg",:owner=>"Emilien",:title=>"nemo")
-    # picture.save
-    # assert_equal(picture.image_file_name,"Fish.jpeg")
-    # assert_equal(picture.image_file_size,32824)
-    # assert_equal(picture.image_content_type,"image/jpeg")
-    # assert_equal(picture.owner,"Emilien")
-    # assert_equal(picture.title,"nemo")
-    # picture.destroy
+    #TODO: Write test #:date => DateTime.now,
+    picture = Picture.new(:owner=>"Emilien",:title=>"nemo") #:remote_image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg"
+    picture.save
+    assert_equal(picture.image_file_name,"Fish.jpeg")
+    assert_equal(picture.image_file_size,32824)
+    assert_equal(picture.image_content_type,"image/jpeg")
+    assert_equal(picture.owner,"Emilien")
+    assert_equal(picture.title,"nemo")
+    picture.destroy
   end
 #   
-  # def test_new_picture_local
-    #TODO: Write test
+  # # def test_new_picture_local
+    # #TODO: Write test
     # picture = Picture.new(:image_url=>"app/assets/images/tiger.jpg",:owner=>"Jules",:title=>"tiger")
     # picture.save
     # assert_equal(picture.image_file_name,"tiger.jpg")
@@ -50,5 +56,5 @@ class ModelsTest < Test::Unit::TestCase
     # assert_equal(picture.owner,"Jules")
     # assert_equal(picture.title,"tiger")
     # picture.destroy
-  # end  
+  # # end  
 end

@@ -3,6 +3,12 @@
 </div>
 <div class="content">
   <%if current_user%>
+  <script type="text/javascript">
+  	  jQuery(document).ready(function(){
+  	  	window.delegations();
+  	  	window.program_refresh();
+  	  });
+  </script>
   	<%= render 'program' %>
   	<%= render 'delegations'%>
 	<div id="wepicbox-wrap" class="box_wrapper" style="min-width: 150px; min-height: 150px; top: 20px; left: 214px; display: none; position : fixed;">

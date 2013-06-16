@@ -4,6 +4,7 @@ class WlValidator < ActiveModel::EachValidator
   
   def validate_each(record, attribute, value)
     #Check all elements from response and check if there is an error.
+    value += ';' unless value.rstrip()[-1]==';'
     response = EngineHelper::WLENGINE.parse(value)
     WLLogger.logger.debug "Parsed : #{response.map {|e| e.class}}"
     unless !response.first.is_a?(StandardError) or response.nil?
