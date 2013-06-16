@@ -1,7 +1,7 @@
 require 'wl_tool'
 
 class DescribedRule < AbstractDatabase
-  attr_accessible :description, :wdlrule, :role
+  attr_accessible :description, :wdlrule, :role, :wdl_rule_id
   
   def self.setup
     unless @setup_done
@@ -14,6 +14,7 @@ class DescribedRule < AbstractDatabase
         t.text :description
         t.text :wdlrule
         t.string :role
+        t.integer :wdl_rule_id
         t.timestamps
       end if !connection.table_exists?('describedRule')
       
@@ -31,9 +32,11 @@ class DescribedRule < AbstractDatabase
 
   # schema used by wdl
   def self.schema
-    {'wdlrule' => 'text',
-     'description' => 'text'
-     }
+    { 'description' => 'text',
+      'wdlrule' => 'text',
+      'role' => 'text',
+      'wdl_rule_id' => 'integer'
+    }
   end
   
   setup  

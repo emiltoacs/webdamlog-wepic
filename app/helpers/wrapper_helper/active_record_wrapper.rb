@@ -70,10 +70,6 @@ module WrapperHelper::ActiveRecordWrapper
     end
   end
 
-  #  def self.included(base)
-  #    base.extend(ClassMethods)
-  #  end
-
   def self.included(base)
     base.extend(ClassMethods)
 
@@ -85,7 +81,7 @@ module WrapperHelper::ActiveRecordWrapper
     # ActiveRecord should be include by the chosen ActiveRecord
     base.send :define_method, :save do |*args|
       
-      if args.first == :skip_ar_wrapper # skip when you want to call the original save or ActiveRecord in ClassMethods::send_deltas
+      if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         # do not use argument here since save use argument only when mixed in
         # with ActiveRecord::Validations http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end
         # .() is ruby1.9 syntax for call
