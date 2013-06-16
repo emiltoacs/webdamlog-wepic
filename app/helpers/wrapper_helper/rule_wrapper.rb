@@ -28,11 +28,12 @@ module WrapperHelper::RuleWrapper
           if inst.is_a? WLBud::WLRule
             begin
               require 'debugger' ; debugger unless inst.show_wdl_format.include?("_at_")
-              inst.show_wdl_format.gsub!("_at_", "@")
-              rule_id, rule_string = engine.update_add_rule(inst)
-              self.wdl_rule_id = rule_id
-              self.wdlrule = rule_string
-              super()
+              wdl_string = inst.show_wdl_format
+              wdl_string.gsub!("_at_", "@")
+              rule_id, rule_string = engine.update_add_rule(wdl_string)
+#              self.wdl_rule_id = rule_id
+#              self.wdlrule = rule_string
+#              super()
             rescue WLBud::WLError => err
               errors.add(:wdlengine, "wrapper fail to insert the rule in the webdamlog engine: #{err}")
             end
@@ -47,13 +48,14 @@ module WrapperHelper::RuleWrapper
             list = budschema.keys.map { |it| it.first.to_s } + budschema.values.map { |it| it.first.to_s }
             list.reject! { |item| item.empty? }
             list.each { |key| schema[key]="text" }
+            require 'debugger' ; debugger 
             klass, relname, sch, instruction = WLDatabase.databases.values.first.create_model(inst.relname, schema, {wdl: true})
             if klass
               # FIXME id is the object_id it should be some kind of id generated in WLCollection in the fashion of wrlrule_id in WLRule
-              self.wdl_rule_id = klass.object_id
-              self.wdlrule = instruction
-              self.role = "collection"
-              super()
+#              self.wdl_rule_id = klass.object_id
+#              self.wdlrule = instruction
+#              self.role = "collection"
+#              super()
             else
               errors.add(:wrapper, "impossible to create model for #{inst.relname} via rule wrapper")
             end

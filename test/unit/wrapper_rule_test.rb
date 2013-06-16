@@ -21,8 +21,8 @@ class WrapperRuleTest < Test::Unit::TestCase
     helper.run_engine
     engine = EngineHelper::WLENGINE
     require 'debugger' ; debugger
-    db.save_facts_for_meta_data
     engine.load_bootstrap_fact
+    db.save_facts_for_meta_data    
     require 'debugger' ; debugger 
     assert_not_nil db
     klassperson, relname, sch, instruction = db.create_model("persontest", {"id"=> "string", "name"=>"string"}, {wdl: true})
@@ -41,14 +41,10 @@ class WrapperRuleTest < Test::Unit::TestCase
           "collection ext per query1@wrapperruletest(title*);",
           "collection"],
         [2,
-          "Get all pictures from all my friends",
-          "collection ext per query2@wrapperruletest(title*);",
-          "collection"],
-        [3,
           "Get all my pictures with rating of 5",
           "collection ext per query3@wrapperruletest(title*);",
           "collection"],
-        [4,
+        [3,
           "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
           "collection ext per friend@wrapperruletest(name*);",
           "collection"]],
