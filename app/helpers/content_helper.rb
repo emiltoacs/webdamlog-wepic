@@ -7,7 +7,7 @@ module ContentHelper
       sample_content_file_name = "#{Rails.root}/config/scenario/samples/query/sample.yml"
       if (File.exists?(sample_content_file_name))
         content = YAML.load(File.open(sample_content_file_name))
-        WLLogger.logger.debug 'Reseting described rules...' if DescribedRule.delete_all
+        #WLLogger.logger.debug 'Reseting described rules...' if DescribedRule.delete_all
         content['described_rules'].values.each do |idrule|
           drule = DescribedRule.new(:wdlrule => idrule['wdlrule'],:description => idrule['description'], :role=> idrule['role'])
           if drule.save
