@@ -24,8 +24,8 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         "comment_at_test_username",
         "contact_at_test_username",
         "describedrule_at_test_username",
-        "person_at_test_username",
-        "friend_at_test_username"],
+        "person_example_at_test_username",
+        "friend_example_at_test_username"],
       engine.wl_program.wlcollections.keys)
     assert_equal [:localtick,
       :stdio,
@@ -48,8 +48,8 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
       :comment_at_test_username,
       :contact_at_test_username,
       :describedrule_at_test_username,
-      :person_at_test_username,
-      :friend_at_test_username], engine.tables.values.map { |coll| coll.tabname }
+      :person_example_at_test_username,
+      :friend_example_at_test_username], engine.tables.values.map { |coll| coll.tabname }
     assert_equal [], engine.tables[:picture_at_test_username].to_a.sort
     assert_equal [], engine.tables[:picturelocation_at_test_username].to_a.sort
     assert_equal [], engine.tables[:comment_at_test_username].to_a.sort
@@ -57,8 +57,8 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     assert_equal [], engine.tables[:describedrule_at_test_username].to_a.sort
     assert_equal [], engine.tables[:person_at_test_username].to_a.sort
     assert_equal [], engine.tables[:friend_at_test_username].to_a.sort
-    assert_equal ["contact_at_test_username($username, $peerlocation, $online, $email, $facebook) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email, $facebook)",
-      "person_at_test_username($id, $name) :- friend_at_test_username($id, $name)",
+    assert_equal ["rule contact_at_test_username($username, $peerlocation, $online, $email, $facebook) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email, $facebook);",
+      "rule person_example_at_test_username($id, $name) :- friend_example_at_test_username($id, $name);",
       "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);"],
       engine.wl_program.rule_mapping.values.map{ |rules| rules.first.is_a?(WLBud::WLRule) ? rules.first.show_wdl_format : rules.first }
 
@@ -96,8 +96,13 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
       :comment_at_test_username,
       :contact_at_test_username,
       :describedrule_at_test_username,
-      :person_at_test_username,
+      :person_example_at_test_username,
+      :friend_example_at_test_username,
+      :query1_at_test_username,
+      :query2_at_test_username,
+      :query3_at_test_username,
       :friend_at_test_username], engine.tables.values.map { |coll| coll.tabname }
+    require 'debugger' ; debugger
     assert_equal [["me",
         "Jules",
         "12349",
@@ -149,10 +154,9 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
       engine.tables[:friend_at_test_username].to_a.sort.map { |t| t.to_a }
 
     # check facts has been loaded in wepic models
-    assert_equal ["{\"created_at\":\"2013-06-15T22:28:48Z\",\"email\":\"jules.testard@mail.mcgill.ca\",\"facebook\":\"Jules Testard\",\"id\":1,\"online\":false,\"peerlocation\":\"localhost:4100\",\"updated_at\":\"2013-06-15T22:28:48Z\",\"username\":\"Jules\"}",
- "{\"created_at\":\"2013-06-15T22:28:48Z\",\"email\":\"stoyanovich@drexel.edu\",\"facebook\":\"jstoy\",\"id\":2,\"online\":false,\"peerlocation\":\"localhost:4100\",\"updated_at\":\"2013-06-15T22:28:48Z\",\"username\":\"Julia\"}"], Contact.all.map { |ar| ar.to_json }
-    assert_equal ["{\"created_at\":\"2013-06-15T22:28:48Z\",\"email\":\"jules.testard@mail.mcgill.ca\",\"facebook\":\"Jules Testard\",\"id\":1,\"online\":false,\"peerlocation\":\"localhost:4100\",\"updated_at\":\"2013-06-15T22:28:48Z\",\"username\":\"Jules\"}",
- "{\"created_at\":\"2013-06-15T22:28:48Z\",\"email\":\"stoyanovich@drexel.edu\",\"facebook\":\"jstoy\",\"id\":2,\"online\":false,\"peerlocation\":\"localhost:4100\",\"updated_at\":\"2013-06-15T22:28:48Z\",\"username\":\"Julia\"}"], Contact.all.map { |ar| ar.to_json }
-
+    assert_equal ["rule contact_at_test_username($username, $peerlocation, $online, $email, $facebook) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email, $facebook);",
+      "rule person_example_at_test_username($id, $name) :- friend_example_at_test_username($id, $name);",
+      "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);"],
+      Contact.all.map { |ar| [ ar[:username], ar[:peerlocation], ar[:online], ar[:email], ar[:facebook] ] }
   end
 end

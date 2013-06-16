@@ -46,9 +46,11 @@ module WrapperHelper::ActiveRecordWrapper
       end
     end
 
-    # Create the wdl relation @param name [String] wdl relation name @param
-    # schema
-    # [Hash] keys are fields name and values are their type @
+    # Create the wdl relation @param name [String] wdl relation name
+    #
+    # @param schema [Hash] keys are fields name and values are their type
+    # 
+    # @return [String, Hash, String] name of relation, Hash of the schema, webamlog instruction
     def create_wdl_relation schema
       @engine = EngineHelper::WLENGINE
       @enginelogger = EngineHelper::WLLOGGER
@@ -66,7 +68,7 @@ module WrapperHelper::ActiveRecordWrapper
       else
         @wdl_tabname = nm
       end
-      return nm, sch
+      return nm, sch, str
     end
   end
 
@@ -80,7 +82,7 @@ module WrapperHelper::ActiveRecordWrapper
     # super to insert in database AR -> wdl tricks to plug some webdamlog in an
     # ActiveRecord should be include by the chosen ActiveRecord
     base.send :define_method, :save do |*args|
-      
+
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         # do not use argument here since save use argument only when mixed in
         # with ActiveRecord::Validations http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end

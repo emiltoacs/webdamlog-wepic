@@ -8,6 +8,7 @@ Conf.db['database']="wp_wrapperruletest"
 require 'test/unit'
 require './lib/wl_setup'
 
+# load bootstrap_for_test.wl as specified in the conf file peer.yml
 class WrapperRuleTest < Test::Unit::TestCase
   
   def test_describedrule
@@ -19,22 +20,39 @@ class WrapperRuleTest < Test::Unit::TestCase
     helper = EngineHelper::WLHELPER
     helper.run_engine
     engine = EngineHelper::WLENGINE
+    require 'debugger' ; debugger
     db.save_facts_for_meta_data
     engine.load_bootstrap_fact
-    
+    require 'debugger' ; debugger 
     assert_not_nil db
-    klassperson = db.create_model("person", {"id"=> "string", "name"=>"string"}, {wdl: true})
+    klassperson, relname, sch, instruction = db.create_model("persontest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassperson
-    assert_equal "person_at_wrapperruletest", klassperson.wdl_tabname
-    klassfriend = db.create_model("friend", {"id"=> "string", "name"=>"string"}, {wdl: true})
+    assert_equal "persontest_at_wrapperruletest", klassperson.wdl_tabname
+    klassfriend, relname, sch, instruction = db.create_model("familytest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassfriend
-    assert_equal "friend_at_wrapperruletest", klassfriend.wdl_tabname
-    DescribedRule.new(
+    assert_equal "familytest_at_wrapperruletest", klassfriend.wdl_tabname
+    db.relation_classes["DescribedRule"].new(
       description: "first rule",
-      wdlrule: "rule person@local($id,$name) :- friend@local($id,$name);",
+      wdlrule: "rule persontest@local($id,$name) :- familytest@local($id,$name);",
       role: "update" ).save
     
-    assert_equal [], DescribedRule.all
+    assert_equal([[1,
+          "Get all the titles for my pictures",
+          "collection ext per query1@wrapperruletest(title*);",
+          "collection"],
+        [2,
+          "Get all pictures from all my friends",
+          "collection ext per query2@wrapperruletest(title*);",
+          "collection"],
+        [3,
+          "Get all my pictures with rating of 5",
+          "collection ext per query3@wrapperruletest(title*);",
+          "collection"],
+        [4,
+          "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
+          "collection ext per friend@wrapperruletest(name*);",
+          "collection"]],
+      DescribedRule.all.map { |tup| [tup[:id], tup[:description], tup[:wdlrule], tup[:role] ] })    
   end
   
 end
