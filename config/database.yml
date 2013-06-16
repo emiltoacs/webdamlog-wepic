@@ -28,7 +28,7 @@ test:
   <<: *common
   encoding: unicode
   pool: 5
-  database: wp_manager
+  database: wp_test
   sample_content: yes
 
 #production:
