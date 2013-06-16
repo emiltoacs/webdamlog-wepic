@@ -2,7 +2,7 @@
 
 class Picture < AbstractDatabase
   
-  attr_accessible :title, :image, :owner, :image_url, :_id, :date
+  attr_accessible :title, :image, :owner, :image_url, :_id, :date, :remote_image_url
   validates :title, :presence => true
   validates :owner, :presence => true  
   #validates :image_url, :presence => true
@@ -91,7 +91,6 @@ class Picture < AbstractDatabase
   before_create :create_defaults
   before_validation :default_values
   before_validation :download_image, :if => :image_url_provided?
-  
      
   private
   
