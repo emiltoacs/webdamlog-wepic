@@ -4,7 +4,7 @@ collection ext persistent picturelocation@local(_id*, location*);
 collection ext persistent rating@local(_id*, rating*, owner*);
 collection ext persistent comment@local(_id*,author*,text*,date*);
 collection ext persistent contact@local(username*, peerlocation*, online*, email*, facebook*);
-collection ext persistent describedrule@local(wdlrule*, description*);
+collection ext persistent describedrule@local(wdlrule*, description*, role*, wdl_rule_id*);
 fact picture@local(sigmod,Jules,12345,"http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif");
 fact picture@local(sigmod,Julia,12346,"http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif");
 fact picture@local(sigmod,local,12347,"http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif");
@@ -14,14 +14,14 @@ fact picture@local(me,Julia,12350,"http://www.cs.columbia.edu/~jds1/pic_7.jpg");
 fact picture@local(me,Julia,12351,"http://www.cs.tau.ac.il/workshop/modas/julia.png");
 
 #Custom content
-collection ext persistent person@local(_id*,name*);
-collection ext persistent friend@local(_id1*,_id2*);
+collection ext persistent person_example@local(_id*,name*);
+collection ext persistent friend_example@local(_id1*,_id2*);
 
-fact person@local(12345,oscar);
-fact person@local(12346,hugo);
-fact person@local(12347,kendrick);
-fact friend@local(12345,12346);
-fact friend@local(12346,12347);
+fact person_example@local(12345,oscar);
+fact person_example@local(12346,hugo);
+fact person_example@local(12347,kendrick);
+fact friend_example@local(12345,12346);
+fact friend_example@local(12346,12347);
 
 fact location@local(12345,"New York");
 fact location@local(12346,"New York");
@@ -38,5 +38,5 @@ fact contact@local(Jules, localhost:4100, false, "jules.testard@mail.mcgill.ca",
 fact contact@local(Julia, localhost:4100, false, "stoyanovich@drexel.edu", "jstoy");
 
 rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);
-rule person@local($id,$name) :- friend@local($id,$name);
+rule person_example@local($id,$name) :- friend_example@local($id,$name);
 end

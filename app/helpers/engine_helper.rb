@@ -77,7 +77,7 @@ module EngineHelper
     end # initialize
 
     def run_engine
-      raise WLErrorRunner,<<-END if @engine.program_loaded
+      raise WLBud::WLErrorRunner,<<-END if @engine.program_loaded
        you have started webdamlog engine with option :delay_fact_loading but you have already load the facts you should have load the facts after having start the engine
       END
       @engine.run_bg

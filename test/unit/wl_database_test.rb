@@ -71,7 +71,8 @@ class WLDatabaseTest < Test::Unit::TestCase
   def test_40_create_relation
     relation_name = "Dog"
     relation_schema = {"name" => "string", "race" => "string", "age" => "integer"}
-    assert_not_nil rel_klass = @database.create_model(relation_name,relation_schema), "fails to create the new relation #{relation_name}"
+    klass, relname, sch, instruction = @database.create_model(relation_name,relation_schema), "fails to create the new relation #{relation_name}"
+    assert_not_nil klass
     assert rel_klass.ancestors.include? ActiveRecord::Base
     assert rel_klass.insert(:name=>"dog1", :race=>"race1", :age=>"7")
     #Assert relations has been added to database schemas and relation class attributes.

@@ -21,6 +21,13 @@ class WLDatabaseModelTest < Test::Unit::TestCase
     helper.run_engine
     engine = EngineHelper::WLENGINE
     db.create_model("test_model_created", {"name"=> "string", "other"=>"integer"}, {:wdl=> true})
+    assert_equal ["picture_at_databasemodeltest",
+      "picturelocation_at_databasemodeltest",
+      "rating_at_databasemodeltest",
+      "comment_at_databasemodeltest",
+      "contact_at_databasemodeltest",
+      "describedrule_at_databasemodeltest",
+      "testmodelcreated_at_databasemodeltest"], engine.wl_program.wlcollections.keys
     assert_not_nil engine.tables[:testmodelcreated_at_databasemodeltest]
     assert_equal 0, engine.tables[:testmodelcreated_at_databasemodeltest].to_a.size
     assert_equal [:name, :other], engine.tables[:testmodelcreated_at_databasemodeltest].cols
