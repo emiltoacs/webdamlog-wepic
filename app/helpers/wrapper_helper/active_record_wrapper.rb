@@ -43,6 +43,7 @@ module WrapperHelper::ActiveRecordWrapper
     def send_deltas tab
       tab.each_from_sym([:delta]) do |t|
         tuple = Hash[t.each_pair.to_a]
+        require 'debugger' ; debugger 
         self.new(tuple).save :skip_ar_wrapper
       end
     end

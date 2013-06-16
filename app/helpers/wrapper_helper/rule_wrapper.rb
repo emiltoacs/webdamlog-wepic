@@ -31,9 +31,9 @@ module WrapperHelper::RuleWrapper
               wdl_string = inst.show_wdl_format
               wdl_string.gsub!("_at_", "@")
               rule_id, rule_string = engine.update_add_rule(wdl_string)
-#              self.wdl_rule_id = rule_id
-#              self.wdlrule = rule_string
-#              super()
+              self.wdl_rule_id = rule_id
+              self.wdlrule = rule_string
+              super()
             rescue WLBud::WLError => err
               errors.add(:wdlengine, "wrapper fail to insert the rule in the webdamlog engine: #{err}")
             end
@@ -52,10 +52,10 @@ module WrapperHelper::RuleWrapper
             klass, relname, sch, instruction = WLDatabase.databases.values.first.create_model(inst.relname, schema, {wdl: true})
             if klass
               # FIXME id is the object_id it should be some kind of id generated in WLCollection in the fashion of wrlrule_id in WLRule
-#              self.wdl_rule_id = klass.object_id
-#              self.wdlrule = instruction
-#              self.role = "collection"
-#              super()
+              self.wdl_rule_id = klass.object_id
+              self.wdlrule = instruction
+              self.role = "collection"
+              super()
             else
               errors.add(:wrapper, "impossible to create model for #{inst.relname} via rule wrapper")
             end
