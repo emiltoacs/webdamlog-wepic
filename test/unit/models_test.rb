@@ -37,13 +37,19 @@ class ModelsTest < Test::Unit::TestCase
   
   def test_new_picture_remote
     #TODO: Write test #:date => DateTime.now,
-    picture = Picture.new(:owner=>"Emilien",:title=>"nemo") #:remote_image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg"
-    picture.save
-    assert_equal(picture.image_file_name,"Fish.jpeg")
-    assert_equal(picture.image_file_size,32824)
-    assert_equal(picture.image_content_type,"image/jpeg")
-    assert_equal(picture.owner,"Emilien")
-    assert_equal(picture.title,"nemo")
+    puts "hey"
+    picture = begin
+      tuple = Picture.new(:owner=>"Emilien",:title=>"nemo", :image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg")
+      tuple.save
+      tuple
+    rescue
+      puts $!, $@
+    end
+    assert_equal("Fish.jpeg",picture.image_file_name)
+    assert_equal(32824,picture.image_file_size)
+    assert_equal("image/jpeg",picture.image_content_type,)
+    assert_equal("Emilien",picture.owner)
+    assert_equal("nemo",picture.title)
     picture.destroy
   end
 #   

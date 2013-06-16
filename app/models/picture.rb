@@ -1,18 +1,16 @@
-#TODO : Due to change in the rating model, need to change rated and rated= methods. 
-
-class Picture < AbstractDatabase
-  
-  attr_accessible :title, :image, :owner, :image_url, :_id, :date, :remote_image_url
-  validates :title, :presence => true
-  validates :owner, :presence => true  
-  #validates :image_url, :presence => true
-  
+class Picture < AbstractDatabase  
   @storage = :database
   
   def self.setup
     unless @setup_done
+      attr_accessible :title, :image, :owner, :image_url, :_wlid, :date, :remote_image_url
+      validates :title, :presence => true
+      validates :owner, :presence => true
+      before_create :create_defaults
+      before_validation :default_values
+      before_validation :download_image, :if => :image_url_provided?
       connection.create_table 'pictures', :force => true do |t|
-        t.integer :_id
+        t.integer :_wlid
         t.string :title
         t.string :owner
         t.datetime :date
@@ -33,7 +31,7 @@ class Picture < AbstractDatabase
   setup
   
   def self.schema
-    { '_id' => 'integer',
+    { '_wlid' => 'integer',
       'title'=>'string',
       'owner'=>'string',
       'image_file_name'=>'string',
@@ -49,12 +47,12 @@ class Picture < AbstractDatabase
   
   def rated
     rated = 0
-    count = Rating.where(:_id => self._id).each {|rating| rated+=rating.rating}.size
+    count = Rating.where(:_wlid => self._wlid).each {|rating| rated+=rating.rating}.size
     rated/count
   end
 
   def located
-    picture = PictureLocation.where(:_id => self._id)
+    picture = PictureLocation.where(:_wlid => self._wlid)
     if picture then picture.first else "unknown" end
   end
 
@@ -79,19 +77,17 @@ class Picture < AbstractDatabase
   end
   
   def default_values
-    self._id = rand(0xFFFFFF) unless self._id
+    # puts caller.join("\n")[0..20]
+    self._wlid = rand(0xFFFFFF) unless self._wlid
     self.date = DateTime.now unless self.date
   end
   
   def create_defaults
     #TODO replace by better thing
     #self.image_url = self.image_file_name unless self.image_url
+    
   end
   
-  before_create :create_defaults
-  before_validation :default_values
-  before_validation :download_image, :if => :image_url_provided?
-     
   private
   
   def url_provided_remote?
