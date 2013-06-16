@@ -21,14 +21,15 @@ module WrapperHelper::ActiveRecordWrapper
         @enginelogger.fatal("bind_wdl_relation fails @engine not initialized")
         return false
       else
-        # TODO change check already declard by dclaration automatic
+        # TODO change check already declared by declaration automatic
         if @engine.wl_program.wlcollections.include?(@wdl_tabname)
           cb_id = @engine.register_callback(@wdl_tabname.to_sym) do |tab|
             send_deltas tab
           end
-          @wdl_table = @engine.tables[@wdl_tabname.to_sym]
-          @enginelogger.debug("bind_wdl_relation succed to register callback #{cb_id} for #{@wdl_tabname}")
+          @wdl_table = @engine.tables[@wdl_tabname.to_sym]          
           EngineHelper::WLHELPER.register_new_binding @wdl_tabname, self.name
+          @enginelogger.debug("bind_wdl_relation succed to register callback #{cb_id} for #{@wdl_tabname}")
+          @enginelogger.debug("#{self} has now methods from wrappers #{self.ancestors}")
           @bound = true
           return true
         else
@@ -42,13 +43,16 @@ module WrapperHelper::ActiveRecordWrapper
     def send_deltas tab
       tab.each_from_sym([:delta]) do |t|
         tuple = Hash[t.each_pair.to_a]
+        require 'debugger' ; debugger 
         self.new(tuple).save :skip_ar_wrapper
       end
     end
 
-    # Create the wdl relation @param name [String] wdl relation name @param
-    # schema
-    # [Hash] keys are fields name and values are their type @
+    # Create the wdl relation @param name [String] wdl relation name
+    #
+    # @param schema [Hash] keys are fields name and values are their type
+    # 
+    # @return [String, Hash, String] name of relation, Hash of the schema, webamlog instruction
     def create_wdl_relation schema
       @engine = EngineHelper::WLENGINE
       @enginelogger = EngineHelper::WLLOGGER
@@ -66,7 +70,7 @@ module WrapperHelper::ActiveRecordWrapper
       else
         @wdl_tabname = nm
       end
-      return nm, sch
+      return nm, sch, str
     end
   end
 
@@ -79,13 +83,14 @@ module WrapperHelper::ActiveRecordWrapper
     # Override ActiveRecord save to perform some wdl validation before calling
     # super to insert in database AR -> wdl tricks to plug some webdamlog in an
     # ActiveRecord should be include by the chosen ActiveRecord
-    base.send :define_method, :save do |*args|
-      
+    self.send :define_method, :save do |*args|
+
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         # do not use argument here since save use argument only when mixed in
         # with ActiveRecord::Validations http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end
         # .() is ruby1.9 syntax for call
-        old_save.bind(self).()
+        #old_save.bind(base).()
+        super()
       else
         if valid?
           if wdl_valid?
@@ -104,6 +109,7 @@ module WrapperHelper::ActiveRecordWrapper
             end
             # insert in database
             if wdlfact
+              require 'debugger' ; debugger 
               val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
               # useless to call super here since callback in table will do the
               # job just check return value val to see if fact has be added

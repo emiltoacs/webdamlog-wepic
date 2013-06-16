@@ -20,9 +20,11 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
     helper = EngineHelper::WLHELPER
     helper.run_engine
     engine = EngineHelper::WLENGINE
-    db.save_facts_for_meta_data
     engine.load_bootstrap_fact
+    require 'debugger' ; debugger 
+    db.save_facts_for_meta_data    
 
+    require 'debugger' ; debugger 
     db.relation_classes['Contact'].new(:username=>'name',:peerlocation=>'peerlocation',:online=>false,:email=>'email',:facebook=>'facebook').save
 
     assert_equal 3, engine.tables[:contact_at_databasemodeltest].to_a.size
@@ -31,4 +33,5 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
       ["Julia", "localhost:4100", "false", "stoyanovich@drexel.edu", "jstoy"],
       ["name", "peerlocation", false, "email", "facebook"]], array
   end
+  
 end

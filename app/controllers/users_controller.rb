@@ -49,8 +49,8 @@ class UsersController < ApplicationController
       db = WLDatabase.setup_database_server
       engine = EngineHelper::WLHELPER.run_engine
       if engine.running_async
-        db.save_facts_for_meta_data
         engine.load_bootstrap_fact
+        db.save_facts_for_meta_data
         if @user.save
           respond_to do |format|
             format.html { redirect_to(:wepic, :notice => "Registration successfull") }
