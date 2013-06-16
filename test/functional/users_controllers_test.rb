@@ -37,17 +37,29 @@ class UsersControllerTest < ActionController::TestCase
     assert engine.running_async
     assert_kind_of WLRunner, engine
     assert_equal([["sigmod_peer", "localhost:4100"], ["test_username", "127.0.0.1:#{engine.port}"]], engine.wl_program.wlpeers.sort)
-    assert_equal 6, engine.wl_program.wlcollections.size
+    assert_equal 11, engine.wl_program.wlcollections.size
     assert_equal ["comment_at_test_username",
       "contact_at_test_username",
+      "deleg_from_test_username_4_1_at_sigmod_peer",
       "describedrule_at_test_username",
+      "friend_at_test_username",
       "picture_at_test_username",
       "picturelocation_at_test_username",
+      "query1_at_test_username",
+      "query2_at_test_username",
+      "query3_at_test_username",
       "rating_at_test_username"], engine.wl_program.wlcollections.keys.sort
     assert_equal 2, engine.tables[:contact_at_test_username].values.size
-    assert_equal 2, engine.wl_program.rule_mapping.size
+    assert_equal 9, engine.wl_program.rule_mapping.size
     assert_equal [1,
-      "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);"],
+      "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);",
+      2,
+      3,
+      4,
+      5,
+      "rule query3@test_username($title, $contact, $id, $image_url):-deleg_from_test_username_4_1@sigmod_peer($title,$contact,$id,$image_url),rating@sigmod_peer($id, 5);",
+      6,
+      7],
       engine.wl_program.rule_mapping.keys
   end
 
@@ -67,7 +79,7 @@ class UsersControllerTest < ActionController::TestCase
     engine = EngineHelper::WLENGINE
     assert_not_nil engine
     assert engine.running_async
-    assert_equal 8, engine.app_tables.size
+    assert_equal 13, engine.app_tables.size
     assert_equal 2, engine.tables[:contact_at_test_username].to_a.size
     assert_equal [:username, :peerlocation, :online, :email, :facebook], engine.tables[:contact_at_test_username].schema
     array = engine.tables[:contact_at_test_username].to_a.sort.map do |item|
