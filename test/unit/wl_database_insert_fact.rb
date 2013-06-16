@@ -23,6 +23,7 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
     db.save_facts_for_meta_data
     engine.load_bootstrap_fact
 
+    require 'debugger' ; debugger 
     db.relation_classes['Contact'].new(:username=>'name',:peerlocation=>'peerlocation',:online=>false,:email=>'email',:facebook=>'facebook').save
 
     assert_equal 3, engine.tables[:contact_at_databasemodeltest].to_a.size

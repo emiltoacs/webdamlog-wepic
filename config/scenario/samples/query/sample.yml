@@ -3,19 +3,19 @@ described_rules:
     description: Get all the titles for my pictures
     wdlrule : |
               collection int query1@local(title*);
-              rule query1@local($title):-pictures@local($title,$_,$_,$_);
+              rule query1@local($title):-picture@local($title,$_,$_,$_);
     role: query
-  drule2:
-    description: Get all pictures from all my friends
-    wdlrule : |
-              collection int query2@local(title*,contact*,id*,image_url*);
-              rule query2@local($title, $contact, $id, $image_url):- contact@local($contact, $_, $_, $_, $_),pictures@$contact($title, $contact, $id, $image_url);
+#  drule2:
+#    description: Get all pictures from all my friends
+#    wdlrule : |
+#              collection int query2@local(title*,contact*,id*,image_url*);
+#              rule query2@local($title, $contact, $id, $image_url):- contact@local($contact, $_, $_, $_, $_),picture@$contact($title, $contact, $id, $image_url);
     role: query
   drule3:
     description: Get all my pictures with rating of 5
     wdlrule : |
               collection int query3@local(title*,contact*,id*,image_url*);
-              rule query3@local($title,$contact,$id,$image_url):- pictures@local($title,$contact,$id,$image_url),rating@sigmod_peer($id,5);
+              rule query3@local($title,$contact,$id,$image_url):- picture@local($title,$contact,$id,$image_url),rating@sigmod_peer($id,5);
     role: query
   # drule4:
     # description ; Get the ten best rated pictures #Find how to pick limited number of results syntax
@@ -24,10 +24,10 @@ described_rules:
     description: Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself. 
     wdlrule : |
               collection ext persistent friends@local(name*,group*);
-              rule friends@local($name,commenters):- pictures@local($_,$_,$id,$_),comments@local($id,$name,$_,$_);
+              rule friends@local($name,commenters):- picture@local($_,$_,$id,$_),comments@local($id,$name,$_,$_);
     role: update
-  drule6: 
-    description: Send to contact all pictures taken last week by our common friends and me at a given location
-    wdlrule : |
-              rule pictures@contact($title, $contact, $id, $image_url):- friends@local(contact,$group),friends@local($peer,$group),pictures@$peer($title,$contact,$id,$image_url),picturelocation@$peer($id,"given location");    
-    role: update
+#  drule6:
+#    description: Send to contact all pictures taken last week by our common friends and me at a given location
+#    wdlrule : |
+#              rule picture@contact($title, $contact, $id, $image_url):- friends@local(contact,$group),friends@local($peer,$group),picture@$peer($title,$contact,$id,$image_url),picturelocation@$peer($id,"given location");
+#    role: update

@@ -65,17 +65,21 @@ module WLRunner
     return fct, err
   end
 
-  # XXX doc and customize return value if needed
+  # XXX customize return value if needed
+  # @raise [WLError] if something goes wrong
   def update_add_rule rule
+    rule_id, rule_string = nil
     sync_do do
-      self.add_rule rule
+      rule_id, rule_string = self.add_rule rule
     end
+    return rule_id, rule_string
   end
 
-  # Helpers to check syntax of one line of webdamlog program
+  # Helpers to check syntax of webdamlog program
   #
   # @return [Array] array of WLBud::WLVocabulary or WLErrorGrammarParsing
   def parse pg
+    return "" if pg.nil?
     file = StringIO.new(pg)
     line = file.readlines
     ret = []

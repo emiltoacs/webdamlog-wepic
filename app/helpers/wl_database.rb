@@ -262,7 +262,7 @@ module WLDatabase
 
     def init_models
       # Create the meta data for the current database, useful on reload
-      @wlmeta = create_model(DATABASE_META,DATABASE_META_SCHEMA)      
+      @wlmeta, relname, sch, instruction = create_model(DATABASE_META,DATABASE_META_SCHEMA)
       
       # Init manually the builtins relations created when rails has parsed the
       # models. These are the relation to bind to webdalog relation that have
@@ -373,7 +373,7 @@ module WLDatabase
       begin
         ContentHelper::query_create
       rescue => error
-        WLLogger.logger.warn "Error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")}"
+        WLLogger.logger.warn "In ContentHelper::query_create an error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")}"
       end
     end
 
@@ -384,6 +384,8 @@ module WLDatabase
     # @options createwdl [boolean] :wdl set to true to create the binding with
     # webdamlog
     #
+    # @return [Class, String, Hash, String] class created, name of relation, Hash of the schema, webamlog instruction
+    #
     def create_model(name,schema,options={})
       model_klass = create_model_class(name, schema)
 
@@ -392,7 +394,7 @@ module WLDatabase
         model_klass.send :include, WrapperHelper::ActiveRecordWrapper
         # XXX when failed the model_klass should be garbage collected since we
         # don't keep any reference to it
-        nm, sch = model_klass.create_wdl_relation schema
+        nm, sch, inst = model_klass.create_wdl_relation schema
         return nm if nm.is_a? WLBud::WLError
         model_klass.bind_wdl_relation
       end
@@ -406,7 +408,7 @@ module WLDatabase
       rescue => error
         raise WLDatabaseError.new "Error in create_model with #{name} #{schema} #{error.message}"
       end
-      return @relation_classes[name]
+      return @relation_classes[name], nm, sch, inst
     end
 
     # Create the relation as a model and a table in the database. Return the
