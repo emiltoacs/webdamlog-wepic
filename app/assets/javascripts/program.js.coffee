@@ -14,21 +14,29 @@ Object.size = (obj) ->
 display_error = (error_msg) ->
   "The following error has been encountered :\n" + error_msg
 
-add_described_rule = (rule) ->
-  description = 'Added through program page.'
+reject_delegation = (id) ->
   jQuery.ajax
-    'url' : current_url + '/described_rule/add'
+    'url' : current_url + '/delegation/reject'
     'data' :
-      'rule' : rule
-      'description' : description
-      'role' : role
+      'id' : id
     'datatype' : 'json'
     'success' : (data) ->
-      if data.saved
-        window.program_refresh()
+      if data.success
+        #window.program_refresh()
       else
-        alert(display_error(data.errors.wdlrule[0]))
-
+        alert(display_error(data.errors))
+  
+accept_delegation = (id) ->
+  jQuery.ajax
+    'url' : current_url + '/delegation/accept'
+    'data' :
+      'id' : id
+    'datatype' : 'json'
+    'success' : (data) ->
+      if data.success
+        #window.program_refresh()
+      else
+        alert(display_error(data.errors))
 
 get_delegations = ->
   jQuery.ajax
@@ -36,15 +44,16 @@ get_delegations = ->
     'data': null
     'datatype' : 'json'
     'success' : (data) ->
-      if data.saved
-        for delegation of data.delegations
-          html = '<div class="delegtion">'
-          html += '<a class="refuse" onclick="window.refuse_rule('+delegation.rule+','+delegation.id+');">x</a>'
-          html += '<a class="accept" onclick="window.accept_rule('+delegation.rule+','+delegation.id+');">&#10003;</a>'
-          html += '<div class="id">'+delegation.id+'</div>'
-          html += '<div class="rule">' + delegation.rule.split(";").join(";<br/>") + '</div>'
-          html += '</div>'
-          jQuery('#display_delegation').append(html)
+      if data.has_new
+        html=''
+        for id,rule of data.content
+            html += '<div class="delegation">'
+            html += '<a class="accept" onclick="window.accept('+id+');">&#10003;</a>'
+            html += '<a class="refuse" onclick="window.refuse('+id+');">x</a>'
+            html += '<div class="id">'+id+'</div>'
+            html += '<div class="rule">'+rule.split("\n").join('<br/>')+'</div>'
+            html += '</div></div>'
+        jQuery('#display_delegations').append(html)
 
 get_program = ->
   jQuery.ajax
@@ -65,24 +74,21 @@ get_program = ->
         html += '<div class="statement"><span class="rule_id">'+id+'</span>:'+rule.split("_at_").join("@")+' </div>'
       jQuery('#rules_content').html(html)
 
-window.get = ->
+window.program_refresh = ->
   get_program()
+  
+window.delegations = ->
+  get_delegations()
 
-window.program_refresh = (type)->
-  relation = jQuery('#relation_'+type+' option:selected').html()
-  getRelationContents(relation,type)
-
-window.refuse_rule = (rule,id) ->
+window.refuse = (id) ->
   jQuery('.id:contains("'+String(id)+'")').parent().remove()
+  reject_delegation(id)
 
-window.accept_rule = (rule,id) ->
+window.accept = (id) ->
   jQuery('.id:contains("'+String(id)+'")').parent().remove()
-  add_described_rule(rule)
+  accept_delegation(id)
 
 jQuery(document).ready ->
-  get_delegations()
-  
-  get_program()
   
   jQuery('#program_button').click ->
     if menu_open
@@ -100,13 +106,13 @@ jQuery(document).ready ->
         menu_open = false
       jQuery('#refresh_button').click ->
         jQuery('#program_button').html('+')
-        window.get()
+        window.program_refresh()
         menu_open = false
-      jQuery('#add_rule_button').click ->
-        jQuery('#program_button').html('+')
-        menu_open = false
-        jQuery('.box_wrapper').css 
-          'display' : 'block'
-        jQuery('#add_rule').css
-          'display' : 'block'
+      # jQuery('#add_rule_button').click ->
+        # jQuery('#program_button').html('+')
+        # menu_open = false
+        # jQuery('.box_wrapper').css 
+          # 'display' : 'block'
+        # jQuery('#add_rule').css
+          # 'display' : 'block'
         
