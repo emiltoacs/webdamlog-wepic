@@ -48,7 +48,11 @@ class Picture < AbstractDatabase
   def rated
     rated = 0
     count = Rating.where(:_id => self._id).each {|rating| rated+=rating.rating}.size
-    rated/count
+    if count > 0 
+      rated/count
+    else
+      0
+    end
   end
 
   def located
