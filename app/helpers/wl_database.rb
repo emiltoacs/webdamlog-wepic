@@ -449,7 +449,7 @@ module WLDatabase
           end
         else
           WLLogger.logger.debug "try to create #{table_name} table in db #{config} for model #{model_name} but it already exists"
-        end        
+        end
         def self.find(*args)
           super *args
         end        
@@ -468,6 +468,7 @@ module WLDatabase
         end
         WLLogger.logger.debug "Created a model #{model_name} with its table #{table_name} and schema #{@schema} in database #{config['database']}"
       end
+      WLLogger.logger.debug "class #{klass} created by create_model_class"
       return klass
     end
       

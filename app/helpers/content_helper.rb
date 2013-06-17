@@ -13,7 +13,7 @@ module ContentHelper
           if drule.save
             WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"
           else
-            error = "Rule : #{drule.description.inspect[0..9]}...[#{drule.wdlrule.inspect[0..19]}] was not saved because :"
+            error = "Rule : #{drule.description.inspect[0..15]}...[#{drule.wdlrule.inspect[0..40]}] was not saved because :"
             drule.errors.messages.each do |msg_k,msg_v|
               error += "\n\t#{msg_k}:#{msg_v}"
             end

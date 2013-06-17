@@ -12,25 +12,26 @@ require './lib/wl_setup'
 class WrapperRuleTest < Test::Unit::TestCase
   
   def test_describedrule
+    # init
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require 'test_helper'
-    # load the database and base model including describedrule
     db = WLDatabase.setup_database_server
     assert_not_nil db
     helper = EngineHelper::WLHELPER
     helper.run_engine
     engine = EngineHelper::WLENGINE
     engine.load_bootstrap_fact
-    db.save_facts_for_meta_data    
+    db.save_facts_for_meta_data
     assert_not_nil db
-    
+
+    # test
     klassperson, relname, sch, instruction = db.create_model("persontest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassperson
     assert_equal "persontest_at_wrapperruletest", klassperson.wdl_tabname
     klassfriend, relname, sch, instruction = db.create_model("familytest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassfriend
     assert_equal "familytest_at_wrapperruletest", klassfriend.wdl_tabname
-    db.relation_classes["DescribedRule"].new(
+    DescribedRule.new(
       description: "first rule",
       wdlrule: "rule persontest@local($id,$name) :- familytest@local($id,$name);",
       role: "update" ).save
