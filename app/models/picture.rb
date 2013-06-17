@@ -3,14 +3,14 @@ class Picture < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      attr_accessible :title, :image, :owner, :image_url, :_wlid, :date, :remote_image_url
+      attr_accessible :title, :image, :owner, :image_url, :_id, :date, :remote_image_url
       validates :title, :presence => true
       validates :owner, :presence => true
       before_create :create_defaults
       before_validation :default_values
       before_validation :download_image, :if => :image_url_provided?
       connection.create_table 'pictures', :force => true do |t|
-        t.integer :_wlid
+        t.integer :_id
         t.string :title
         t.string :owner
         t.datetime :date
@@ -31,7 +31,7 @@ class Picture < AbstractDatabase
   setup
   
   def self.schema
-    { '_wlid' => 'integer',
+    { '_id' => 'integer',
       'title'=>'string',
       'owner'=>'string',
       'image_file_name'=>'string',
@@ -47,12 +47,12 @@ class Picture < AbstractDatabase
   
   def rated
     rated = 0
-    count = Rating.where(:_wlid => self._wlid).each {|rating| rated+=rating.rating}.size
+    count = Rating.where(:_id => self._id).each {|rating| rated+=rating.rating}.size
     rated/count
   end
 
   def located
-    picture = PictureLocation.where(:_wlid => self._wlid)
+    picture = PictureLocation.where(:_id => self._id)
     if picture then picture.first else "unknown" end
   end
 
@@ -78,7 +78,7 @@ class Picture < AbstractDatabase
   
   def default_values
     # puts caller.join("\n")[0..20]
-    self._wlid = rand(0xFFFFFF) unless self._wlid
+    self._id = rand(0xFFFFFF) unless self._id
     self.date = DateTime.now unless self.date
   end
   

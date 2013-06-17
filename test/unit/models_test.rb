@@ -32,6 +32,8 @@ class ModelsTest < Test::Unit::TestCase
     # assert_equal("image/jpeg", picture.image_content_type)
     assert_equal("Emilien", picture.owner)
     assert_equal("nemo", picture.title)
+    assert_not_nil(picture.date)
+    assert_equal("http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg", picture.image_url)
     picture.destroy
   end
   
