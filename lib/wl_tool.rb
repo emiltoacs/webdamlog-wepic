@@ -111,7 +111,8 @@ module Conf
         end
       else
         @@env['MANAGER_PORT'] = mport
-        @@peer['manager']['manager_port'] = @@env['MANAGER_PORT']
+        @@peer['manager']['manager_waiting_port'] = @@env['MANAGER_PORT']
+        @@peer['manager']['manager_port'] = 4000 unless @@peer['manager']['manager_port'] #Manager port defaults to 4000
         @@standalone = false
       end
 
