@@ -40,4 +40,3 @@ fact contact@local(Julia, "127.0.0.1", 4150, false, "stoyanovich@drexel.edu");
 rule contact@local($username, $peerlocation, $online, $email):-contact@sigmod_peer($username, $peerlocation, $online, $email);
 rule person_example@local($id,$name) :- friend_example@local($id,$name);
 end
-end
