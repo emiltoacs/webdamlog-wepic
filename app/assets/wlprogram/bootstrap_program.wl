@@ -21,13 +21,13 @@ fact person@local(12347,kendrick);
 fact friend@local(12345,12346);
 fact friend@local(12346,12347);
 
-fact location@local(12345,"New York");
-fact location@local(12346,"New York");
-fact location@local(12347,"New York");
-fact location@local(12348,"Paris, France");
-fact location@local(12349,"McGill University");
-fact location@local(12350,"Columbia");
-fact location@local(12351,"Tau workshop");
+fact pictureLocation@local(12345,"New York");
+fact pictureLocation@local(12346,"New York");
+fact pictureLocation@local(12347,"New York");
+fact pictureLocation@local(12348,"Paris, France");
+fact pictureLocation@local(12349,"McGill University");
+fact pictureLocation@local(12350,"Columbia");
+fact pictureLocation@local(12351,"Tau workshop");
 
 fact rating@local(12345,5,Jules);
 fact rating@local(12349,5,Julia);

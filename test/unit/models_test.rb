@@ -7,6 +7,7 @@ ENV["MANAGER_PORT"] = nil
 require './lib/wl_tool'
 #Put custom variables (such as db name) here.
 Conf.db['database']="wp_modelstesttest"
+Conf.peer['peer']['program']['file_path'] = 'test/config/custom_bootstrap_program.wl'
 require 'test/unit'
 require './lib/wl_setup'
 
@@ -17,12 +18,15 @@ class ModelsTest < Test::Unit::TestCase
     require './test/test_helper'
     db = WLDatabase.setup_database_server
     assert_not_nil db
+    #require 'debugger';debugger
     helper = EngineHelper::WLHELPER
     helper.run_engine
     engine = EngineHelper::WLENGINE
+    #
     engine.load_bootstrap_fact
+    require 'debugger';debugger
     db.save_facts_for_meta_data
-    
+    require 'debugger';debugger
     rating = Rating.new(:rating => 3, :owner=>'jules', :_id => 12345)
     rating.save
     assert_equal(3,rating.rating)

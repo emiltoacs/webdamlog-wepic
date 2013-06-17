@@ -24,6 +24,7 @@ module WrapperHelper::ActiveRecordWrapper
         # TODO change check already declared by declaration automatic
         if @engine.wl_program.wlcollections.include?(@wdl_tabname)
           cb_id = @engine.register_callback(@wdl_tabname.to_sym) do |tab|
+            #require 'debugger';debugger
             unless tab.delta.empty?
               # send_deltas tab # Callback sent to wdl
               tab.each_from_sym([:delta]) do |t|
@@ -97,7 +98,6 @@ module WrapperHelper::ActiveRecordWrapper
         # do not use argument here since save use argument only when mixed in
         # with ActiveRecord::Validations http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end
         # .() is ruby1.9 syntax for call #old_save.bind(self).()
-        require 'debugger' ; debugger
         return super()
       else
         if valid?
@@ -160,6 +160,7 @@ module WrapperHelper::ActiveRecordWrapper
   end
 
   def save_in_ar
+    #require 'debugger';debugger
     self.class.superclass.instance_method(:save).bind(self).call
   end
 end

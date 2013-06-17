@@ -32,7 +32,6 @@ module EngineHelper
     attr_reader :dir_rule, :port, :peername, :bootstrap_program, :rule_dir, :wdl_tables_binding, :wdl_tables_binding_rev
         
     def initialize
-      require 'debugger';debugger
       # Special logger for webdamlog engine
       @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       username = Conf.peer['peer']['username']
