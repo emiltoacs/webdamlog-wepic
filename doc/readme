@@ -11,7 +11,6 @@
 git clone git+ssh://emilien@scm.gforge.inria.fr//gitroot/webdamsystem/webdamsystem.git
 #+end_src
 
-
 * Some instruction to install wepic
 
 ** Requirement
@@ -57,6 +56,8 @@ install .deb package
 
 *** install postgres
 
+See also [[file:~/document/notes/it/database.org::*postgres][postgres]]
+
 install the *postgresql* meta-package which install in their last
 version
 + postgresql-client-9.1
@@ -73,7 +74,7 @@ also install
 
 run the script posgtres_init_script at the root of the project
 
-optionally run rails --rese
+optionally run rails --reset
 
 *** install dependencies with bundle
 
@@ -85,9 +86,6 @@ The previous command start to install lots of gems
 Now you can see what and where gems have been installed by
 bundle.
 : bundle show
-
-
-
 
 
 ** Launch the peer
@@ -104,5 +102,33 @@ communication:
   manager_port : 3100
   default_spawn_port : 3200
 #+end_src
+
+
+* Amazon
+
+** Install rvm
+: \curl -L https://get.rvm.io | bash -s stable --rails
+
+restart or
+: `source /home/ubuntu/.rvm/scripts/rvm`
+
+: rvm --default use 1.9.3
+
+Set up your ssh key with inria gforge if needed:
++ https://gforge.inria.fr/account/ in account maintenance
+I used the key "id_rsa_amaz"
+
+
+Set language environment to avoid warning (in your bashrc) for
+the following
+: export LANG=en_US
+: sudo apt-get install language-pack-en
+: sudo apt-get install language-pack-en
+: apt-get install postgresql
+: sudo apt-get install build-essential imagemagick libmagickcore-dev libmagickwand-dev
+: sudo apt-get install postgresql postgresql-server-dev-9.1
+
+launch bundle in your rails root (everything should succed)
+
 
 
