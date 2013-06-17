@@ -17,6 +17,7 @@ module Paperclip
         end
 
         def matches? subject
+          ;
           @subject = subject
           @subject = subject.new if subject.class == Class
           error_when_not_valid? && no_error_when_valid?
@@ -37,12 +38,14 @@ module Paperclip
         protected
 
         def error_when_not_valid?
+          ;
           @subject.send(@attachment_name).assign(nil)
           @subject.valid?
           not @subject.errors[:"#{@attachment_name}_file_name"].blank?
         end
 
         def no_error_when_valid?
+          ;
           @file = StringIO.new(".")
           @subject.send(@attachment_name).assign(@file)
           @subject.valid?
