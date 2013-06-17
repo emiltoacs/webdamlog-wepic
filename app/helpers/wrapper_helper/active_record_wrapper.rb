@@ -46,6 +46,14 @@ module WrapperHelper::ActiveRecordWrapper
       end
     end
 
+    # Callback sent to wdl
+    #    def send_deltas tab
+    #      tab.each_from_sym([:delta]) do |t|
+    #        tuple = Hash[t.each_pair.to_a]
+    #        self.new(tuple).save_in_ar
+    #      end
+    #    end
+
     # Create the wdl relation @param name [String] wdl relation name
     #
     # @param schema [Hash] keys are fields name and values are their type
