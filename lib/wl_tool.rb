@@ -7,12 +7,16 @@ require './lib/monkey_patch'
 module Conf  
   @@init = false
   @@current_env = ENV["RAILS_ENV"] || 'development'
+
+  FILES = %w(
+  admin.yml
+  database.yml
+  peer.yml  
+  )
   # Store in one object all the configuration related to this peer
   # * :force=> true in options to force reloading of conf
-  # * :rails_env => [test,development,production] to change environment of
-  #   configuration files
-  # * :ymlconf => path_to_conf to specify a custom path to scenarios
-  #
+  # * :rails_env => [test,development,production] to change environment of configuration files
+  # * :ymlconf => path_to_conf to specify a custom path to scenarios for specific options for amazon for example default point to localhost
   def self.init(options={})
     options[:force] ||= false
     @@init=false if options[:force]
@@ -24,15 +28,17 @@ module Conf
     end
     # Reload configuration if needed
     unless @@init
-      path_to_conf = options[:ymlconf] ||= 'config'
-      if !File.exists? path_to_conf
-        if defined?(Rails) and File.exists?( File.join(Rails.root, path_to_conf) )
-          path_to_conf = File.join(Rails.root, path_to_conf)
-        else          
-          path_to_conf = 'config'
-          WLLogger.logger.warn "custom path to config file does not exists fall back to default #{path_to_conf}"
-        end
-      end      
+      path_to_conf = options[:ymlconf] ||= 'config/peer/localhost'
+      if File.exists? path_to_conf and self.check_conf_file(path_to_conf)
+        path_to_conf = path_to_conf
+        WLLogger.logger.debug "custom path to config file set to #{path_to_conf}"
+      elsif defined?(Rails) and File.exists?( File.join(Rails.root, path_to_conf) ) and self.check_conf_file(File.join(Rails.root, path_to_conf))
+        path_to_conf = File.join(Rails.root, path_to_conf)
+        WLLogger.logger.debug "custom path to config file set to #{path_to_conf}"
+      else
+        path_to_conf = 'config/peer/localhost'
+        WLLogger.logger.warn "custom path to config file does not exists fall back to default #{path_to_conf}"
+      end
       @@peer = read_yaml_file File.join(path_to_conf, 'peer.yml'), @@current_env
       @@db = read_yaml_file 'config/database.yml', @@current_env
       # store all parameter for manager db useful for regular peer that change
@@ -103,7 +109,7 @@ module Conf
           @@env['MANAGER_PORT'] = mport
           @@standalone = false
         end
-      else        
+      else
         @@env['MANAGER_PORT'] = mport
         @@peer['manager']['manager_port'] = @@env['MANAGER_PORT']
         @@standalone = false
@@ -111,7 +117,7 @@ module Conf
 
       @@init = true
       
-    end # end unless init    
+    end # end unless init
   end # end def self.init
 
   def self.manager?
@@ -156,6 +162,17 @@ module Conf
     hash = YAML.load_file(pathfile)
     return hash[rails_env]
   end
+
+  # @return [Boolean] true if conf file needed are present under the given path
+  def self.check_conf_file path
+    Conf::FILES.each do |file|
+      puts File.join(path, file)
+      unless File.exists?( File.join(path, file) )
+        false
+      end
+    end
+    true
+  end  
 end
 
 # General useful tools for ruby
@@ -209,7 +226,7 @@ module WLTool
     string.strip!
     string.downcase!
     ['"', "'", "."].each do |c|
-      string.delete!(c)      
+      string.delete!(c)
     end
     string.gsub!(/\s+/, '_')
     return string
@@ -250,7 +267,7 @@ module Network
             else
               return false
             end
-          end                    
+          end
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH => error
           WLLogger.logger.info error.inspect
           return false
@@ -368,41 +385,34 @@ module PostgresHelper
 end # module PostgresHelper
 
 module SampleHelper
-  #FIXME This sample helper has become obsolete
+  # #FIXME This sample helper has become obsolete
   def self.wepic_create
-      # if defined?(Conf) #and Conf.env['USERNAME']!='manager'
-        # WLLogger.logger.debug "Samples added for user #{Conf.env['USERNAME']} : #{Conf.db['sample_content']}"
-        # sample_content_file_name = "#{Rails.root}/config/scenario/samples/#{Conf.env['USERNAME']}_sample.yml"
-        # if (File.exists?(sample_content_file_name))
-          # content = YAML.load(File.open(sample_content_file_name))
-          # WLLogger.logger.info "Load sample specification from yaml file"
-          # content['contacts'].values.each do |contact|
-            # #We should check if users are online using Webdamlog rules.
-            # Contact.new(:username=>contact['name'],:peerlocation=>contact['peerlocation'],:online=>false,:email=>contact['email'],:facebook=>contact['facebook']).save
-          # end unless content['contacts'].values.nil?
-          # content['pictures'].values.each do |picture|
-            # owner = if picture['owner'] then picture['owner'] else Conf.env['USERNAME'] end
-            # Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title']).save
-          # end unless content['pictures'].values.nil?
-          # content['locations'].values.each do |imagelocation|
-            # owner = if imagelocation['owner'] then imagelocation['owner'] else Conf.env['USERNAME'] end
-            # Picture.where(:title=>imagelocation['title'],:owner=>owner).first.located = imagelocation['location']
-          # end unless content['locations'].values.nil?
-          # content['ratings'].values.each do |rating|
-            # owner = if rating['owner'] then rating['owner'] else Conf.env['USERNAME'] end
-            # Picture.where(:title=>rating['title'],:owner=>owner).first.rated = rating['rating']
-          # end unless content['ratings'].values.nil?
-          # content['comments'].values.each do |comment|
-            # owner = if comment['owner'] then comment['owner'] else Conf.env['USERNAME'] end
-            # picture = Picture.where(:title=>comment['title'],:owner=>owner).first
-            # Comment.insert(:_id=>picture._id,:text=>comment['text'],:author=>comment['author']) if picture
-          # end
-        # else
-          # raise "file #{sample_content_file_name} does not exist!"
-        # end
-      # else
-      # raise "The Conf object has not been setup!"
-      # end
+    # if defined?(Conf) #and Conf.env['USERNAME']!='manager'
+    # WLLogger.logger.debug "Samples added for user #{Conf.env['USERNAME']} :
+    # #{Conf.db['sample_content']}" sample_content_file_name =
+    # "#{Rails.root}/config/scenario/samples/#{Conf.env['USERNAME']}_sample.yml"
+    # if (File.exists?(sample_content_file_name)) content =
+    # YAML.load(File.open(sample_content_file_name)) WLLogger.logger.info "Load
+    # sample specification from yaml file" content['contacts'].values.each do
+    # |contact| #We should check if users are online using Webdamlog rules. Contact.new(:username=>contact['name'],:peerlocation=>contact['peerlocation'],:online=>false,:email=>contact['email'],:facebook=>contact['facebook']).save
+    # end unless content['contacts'].values.nil? content['pictures'].values.each
+    # do |picture| owner = if picture['owner'] then picture['owner'] else
+    # Conf.env['USERNAME'] end Picture.new(:image_url=>picture['url'],:owner=>owner,:title=>picture['title']).save
+    # end unless content['pictures'].values.nil?
+    # content['locations'].values.each do |imagelocation| owner = if
+    # imagelocation['owner'] then imagelocation['owner'] else
+    # Conf.env['USERNAME'] end
+    # Picture.where(:title=>imagelocation['title'],:owner=>owner).first.located
+    # = imagelocation['location'] end unless content['locations'].values.nil?
+    # content['ratings'].values.each do |rating| owner = if rating['owner'] then
+    # rating['owner'] else Conf.env['USERNAME'] end
+    # Picture.where(:title=>rating['title'],:owner=>owner).first.rated =
+    # rating['rating'] end unless content['ratings'].values.nil?
+    # content['comments'].values.each do |comment| owner = if comment['owner']
+    # then comment['owner'] else Conf.env['USERNAME'] end picture =
+    # Picture.where(:title=>comment['title'],:owner=>owner).first Comment.insert(:_id=>picture._id,:text=>comment['text'],:author=>comment['author'])
+    # if picture end else raise "file #{sample_content_file_name} does not
+    # exist!" end else raise "The Conf object has not been setup!" end
   end
   
   def self.query_create
@@ -417,12 +427,12 @@ module SampleHelper
       else
         error = "File #{sample_content_file_name} does not exist!"
         WLLogger.logger.warn error
-        raise error 
+        raise error
       end
     else
       error =  "The Conf object has not been setup!"
       WLLogger.logger.warn error
-      raise error    
+      raise error
     end
-  end          
+  end
 end

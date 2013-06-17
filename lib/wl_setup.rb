@@ -128,7 +128,7 @@ WHERE
     end
     conn.close
     
-    #Cleanup the rule_dir directory
+    # #Cleanup the rule_dir directory
     cleanup_cmd = "rm -rf #{File.expand_path File.dirname(__FILE__)}/../tmp/rule_dir/* && rm -rf #{File.expand_path File.dirname(__FILE__)}/webdamlog/wlrule_to_bud/*"
     system cleanup_cmd
   end
@@ -140,8 +140,7 @@ WHERE
   def self.parse!(argv)
     # Assign default value
     options = OpenStruct.new
-    #options.peername = "manager"
-    #options.port = "4000"
+    # #options.peername = "manager" #options.port = "4000"
     options.peername = nil
     options.port = nil
     options.debug = false
@@ -164,7 +163,9 @@ WHERE
       opt.on("-m", "--manager-port MPORT", "give the port on which the manager is waiting your answer") do |mport|
         options.manager_port = mport
       end
-      opt.on("-C", "--ymlconf path", "if not specified the default is config/") { |path| options.ymlconf = path }
+      opt.on("-C", "--ymlconf PATH", "if not specified the default is config/peer/localhost") do |path|
+        options.ymlconf = path 
+      end
       # options for server: see rails/commands/server
       opt.on("-b", "--binding=ip", String,
         "Binds Rails to the specified ip.", "Default: 0.0.0.0") { |v| options.Host = v }

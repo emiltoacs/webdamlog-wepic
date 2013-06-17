@@ -1,5 +1,3 @@
-# This is required by the rails hence it should be here in any case
-
 # This represent the generic parameter used to connected to the manager database
 # Some of these value must be override by the peers to acces their own db (such as the attribute database)
 common: &common

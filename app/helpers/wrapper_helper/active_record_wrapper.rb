@@ -120,8 +120,8 @@ module WrapperHelper::ActiveRecordWrapper
               # useless to call super here since callback in table will do the
               # job just check return value val to see if fact has be added
               
-              #TODO:Fix this hack for images
-              if self.class==Picture
+              # TODO Fix this hack for images
+              if self.is_a? Picture
                 tuple = Picture.where(:_id => self._id)
                 if tuple.empty? or tuple.nil?
                   super()
