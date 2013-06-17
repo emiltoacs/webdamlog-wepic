@@ -12,7 +12,7 @@ class Delegation < AbstractDatabase
       connection.create_table 'Delegation', :force => true do |t|
         t.text :wdlrule
         t.boolean :accepted
-        t.integer :wdl_rule_id
+        t.integer :wdl_rule_id, :limit => 8
         t.timestamps
       end if !connection.table_exists?('Delegation')
       
