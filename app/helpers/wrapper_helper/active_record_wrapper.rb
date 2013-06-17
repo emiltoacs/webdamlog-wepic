@@ -107,7 +107,7 @@ module WrapperHelper::ActiveRecordWrapper
               if self.class.column_names.include?(col.to_s)
                 tuple[i] = self.send(col)
               else
-                erros.add(:invalid, "tuple #{self} impossible to insert in webdalog it lacks attribute #{col}")
+                errors.add(:invalid, "tuple #{self} impossible to insert in webdalog it lacks attribute #{col}")
                 return false
               end
               wdlfact = { self.class.wdl_tabname => [tuple] }
