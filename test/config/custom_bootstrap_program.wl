@@ -34,8 +34,8 @@ fact location@local(12351,"Tau workshop");
 fact rating@local(12345,5);
 fact rating@local(12349,5);
 
-fact contact@local(Jules, localhost:4100, false, "jules.testard@mail.mcgill.ca", "Jules Testard");
-fact contact@local(Julia, localhost:4100, false, "stoyanovich@drexel.edu", "jstoy");
+fact contact@local(Jules, "127.0.0.1", 4100, false, "jules.testard@mail.mcgill.ca");
+fact contact@local(Julia, "127.0.0.1", 4150, false, "stoyanovich@drexel.edu");
 
 rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);
 rule person_example@local($id,$name) :- friend_example@local($id,$name);
