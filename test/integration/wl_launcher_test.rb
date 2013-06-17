@@ -9,7 +9,7 @@ class WLLauncherTest < ActionController::IntegrationTest
     ENV["MANAGER_PORT"] = nil
     Conf.init({rails_env:'test', force: true })
     @web_port = Conf.peer['peer']['web_port']
-    @ip = Conf.peer['peer']['ip']    
+    @ip = Conf.peer['peer']['ip']
   end
     
   def teardown
@@ -44,7 +44,7 @@ class WLLauncherTest < ActionController::IntegrationTest
   #
   def test_2_find_ports_when_port_not_free
     #This test first assumes that all ports are available.
-    assert_equal(@web_port, Network.find_ports(@ip,1,@web_port))
+    assert_equal(@web_port, "#{Network.find_ports(@ip,1,@web_port)}")
     #Now the test blocks a port and check that method behaves appropriately
     begin
       port_reserved = @web_port
