@@ -419,7 +419,6 @@ module WLDatabase
     # @notice silently ignore empty fields that is if col_type or col_name is
     # not specified in schema it will be skipped and continue with other
     # attributes
-    #
     def create_model_class(name, schema)
       raise WLDatabaseError.new "type error of name is #{name.class}" unless name.is_a? String
       raise WLDatabaseError.new "type error of schema is #{schema.class}" unless schema.is_a? Hash
