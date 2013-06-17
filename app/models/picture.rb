@@ -3,7 +3,7 @@ class Picture < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      attr_accessible :title, :image, :owner, :image_url, :_id, :date, :remote_image_url
+      attr_accessible :title, :image, :owner, :image_url, :_id, :date
       validates :title, :presence => true
       validates :owner, :presence => true
       before_create :create_defaults
@@ -104,13 +104,13 @@ class Picture < AbstractDatabase
   end
   
   def download_image
-    # #self.image = do_download_remote_image
     if url_provided_remote?
       self.image = do_download_remote_image
     elsif url_provided_local?
       self.image = get_local_image
     else
-      # #Do nothing
+      # #Do nothing or 
+      self.image = do_download_remote_image
     end
   end
   
