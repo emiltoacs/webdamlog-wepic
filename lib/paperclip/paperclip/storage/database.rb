@@ -146,6 +146,8 @@ module Paperclip
       def assign uploaded_file
         # Assign standard metadata attributes and perform post processing as usual
         super
+        
+        require 'debugger'; debugger
 
         # Save the file contents for all styles in ActiveRecord immediately (before save)
         @queued_for_write.each do |style, file|

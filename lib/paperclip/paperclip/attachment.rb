@@ -210,6 +210,7 @@ module Paperclip
     # Saves the file, if there are no errors. If there are, it flushes them to
     # the instance's errors and returns false, cancelling the save.
     def save
+      caller
       flush_deletes unless @options[:keep_old_files]
       flush_writes
       @dirty = false
