@@ -88,6 +88,7 @@ module WrapperHelper::ActiveRecordWrapper
     # Override ActiveRecord save to perform some wdl validation before calling
     # super to insert in database AR -> wdl tricks to plug some webdamlog in an
     # ActiveRecord should be include by the chosen ActiveRecord
+    
     self.send :define_method, :save do |*args|
 
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
@@ -99,7 +100,6 @@ module WrapperHelper::ActiveRecordWrapper
       else
         if valid?
           if wdl_valid?
-
             # format for insert into webdamlog
             tuple = []
             wdlfact = nil
@@ -117,6 +117,14 @@ module WrapperHelper::ActiveRecordWrapper
               val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
               # useless to call super here since callback in table will do the
               # job just check return value val to see if fact has be added
+              
+              #TODO:Fix this hack for images
+              if self.class==Picture
+                tuple = Picture.where(:_id => self._id)
+                if tuple.empty? or tuple.nil?
+                  super()
+                end
+              end 
               unless val.nil? or val.empty?
                 return true
               else

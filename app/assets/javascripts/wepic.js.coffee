@@ -279,7 +279,7 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
         console.log('removestar')
         removeStar()
       jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
-      '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
+      '<textarea id="add-comment-box" placeholder="Type a comment here"></textarea></div>') #TODO show greetings content when empty
       
       #Edit picture interaction
       jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
@@ -296,9 +296,9 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
       	if keypressed.keyCode == 13
-      	  text = jQuery('#add-comment-box').html()
+      	  text = jQuery('#add-comment-box').val()
       	  addComment(pictureId,text) #Add a comment with text entered up to now.
-      	  jQuery('#add-comment-box').html('') #Clear the comment line
+      	  jQuery('#add-comment-box').val('') #Clear the comment line
       )
 
       #image change forms
@@ -385,9 +385,9 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
         if keypressed.keyCode == 13
-          text = jQuery('#add-comment-box').html()
+          text = jQuery('#add-comment-box').val()
           addComment(pictureId,text) #Add a comment with text entered up to now.
-          jQuery('#add-comment-box').html('') #Clear the comment line
+          jQuery('#add-comment-box').val('') #Clear the comment line
       )
       
       #Setup the chron job

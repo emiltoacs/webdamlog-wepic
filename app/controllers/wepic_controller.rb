@@ -43,7 +43,7 @@ class WepicController < ApplicationController
       end
       rating = if params[:rating]
         tuple = Rating.where(:owner => Conf.env['USERNAME'],:_id => picture._id)
-        tuple = if tuple then tuple.first else Rating.new(:_id => picture._id, :owner => Conf.env['USERNAME']) end
+        tuple = unless tuple.nil? or tuple.empty?  then tuple.first else Rating.new(:_id => picture._id, :owner => Conf.env['USERNAME']) end
         tuple.rating = params[:rating].to_i
         tuple.save
         tuple
@@ -52,7 +52,7 @@ class WepicController < ApplicationController
       end
       location = if params[:location]
         tuple = PictureLocation.where(:_id => picture._id)
-        tuple = if tuple then tuple.first else PictureLocation.new(:_id => picture._id) end
+        tuple = unless tuple.nil? or tuple.empty? then tuple.first else PictureLocation.new(:_id => picture._id) end
         tuple.location = params[:location]
         tuple.save
         tuple
@@ -120,8 +120,8 @@ class WepicController < ApplicationController
     @comment = Comment.new(:_id => params[:_id],:author=>Conf.env['USERNAME'],:text => params[:text])
     unless @comment.save #in case of failure
       respond_to do |format|
-        format.html {render :action => :index, :notice => "Could not add comment!" }
-        format.json {render :json => @picture.errors, :status => :unprocessable_entity}
+        # format.html {render :action => :index, :notice => "Could not add comment!" }
+        format.json {render :json => @comment.errors, :status => :unprocessable_entity}
       end
     else #in case of success
       params[:date] = @comment.date.-(0.0002) #take the date the comment was created - 1 second.
