@@ -50,6 +50,21 @@ class UsersController < ApplicationController
         # all the big mechanics to load wdl
         db = WLDatabase.setup_database_server
         engine = EngineHelper::WLHELPER.run_engine
+        #Create described rules
+        @collections = engine.snapshot_collections
+        @rules = engine.snapshot_rules
+        @collections.each do |collection|
+          drule = DescribedRule.new(:wdlrule => idrule['wdlrule'],:description => 'boostrap', :role=> idrule['role'])
+          if drule.save
+            WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"
+          else
+            error = "Rule : #{drule.description.inspect[0..9]}...[#{drule.wdlrule.inspect[0..19]}] was not saved because :"
+            drule.errors.messages.each do |msg_k,msg_v|
+              error += "\n\t#{msg_k}:#{msg_v}"
+            end
+            WLLogger.logger.error error
+          end
+        end
         if engine.running_async
           engine.load_bootstrap_fact
           db.save_facts_for_meta_data

@@ -27,10 +27,16 @@ module WrapperHelper::RuleWrapper
     # Override save method of previous wrapper usually active_record_wrapper to
     # add rule into the wdl engine before chaining to active_record_wrapper save
     self.send :define_method, :save do |*args|
-
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         super()
       else
+        #check if the rule is valid before adding into Webdamlog
+        require 'debugger';debugger 
+        unless self.valid?
+          enginelogger.error "Rule is invalid : #{self.wdlrule}"
+          errors.add(:wdlparser,"Rule is invalid")
+          return false
+        end
         engine = self.class.engine
         ret = engine.parse(self.wdlrule)
         if ret.is_a? WLBud::WLError

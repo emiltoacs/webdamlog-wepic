@@ -373,7 +373,7 @@ module WLDatabase
       begin
         ContentHelper::query_create
       rescue => error
-        WLLogger.logger.warn "In ContentHelper::query_create an error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")}"
+        WLLogger.logger.warn "In ContentHelper::query_create an error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")[0..20]}"
       end
     end
 

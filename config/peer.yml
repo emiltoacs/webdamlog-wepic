@@ -5,6 +5,7 @@ development: &base
   # or the manager itself if the current peer is a manager
   manager:
     ip: localhost
+    protocol : http
     # default value in WLSetup is 4000 if no flag given
     manager_port: 4000
     manager_waiting_port:
