@@ -21,16 +21,15 @@ module WrapperHelper::ActiveRecordWrapper
         @enginelogger.fatal("bind_wdl_relation fails @engine not initialized")
         return false
       else
-        # TODO change check already declared by declaration automatic
+        # PENDING change check already declared by declaration automatic if not
         if @engine.wl_program.wlcollections.include?(@wdl_tabname)
           cb_id = @engine.register_callback(@wdl_tabname.to_sym) do |tab|
-            #require 'debugger';debugger
-            unless tab.delta.empty?
+            unless tab.delta.empty?              
               # send_deltas tab # Callback sent to wdl
               tab.each_from_sym([:delta]) do |t|
                 tuple = Hash[t.each_pair.to_a]
                 self.new(tuple).save_in_ar
-              end              
+              end
               tab.flush_deltas
             end
           end
@@ -46,14 +45,6 @@ module WrapperHelper::ActiveRecordWrapper
         end
       end
     end
-
-    # Callback sent to wdl
-    #    def send_deltas tab
-    #      tab.each_from_sym([:delta]) do |t|
-    #        tuple = Hash[t.each_pair.to_a]
-    #        self.new(tuple).save_in_ar
-    #      end
-    #    end
 
     # Create the wdl relation @param name [String] wdl relation name
     #
@@ -118,16 +109,8 @@ module WrapperHelper::ActiveRecordWrapper
             if wdlfact
               val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
               # useless to call super here since callback in table will do the
-              # job just check return value val to see if fact has be added
-              
-              # TODO Fix this hack for images
-              if self.is_a? Picture
-                tuple = Picture.where(:_id => self._id)
-                if tuple.empty? or tuple.nil?
-                  super()
-                end
-              end 
-              unless val.nil? or val.empty?
+              # job just check return value val to see if fact has be added in wdl  
+              if err.empty? and not val.empty?
                 return true
               else
                 errors.add(:database, "fail to save the record #{self} in the database for wdl_table: #{self.class.wdl_tabname} with error #{err} but the following have succed #{val}")
@@ -159,8 +142,14 @@ module WrapperHelper::ActiveRecordWrapper
     return true
   end
 
+  # To invoke the original call of AR
+  # @return [Boolean] AR#save return value
   def save_in_ar
-    #require 'debugger';debugger
-    self.class.superclass.instance_method(:save).bind(self).call
-  end
+    if self.valid?
+      self.class.superclass.instance_method(:save).bind(self).call
+    else
+      self.enginelogger.fatal("wdl derived an invalid tuple for AR: #{self}")
+      raise Exceptions::WrapperError, "wdl derived an invalid tuple for AR: #{self}"
+    end
+  end 
 end
