@@ -3,7 +3,7 @@ class Picture < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      attr_accessible :title, :image, :owner, :image_url, :_id, :date
+      attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url
       validates :title, :presence => true
       validates :owner, :presence => true
       before_create :create_defaults
@@ -88,7 +88,7 @@ class Picture < AbstractDatabase
     
   end
   
-  private
+  # private
   
   def url_provided_remote?
     uri = URI.parse(self.image_url)
@@ -121,6 +121,7 @@ class Picture < AbstractDatabase
   
   def do_download_remote_image
     io = open(URI.parse(image_url))
+    puts io
     def io.original_filename; base_uri.path.split('/').last; end
     io.original_filename.blank? ? nil : io
   rescue # catch url errors with validations instead of exceptions (Errno::ENOENT, OpenURI::HTTPError, etc...)
