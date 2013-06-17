@@ -12,6 +12,7 @@ require './lib/wl_setup'
 class WrapperRuleTest < Test::Unit::TestCase
   
   def test_describedrule
+    require 'debugger' ; debugger 
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require 'test_helper'
     # load the database and base model including describedrule
@@ -22,6 +23,7 @@ class WrapperRuleTest < Test::Unit::TestCase
     engine = EngineHelper::WLENGINE
     engine.load_bootstrap_fact
     db.save_facts_for_meta_data
+    
     assert_not_nil db
     klassperson, relname, sch, instruction = db.create_model("persontest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassperson
