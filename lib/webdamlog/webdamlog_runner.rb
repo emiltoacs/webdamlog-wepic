@@ -59,7 +59,7 @@ module WLRunner
       begin
         fct, err = self.add_facts facts
       rescue WLError => e
-        err = e
+        err << e
       end
     end
     return fct, err
