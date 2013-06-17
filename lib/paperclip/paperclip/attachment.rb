@@ -90,6 +90,7 @@ module Paperclip
     #   new_user.avatar = old_user.avatar
     def assign uploaded_file
       ensure_required_accessors!
+      
 
       if uploaded_file.is_a?(Paperclip::Attachment)
         uploaded_filename = uploaded_file.original_filename
@@ -210,6 +211,7 @@ module Paperclip
     # Saves the file, if there are no errors. If there are, it flushes them to
     # the instance's errors and returns false, cancelling the save.
     def save
+      caller
       flush_deletes unless @options[:keep_old_files]
       flush_writes
       @dirty = false

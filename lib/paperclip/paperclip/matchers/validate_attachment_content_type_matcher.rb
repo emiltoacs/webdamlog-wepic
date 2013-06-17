@@ -63,6 +63,7 @@ module Paperclip
         def type_allowed?(type)
           file = StringIO.new(".")
           file.content_type = type
+          
           @subject.attachment_for(@attachment_name).assign(file)
           @subject.valid?
           @subject.errors[:"#{@attachment_name}_content_type"].blank?

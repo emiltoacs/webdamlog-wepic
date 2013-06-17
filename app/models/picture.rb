@@ -3,7 +3,7 @@ class Picture < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      attr_accessible :title, :image, :owner, :image_url, :_id, :date, :remote_image_url
+      attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url
       validates :title, :presence => true
       validates :owner, :presence => true
       before_create :create_defaults
@@ -88,7 +88,7 @@ class Picture < AbstractDatabase
     
   end
   
-  private
+  # private
   
   def url_provided_remote?
     uri = URI.parse(self.image_url)
@@ -104,13 +104,13 @@ class Picture < AbstractDatabase
   end
   
   def download_image
-    # #self.image = do_download_remote_image
     if url_provided_remote?
       self.image = do_download_remote_image
     elsif url_provided_local?
       self.image = get_local_image
     else
-      # #Do nothing
+      # #Do nothing or 
+      self.image = do_download_remote_image
     end
   end
   
@@ -120,6 +120,7 @@ class Picture < AbstractDatabase
   end
   
   def do_download_remote_image
+    require 'open-uri'
     io = open(URI.parse(image_url))
     def io.original_filename; base_uri.path.split('/').last; end
     io.original_filename.blank? ? nil : io

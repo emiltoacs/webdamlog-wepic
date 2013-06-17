@@ -4,11 +4,6 @@ class ProgramController < ApplicationController
   def index
     # #Do not load program if already in main memory
     
-    # #TODO:This line assumes there is only one program. This assumption #should
-    # be relaxed later.
-    @program = WLENGINE.snapshot_collections
-    @described_rules = DescribedRule.all
-    
     flash.now[:alert] = 'The program was not loaded properly.' unless @program
     
   end
