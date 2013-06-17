@@ -46,11 +46,16 @@ module WrapperHelper::ContactWrapper
       else
         engine = self.class.engine
 
-        # PENDING add some guards here to check if a peer is override
+        # PENDING add some guards here to check if a peer is overriden
 
         if(self.username and self.ip and self.port)
           if engine.update_add_peer(self.username, self.ip, self.port)
-            super()
+            if super()
+              self.class.enginelogger.debug("WrapperHelper::ContactWrapper has created a new contect in webdamlog #{self.username} #{self.ip} #{self.port} linked to #{self}")
+            else
+              errors.add(:contactwrapper, "update_add_peer failed to save new contact peername#{self.username} ip#{self.ip} #{self.port} in the db")
+            return false
+            end
           else
             errors.add(:contactwrapper, "update_add_peer failed to declare new contact peername#{self.username} ip#{self.ip} #{self.port}")
             return false
