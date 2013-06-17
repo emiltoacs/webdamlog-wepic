@@ -11,7 +11,23 @@ require './lib/wl_setup'
 
 class ModelsTest < Test::Unit::TestCase
   
-  def test_rating
+#  def test_rating
+#    WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
+#    require './test/test_helper'
+#    db = WLDatabase.setup_database_server
+#    assert_not_nil db
+#    helper = EngineHelper::WLHELPER
+#    helper.run_engine
+#    engine = EngineHelper::WLENGINE
+#    engine.load_bootstrap_fact
+#    db.save_facts_for_meta_data
+#
+#    rating = Rating.new(:rating => 3, :owner=>'jules', :_id => 12345)
+#    rating.save
+#    assert_equal(3,rating.rating)
+#  end
+  
+  def test_new_picture_remotes
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require './test/test_helper'
     db = WLDatabase.setup_database_server
@@ -21,17 +37,9 @@ class ModelsTest < Test::Unit::TestCase
     engine = EngineHelper::WLENGINE
     engine.load_bootstrap_fact
     db.save_facts_for_meta_data
-    
-    rating = Rating.new(:rating => 3, :owner=>'jules', :_id => 12345)
-    rating.save
-    assert_equal(3,rating.rating)
-  end
-  
-  def test_new_picture_remote
-    WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
-    require './test/test_helper'
+
     picture = Picture.new(:owner=>"Emilien",:title=>"nemo") #:remote_image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg"
-    require 'debugger' ; debugger 
+    require 'debugger' ; debugger
     picture.save
     assert_equal("Fish.jpeg", picture.image_file_name)
     assert_equal(32824, picture.image_file_size)
