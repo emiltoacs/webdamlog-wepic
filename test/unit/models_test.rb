@@ -31,6 +31,7 @@ class ModelsTest < Test::Unit::TestCase
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require './test/test_helper'
     picture = Picture.new(:owner=>"Emilien",:title=>"nemo") #:remote_image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg"
+    require 'debugger' ; debugger 
     picture.save
     assert_equal("Fish.jpeg", picture.image_file_name)
     assert_equal(32824, picture.image_file_size)

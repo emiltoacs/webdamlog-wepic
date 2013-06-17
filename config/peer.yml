@@ -45,6 +45,11 @@ test:
     program:
       file_path: test/config/bootstrap_for_test.wl
       query_sample: test/config/sample.yml
+  manager:
+    ip: localhost  
+    manager_port:
+    manager_waiting_port:
+    default_spawn_port : 10000
 
 production:
   <<: *base
