@@ -21,9 +21,9 @@ class WrapperRuleTest < Test::Unit::TestCase
     helper.run_engine
     engine = EngineHelper::WLENGINE
     engine.load_bootstrap_fact
-    db.save_facts_for_meta_data
-    
+    db.save_facts_for_meta_data    
     assert_not_nil db
+    
     klassperson, relname, sch, instruction = db.create_model("persontest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassperson
     assert_equal "persontest_at_wrapperruletest", klassperson.wdl_tabname
