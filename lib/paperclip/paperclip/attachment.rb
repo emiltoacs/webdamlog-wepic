@@ -90,6 +90,7 @@ module Paperclip
     #   new_user.avatar = old_user.avatar
     def assign uploaded_file
       ensure_required_accessors!
+      
 
       if uploaded_file.is_a?(Paperclip::Attachment)
         uploaded_filename = uploaded_file.original_filename

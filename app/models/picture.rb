@@ -120,8 +120,8 @@ class Picture < AbstractDatabase
   end
   
   def do_download_remote_image
+    require 'open-uri'
     io = open(URI.parse(image_url))
-    puts io
     def io.original_filename; base_uri.path.split('/').last; end
     io.original_filename.blank? ? nil : io
   rescue # catch url errors with validations instead of exceptions (Errno::ENOENT, OpenURI::HTTPError, etc...)
