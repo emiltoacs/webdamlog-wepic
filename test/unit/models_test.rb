@@ -27,7 +27,8 @@ class ModelsTest < Test::Unit::TestCase
     rating.save
     assert_equal(3,rating.rating)
     picture = Picture.new(:owner=>"Emilien",:title=>"nemo",:image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg") #: 
-    picture.save
+    saved = picture.save
+    picture = Picture.all.first
     assert_equal("http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg", picture.image_url)
     # assert_equal("Fish.jpeg", picture.image_file_name)
     # assert_equal(32824, picture.image_file_size)

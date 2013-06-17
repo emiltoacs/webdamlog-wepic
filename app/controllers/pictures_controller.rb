@@ -14,7 +14,7 @@ class PicturesController < WepicController
       tuple.save
       tuple
     else
-      nil 
+      nil
     end
     @pictures = Picture.all
     errors = {:picture => @picture.errors.messages}
@@ -25,7 +25,7 @@ class PicturesController < WepicController
     if no_errors and saved
       config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} successfully saved a new picture"
       respond_to do |format|
-        format.html { redirect_to :wepic, :notice => "Picture was successfully created. [#{saved}]#{errors.inspect}" }
+        format.html { redirect_to :wepic, :notice => "Picture was successfully created." }
         format.json { render :json => @picture, :status => :created, :location => :wepic }
       end
     else
