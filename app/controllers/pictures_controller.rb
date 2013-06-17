@@ -17,12 +17,10 @@ class PicturesController < WepicController
       nil 
     end
     errors = {:picture => @picture.errors.messages}
-    errors[:location] = location.errors.messages if location.nil?
-    @pictures = Picture.all if @pictures.nil?
-    @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    @contacts = Contact.all
-    no_errors = true
-    errors.values.each {|val| no_errors &&= val.empty?}
+    errors[:location] = location.errors.messages if location
+    logger.debug "Errors if any? : #{errors.inspect}"
+    no_errors = errors[:picture].empty?
+    no_errors &&= errors[:location].empty? if location
     if no_errors
       config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} successfully saved a new picture"
       respond_to do |format|
