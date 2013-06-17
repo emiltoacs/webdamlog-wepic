@@ -24,12 +24,15 @@ module WrapperHelper::ActiveRecordWrapper
         # TODO change check already declared by declaration automatic
         if @engine.wl_program.wlcollections.include?(@wdl_tabname)
           cb_id = @engine.register_callback(@wdl_tabname.to_sym) do |tab|
-            # send_deltas tab # Callback sent to wdl
-            tab.each_from_sym([:delta]) do |t|
-              tuple = Hash[t.each_pair.to_a]
-              self.new(tuple).save_in_ar
+            unless tab.delta.empty?
+              # send_deltas tab # Callback sent to wdl
+              tab.each_from_sym([:delta]) do |t|
+                tuple = Hash[t.each_pair.to_a]
+                self.new(tuple).save_in_ar
+              end
+              require 'debugger' ; debugger
+              tab.flush_deltas
             end
-            tab.flush_deltas
           end
           @wdl_table = @engine.tables[@wdl_tabname.to_sym]          
           EngineHelper::WLHELPER.register_new_binding @wdl_tabname, self.name
@@ -45,12 +48,12 @@ module WrapperHelper::ActiveRecordWrapper
     end
 
     # Callback sent to wdl
-#    def send_deltas tab
-#      tab.each_from_sym([:delta]) do |t|
-#        tuple = Hash[t.each_pair.to_a]
-#        self.new(tuple).save_in_ar
-#      end
-#    end
+    #    def send_deltas tab
+    #      tab.each_from_sym([:delta]) do |t|
+    #        tuple = Hash[t.each_pair.to_a]
+    #        self.new(tuple).save_in_ar
+    #      end
+    #    end
 
     # Create the wdl relation @param name [String] wdl relation name
     #
@@ -93,8 +96,8 @@ module WrapperHelper::ActiveRecordWrapper
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         # do not use argument here since save use argument only when mixed in
         # with ActiveRecord::Validations http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end
-        # .() is ruby1.9 syntax for call
-        # #old_save.bind(self).()
+        # .() is ruby1.9 syntax for call #old_save.bind(self).()
+        require 'debugger' ; debugger
         super()
       else
         if valid?
