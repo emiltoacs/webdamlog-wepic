@@ -91,8 +91,7 @@ class Picture < AbstractDatabase
   
   def create_defaults
     # #TODO replace by better thing #self.image_url = self.image_file_name
-    # unless self.image_url
-    
+    # unless self.image_url    
   end
   
   # private
