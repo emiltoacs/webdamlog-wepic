@@ -4,8 +4,7 @@
 module WrapperHelper::ContactWrapper
 
   module ClassMethods
-    def bind_wdl_relation
-      require 'debugger' ; debugger 
+    def bind_wdl_relation      
       super
       # Automatically add self in the list of contact TODO add into
       # wl_program.wlfacts
