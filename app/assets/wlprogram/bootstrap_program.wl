@@ -3,7 +3,7 @@ collection ext persistent picture@local(title*, owner*, _id*, image_url*, date*)
 collection ext persistent picturelocation@local(_id*, location*);
 collection ext persistent rating@local(_id*, rating*, owner*);
 collection ext persistent comment@local(_id*,author*,text*,date*);
-collection ext persistent contact@local(username*, peerlocation*, online*, email*, facebook*);
+collection ext persistent contact@local(username*, ip*, port*, online*, email*);
 collection ext persistent describedrule@local(wdlrule*, description*, role*, wdl_rule_id*);
 fact picture@local(sigmod,Jules,12345,"http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif");
 fact picture@local(sigmod,Julia,12346,"http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif");
@@ -32,8 +32,8 @@ fact location@local(12351,"Tau workshop");
 fact rating@local(12345,5,Jules);
 fact rating@local(12349,5,Julia);
 
-fact contact@local(Jules, localhost:4100, false, "jules.testard@mail.mcgill.ca", "Jules Testard");
-fact contact@local(Julia, localhost:4100, false, "stoyanovich@drexel.edu", "jstoy");
+fact contact@local(Jules, 127.0.0.1, 4100, false, "jules.testard@mail.mcgill.ca");
+fact contact@local(Julia, 12.0.0.1, 4150, false, "stoyanovich@drexel.edu");
 
 rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);
 rule person@local($id,$name) :- friend@local($id,$name);

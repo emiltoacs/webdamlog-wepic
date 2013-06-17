@@ -1,5 +1,0 @@
-fact contact@local(Emilien, sigmod_peer, false, emilien.antoine@inria.fr, Emilien Antoine);
-fact contact@local(Julia, sigmod_peer,  false, stoyanovich@drexel.edu, Julia Stoyanovich);
-fact contact@local(Gerome, sigmod_peer, false, miklau@cs.umass.edu, Gerome Miklau);
-fact contact@local(Serge, sigmod_peer, false, serge.abiteboul@inria.fr, Serge Abiteboul);
-fact contact@local(Jules, sigmod_peer, false, jules.testard@mail.mcgill.ca, Jules Testard);

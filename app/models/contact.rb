@@ -1,41 +1,38 @@
-class Contact < AbstractDatabase   
+class Contact < AbstractDatabase 
   
   def self.setup
     unless @setup_done
       attr_accessible :username
-      # This describes where the contact can be found. This might be how to
-      # contact it directly or might be an index location such as the sigmod
-      # peer. For now this should be an ip:port combination.
-      attr_accessible :peerlocation
+      attr_accessible :ip
+      attr_accessible :port
       attr_accessible :online
       attr_accessible :email
-      attr_accessible :facebook
       
       validates :username, :presence => true, :uniqueness => true
-      validates :peerlocation, :presence => true
+      validates :ip, :presence => true
+      validates :port, :presence => true
       
       connection.create_table 'contacts', :force => true do |t|
         t.string :username
-        t.string :peerlocation
+        t.string :ip
+        t.integer :port
         t.boolean :online
         t.string :email
-        t.string :facebook
         t.timestamps
       end if !connection.table_exists?('contacts')
       
       @setup_done = true
     end # unless @setup_done
   end # self.setup
-  
+
+  # map the webdamlog schema
   def self.schema
     {'username' => 'string',
-      'peerlocation' => 'string',
+      'ip' => 'integer',
+      'port' => 'integer',
       'online' => 'boolean',
-      'email' => 'string',
-      'facebook' => 'string'}
+      'email' => 'string'}
   end
-
-  # TODO add specific behavior to declare new peer when contacts are added
   
   setup    
 end
