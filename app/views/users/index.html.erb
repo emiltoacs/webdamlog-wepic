@@ -11,6 +11,9 @@
         <div id="user_prompt">
           <h2>Welcome Back!</h2>
           <%= render '/user_sessions/form' %>
+          <br/> <br/>
+          <%=@config = Conf.peer%>
+          <%= link_to "Log in with a different user", "#{@config['protocol']}://#{@config['ip']}:#{@config['web_port']}/"%>
         </div>
       <% else %>
         <div id="user_prompt">
