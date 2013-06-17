@@ -12,7 +12,6 @@ require './lib/wl_setup'
 class ModelsTest < Test::Unit::TestCase
   
   def test_rating
-    `rails --reset` 
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require './test/test_helper'
     db = WLDatabase.setup_database_server
@@ -33,6 +32,8 @@ class ModelsTest < Test::Unit::TestCase
     # assert_equal("image/jpeg", picture.image_content_type)
     assert_equal("Emilien", picture.owner)
     assert_equal("nemo", picture.title)
+    assert_not_nil(picture.date)
+    assert_equal("http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg", picture.image_url)
     picture.destroy
   end
   
