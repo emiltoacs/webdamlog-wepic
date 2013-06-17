@@ -49,6 +49,7 @@ module WrapperHelper::RuleWrapper
                 rule_string.gsub!("_at_", "@")
                 self.wdl_rule_id = rule_id
                 self.wdlrule = rule_string
+                self.role = 'rule'
                 super()
               rescue WLBud::WLError => err
                 errors.add(:wdlengine, "wrapper fail to insert the rule in the webdamlog engine: #{err}")
@@ -79,7 +80,7 @@ module WrapperHelper::RuleWrapper
                 # WLRule
                 self.wdl_rule_id = klass.object_id
                 self.wdlrule = instruction
-                self.role = "collection"
+                self.role = "extensional"
                 super()
               else
                 errors.add(:wrapper, "impossible to create model for #{inst.relname} via rule wrapper")
