@@ -29,6 +29,7 @@ class ModelsTest < Test::Unit::TestCase
     rating.save
     assert_equal(3,rating.rating)
     picture = Picture.new(:owner=>"Emilien",:title=>"nemo") #:remote_image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg"
+    require 'debugger' ; debugger 
     picture.save
     assert_equal("Fish.jpeg", picture.image_file_name)
     assert_equal(32824, picture.image_file_size)

@@ -83,8 +83,8 @@ class Picture < AbstractDatabase
   end
   
   def create_defaults
-    #TODO replace by better thing
-    #self.image_url = self.image_file_name unless self.image_url
+    # #TODO replace by better thing #self.image_url = self.image_file_name
+    # unless self.image_url
     
   end
   
@@ -104,18 +104,18 @@ class Picture < AbstractDatabase
   end
   
   def download_image
-    #self.image = do_download_remote_image
+    # #self.image = do_download_remote_image
     if url_provided_remote?
       self.image = do_download_remote_image
     elsif url_provided_local?
       self.image = get_local_image
     else
-      #Do nothing
+      # #Do nothing
     end
   end
   
   def get_local_image
-  io = File.new(URI.parse(image_url).path)
+    io = File.new(URI.parse(image_url).path)
   rescue
   end
   
