@@ -33,8 +33,8 @@ module WrapperHelper::ActiveRecordWrapper
           end
           @wdl_table = @engine.tables[@wdl_tabname.to_sym]          
           EngineHelper::WLHELPER.register_new_binding @wdl_tabname, self.name
-          @enginelogger.debug("bind_wdl_relation succed to register callback #{cb_id} for #{@wdl_tabname}")
-          @enginelogger.debug("#{self} has now methods from wrappers #{self.ancestors[0..2]}...")
+          @enginelogger.debug("WrapperHelper::ActiveRecordWrapper: bind_wdl_relation succed to register callback #{cb_id} for #{@wdl_tabname}")
+          @enginelogger.debug("WrapperHelper::ActiveRecordWrapper: #{self} has now methods from wrappers #{self.ancestors[0..2]}...")
           @bound = true
           return true
         else
@@ -136,7 +136,7 @@ module WrapperHelper::ActiveRecordWrapper
           return false
         end # if valid?
       end # if args.first == :skip_ar_wrapper  
-    end # define_method    
+    end # define_method
   end # self.included
 
   # TODO add here some wdl guards

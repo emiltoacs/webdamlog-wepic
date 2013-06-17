@@ -3,7 +3,15 @@
 # should have been included previously
 module WrapperHelper::RuleWrapper
 
+  module ClassMethods
+    def bind_wdl_relation
+      super
+      enginelogger.debug("WrapperHelper::RuleWrapper #{self} has now methods from wrappers #{self.ancestors[0..2]}...")
+    end
+  end
+
   def self.included(base)
+    base.extend(ClassMethods)
 
     attr_reader :inst
 
