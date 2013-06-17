@@ -16,6 +16,7 @@ class PicturesController < WepicController
     else
       nil 
     end
+    @pictures = Picture.all
     errors = {:picture => @picture.errors.messages}
     errors[:location] = location.errors.messages if location
     logger.debug "Errors if any? : #{errors.inspect}"
@@ -24,7 +25,7 @@ class PicturesController < WepicController
     if no_errors and saved
       config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} successfully saved a new picture"
       respond_to do |format|
-        format.html { redirect_to :wepic, :notice => 'Picture was successfully created. #{errors.inspect}' }
+        format.html { redirect_to :wepic, :notice => "Picture was successfully created. [#{saved}]#{errors.inspect}" }
         format.json { render :json => @picture, :status => :created, :location => :wepic }
       end
     else

@@ -1,3 +1,4 @@
+require 'open-uri'
 class Picture < AbstractDatabase  
   @storage = :database
   
@@ -71,8 +72,10 @@ class Picture < AbstractDatabase
   has_attached_file :image,
     :storage => @storage, 
     :styles => {
-    :thumb => "206x206!",
+    :thumb => "",
     :small => "500x500>"
+  }, :conver_options => {
+    :thumb => "-gravity Center -crop 206x206"
   },
     :url => '/:class/:id/:attachment.:extension?style=:style'
   
@@ -124,7 +127,6 @@ class Picture < AbstractDatabase
   end
   
   def do_download_remote_image
-    require 'open-uri'
     io = open(URI.parse(image_url))
     def io.original_filename; base_uri.path.split('/').last; end
     io.original_filename.blank? ? nil : io
