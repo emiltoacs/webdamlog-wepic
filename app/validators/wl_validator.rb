@@ -18,7 +18,6 @@ class WlValidator < ActiveModel::EachValidator
     end
     return true
   end
-  
 end
 
 

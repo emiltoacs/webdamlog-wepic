@@ -33,8 +33,7 @@ class WrapperPictureTest < Test::Unit::TestCase
     assert_not_nil picture.image_url
     picture.valid?
     assert_not_nil picture._id
-    require 'debugger' ; debugger 
-
+    
     picture.save
         
     # check AR values check insertion into db
