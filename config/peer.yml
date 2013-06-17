@@ -6,7 +6,7 @@ development: &base
   manager:
     ip: localhost
     # default value in WLSetup is 4000 if no flag given
-    manager_port:
+    manager_port: 4000
     manager_waiting_port:
     # Choose a prefered port to spawn peer if not available, find_port will look for others
     default_spawn_port : 10000
