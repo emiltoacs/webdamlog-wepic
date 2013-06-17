@@ -14,7 +14,7 @@ class DescribedRule < AbstractDatabase
         t.text :description
         t.text :wdlrule
         t.string :role
-        t.integer :wdl_rule_id
+        t.integer :wdl_rule_id, :limit => 8
         t.timestamps
       end if !connection.table_exists?('describedRule')
       
