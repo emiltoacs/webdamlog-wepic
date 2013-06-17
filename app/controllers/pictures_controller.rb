@@ -8,7 +8,7 @@ class PicturesController < WepicController
     @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image_url=>params[:picture][:image_url]) if params[:picture][:image_url]
     @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
     @picture = Picture.new if @picture.nil?
-    @picture.save
+    saved = @picture.save
     location = if params[:location] 
       tuple = PictureLocation.new(:_id => @picture._id,:location => params[:location])
       tuple.save
@@ -21,10 +21,10 @@ class PicturesController < WepicController
     logger.debug "Errors if any? : #{errors.inspect}"
     no_errors = errors[:picture].empty?
     no_errors &&= errors[:location].empty? if location
-    if no_errors
+    if no_errors and saved
       config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} successfully saved a new picture"
       respond_to do |format|
-        format.html { redirect_to :wepic, :notice => 'Picture was successfully created.' }
+        format.html { redirect_to :wepic, :notice => 'Picture was successfully created. #{errors.inspect}' }
         format.json { render :json => @picture, :status => :created, :location => :wepic }
       end
     else
