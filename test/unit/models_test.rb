@@ -1,3 +1,4 @@
+#XXX : Please run rails --reset before running this test.
 # setup environment before loading wltool.rb in wl_setup.rb
 ENV["RAILS_ENV"] = "test"
 ENV["USERNAME"] = "modelstesttest"
@@ -27,13 +28,15 @@ class ModelsTest < Test::Unit::TestCase
     assert_equal(3,rating.rating)
     picture = Picture.new(:owner=>"Emilien",:title=>"nemo",:image_url=>"http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg") #: 
     picture.save
+    assert_equal("http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg", picture.image_url)
     # assert_equal("Fish.jpeg", picture.image_file_name)
     # assert_equal(32824, picture.image_file_size)
     # assert_equal("image/jpeg", picture.image_content_type)
     assert_equal("Emilien", picture.owner)
     assert_equal("nemo", picture.title)
     assert_not_nil(picture.date)
-    assert_equal("http://1.bp.blogspot.com/-Gv648iUY5p0/UD8rqW3deSI/AAAAAAAAACA/MrG4KxFyM5A/s400/Fish.jpeg", picture.image_url)
+    assert_equal("Fish.jpeg",picture.image_file_name)
+    assert_equal("image/jpeg", picture.image_content_type)
     picture.destroy
   end
   

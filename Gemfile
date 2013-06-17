@@ -36,6 +36,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'fancybox-rails'
 gem 'jquery-star-rating-rails'
+gem 'trim_blobs'
 
 group :development, :test do
   # To use the debugger
