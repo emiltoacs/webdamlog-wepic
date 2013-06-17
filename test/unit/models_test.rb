@@ -37,6 +37,7 @@ class ModelsTest < Test::Unit::TestCase
     assert_not_nil(picture.date)
     assert_equal("Fish.jpeg",picture.image_file_name)
     assert_equal("image/jpeg", picture.image_content_type)
+    assert_equal [], Picture.all.map { |tup| [tup[:owner], tup[:title], tup[:date], tup[:image_file_name], tup[:image_content_type], tup[:image_url]] }
     picture.destroy
   end
   
