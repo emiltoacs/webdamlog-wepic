@@ -12,7 +12,6 @@ require './lib/wl_setup'
 class WrapperRuleTest < Test::Unit::TestCase
   
   def test_describedrule
-    require 'debugger' ; debugger 
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require 'test_helper'
     # load the database and base model including describedrule
