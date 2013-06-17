@@ -9,9 +9,9 @@ class QueryController < ApplicationController
   def index
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    @described_queries = DescribedRule.where(:role=>'query')
-    @described_updates = DescribedRule.where(:role=>'update')
-    @described_query = DescribedRule.new
+    # @described_queries = DescribedRule.where(:role=>'query')
+    # @described_query = DescribedRule.new
+    @described_updates = DescribedRule.all
     @described_udpate = DescribedRule.new
   end
   
