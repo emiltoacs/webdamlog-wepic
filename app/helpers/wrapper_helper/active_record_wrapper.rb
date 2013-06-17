@@ -29,8 +29,7 @@ module WrapperHelper::ActiveRecordWrapper
               tab.each_from_sym([:delta]) do |t|
                 tuple = Hash[t.each_pair.to_a]
                 self.new(tuple).save_in_ar
-              end
-              require 'debugger' ; debugger
+              end              
               tab.flush_deltas
             end
           end
@@ -98,7 +97,7 @@ module WrapperHelper::ActiveRecordWrapper
         # with ActiveRecord::Validations http://stackoverflow.com/questions/9649193/ruby-method-arguments-with-just-operator-def-save-end
         # .() is ruby1.9 syntax for call #old_save.bind(self).()
         require 'debugger' ; debugger
-        super()
+        return super()
       else
         if valid?
           if wdl_valid?
