@@ -276,6 +276,7 @@ module WLDatabase
         @relation_classes[classname] = pict
       end
       @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].send :include, WrapperHelper::PictureWrapper
       @relation_classes[classname].bind_wdl_relation
       
       classname = "Contact"
