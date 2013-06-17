@@ -227,10 +227,10 @@ module WLDatabase
       
       # The model of the schema itself stored in the database
       #
-      # TODO write create_model_class with a block to introduced validators
+      # TODO write create_AR_model_class with a block to introduced validators
       # (validates_uniqueness_of :name) as in comments below
       #
-      @wlschema = create_model_class(DATABASE_SCHEMA, {"name"=>"string","schema"=>"binary"})
+      @wlschema = create_AR_model_class(DATABASE_SCHEMA, {"name"=>"string","schema"=>"binary"})
       #      @wlschema = create_class("#{relation_name}_#{@id}",ActiveRecord::Base) do
       #        @schema = {"name"=>"string","schema"=>"string"}
       #        @wl_database_instance = database_instance
@@ -254,7 +254,7 @@ module WLDatabase
       @relation_classes[DATABASE_SCHEMA]=@wlschema
       # #Retrieve all the models #@wlschema.establish_connection @configuration
       @wlschema.all.each do |table|
-        klass = create_model_class(table.name, JSON.parse(table.schema))
+        klass = create_AR_model_class(table.name, JSON.parse(table.schema))
         @relation_classes[klass.name] = klass
         @wlmeta = @relation_classes[klass.name] if klass.name == DATABASE_META
       end
@@ -388,7 +388,7 @@ module WLDatabase
     # @return [Class, String, Hash, String] class created, name of relation, Hash of the schema, webamlog instruction
     #
     def create_model(name,schema,options={})
-      model_klass = create_model_class(name, schema)
+      model_klass = create_AR_model_class(name, schema)
 
       if options[:wdl]
         # wdl binding
@@ -419,7 +419,7 @@ module WLDatabase
     # @notice silently ignore empty fields that is if col_type or col_name is
     # not specified in schema it will be skipped and continue with other
     # attributes
-    def create_model_class(name, schema)
+    def create_AR_model_class(name, schema)
       raise WLDatabaseError.new "type error of name is #{name.class}" unless name.is_a? String
       raise WLDatabaseError.new "type error of schema is #{schema.class}" unless schema.is_a? Hash
       database_instance = self
@@ -467,7 +467,7 @@ module WLDatabase
         end
         WLLogger.logger.debug "Created a model #{model_name} with its table #{table_name} and schema #{@schema} in database #{config['database']}"
       end
-      WLLogger.logger.debug "class #{klass} created by create_model_class"
+      WLLogger.logger.debug "class #{klass} created by create_AR_model_class"
       return klass
     end
       
