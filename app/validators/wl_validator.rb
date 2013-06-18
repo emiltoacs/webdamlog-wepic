@@ -22,7 +22,7 @@ class WlValidator < ActiveModel::EachValidator
     else
       record.errors[attribute] << (options[:message] || "#{value} : parsing returned nothing or nil!")
     end
-    WLLogger.logger.debug "Parsed : #{responses.map {|e| e.class}}"
+    WLLogger.logger.debug "WlValidator accept DescribedRule #{self} : #{responses.map {|e| e.is_a?(WLBud::NamedSentence) ? e.show_wdl_format : e.to_s }}"
     return true
   end
 end

@@ -283,7 +283,6 @@ module WLBud
     # program from the beginning.
     def load_bootstrap_fact
       self.sync_do do
-        #require 'debugger';debugger
         @wl_program.wlfacts.each { |fact| add_facts(fact) }
         @program_loaded = true
       end
