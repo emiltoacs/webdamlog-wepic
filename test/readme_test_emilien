@@ -1,0 +1,11 @@
+# Because of the particular loading of rails made in my test I cannot load them in a test suite (or should investigate to make it possible) there is a list of the important test to run to check validity of the application
+
+Functional
+    user_controller*
+Integration
+    wl_launcher_test
+    wl_setup_test
+Unit
+    wl_database_*
+    models_test*
+    helpers/*
