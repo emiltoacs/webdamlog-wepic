@@ -8,6 +8,16 @@ module WrapperHelper::ActiveRecordWrapper
   module ClassMethods
 
     attr_reader :engine, :enginelogger, :wdl_tabname, :bound, :wdl_table
+    
+    def add_to_described_rules
+      wdl_dec_coll = "#{WLTools.sanitize(self.name)}@#{EngineHelper::WLENGINE.peername}"
+      rule = "collection ext per "
+      rule << "#{wdl_dec_coll}("
+      schema.keys.each { |at| rule<<"#{at}*," }
+      rule.slice!(-1)
+      rule << ");"
+      ContentHelper::add_to_described_rules(rule,'Core relation','extensional')      
+    end
 
     # Set a callback in the webdamlog relation to update this ActiveRecord
     #

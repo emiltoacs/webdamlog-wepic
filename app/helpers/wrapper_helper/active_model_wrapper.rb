@@ -1,4 +1,4 @@
-# Use this module as a wrapper for intensional relation
+# Use this module as a wrapper for intentional relation
 module WrapperHelper::ActiveModelWrapper
 
   module ClassMethods
