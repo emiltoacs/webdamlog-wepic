@@ -9,6 +9,7 @@ class WlValidator < ActiveModel::EachValidator
     unless response.nil? or response.empty?
       unless response.first.is_a?(StandardError)
         response.each do |statement|
+          require 'debugger';debugger
           if statement.class == WLBud::WLCollection
             @collections = EngineHelper::WLENGINE.snapshot_collections unless @collections 
             record.errors[attribute] << (options[:message] || "#{statement} : collection already exists!") if @collections.include?(statement)
