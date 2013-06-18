@@ -31,12 +31,16 @@ module WLBud
 
     # the peer name of this sentence
     def peername
-      raise MethodNotImplementedError, "a WLSentence subclass must implement the method peername"
+      raise MethodNotImplementedError, "a WLBud::NamedSentence subclass must implement the method peername"
     end
 
     # Assign value returned by block on each peername
     def map_peername! &block
-      raise MethodNotImplementedError, "a WLSentence subclass must implement the method map_peername!"
+      raise MethodNotImplementedError, "a WLBud::NamedSentence subclass must implement the method map_peername!"
+    end
+
+    def show_wdl_format
+      raise MethodNotImplementedError, "a WLBud::NamedSentence subclass must implement the method show_wdl_format"
     end
   end
 
