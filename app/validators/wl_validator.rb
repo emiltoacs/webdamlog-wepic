@@ -1,29 +1,28 @@
 require 'webdamlog/wlbud'
 
 class WlValidator < ActiveModel::EachValidator
+  include EngineHelper
   
   def validate_each(record, attribute, value)
-    #Check all elements from response and check if there is an error.
-    response = EngineHelper::WLENGINE.parse(value)
-    unless response.nil? or response.empty?
-      if response.first.is_a?(StandardError)
-        record.errors[attribute] << (options[:message] || if response and response.first and response.first.message then response.first.message.to_s else 'Unkown Error' end)
+    #Check all elements from responses and check if there is an error.
+    responses = WLENGINE.parse(value)
+    unless responses.nil? or responses.empty?
+      if responses.first.is_a?(StandardError)
+        record.errors[attribute] << (options[:message] || if responses and responses.first and responses.first.message then responses.first.message.to_s else 'Unkown Error' end)
       else
-        response.each do |statement|
-          if statement==WLBud::WLCollection
-            @collections = DescribedRule.where("role = ? or role = ?", 'intentional','extensional').map {|dr| dr.wdlrule} unless @collections
-            @collections.each do |collection|
-              if ContentHelper::collections_same(collection,statement)
-                record.errors[attribute] << (options[:message] || "#{value} : collection already exists!")
-              end
-            end            
+        @statements = DescribedRule.all.map {|dr| dr.wdlrule} unless @statements
+        responses.each do |response|
+          @statements.each do |statement|
+            if WLENGINE.parse(statement).show_wdl_format==response.show_wdl_format
+              record.errors[attribute] << (options[:message] || "#{value} : statement already exists!")
+            end
           end
         end
       end
     else
       record.errors[attribute] << (options[:message] || "#{value} : parsing returned nothing or nil!")
     end
-    WLLogger.logger.debug "Parsed : #{response.map {|e| e.class}}"
+    WLLogger.logger.debug "Parsed : #{responses.map {|e| e.class}}"
     return true
   end
 end

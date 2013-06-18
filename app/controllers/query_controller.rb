@@ -66,35 +66,6 @@ class QueryController < ApplicationController
       format.html { redirect_to '/query', :notice => "Relation classes: #{@relation_classes.inspect}" }
       format.json { head :no_content }
     end    
-
-    # # field must be a valid type: http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html#method-i-column
-    # type = ['string', 'text', 'integer', 'float', 'decimal', 'datetime', 'timestamp', 'time', 'date', 'binary', 'boolean']
-    # err_message = ""
-    # if col_names.size == col_types.size
-      # col_names.each_index do |i|
-        # if type.include? col_types[i]
-          # schema[col_names[i]] = col_types[i]
-        # else
-          # err_message = "type not conform, found #{col_names[i]} but expected one of #{type.inspect}"
-        # end
-      # end
-    # else
-      # err_message = "number of type and columns should be the same"
-    # end
-    # begin
-      # if err_message.empty?
-# 
-      # else
-        # raise err_message
-      # end
-    # rescue => error
-      # respond_to do |format|
-        # format.html { redirect_to '/query', :notice => "Error: #{error.to_s} : #{error.message}" }
-        # format.json { head :no_content }
-      # end
-    # else
-# 
-    # end
   end # create
   
   def add_described_rule

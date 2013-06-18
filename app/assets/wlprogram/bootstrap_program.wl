@@ -9,5 +9,6 @@ fact picture@local(sigmod,local,12347,"http://www.sigmod.org/about-sigmod/sigmod
 fact picture@local(webdam,local,12348,"http://www.cs.tau.ac.il/workshop/modas/webdam3.png");
 fact picturelocation@local(12347,"Columbia");
 fact picturelocation@local(12348,"Tau workshop");
-rule contact@local($username, $peerlocation, $online, $email):-contact@sigmod_peer($username, $peerlocation, $online, $email);
+fact contac@local(sigmod_peer,localhost,4100,false,"sigmod_peer@inria.fr");
+rule contact@local($username, $ip, $port, $online, $email):-contact@sigmod_peer($username, $ip, $port, $online, $email);
 end

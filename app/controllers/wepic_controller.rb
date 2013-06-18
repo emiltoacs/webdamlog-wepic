@@ -25,6 +25,7 @@ class WepicController < ApplicationController
       # end
     end
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
+    @contacts.select! {|contact| !['sigmod_peer',Conf.env['USERNAME']].include?(contact) } #Do not show self or sigmod_peer
   end
 
   #Updates all fields deriving from a picture
