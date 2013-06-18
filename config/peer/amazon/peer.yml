@@ -4,7 +4,7 @@ development: &base
   # the manager who launched the peer,
   # or the manager itself if the current peer is a manager
   manager:
-    ip: localhost
+    ip: ec2-54-216-164-120.eu-west-1.compute.amazonaws.com
     # default value in WLSetup is 4000 if no flag given
     manager_port:
     manager_waiting_port:
@@ -17,7 +17,7 @@ development: &base
     # name for the current peer, could be overrride by the ENV['USERNAME'] variable
     username: manager
     protocol: http
-    ip: localhost
+    ip: ec2-54-216-164-120.eu-west-1.compute.amazonaws.com
     # store the port on which the web server listen for requests, you can give a
     # default value to this otherwise find_port if not available or by the manager
     # default_spawn_port if this peer has been launched by a manager
