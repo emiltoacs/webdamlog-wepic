@@ -69,26 +69,30 @@ class QueryController < ApplicationController
   end # create
   
   def add_described_rule
-    described_rule = DescribedRule.new(:wdlrule=>params[:rule],:description=>params[:description],:role=>params[:role])
-    if described_rule.save 
+    saved , response = ContentHelper::add_to_described_rules(params[:rule],params[:description],:role=>params[:role])
+    if saved
+      id = response
+      ContentHelper.described_rules << rule
       respond_to do |format|
-        format.json {render :json => {:saved => true, :id => described_rule.id}.to_json }
+        format.json {render :json => {:saved => true, :id => id}.to_json }
         format.html {redirect_to :query }
       end
     else
+      err = response
       respond_to do |format|
-        format.json {render :json => {:saved => false, :errors => described_rule.errors.messages}.to_json }
-        format.html {redirect_to :query, :alert => picture.errors.messages.inspect }
+        format.json {render :json => {:saved => false, :errors => err}.to_json }
+        format.html {redirect_to :query, :alert => err }
       end
     end
   end
   
+  #Do not allow removing rules for now.
   def remove_described_rule
-    described_rule = DescribedRule.find(params[:id])
-    described_rule.destroy
-    respond_to do |format|
-      format.json {render :json => {:saved => true}.to_json }
-    end    
+    # described_rule = DescribedRule.find(params[:id])
+    # described_rule.destroy
+    # respond_to do |format|
+      # format.json {render :json => {:saved => true}.to_json }
+    # end
   end
   
   def relation

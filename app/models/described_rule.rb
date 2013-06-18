@@ -5,7 +5,7 @@ class DescribedRule < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      validates :wdlrule, :presence => true, :wl => true
+      validates :wdlrule, :presence => true#,:wl => true
       validates :role, :presence => true
       validates_inclusion_of :role, :in => ['extensional','intentional','rule', 'unknown']
             
