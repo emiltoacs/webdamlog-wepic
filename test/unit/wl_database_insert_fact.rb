@@ -23,13 +23,30 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
     engine.load_bootstrap_fact
     db.save_facts_for_meta_data
 
-    db.relation_classes['Contact'].new(:username=>'name',:peerlocation=>'peerlocation',:online=>false,:email=>'email',:facebook=>'facebook').save
+    db.relation_classes['Contact'].new(:username=>'name',:ip=>'127.0.0.1', :port=>'port', :online=>false,:email=>'email').save
 
-    assert_equal 3, engine.tables[:contact_at_databasemodeltest].to_a.size
-    array = engine.tables[:contact_at_databasemodeltest].to_a.sort.map{ |item| item.values }
-    assert_equal [["Jules","localhost:4100","false","jules.testard@mail.mcgill.ca","Jules Testard"],
-      ["Julia", "localhost:4100", "false", "stoyanovich@drexel.edu", "jstoy"],
-      ["name", "peerlocation", false, "email", "facebook"]], array
+    assert_equal 4, engine.tables[:contact_at_databasemodeltest].to_a.size
+
+    assert_equal [{:username=>"Jules",
+        :ip=>"127.0.0.1",
+        :port=>"4100",
+        :online=>"false",
+        :email=>"jules.testard@mail.mcgill.ca"},
+      {:username=>"Julia",
+        :ip=>"127.0.0.1",
+        :port=>"4150",
+        :online=>"false",
+        :email=>"stoyanovich@drexel.edu"},
+      {:username=>"databasemodeltest",
+        :ip=>"127.0.0.1",
+        :port=>"50979",
+        :online=>"true",
+        :email=>"none"},
+      {:username=>"name",
+        :ip=>"127.0.0.1",
+        :port=>0,
+        :online=>false,
+        :email=>"email"}], engine.tables[:contact_at_databasemodeltest].map { |t| Hash[t.each_pair.to_a] }
   end
   
 end
