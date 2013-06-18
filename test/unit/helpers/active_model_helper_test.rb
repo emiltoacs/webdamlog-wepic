@@ -31,7 +31,7 @@ class ActiveModelHelperTest < Test::Unit::TestCase
 
     # test ActiveModelWrappper
     am = ActiveModelHelper.create_active_model_class('friend', { username: String, ip: String, port: Integer, online: String, email: String })
-    am.send :include, WrapperHelper::ActiveModelWrapper    
+    am.send :include, WrapperHelper::ActiveModelWrapper
     am.bind_wdl_relation
     assert am.bound
     assert_not_nil am.engine
