@@ -114,19 +114,54 @@ restart or
 
 : rvm --default use 1.9.3
 
-Set up your ssh key with inria gforge if needed:
-+ https://gforge.inria.fr/account/ in account maintenance
-I used the key "id_rsa_amaz"
-
+** Set up connexion
+Set up your ssh key with inria gforge if needed git repo:
++ https://gforge.inria.fr/account/ in account maintenance I used
+  the key "id_rsa_amaz"
 
 Set language environment to avoid warning (in your bashrc) for
 the following
 : export LANG=en_US
 : sudo apt-get install language-pack-en
-: sudo apt-get install language-pack-en
-: apt-get install postgresql
 : sudo apt-get install build-essential imagemagick libmagickcore-dev libmagickwand-dev
 : sudo apt-get install postgresql postgresql-server-dev-9.1
+
+*** postgres setup
+
+setup your databases
+#+begin_src
+    Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+------------+----------+----------+-------------+-------------+-----------------------
+ postgres   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ template0  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+            |          |          |             |             | postgres=CTc/postgres
+ template1  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+            |          |          |             |             | postgres=CTc/postgres
+ wp_manager | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+#+end_src
+
+
+sudo emacs /etc/postgresql/9.1/main/pg_hba.conf
+#+begin_src
+# Database administrative login by Unix domain socket
+local   all             postgres                                trust
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+#local   replication     postgres                                peer
+#host    replication     postgres        127.0.0.1/32            md5
+#host    replication     postgres        ::1/128                 md5
+#+end_src
+
+*** finshing
 
 launch bundle in your rails root (everything should succed)
 

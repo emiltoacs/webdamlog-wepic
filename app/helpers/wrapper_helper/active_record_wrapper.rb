@@ -1,3 +1,6 @@
+# Use this module as a wrapper for extensional persistent relation, it provide
+# support for storage in the db if included in an ActiveRecord::Base inheriting
+# class
 module WrapperHelper::ActiveRecordWrapper
   
   # wdl -> AR Generic method to sync ActiveRecord with webdamlog relations
@@ -8,7 +11,7 @@ module WrapperHelper::ActiveRecordWrapper
 
     # Set a callback in the webdamlog relation to update this ActiveRecord
     #
-    # @param [String] relation_name
+    # The webdamlog relation is supposed to be the same as the name of the class to bind
     def bind_wdl_relation
       @engine = EngineHelper::WLENGINE
       @enginelogger = EngineHelper::WLLOGGER
@@ -46,14 +49,6 @@ module WrapperHelper::ActiveRecordWrapper
       end
     end
 
-    # Callback sent to wdl
-    #    def send_deltas tab
-    #      tab.each_from_sym([:delta]) do |t|
-    #        tuple = Hash[t.each_pair.to_a]
-    #        self.new(tuple).save_in_ar
-    #      end
-    #    end
-
     # Create the wdl relation @param name [String] wdl relation name
     #
     # @param schema [Hash] keys are fields name and values are their type
@@ -79,7 +74,17 @@ module WrapperHelper::ActiveRecordWrapper
       end
       return nm, sch, str
     end
-  end
+
+    # TODO add here some wdl guards
+    def wdl_valid?
+      if @bound
+        true
+      else
+        false
+      end
+      return true
+    end
+  end # ClassMethod
 
   def self.included(base)
     base.extend(ClassMethods)
@@ -100,7 +105,7 @@ module WrapperHelper::ActiveRecordWrapper
         return super()
       else
         if valid?
-          if wdl_valid?
+          if self.class.wdl_valid?
             # format for insert into webdamlog
             tuple = []
             wdlfact = nil
@@ -117,7 +122,8 @@ module WrapperHelper::ActiveRecordWrapper
             if wdlfact
               val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
               # useless to call super here since callback in table will do the
-              # job just check return value val to see if fact has be added in wdl  
+              # job just check return value val to see if fact has be added in
+              # wdl
               if err.empty? and not val.empty?
                 return true
               else
@@ -139,19 +145,8 @@ module WrapperHelper::ActiveRecordWrapper
       end # if args.first == :skip_ar_wrapper  
     end # define_method
   end # self.included
-
-  # TODO add here some wdl guards
-  def wdl_valid?
-    if self.class.bound
-      true
-    else
-      false
-    end
-    return true
-  end
-
-  # To invoke the original call of AR
-  # @return [Boolean] AR#save return value
+  
+  # To invoke the original call of AR @return [Boolean] AR#save return value
   def save_in_ar
     if self.valid?
       self.class.superclass.instance_method(:save).bind(self).call
