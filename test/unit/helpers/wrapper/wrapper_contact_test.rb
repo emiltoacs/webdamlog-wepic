@@ -26,12 +26,13 @@ class WrapperRuleTest < Test::Unit::TestCase
 
     # test propagation of ip port in wdl and peer declaration
     assert Contact.new( username: "testusername", ip: "127.0.0.1", port: "5040" ).save
-    
-    assert_equal [["Jules", "127.0.0.1", 4100, false, "jules.testard@mail.mcgill.ca"],
-      ["Julia", "127.0.0.1", 4150, false, "stoyanovich@drexel.edu"],
-      ["wrapperruletest", "127.0.0.1", 54867, true, "none"],
-      ["testusername", "127.0.0.1", 5040, nil, nil]],
-      Contact.all.map { |tup| [tup[:username], tup[:ip], tup[:port], tup[:online], tup[:email]] }
+    # do not test port here since it is dynamically attributed
+    assert_equal [["Jules", "127.0.0.1", false, "jules.testard@mail.mcgill.ca"],
+      ["Julia", "127.0.0.1", false, "stoyanovich@drexel.edu"],
+      ["wrapperruletest", "127.0.0.1", true, "none"],
+      ["testusername", "127.0.0.1", nil, nil]],
+      Contact.all.map { |tup| [tup[:username], tup[:ip], tup[:online], tup[:email]] }
+    Contact.all.each { |tup| assert_not_nil tup[:port] }
   end
   
 end

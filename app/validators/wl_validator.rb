@@ -22,6 +22,7 @@ class WlValidator < ActiveModel::EachValidator
       record.errors[attribute] << (options[:message] || "#{value} : parsing returned nothing or nil!")
     end
     WLLogger.logger.debug "Parsed : #{response.map {|e| e.class}}"
+    return true
   end
 end
 
