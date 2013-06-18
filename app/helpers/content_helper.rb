@@ -41,8 +41,4 @@ module ContentHelper
         return false, drule.errors.messages
      end    
   end
-  
-  def self.collections_same(cola, colb)
-    
-  end
 end

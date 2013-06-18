@@ -67,7 +67,6 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         :password => "test_user_password",
         :password_confirmation => "test_user_password"
       })
-    require 'debugger';debugger
     assert_not_nil assigns(:user)        
     assert engine.running_async
     assert_kind_of WLRunner, engine
@@ -75,7 +74,28 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     assert_equal(DescribedRule.all.empty?,false)
     assert_equal(Picture.all.empty?,false)
     assert_equal(PictureLocation.all.empty?,false)
+    
+    
+    rule_a = "rule contact@local($username,$ip,$port, $online, $email):-contact@sigmod_peer($username,$ip,$port, $online, $email);"
+    rule_b = "rule   contact@local($username,$ip,$port,$online,$email):-  contact@sigmod_peer($username,$ip  ,$port ,  $online,$email)\n;\n"
+    assert_equal(engine.parse(rule_a).first.show_wdl_format,engine.parse(rule_b).first.show_wdl_format)
 
+    saved, err = ContentHelper::add_to_described_rules(rule_b,'should not work','rule')
+    assert_equal(false,saved)
+    assert_equal(["wrapper fail to insert the rule in the webdamlog engine: exactly one intermediary collection should have been generated while splitting a non-local rule an nt 0"],err[:wdlengine])
+
+    rule_c = "rule contact@local(newcontact,localhost,10023,false,newcontact@gmail.com):-;"
+    saved, err = ContentHelper::add_to_described_rules(rule_b,'should not work','rule')
+    assert_equal(false,saved)
+    assert_not_nil err[:wdlengine]
+    
+    rule_d= "rating@local($id,3,$owner):-picture@local($_, $owner, $id,$_);"
+    saved, err = ContentHelper::add_to_described_rules(rule_b,'should work','rule')
+    assert_equal(true,saved)
+    saved, err = ContentHelper::add_to_described_rules(rule_b,'should not work','rule')
+    assert_equal(false,saved)
+    assert_equal(["wrapper fail to insert the rule in the webdamlog engine: exactly one intermediary collection should have been generated while splitting a non-local rule an nt 0"],err[:wdlengine])
+    
     # check facts has been loaded in wdl
     # assert_equal [:localtick,
       # :stdio,

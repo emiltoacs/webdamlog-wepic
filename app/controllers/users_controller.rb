@@ -52,8 +52,8 @@ class UsersController < ApplicationController
         engine = EngineHelper::WLHELPER.run_engine
         #Create described rules
         #Load file for parsing for describedRules
-        @collections = engine.start_collections
-        @rules = engine.start_rules
+        @collections = engine.bootstrap_collections
+        @rules = engine.bootstrap_rules
         @rule_load_error = false
         @collections.each do |collection|
           saved, err = ContentHelper::add_to_described_rules(collection,'bootstrap','unknown',:skip_ar_wrapper)
@@ -64,7 +64,7 @@ class UsersController < ApplicationController
           end
         end
         @rules.each do |rule|
-          saved, err = ContentHelper::add_to_described_rules(rule,'bootstrap','unknown')
+          saved, err = ContentHelper::add_to_described_rules(rule,'bootstrap','rule',:skip_ar_wrapper)
           unless saved
             logger.error err
             @user.errors.add(:wdl,err)
