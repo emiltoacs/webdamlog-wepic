@@ -7,8 +7,9 @@ class WLLauncherTest < ActionController::IntegrationTest
     ENV["USERNAME"] = "manager"
     ENV["PORT"] = "4000"
     ENV["MANAGER_PORT"] = nil
-    Conf.init({rails_env:'test', force: true })
+    Conf.init({rails_env:'test', force: true })    
     @web_port = Conf.peer['peer']['web_port']
+    @web_port ||= 4000
     @ip = Conf.peer['peer']['ip']
   end
     
@@ -23,6 +24,7 @@ class WLLauncherTest < ActionController::IntegrationTest
   def test_1_port_in_config_file_available
     ip = Conf.peer['manager']['ip']
     port = Conf.peer['manager']['manager_port']
+    port ||= 4000
     assert Network.port_available?(ip,port),
       "check your PeerProperties.config.yml file the #{ip}:#{port} port should be availaible"
     assert_equal port, Network.find_ports(ip,1,port)

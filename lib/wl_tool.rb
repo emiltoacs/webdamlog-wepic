@@ -4,7 +4,7 @@ require 'active_record'
 require './lib/wl_logger'
 require './lib/monkey_patch'
 
-module Conf  
+module Conf
   @@init = false
   @@current_env = ENV["RAILS_ENV"] || 'development'
 
