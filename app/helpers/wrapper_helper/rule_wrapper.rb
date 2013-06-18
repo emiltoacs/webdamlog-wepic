@@ -27,20 +27,20 @@ module WrapperHelper::RuleWrapper
     # Override save method of previous wrapper usually active_record_wrapper to
     # add rule into the wdl engine before chaining to active_record_wrapper save
     self.send :define_method, :save do |*args|
+      # if (self.wdlrule.include?("url2")) then require 'debugger';debugger end
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         super(:skip_ar_wrapper)
       else
         #check if the rule is valid before adding into Webdamlog
-        #require 'debugger';debugger
-        unless self.valid?
-          WLLogger.logger.error "Rule is invalid : #{self.wdlrule}"
-          errors.add(:wdlparser,"Rule is invalid : #{self.errors.messages}")
+        unless  ContentHelper::already_exists?(self.wdlrule)
+          errors.add(:exists,"Statement already exists!")
           return false
         end
         engine = self.class.engine
         ret = engine.parse(self.wdlrule)
-        if ret.is_a? WLBud::WLError
+        if ret.first.is_a? WLBud::WLError
           errors.add(:wdlparser, "wrapper fail to parse the rule: #{ret}")
+          return false
         else
           ret.each do |inst|
             if inst.is_a? WLBud::WLRule
@@ -49,8 +49,7 @@ module WrapperHelper::RuleWrapper
                 # FIXME HACKY replace of _at_by @ because of internal webdamlog
                 # format return _at_ and wdl program expect @
                 
-                wdl_string.gsub!("_at_", "@")         
-                # require 'debugger';debugger       
+                wdl_string.gsub!("_at_", "@")
                 rule_id, rule_string = engine.update_add_rule(wdl_string)
                 rule_string.gsub!("_at_", "@")
                 self.wdl_rule_id = rule_id
