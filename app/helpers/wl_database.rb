@@ -264,6 +264,19 @@ module WLDatabase
       # Create the meta data for the current database, useful on reload
       @wlmeta, relname, sch, instruction = create_model(DATABASE_META,DATABASE_META_SCHEMA)
       
+      # bind to webdamlog but not created in the bootstrap program
+      classname = "DescribedRule"
+      com = WLTool::class_exists(classname , ActiveRecord::Base)
+      if com.nil?
+        load 'described_rule.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = com
+      end
+      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
+      @relation_classes[classname].send :include, WrapperHelper::RuleWrapper
+      @relation_classes[classname].bind_wdl_relation      
+      
       # Init manually the builtins relations created when rails has parsed the
       # models. These are the relation to bind to webdalog relation that have
       # already been created in webdamlog thanks to wdl program file in bootstrap
@@ -323,19 +336,6 @@ module WLDatabase
         @relation_classes[classname] = com
       end
       @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].bind_wdl_relation
-
-      # bind to webdamlog but not created in the bootstrap program
-      classname = "DescribedRule"
-      com = WLTool::class_exists(classname , ActiveRecord::Base)
-      if com.nil?
-        load 'described_rule.rb'
-        @relation_classes[classname] = Object.const_get(classname)
-      else
-        @relation_classes[classname] = com
-      end
-      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].send :include, WrapperHelper::RuleWrapper
       @relation_classes[classname].bind_wdl_relation
 
       # The following relation are not linked to webdamlog

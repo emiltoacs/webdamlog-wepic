@@ -31,10 +31,10 @@ module WrapperHelper::RuleWrapper
         super(:skip_ar_wrapper)
       else
         #check if the rule is valid before adding into Webdamlog
-        require 'debugger';debugger 
+        #require 'debugger';debugger
         unless self.valid?
-          enginelogger.error "Rule is invalid : #{self.wdlrule}"
-          errors.add(:wdlparser,"Rule is invalid")
+          WLLogger.logger.error "Rule is invalid : #{self.wdlrule}"
+          errors.add(:wdlparser,"Rule is invalid : #{self.errors.messages}")
           return false
         end
         engine = self.class.engine
@@ -48,6 +48,7 @@ module WrapperHelper::RuleWrapper
                 wdl_string = inst.show_wdl_format
                 # FIXME HACKY replace of _at_by @ because of internal webdamlog
                 # format return _at_ and wdl program expect @
+                
                 wdl_string.gsub!("_at_", "@")                
                 rule_id, rule_string = engine.update_add_rule(wdl_string)
                 rule_string.gsub!("_at_", "@")

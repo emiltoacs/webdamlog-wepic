@@ -5,32 +5,31 @@ module ContentHelper
     if defined?(Conf)
       WLLogger.logger.debug "Query Samples for user : #{Conf.env['USERNAME']}"
       sample_content_file_name = Conf.peer['peer']['program']['query_sample']
-      if (File.exists?("#{Rails.root}/#{sample_content_file_name}"))
+      sample_content_file_name = "#{Rails.root}/#{sample_content_file_name}"
+      if (File.exists?(sample_content_file_name))
         content = YAML.load(File.open(sample_content_file_name))
         # WLLogger.logger.debug 'Reseting described rules...' if DescribedRule.delete_all       
         if content['described_rules']
           content['described_rules'].values.each do |idrule|
             saved, err = add_to_described_rules(idrule['wdlrule'],idrule['description'],idrule['role'])
             unless saved
-              raise err
+              WLLogger.logger.error err
             end 
           end
         end
       else
         error = "File #{sample_content_file_name} does not exist!"
-        WLLogger.logger.warn error
-        raise error 
+        WLLogger.logger.error error 
       end
     else
       error =  "The Conf object has not been setup!"
-      WLLogger.logger.warn error
-      raise error    
+      WLLogger.logger.error error   
     end
   end
   
-  def add_to_described_rules (rule,description,role)
+  def self.add_to_described_rules (rule,description,role,skip=nil)
       drule = DescribedRule.new(:wdlrule => rule,:description => description, :role=> role)
-      if drule.save
+      if drule.save(skip)
         WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"
         return true, {}
       else
@@ -41,5 +40,9 @@ module ContentHelper
         WLLogger.logger.warn error
         return false, drule.errors.messages
      end    
+  end
+  
+  def self.collections_same(cola, colb)
+    
   end
 end

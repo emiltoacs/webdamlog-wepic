@@ -5,7 +5,7 @@ ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
 require './lib/wl_setup'
 WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
-Conf.peer['peer']['program']['file_path'] = 'test/config/custom_bootstrap_program.wl'
+Conf.peer['peer']['program']['file_path'] = 'test/config/bootstrap_for_loading_delay_fact.wl'
 require './test/test_helper'
 
 class UserControllersTestDelayFactLoading < ActionController::TestCase
@@ -25,9 +25,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         "rating_at_test_username",
         "comment_at_test_username",
         "contact_at_test_username",
-        "describedrule_at_test_username",
-        "person_example_at_test_username",
-        "friend_example_at_test_username"],
+        "describedrule_at_test_username"],
       engine.wl_program.wlcollections.keys)
     assert_equal [:localtick,
       :stdio,
@@ -49,9 +47,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
       :rating_at_test_username,
       :comment_at_test_username,
       :contact_at_test_username,
-      :describedrule_at_test_username,
-      :person_example_at_test_username,
-      :friend_example_at_test_username], engine.tables.values.map { |coll| coll.tabname }
+      :describedrule_at_test_username], engine.tables.values.map { |coll| coll.tabname }
     assert_equal [], engine.tables[:picture_at_test_username].to_a.sort
     assert_equal [], engine.tables[:picturelocation_at_test_username].to_a.sort
     assert_equal [], engine.tables[:comment_at_test_username].to_a.sort
@@ -60,7 +56,6 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     assert_equal [], engine.tables[:person_at_test_username].to_a.sort
     assert_equal [], engine.tables[:friend_at_test_username].to_a.sort
     assert_equal ["rule contact_at_test_username($username, $peerlocation, $online, $email) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email);",
-      "rule person_example_at_test_username($id, $name) :- friend_example_at_test_username($id, $name);",
       "rule contact@local($username, $peerlocation, $online, $email):-contact@sigmod_peer($username, $peerlocation, $online, $email);"],
       engine.wl_program.rule_mapping.values.map{ |rules| rules.first.is_a?(WLBud::WLRule) ? rules.first.show_wdl_format : rules.first }
 
@@ -72,17 +67,14 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         :password => "test_user_password",
         :password_confirmation => "test_user_password"
       })
+    require 'debugger';debugger
     assert_not_nil assigns(:user)        
     assert engine.running_async
     assert_kind_of WLRunner, engine
     
-    assert_equal(Picture.all.empty?,false)
-    # assert_equal(Rating.all.empty?,false)
-    assert_equal(PictureLocation.all.empty?,false)
     assert_equal(DescribedRule.all.empty?,false)
     assert_equal(Picture.all.empty?,false)
-    
-    puts DescribedRule.all.inspect
+    assert_equal(PictureLocation.all.empty?,false)
 
     # check facts has been loaded in wdl
     # assert_equal [:localtick,
