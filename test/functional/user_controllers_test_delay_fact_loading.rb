@@ -92,10 +92,10 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     assert_equal(false,saved)
     assert_not_nil err[:wdlengine]
     
-    # rule_d= "rating@local($id,3,$owner):-picture@local($_, $owner, $id,$_);"
-    # saved, err = ContentHelper::add_to_described_rules(rule_b,'should work','rule')
-    # assert_equal(true,saved)
-    # assert_equal(true,err.empty?)
+    rule_d= "rating@local($id,3,$owner):-picture@local($_, $owner, $id,$_);"
+    saved, err = ContentHelper::add_to_described_rules(rule_b,'should work','rule')
+    assert err.empty?
+    assert_equal(true,saved)
     saved, err = ContentHelper::add_to_described_rules(rule_b,'should not work','rule')
     assert_equal(false,saved)
     assert_equal(["wrapper fail to insert the rule in the webdamlog engine: exactly one intermediary collection should have been generated while splitting a non-local rule an nt 0"],err[:wdlengine])
