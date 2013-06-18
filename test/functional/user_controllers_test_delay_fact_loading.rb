@@ -95,7 +95,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     
     # Should be working but does not
     require 'debugger';debugger
-    rule_d= "rule rating@local($id,3,$owner):-picture@local(title, $owner, $id,url2);"
+    rule_d = "rule rating@local($id,3,$owner):-picture@local(title, $owner, $id,url2);"
     saved, err = ContentHelper::add_to_described_rules(rule_d,'should work','rule')
     assert_equal(true,saved)
     saved, err = ContentHelper::add_to_described_rules(rule_d,'should not work','rule')
