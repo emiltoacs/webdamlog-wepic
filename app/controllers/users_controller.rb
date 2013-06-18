@@ -53,19 +53,24 @@ class UsersController < ApplicationController
         #Create described rules
         @collections = engine.snapshot_collections
         @rules = engine.snapshot_rules
+        @rule_load_error = false
         @collections.each do |collection|
-          drule = DescribedRule.new(:wdlrule => idrule['wdlrule'],:description => 'boostrap', :role=> idrule['role'])
-          if drule.save
-            WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"
-          else
-            error = "Rule : #{drule.description.inspect[0..9]}...[#{drule.wdlrule.inspect[0..19]}] was not saved because :"
-            drule.errors.messages.each do |msg_k,msg_v|
-              error += "\n\t#{msg_k}:#{msg_v}"
-            end
-            WLLogger.logger.error error
+          saved, err = ContentHelper::add_to_described_rules(collection,'bootstrap','unknown')
+          unless saved and !@rule_load_error
+            WLLogger.logger.error err
+            @user.errors.add(:wdl,err)
+            @rule_load_error = true
           end
         end
-        if engine.running_async
+        @rules.each do |rule|
+          saved, err = ContentHelper::add_to_described_rules(rule,'bootstrap','unknown')
+          unless saved and !@rule_load_error
+            WLLogger.logger.error err
+            @user.errors.add(:wdl,err)
+            @rule_load_error = true
+          end
+        end        
+        if engine.running_async and !@rule_load_error
           engine.load_bootstrap_fact
           db.save_facts_for_meta_data
           # TODO check if two previous are ok

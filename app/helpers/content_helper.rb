@@ -10,17 +10,10 @@ module ContentHelper
         # WLLogger.logger.debug 'Reseting described rules...' if DescribedRule.delete_all       
         if content['described_rules']
           content['described_rules'].values.each do |idrule|
-            drule = DescribedRule.new(:wdlrule => idrule['wdlrule'],:description => idrule['description'], :role=> idrule['role'])
-            if drule.save
-              WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"
-            else
-              error = "Rule : #{drule.description.inspect[0..15]}...[#{drule.wdlrule.inspect[0..40]}] was not saved because :"
-              drule.errors.messages.each do |msg_k,msg_v|
-                error += "\n\t#{msg_k}:#{msg_v}"
-              end
-              WLLogger.logger.warn error
-              raise error
-            end
+            saved, err = add_to_described_rules(idrule['wdlrule'],idrule['description'],idrule['role'])
+            unless saved
+              raise err
+            end 
           end
         end
       else
@@ -33,5 +26,20 @@ module ContentHelper
       WLLogger.logger.warn error
       raise error    
     end
+  end
+  
+  def add_to_described_rules (rule,description,role)
+      drule = DescribedRule.new(:wdlrule => rule,:description => description, :role=> role)
+      if drule.save
+        WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"
+        return true, {}
+      else
+        error = "Rule : #{drule.description.inspect[0..15]}...[#{drule.wdlrule.inspect[0..40]}] was not saved because :"
+        drule.errors.messages.each do |msg_k,msg_v|
+          error += "\n\t#{msg_k}:#{msg_v}"
+        end
+        WLLogger.logger.warn error
+        return false, drule.errors.messages
+     end    
   end
 end
