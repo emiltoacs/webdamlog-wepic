@@ -3,13 +3,12 @@
 	<a id="update_examples_button" type="submit" class="popUpButton nice-button">&nbsp+&nbsp</a>
 	<div  class="query_view">
 	<div class="update_examples">
-		<% @described_updates.each do |update| %>
+		<% @described_rules.each do |rule| %>
 		<div class="drule">
-			<a class="close" onclick="window.close_rule(<%=update.id%>);">x</a>
-			<div class="description"><%=update.description%></div>
-			<div class="id"><%=update.id%></div>
+			<div class="description"><%=rule.description%></div>
+			<div class="id"><%=rule.id%></div>
 			<div class="rule">
-				<%update.wdlrule.split(";").each do |line|%>
+				<%rule.wdlrule.split(";").each do |line|%>
 				<%= "#{line};"%> <br/>
 				<%end%>
 			</div>
