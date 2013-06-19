@@ -4,7 +4,8 @@ ENV["USERNAME"] = "wrapperruletest"
 ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
 require 'wl_tool'
-Conf.db['database']="wp_wrapperruletest"
+Conf.db['database'] = "wp_wrapperruletest"
+Conf.peer['peer']['program']['query_sample'] = 'test/config/sample_wtho_var.yml'
 require 'test/unit'
 require './lib/wl_setup'
 
@@ -45,21 +46,21 @@ class WrapperRuleTest < Test::Unit::TestCase
           "rule query1@wrapperruletest($title) :- picture@wrapperruletest($title, $_, $_, $_);",
           "rule"],
         [3,
-          "Get all pictures from all my friends",
-          "collection ext per query2@wrapperruletest(title*);",
-          "extensional"],
-        [4,
           "Get all my pictures with rating of 5",
           "collection ext per query3@wrapperruletest(title*);",
           "extensional"],
-        [5,
+        [4,
           "Get all my pictures with rating of 5",
-          "rule deleg_from_wrapperruletest_4_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@wrapperruletest($title, $contact, $id, $image_url);",
+          "rule deleg_from_wrapperruletest_3_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@wrapperruletest($title, $contact, $id, $image_url);",
           "rule"],
-        [6,
+        [5,
           "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
           "collection ext per friend@wrapperruletest(name*);",
           "extensional"],
+        [6,
+          "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
+          "rule friend@wrapperruletest($name, commenters) :- picture@wrapperruletest($_, $_, $id, $_), comment@wrapperruletest($id, $name, $_, $_);",
+          "rule"],
         [7,
           "first rule",
           "rule persontest@wrapperruletest($id, $name) :- familytest@wrapperruletest($id, $name);",

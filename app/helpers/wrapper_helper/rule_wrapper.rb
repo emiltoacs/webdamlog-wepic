@@ -36,19 +36,20 @@ module WrapperHelper::RuleWrapper
           errors.add(:exists,"Statement already exists!")
           return false
         end
-        engine = self.class.engine
-        ret = engine.parse(self.wdlrule)
-        if ret.first.is_a? WLBud::WLError
-          errors.add(:wdlparser, "wrapper fail to parse the rule: #{ret}")
-          return false
-        else
+          engine = self.class.engine
+          # FIXME maybe duplicate of validator juste above
+          ret = engine.parse(self.wdlrule)
+          if ret.is_a? WLBud::WLError
+            WLLogger.logger.error "wrapper fail to parse the rule: #{ret} in #{self.wdlrule}"
+            errors.add(:wdlparser, "wrapper fail to parse the rule: #{ret} in #{self.wdlrule}")
+            return false
+          else            
           ret.each do |inst|
             if inst.is_a? WLBud::WLRule
               begin
                 wdl_string = inst.show_wdl_format
-                # FIXME HACKY replace of _at_by @ because of internal webdamlog
-                # format return _at_ and wdl program expect @
-                
+                # FIXME HACKY replace of _at_by @ because of internal
+                # webdamlog format return _at_ and wdl program expect @                
                 wdl_string.gsub!("_at_", "@")
                 rule_id, rule_string = engine.update_add_rule(wdl_string)
                 rule_string.gsub!("_at_", "@")
@@ -57,13 +58,14 @@ module WrapperHelper::RuleWrapper
                 self.role = 'rule'
                 super()
               rescue WLBud::WLError => err
+                WLLogger.logger.error "wrapper fail to insert the rule in the webdamlog engine: #{err}"
                 errors.add(:wdlengine, "wrapper fail to insert the rule in the webdamlog engine: #{err}")
                 return false
               end
               # FIXME some temporary code to makes rules with relation works
               # ideally the rulewrapper should not do that king of stuff but
-              # delegate to a proper wrapper (maybe a relation classes wrapper)
-              # HACKY
+              # delegate to a proper wrapper (maybe a relation classes
+              # wrapper) HACKY
             elsif inst.is_a? WLBud::WLCollection
               # TODO add collection into the right model for wepic to see them
               # FIXME should be only one database but still
@@ -95,13 +97,9 @@ module WrapperHelper::RuleWrapper
               errors.add(:typing, "wrapper tried to insert a #{inst.class} into described rules is a very bad idea")
               return false
             end # if inst.is_a? WLBud::WLRule
-          end # ret.each do |inst|        
+          end # ret.each do |inst|
         end # if ret.is_a? WLError
-
       end # if args.first == :skip_ar_wrapper
-
-    end # base.send :define_method, :save
-    
-  end # self.included(base)
-  
+    end # base.send :define_method, :save    
+  end # self.included(base)  
 end # module WrapperHelper::RuleWrapper

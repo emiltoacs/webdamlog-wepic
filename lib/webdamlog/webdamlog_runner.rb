@@ -15,6 +15,7 @@ module WLRunner
   def self.create (username, pg_file, port, options={})
     klass = WLEnginePool.create username, port
     options[:port] = port
+    # FIXME Hacky way to get the rules and collections from bootstrap program
     klass.module_eval { attr_accessor :bootstrap_program}
     klass.module_eval { attr_accessor :bootstrap_collections}
     klass.module_eval { attr_accessor :bootstrap_rules}
@@ -66,7 +67,7 @@ module WLRunner
       begin
         fct, err = self.add_facts facts
       rescue WLError => e
-        err << e
+        err = e
       end
     end
     return fct, err
