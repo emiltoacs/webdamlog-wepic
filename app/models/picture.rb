@@ -72,12 +72,12 @@ class Picture < AbstractDatabase
   has_attached_file :image,
     :storage => @storage, 
     :styles => {
-    :thumb => "",
+    :thumb => "206x206#",
     :small => "500x500>"
-  }, :conver_options => {
-    :thumb => "-gravity Center -crop 206x206"
-  },
-    :url => '/:class/:id/:attachment.:extension?style=:style'
+  },#, :conver_options => {
+   # :thumb => "-gravity Center -crop 206x206"
+  #},
+   :url => '/:class/:id/:attachment.:extension?style=:style'
   
   if @storage==:database
     default_scope select_without_file_columns_for(:image)
