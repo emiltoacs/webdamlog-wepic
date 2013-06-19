@@ -36,14 +36,14 @@ module WrapperHelper::RuleWrapper
           errors.add(:exists,"Statement already exists!")
           return false
         end
-          engine = self.class.engine
-          # FIXME maybe duplicate of validator juste above
-          ret = engine.parse(self.wdlrule)
-          if ret.is_a? WLBud::WLError
-            WLLogger.logger.error "wrapper fail to parse the rule: #{ret} in #{self.wdlrule}"
-            errors.add(:wdlparser, "wrapper fail to parse the rule: #{ret} in #{self.wdlrule}")
-            return false
-          else            
+        engine = self.class.engine
+        # FIXME maybe duplicate of validator juste above
+        ret = engine.parse(self.wdlrule)
+        if ret.is_a? WLBud::WLError
+          WLLogger.logger.error "wrapper fail to parse the rule: #{ret} in #{self.wdlrule}"
+          errors.add(:wdlparser, "wrapper fail to parse the rule: #{ret} in #{self.wdlrule}")
+          return false
+        else            
           ret.each do |inst|
             if inst.is_a? WLBud::WLRule
               begin
