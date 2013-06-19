@@ -137,6 +137,19 @@ jQuery(document).ready ->
   window.close_rule = (id) ->
     remove_described_rule(id)
 
+  jQuery('.drule').each ->
+    relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1]
+    relation = relation.split("(")[0]
+    if relation
+      name = window.capitalizeFirstLetter(relation.split('@')[0])
+      location = relation.split('@')[1]
+      if location=='local' or location=='<%=Conf.env['USERNAME']%>' #if head is local
+        html = '<div class="local">local</div>'
+        jQuery(this).append(html)
+      else
+        html = '<div class="non-local">non local</div>'
+        jQuery(this).append(html)
+
   jQuery('.drule').click ->
     relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1]
     relation = relation.split("(")[0]

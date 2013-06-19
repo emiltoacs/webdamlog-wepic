@@ -2,7 +2,26 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-//Menu rules 
+//Menu rules
+
+.local {
+  position : absolute;
+  top : 0px;
+  right : 0px;
+  padding : 3px 5px;
+  z-index : 30;
+  color : green;
+}
+
+.non-local {
+  position : absolute;
+  top : 0px;
+  right : 0px;
+  padding : 3px 5px;
+  z-index : 30;
+  color : red;
+}
+
 #update_examples_menu {
   right: 12px;
 }
@@ -44,6 +63,10 @@
   position : relative;
   padding-right : 5px;
   overflow-x : hidden;
+  cursor : pointer;
+  &:hover {
+    background-color : #ccc;
+  }
 }
 
 .drule div.rule{
