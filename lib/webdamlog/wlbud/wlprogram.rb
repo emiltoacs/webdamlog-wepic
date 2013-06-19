@@ -308,14 +308,14 @@ In the string: #{line}
       to_delegate=false
 
       # Scan atoms and divide body in local and non-local
-      wlrule.body.each { |atom|
+      wlrule.body.each do |atom|
         if !to_delegate and local?(atom)
           localstack << atom
         else
           to_delegate=true
           nonlocalstack << atom
         end
-      }
+      end
       raise WLError, <<-MSG if nonlocalstack.empty?
       ERROR in rewrite : You are trying to rewrite a local rule. There may be an error in your rule filter
         MSG
