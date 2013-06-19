@@ -1,4 +1,5 @@
 # Because of the particular loading of rails made in my test I cannot load them in a test suite (or should investigate to make it possible) there is a list of the important test to run to check validity of the application
+# Please do not change existing files under test/config since most of the test relies on them
 
 Functional
     user_controller*

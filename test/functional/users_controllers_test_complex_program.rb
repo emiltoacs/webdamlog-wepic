@@ -212,12 +212,19 @@ class UsersControllersTestComplexProgram < ActionController::TestCase
         h
       }
     }
-    # REMARK if you use do end with map it returns a enumerator rather than { } return an array as expected
+    # REMARK if you use do end with map it returns a enumerator rather than { }
+    # return an array as expected
       
-    assert_equal [
-      "contact_at_test_username($username, $peerlocation, $online, $email, $facebook) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email, $facebook)",
-      "person_at_test_username($id, $name) :- friend_at_test_username($id, $name)",
-      nil],
+    assert_equal ["rule contact_at_test_username($username, $peerlocation, $online, $email) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email);",
+      "rule person_example_at_test_username($id, $name) :- friend_example_at_test_username($id, $name);",
+      nil,
+      "rule query1_at_test_username($title) :- picture_at_test_username($title, $_, $_, $_);",
+      "rule query2_at_test_username($title, $contact, $id, $image_url) :- contact_at_test_username($contact, $_, $_, $_, $_), picture_at_$contact($title, $contact, $id, $image_url);",
+      "rule query3_at_test_username($title, $contact, $id, $image_url) :- picture_at_test_username($title, $contact, $id, $image_url), rating_at_sigmod_peer($id, 5);",
+      "rule deleg_from_test_username_5_1_at_sigmod_peer($title, $contact, $id, $image_url) :- picture_at_test_username($title, $contact, $id, $image_url);",
+      nil,
+      "rule friend_at_test_username($name, commenters) :- picture_at_test_username($_, $_, $id, $_), comment_at_test_username($id, $name, $_, $_);",
+      "rule picture_at_contact($title, $contact, $id, $image_url) :- friend_at_test_username(contact, $group), friend_at_test_username($peer, $group), picture_at_$peer($title, $contact, $id, $image_url), picturelocation_at_$peer($id, \"given location\");"],
       engine.wl_program.rule_mapping.values.map{ |rules| rules.first.show_wdl_format if rules.first.is_a? WLBud::WLRule }
   end
 end
