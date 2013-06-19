@@ -8,7 +8,7 @@ current_url = location.protocol + '//' + location.host + location.pathname
 
 window.capitalizeFirstLetter = (string) ->
   if (typeof string)=='string'
-    string = String.trim(string)
+    string = jQuery.trim(string)
     string.charAt(0).toUpperCase()+string.slice(1)
   else
     string
@@ -409,12 +409,11 @@ jQuery(document).ready ->
     else
       html = '+<div id="my_pictures_menu" class="popUpMenu">'
       html += '<a type="submit" id="my_pictures_menu_close" class="button-close"></a><ul>'
-      html += '<li><a type="submit" id="upload_new_picture">Upload New Picture...</a></li><ul>'
+      html += '<li><div style="color : #666;cursor : text;">Upload New Picture...</li><ul>'
       html += '<li><a type="submit" id="upload_from_file" class="active_action">from file</a></li>'
       html += '<li><a type="submit" id="upload_from_url" class="active_action" >from URL</a></li>'
       html += '</ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      html += '<li><a type="submit" id="send-mine-to-contact">Send To...</a></li>'
       html += '</ul></div>'
       jQuery('#my_pictures_button').html(html)
       menu_open = true
@@ -461,7 +460,6 @@ jQuery(document).ready ->
       html = '+<div id="contact_pictures_menu" class="popUpMenu">'
       html += '<a type="submit" id="contact_pictures_menu_close" class="button-close"></a><ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      html += '<li><a type="submit" id="send-contact-to-contact">Send To...</a></li>'
       html += '</ul></div>'
       jQuery('#contact_pictures_button').html(html)
       menu_open = true
