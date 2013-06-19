@@ -791,7 +791,7 @@ module WLBud
     # @return [Array] rule_id, rule string to display
     def add_rule(wlpg_rule)
       rule = @wl_program.parse(wlpg_rule, true)
-      raise WLErrorProgram, "parse rule and get #{rule.class}" unless rule.is_a?(WLBud::WLRule)      
+      raise WLErrorProgram, "parse rule and get #{rule.class}" unless rule.is_a?(WLBud::WLRule)
       unless @wl_program.local?(rule)
         @wl_program.rewrite_non_local(rule)
         localcolls = @wl_program.flush_new_local_declaration
