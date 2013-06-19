@@ -27,26 +27,27 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
 
     assert_equal 4, engine.tables[:contact_at_databasemodeltest].to_a.size
 
+    array = engine.tables[:contact_at_databasemodeltest].map { |t| Hash[t.each_pair.to_a] }
+    array.each { |h| h.delete :port }
     assert_equal [{:username=>"Jules",
         :ip=>"127.0.0.1",
-        :port=>"4100",
         :online=>"false",
         :email=>"jules.testard@mail.mcgill.ca"},
       {:username=>"Julia",
         :ip=>"127.0.0.1",
-        :port=>"4150",
         :online=>"false",
         :email=>"stoyanovich@drexel.edu"},
       {:username=>"databasemodeltest",
         :ip=>"127.0.0.1",
-        :port=>"50979",
         :online=>"true",
         :email=>"none"},
-      {:username=>"name",
-        :ip=>"127.0.0.1",
-        :port=>0,
-        :online=>false,
-        :email=>"email"}], engine.tables[:contact_at_databasemodeltest].map { |t| Hash[t.each_pair.to_a] }
+      {:username=>"name", :ip=>"127.0.0.1", :online=>false, :email=>"email"}], array
+
+    assert_equal [["Jules", "127.0.0.1", false, "jules.testard@mail.mcgill.ca"],
+      ["Julia", "127.0.0.1", false, "stoyanovich@drexel.edu"],
+      ["databasemodeltest", "127.0.0.1", true, "none"],
+      ["name", "127.0.0.1", false, "email"]],
+      Contact.all.map { |ar| [ ar[:username], ar[:ip], ar[:online], ar[:email] ] }
   end
   
 end
