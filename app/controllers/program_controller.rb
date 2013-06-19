@@ -43,7 +43,7 @@ class ProgramController < ApplicationController
     if tuple.nil?
       respond_to do |format|
         format.json {render :json => {:success => false, :errors => {"tuple" => "no tuple for wdlrule_id : #{params[:id]}"}}}
-      end      
+      end
     else
       delegation = tuple.first
       delegation.accepted = true
