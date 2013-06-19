@@ -71,18 +71,21 @@ class QueryController < ApplicationController
   end # create
   
   def add_described_rule
-    drule = DescribedRule.new(:wdlrule => params[:rule],:description => params[:description], :role=> params[:role])
-    drule.save
-    saved , response = ContentHelper::add_to_described_rules(params[:rule],params[:description],:role=>params[:role])
+    # saved , response = ContentHelper::add_to_described_rules(params[:rule],params[:description],params[:role],:skip_ar_wrapper)
+    rule = params[:rule]
+    drule = DescribedRule.new(:wdlrule =>rule,:description => params[:description], :role=> params[:role])
+    saved = drule.save
+    err = drule.errors.messages
+    id = drule.id
     if saved
-      id = response
-      ContentHelper.described_rules << rule
+      #id = response
+      ContentHelper.describedRules << rule
       respond_to do |format|
         format.json {render :json => {:saved => true, :id => id}.to_json }
         format.html {redirect_to :query }
       end
     else
-      err = response
+      logger.debug "Unable to save to describe rule : #{err}"
       respond_to do |format|
         format.json {render :json => {:saved => false, :errors => err}.to_json }
         format.html {redirect_to :query, :alert => err }
