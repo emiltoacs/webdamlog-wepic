@@ -6,7 +6,7 @@ regexWS = new RegExp(' ', 'g')
 menu_open = false
 current_url = location.protocol + '//' + location.host + location.pathname
 
-capitalizeFirstLetter = (string) ->
+window.capitalizeFirstLetter = (string) ->
   if (typeof string)=='string'
     string = String.trim(string)
     string.charAt(0).toUpperCase()+string.slice(1)
