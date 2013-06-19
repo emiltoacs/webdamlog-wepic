@@ -75,7 +75,6 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     assert_equal(Picture.all.empty?,false)
     assert_equal(PictureLocation.all.empty?,false)
     
-    # #require 'debugger';debugger
     rule_a = "rule contact@local($username,$ip,$port, $online, $email):-contact@sigmod_peer($username,$ip,$port, $online, $email);"
     rule_b = "rule   contact@local($username,$ip,$port,$online,$email):-  contact@sigmod_peer($username,$ip  ,$port ,  $online,$email)\n;\n"
     assert_a = engine.parse(rule_a).first.show_wdl_format
