@@ -9,10 +9,12 @@ class QueryController < ApplicationController
   def index
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    # @described_queries = DescribedRule.where(:role=>'query')
-    # @described_query = DescribedRule.new
-    @described_updates = DescribedRule.all
-    @described_udpate = DescribedRule.new
+    @described_rules = DescribedRule.where(:role => 'rule')
+    @described_rule = DescribedRule.new
+    respond_to do |format|
+      format.json {render :json => @described_rules}
+      format.html
+    end
   end
   
   #Insert a tuple in the instance database
@@ -69,6 +71,8 @@ class QueryController < ApplicationController
   end # create
   
   def add_described_rule
+    drule = DescribedRule.new(:wdlrule => params[:rule],:description => params[:description], :role=> params[:role])
+    drule.save
     saved , response = ContentHelper::add_to_described_rules(params[:rule],params[:description],:role=>params[:role])
     if saved
       id = response
