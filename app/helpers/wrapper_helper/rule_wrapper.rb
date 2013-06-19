@@ -30,9 +30,9 @@ module WrapperHelper::RuleWrapper
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         super(:skip_ar_wrapper)
       else
-        unless self.valid?
-          WLLogger.logger.error "DescribedRule record is invalid : #{self.wdlrule}"
-          errors.add(:wdlparser,"DescribedRule record is invalid : #{self.errors.messages}")
+        #check if the rule is valid before adding into Webdamlog
+        unless  ContentHelper::already_exists?(self.wdlrule)
+          errors.add(:exists,"Statement already exists!")
           return false
         else
           engine = self.class.engine
@@ -93,7 +93,7 @@ module WrapperHelper::RuleWrapper
                   return false
                 end
               else
-                errors.add(:typing, "wrapper tried to insert a #{inst.class} into described rules is a very bad idea")
+                errors.add(:wrapper, "impossible to create model for #{inst.relname} via rule wrapper")
                 return false
               end # if inst.is_a? WLBud::WLRule
             end # ret.each do |inst|
