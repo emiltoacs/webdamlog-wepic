@@ -419,6 +419,7 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
     # Number of fields for this relation
     def arity
       if @arity.nil?
+        @arity = 0 if self.col_fields.nil?
         @arity = self.col_fields.keys.elements.size + self.col_fields.values.elements.size
       end
       return @arity
