@@ -21,13 +21,9 @@ TODOs:
 	
     change + to options
     
-    18/06:
-    make sure cannot duplicate collections and rules.
-    remove collections from update examples, query=> show result when click 
-    rename in query page : update examples => query, extensional => result.
-    remove cross in query page.
+    19/06:
+    check internal 'undefined error column names' ==> click on drule
+    check adding new drule 
     check error in assets in production.
-    crop images.
     exchange images.
-    check safari pop ups.
     
