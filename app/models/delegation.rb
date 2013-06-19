@@ -1,7 +1,7 @@
 require 'wl_tool'
 
 class Delegation < AbstractDatabase
-  attr_accessible :wdlrule, :wdl_rule_id,:accepted
+  attr_accessible :wdlrule, :wdl_rule_id, :accepted
   
   def self.setup
     unless @setup_done
