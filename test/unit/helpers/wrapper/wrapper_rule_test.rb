@@ -6,6 +6,7 @@ ENV["MANAGER_PORT"] = nil
 require 'wl_tool'
 Conf.db['database'] = "wp_wrapperruletest"
 Conf.peer['peer']['program']['query_sample'] = 'test/config/sample_wtho_var.yml'
+Conf.peer['peer']['program']['file_path'] = 'test/config/bootstrap_for_wrapper_rule_test.wl'
 require 'test/unit'
 require './lib/wl_setup'
 
