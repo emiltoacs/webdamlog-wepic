@@ -275,7 +275,7 @@ module WLDatabase
       end
       @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
       @relation_classes[classname].send :include, WrapperHelper::RuleWrapper
-      @relation_classes[classname].bind_wdl_relation      
+      @relation_classes[classname].bind_wdl_relation
       
       # Init manually the builtins relations created when rails has parsed the
       # models. These are the relation to bind to webdalog relation that have
