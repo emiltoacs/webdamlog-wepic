@@ -553,6 +553,9 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
     def variable?
       true
     end
+    def anonymous?
+      self.terminal? and self == '$_' ? true : false
+  end
   end
 
   # WebdamLog Atom, element of a WLrule: rrelation@rpeer(rfields)

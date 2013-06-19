@@ -29,15 +29,32 @@ class WrapperRuleTest < Test::Unit::TestCase
     # test
     klassperson, relname, sch, instruction = db.create_model("persontest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassperson
-    assert_equal "persontest_at_wrapperruletest", klassperson.wdl_tabname
+    assert_equal "persontest_at_wrapperruletest", klassperson.wdl_table_name
     klassfriend, relname, sch, instruction = db.create_model("familytest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassfriend
-    assert_equal "familytest_at_wrapperruletest", klassfriend.wdl_tabname
+    assert_equal "familytest_at_wrapperruletest", klassfriend.wdl_table_name
     DescribedRule.new(
       description: "first rule",
       wdlrule: "rule persontest@local($id,$name) :- familytest@local($id,$name);",
       role: "rule" ).save
+    # check wrappers binding
+    assert engine.tables.keys.include? :friend_test_at_wrapperruletest
+    assert_equal [["comment_at_wrapperruletest", "Comment"],
+      ["contact_at_wrapperruletest", "Contact"],
+      ["describedrule_at_wrapperruletest", "DescribedRule"],
+      ["familytest_at_wrapperruletest", "Familytest"],
+      ["friend_at_wrapperruletest", "Friend"],
+      ["persontest_at_wrapperruletest", "Persontest"],
+      ["picture_at_wrapperruletest", "Picture"],
+      ["picturelocation_at_wrapperruletest", "PictureLocation"],
+      ["query1_at_wrapperruletest", "Query1"],
+      ["query3_at_wrapperruletest", "Query3"],
+      ["rating_at_wrapperruletest", "Rating"]], helper.wdl_tables_binding.sort    
+
+    # Engine should have the right collections and facts
     
+
+    # DescribedRule should contains collections and facts
     assert_equal([[1,
           "Get all the titles for my pictures",
           "collection ext per query1@wrapperruletest(title*);",
@@ -52,7 +69,7 @@ class WrapperRuleTest < Test::Unit::TestCase
           "extensional"],
         [4,
           "Get all my pictures with rating of 5",
-          "rule deleg_from_wrapperruletest_3_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@wrapperruletest($title, $contact, $id, $image_url);",
+          "rule deleg_from_wrapperruletest_4_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@wrapperruletest($title, $contact, $id, $image_url);",
           "rule"],
         [5,
           "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
@@ -67,6 +84,5 @@ class WrapperRuleTest < Test::Unit::TestCase
           "rule persontest@wrapperruletest($id, $name) :- familytest@wrapperruletest($id, $name);",
           "rule"]],
       DescribedRule.all.map { |tup| [tup[:id], tup[:description], tup[:wdlrule], tup[:role] ] })
-  end
-  
+  end  
 end
