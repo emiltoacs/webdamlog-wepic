@@ -455,7 +455,7 @@ In the string: #{line}
             else
               str_res << " && "
             end
-            str_res << "#{wlrule.dic_relation_name[relation_position]}.#{attribute_position}==#{quotes(key)}"
+            str_res << "#{wlrule.dic_relation_name[relation_position]}.#{attribute_position}==#{quote_string(key)}"
           end
         end
         unless wlrule.dic_wlconst.empty?
@@ -645,7 +645,7 @@ In the string: #{line}
       fields = wlrule.head.fields
       fields.each_with_index do |f,i|
         if f.variable?
-          var = f.text_value
+          var = f.token_text_value
           if wlrule.dic_wlvar.has_key?(var)
             relation , attribute = wlrule.dic_wlvar.fetch(var).first.split('.')
             str << "#{WLBud::WLProgram.get_bud_var_by_pos(relation)}[#{attribute}], "
@@ -659,7 +659,7 @@ In the string: #{line}
             end
           end
         else
-          str << "#{quotes(f)}, "
+          str << "#{quote_string(f.token_text_value)}, "
         end
       end
       str.slice!(-2..-1) unless fields.empty?
@@ -926,13 +926,8 @@ In the string: #{line}
     end
 
     # Add quotes around s if it is a string
-    #
-    def quotes(s)
-      if s.is_a?(String)
-        return "\'#{s}\'"
-      else
-        return s.to_s
-      end
+    def quote_string(s)
+      s.is_a?(String) ? "\'#{s}\'" : s.to_s
     end
 
     # Tools for WLprogram This tool function checks if a table includes an
