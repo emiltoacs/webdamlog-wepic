@@ -38,7 +38,6 @@ class WrapperRuleTest < Test::Unit::TestCase
       wdlrule: "rule persontest@local($id,$name) :- familytest@local($id,$name);",
       role: "rule" ).save
     # check wrappers binding
-    assert engine.tables.keys.include? :friend_test_at_wrapperruletest
     assert_equal [["comment_at_wrapperruletest", "Comment"],
       ["contact_at_wrapperruletest", "Contact"],
       ["describedrule_at_wrapperruletest", "DescribedRule"],
@@ -51,10 +50,24 @@ class WrapperRuleTest < Test::Unit::TestCase
       ["query3_at_wrapperruletest", "Query3"],
       ["rating_at_wrapperruletest", "Rating"]], helper.wdl_tables_binding.sort    
 
-    # Engine should have the right collections and facts
-    
+    # Engine should have the right list of rules
+    assert_equal({1=>
+        "rule contact_at_wrapperruletest($username, $ip, $port, $online, $email) :- contact_at_sigmod_peer($username, $ip, $port, $online, $email);",
+      2=>
+        "rule comment_at_wrapperruletest(\" \", $ip, $port, \" \") :- contact_at_wrapperruletest($username, $ip, $port, $online, $email);",
+      3=>
+        "rule query1_at_wrapperruletest($title) :- picture_at_wrapperruletest($title, $_, $_, $_);",
+      4=>
+        "rule query3_at_wrapperruletest($title, $contact, $id, $image_url) :- picture_at_wrapperruletest($title, $contact, $id, $image_url), rating_at_sigmod_peer($id, 5);",
+      5=>
+        "rule deleg_from_wrapperruletest_4_1_at_sigmod_peer($title, $contact, $id, $image_url) :- picture_at_wrapperruletest($title, $contact, $id, $image_url);",
+      6=>
+        "rule friend_at_wrapperruletest($name, commenters) :- picture_at_wrapperruletest($_, $_, $id, $_), comment_at_wrapperruletest($id, $name, $_, $_);",
+      7=>
+        "rule persontest_at_wrapperruletest($id, $name) :- familytest_at_wrapperruletest($id, $name);"}, engine.snapshot_rules)
 
     # DescribedRule should contains collections and facts
+    # FIXME comment :- contact ie. rule 2 is not in dexcribed rule
     assert_equal([[1,
           "Get all the titles for my pictures",
           "collection ext per query1@wrapperruletest(title*);",
@@ -84,5 +97,5 @@ class WrapperRuleTest < Test::Unit::TestCase
           "rule persontest@wrapperruletest($id, $name) :- familytest@wrapperruletest($id, $name);",
           "rule"]],
       DescribedRule.all.map { |tup| [tup[:id], tup[:description], tup[:wdlrule], tup[:role] ] })
-  end  
+  end
 end
