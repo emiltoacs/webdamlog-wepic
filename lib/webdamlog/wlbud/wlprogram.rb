@@ -644,16 +644,19 @@ In the string: #{line}
       # add the list of variable and constant that should be projected
       fields = wlrule.head.fields
       fields.each_with_index do |f,i|
-        # treat as a constant or a variable
-        #unless f.include?('$')  #for constant
         if f.variable?
           var = f.text_value
           if wlrule.dic_wlvar.has_key?(var)
             relation , attribute = wlrule.dic_wlvar.fetch(var).first.split('.')
             str << "#{WLBud::WLProgram.get_bud_var_by_pos(relation)}[#{attribute}], "
           else
-            raise( WLErrorGrammarParsing,
-              "In rule "+wlrule.text_value+" #{f} is present in the head but not in the body. This is not WebdamLog syntax." )
+            if var.anonymous?
+              raise(WLErrorGrammarParsing,
+                "Anonymous variable in the head not allowed in " + wlrule.text_value)
+            else
+              raise(WLErrorGrammarParsing,
+                "In rule "+wlrule.text_value+" #{var} is present in the head but not in the body. This is not WebdamLog syntax.")
+            end
           end
         else
           str << "#{quotes(f)}, "
