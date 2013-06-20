@@ -89,7 +89,6 @@ window.accept = (id) ->
   accept_delegation(id)
 
 jQuery(document).ready ->
-  
   jQuery('#program_button').click ->
     if menu_open
       menu_open = false
