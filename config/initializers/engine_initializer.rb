@@ -1,4 +1,4 @@
-require 'engine_helper'
+require 'webdamlog_wrapper/engine_helper'
 
 module EngineHelper
 

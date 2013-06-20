@@ -138,5 +138,5 @@ class Picture < AbstractDatabase
     include WrapperHelper::ActiveRecordWrapper
     include WrapperHelper::PictureWrapper
     bind_wdl_relation
-  end  
+  end
 end

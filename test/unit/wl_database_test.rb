@@ -4,7 +4,6 @@
 # regenerated from scratch
 require 'test/unit'
 require 'wl_tool'
-require File.expand_path('../../../app/helpers/wl_database', __FILE__) #require 'wl_database'
 
 # This class is meant to test and explain the database API to be used by the
 # rails controllers and WebdamLog. The suppress warning messages are used to
