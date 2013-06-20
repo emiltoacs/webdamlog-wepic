@@ -7,7 +7,7 @@ class Picture < AbstractDatabase
       attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url
       validates :title, :presence => true
       validates :owner, :presence => true
-      before_create :create_defaults
+      after_create :create_defaults
       before_validation :default_values
       before_validation :download_image, :if => :image_url_provided?
       connection.create_table 'pictures', :force => true do |t|
@@ -90,9 +90,11 @@ class Picture < AbstractDatabase
   end
   
   def create_defaults
-    # #TODO replace by better thing #self.image_url = self.image_file_name
-    # unless self.image_url
-    self.image_url = image.url    
+    unless self.image_url
+      config = Conf.peer['peer']
+      url = "#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{image.url}"
+      update_attribute(:image_url,url) #Warning! bypasses validations.
+    end  
   end
   
   # private
@@ -132,8 +134,9 @@ class Picture < AbstractDatabase
     io.original_filename.blank? ? nil : io
   rescue # catch url errors with validations instead of exceptions (Errno::ENOENT, OpenURI::HTTPError, etc...)
   end
-  
-  include WrapperHelper::ActiveRecordWrapper
-  include WrapperHelper::PictureWrapper
-  bind_wdl_relation  
+  unless Conf.env['USERNAME'].downcase == 'manager'
+    include WrapperHelper::ActiveRecordWrapper
+    include WrapperHelper::PictureWrapper
+    bind_wdl_relation
+  end  
 end

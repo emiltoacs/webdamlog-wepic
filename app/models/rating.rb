@@ -42,6 +42,8 @@ class Rating < AbstractDatabase
   end
   
   setup
-  include WrapperHelper::ActiveRecordWrapper
-  bind_wdl_relation
+  unless Conf.env['USERNAME'].downcase == 'manager'
+    include WrapperHelper::ActiveRecordWrapper
+    bind_wdl_relation
+  end
 end
