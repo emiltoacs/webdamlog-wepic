@@ -7,6 +7,7 @@
 
 jQuery.noConflict()
 current_url = location.protocol + '//' + location.host + location.pathname
+username = null
 
 print_hash = (data) ->
   str = ""
@@ -111,11 +112,11 @@ remove_described_rule = (id) ->
       if data.saved
         jQuery('.id:contains("'+String(id)+'")').parent().remove()
 
-local = (relation) ->
+local = (relation,username) ->
     if relation
       name = window.capitalizeFirstLetter(relation.split('@')[0])
       location = relation.split('@')[1]
-      if location=='local' or location=='<%=Conf.peer['peer']['username']%>' #if head is local 
+      if location=='local' or location==username #if head is local 
         true
       else
         false
@@ -148,23 +149,30 @@ jQuery(document).ready ->
     add_described_rule(rule,desc,'update')
   window.close_rule = (id) ->
     remove_described_rule(id)
-
-  jQuery('.drule').each ->
-    relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
-    if local(relation)
-      html = '<div class="local">local</div>'
-      jQuery(this).append(html)
-    else
-      html = '<div class="non-local">non local</div>'
-      jQuery(this).append(html)
-
-  jQuery('.drule').click ->
-    relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
-    name = window.capitalizeFirstLetter(relation.split('@')[0])
-    if local(relation)
-      jQuery('#relation_extensional').val(name).attr('selected',true).change()
-    else
-      alert(display_error('You should only click on local rules'))
+  
+  #Manage local non local determination
+  jQuery.ajax
+    'url' : current_url + '/username'
+    'data' : null
+    'datatype' : 'json'
+    'success' : (data) ->
+      username = data.username
+      jQuery('.drule').each ->
+        relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+        if local(relation,username)
+          html = '<div class="local">local</div>'
+          jQuery(this).append(html)
+        else
+          html = '<div class="non-local">non local</div>'
+          jQuery(this).append(html)
+    
+      jQuery('.drule').click ->
+        relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+        name = window.capitalizeFirstLetter(relation.split('@')[0])
+        if local(relation,username)
+          jQuery('#relation_extensional').val(name).attr('selected',true).change()
+        else
+          alert(display_error('You should only click on local rules'))
     
   jQuery('#update_examples_button').click ->
     if menu_open
