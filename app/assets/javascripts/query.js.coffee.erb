@@ -82,6 +82,11 @@ add_described_rule = (rule,description,type) ->
     'success' : (data) ->
       if data.saved
         html = '<div class="drule">'
+        relation = rule.split(" ")[1].split("(")[0]
+        if local(relation)
+          html += '<div class="local">local</div>'
+        else
+          html += '<div class="non-local">non local</div>'
         html += '<div class="description">' + description+ '</div>'
         html += '<div class="id">'+data.id+'</div>'
         html += '<div class="rule">' + rule + '</div>'
@@ -108,6 +113,16 @@ remove_described_rule = (id) ->
 
 change_to_relation = (name) ->
   jQuery()
+
+local = (relation) ->
+    if relation
+      name = window.capitalizeFirstLetter(relation.split('@')[0])
+      location = relation.split('@')[1]
+      if location=='local' or location=='<%=ENV['USERNAME']%>' #if head is local 
+        true
+      else
+        false
+
 
 window.relation_refresh = (type)->
   relation = jQuery('#relation_'+type+' option:selected').html()
@@ -138,29 +153,20 @@ jQuery(document).ready ->
     remove_described_rule(id)
 
   jQuery('.drule').each ->
-    relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1]
-    relation = relation.split("(")[0]
-    if relation
-      name = window.capitalizeFirstLetter(relation.split('@')[0])
-      location = relation.split('@')[1]
-      if location=='local' or location=='<%=ENV['USERNAME']%>' #if head is local
-        html = '<div class="local">local</div>'
-        jQuery(this).append(html)
-      else
-        html = '<div class="non-local">non local</div>'
-        jQuery(this).append(html)
+    relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+    if local(relation)
+      html = '<div class="local">local</div>'
+      jQuery(this).append(html)
+    else
+      html = '<div class="non-local">non local</div>'
+      jQuery(this).append(html)
 
   jQuery('.drule').click ->
-    relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1]
-    relation = relation.split("(")[0]
-    if relation
-      name = window.capitalizeFirstLetter(relation.split('@')[0])
-      location = relation.split('@')[1]
-      if location=='local' or location=='<%=ENV['USERNAME']%>' #if head is local 
-        console.log('Switch to relation : ' + name)
-        jQuery('#relation_extensional').val(name).attr('selected',true).change()
-      else
-        alert(display_error('You should only click on local rules'))
+    relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+    if local(relation)
+      jQuery('#relation_extensional').val(name).attr('selected',true).change()
+    else
+      alert(display_error('You should only click on local rules'))
     
   jQuery('#update_examples_button').click ->
     if menu_open
