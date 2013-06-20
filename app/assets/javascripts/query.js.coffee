@@ -122,6 +122,32 @@ local = (relation,username) ->
         false
 
 
+  #Manage local non local determination
+  window.setup_query = ->
+    jQuery.ajax
+      'url' : current_url + '/username'
+      'data' : null
+      'datatype' : 'json'
+      'success' : (data) ->
+        username = data.username
+        jQuery('.drule').each ->
+          relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+          if local(relation,username)
+            html = '<div class="local">local</div>'
+            jQuery(this).append(html)
+          else
+            html = '<div class="non-local">non local</div>'
+            jQuery(this).append(html)
+      
+        jQuery('.drule').click ->
+          relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+          name = window.capitalizeFirstLetter(relation.split('@')[0])
+          if local(relation,username)
+            jQuery('#relation_extensional').val(name).attr('selected',true).change()
+          else
+            alert(display_error('You should only click on local rules'))
+
+
 window.relation_refresh = (type)->
   relation = jQuery('#relation_'+type+' option:selected').html()
   getRelationContents(relation,type)
@@ -149,31 +175,7 @@ jQuery(document).ready ->
     add_described_rule(rule,desc,'update')
   window.close_rule = (id) ->
     remove_described_rule(id)
-  
-  #Manage local non local determination
-  jQuery.ajax
-    'url' : current_url + '/username'
-    'data' : null
-    'datatype' : 'json'
-    'success' : (data) ->
-      username = data.username
-      jQuery('.drule').each ->
-        relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
-        if local(relation,username)
-          html = '<div class="local">local</div>'
-          jQuery(this).append(html)
-        else
-          html = '<div class="non-local">non local</div>'
-          jQuery(this).append(html)
-    
-      jQuery('.drule').click ->
-        relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
-        name = window.capitalizeFirstLetter(relation.split('@')[0])
-        if local(relation,username)
-          jQuery('#relation_extensional').val(name).attr('selected',true).change()
-        else
-          alert(display_error('You should only click on local rules'))
-    
+      
   jQuery('#update_examples_button').click ->
     if menu_open
       menu_open = false
