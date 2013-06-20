@@ -15,6 +15,7 @@ class ProgramController < ApplicationController
   
   def delegations
     @delegations = {}
+    Delegation.refresh_delegations
     Delegation.where(:accepted=>false).all.each {|delegation| @delegations[delegation.id]=delegation.wdlrule}
     respond_to do |format|
       format.json{render :json => {:has_new => true, :content => @delegations}}
