@@ -43,6 +43,7 @@ class DescribedRule < AbstractDatabase
   setup  
   
   before_validation :default_values
+  
   unless Conf.env['USERNAME'].downcase=='manager'
     include WrapperHelper::ActiveRecordWrapper
     include WrapperHelper::RuleWrapper
