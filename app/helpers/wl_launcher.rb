@@ -69,7 +69,7 @@ module WLLauncher
     if Conf.manager?
       WLLogger.logger.debug "#{new_peer_name} : #{new_peer_port}"
       if !new_peer_name.nil? and !new_peer_port.nil?
-        cmd = "rails server -p #{new_peer_port} -U #{new_peer_name} -m #{manager_waiting_port}"
+        cmd = "rails server -p #{new_peer_port} -U #{new_peer_name} -m #{manager_waiting_port} -e #{ENV['RAILS_ENV']}"
         if !directory.nil?
           if File.exists?(directory) or File.exists?( File.join(Rails.root, directory) )
             cmd << " -C #{directory}"
