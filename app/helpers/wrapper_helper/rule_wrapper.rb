@@ -89,11 +89,11 @@ module WrapperHelper::RuleWrapper
                   self.role = "extensional"
                   super()
                 else
-                  errors.add(:wrapper, "impossible to create model for #{inst.relname} via rule wrapper")
+                  errors.add(:wrapper, "impossible to create model for #{inst} via rule wrapper")
                   return false
                 end
               else
-                errors.add(:wrapper, "impossible to create model for #{inst.relname} via rule wrapper")
+                errors.add(:wrapper, "impossible to create model for #{inst} via rule wrapper")
                 return false
               end # if inst.is_a? WLBud::WLRule
             end # ret.each do |inst|
