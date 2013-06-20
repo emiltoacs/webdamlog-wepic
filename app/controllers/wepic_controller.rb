@@ -13,7 +13,7 @@ class WepicController < ApplicationController
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
       @pictures = Picture.where(:owner => Conf.env['USERNAME'])
-      Picture.where(:owner => 'local').each {|pic| @pictures << pic}
+      # Picture.where(:owner => 'local').each {|pic| @pictures << pic}
       if sorting_order=='desc'
         @pictures.sort! {|a,b| b.send(order_criteria.to_sym) <=> a.send(order_criteria.to_sym)}
       else
