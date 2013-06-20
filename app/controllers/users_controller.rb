@@ -101,7 +101,6 @@ class UsersController < ApplicationController
         end
       end
     rescue => error
-      require 'debugger';debugger
       flash[:alert] ="#{error.message}"
       respond_to do |format|
         format.html { render :action => "new" }
