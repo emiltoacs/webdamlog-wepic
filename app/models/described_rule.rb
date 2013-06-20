@@ -28,6 +28,7 @@ class DescribedRule < AbstractDatabase
   
   def default_values
     self.description = "No description" unless self.description
+    return true
   end
 
   # schema used by wdl
