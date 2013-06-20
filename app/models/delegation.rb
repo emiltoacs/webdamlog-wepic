@@ -37,6 +37,7 @@ class Delegation < AbstractDatabase
   
   def default_values
     self.accepted = false unless self.accepted
+    return true
   end
   
   setup  
@@ -47,12 +48,7 @@ class Delegation < AbstractDatabase
   # wedamlog link
   def self.refresh_delegations
     new_delegations = EngineHelper::WLENGINE.flush_delegations
-    require 'debugger' ; debugger 
     new_delegations.each { |peer, value| value.each { |tmst, value| value.each { |rules| rules.each { |rule|
-          t = self.new(:peername => peer.to_s, :timestamp => tmst, :wdlrule => rule)
-          t.save
-          p t
-          p t.errors.messages
-        }}}}
+          self.new(:peername => peer.to_s, :timestamp => tmst, :wdlrule => rule).save }}}}
   end
 end
