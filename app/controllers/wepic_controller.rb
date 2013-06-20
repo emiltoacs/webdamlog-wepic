@@ -42,7 +42,7 @@ class WepicController < ApplicationController
         picture.title = params[:title]
         picture.save
       end
-      rating = if params[:rating]
+      rating = if params[:rating] and !params[:rating].empty?
         tuple = Rating.where(:owner => Conf.env['USERNAME'],:_id => picture._id)
         tuple = unless tuple.nil? or tuple.empty?  then tuple.first else Rating.new(:_id => picture._id, :owner => Conf.env['USERNAME']) end
         tuple.rating = params[:rating].to_i
@@ -51,7 +51,7 @@ class WepicController < ApplicationController
       else
         Rating.new
       end
-      location = if params[:location]
+      location = if params[:location] and !params[:location].empty?
         tuple = PictureLocation.where(:_id => picture._id)
         tuple = unless tuple.nil? or tuple.empty? then tuple.first else PictureLocation.new(:_id => picture._id) end
         tuple.location = params[:location]
