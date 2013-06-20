@@ -7,7 +7,7 @@ class Picture < AbstractDatabase
       attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url
       validates :title, :presence => true
       validates :owner, :presence => true
-      after_create :create_defaults
+      after_save :create_defaults
       before_validation :default_values
       before_validation :download_image, :if => :image_url_provided?
       connection.create_table 'pictures', :force => true do |t|

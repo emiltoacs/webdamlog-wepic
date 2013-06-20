@@ -143,7 +143,7 @@ jQuery(document).ready ->
     if relation
       name = window.capitalizeFirstLetter(relation.split('@')[0])
       location = relation.split('@')[1]
-      if location=='local' or location=='<%=Conf.env['USERNAME']%>' #if head is local
+      if location=='local' or location=='<%=ENV['USERNAME']%>' #if head is local
         html = '<div class="local">local</div>'
         jQuery(this).append(html)
       else
@@ -156,7 +156,7 @@ jQuery(document).ready ->
     if relation
       name = window.capitalizeFirstLetter(relation.split('@')[0])
       location = relation.split('@')[1]
-      if location=='local' or location=='<%=Conf.env['USERNAME']%>' #if head is local 
+      if location=='local' or location=='<%=ENV['USERNAME']%>' #if head is local 
         console.log('Switch to relation : ' + name)
         jQuery('#relation_extensional').val(name).attr('selected',true).change()
       else
