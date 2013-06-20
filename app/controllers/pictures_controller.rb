@@ -15,7 +15,7 @@ class PicturesController < WepicController
       # url = "#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{@picture.image.url}"
       # @picture.update_attribute(:image_url,url)
     # end
-    location = if params[:location] 
+    location = if params[:location] and !params[:location].empty?
       tuple = PictureLocation.new(:_id => @picture._id,:location => params[:location])
       tuple.save
       tuple
