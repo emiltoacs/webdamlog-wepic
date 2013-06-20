@@ -115,7 +115,7 @@ local = (relation) ->
     if relation
       name = window.capitalizeFirstLetter(relation.split('@')[0])
       location = relation.split('@')[1]
-      if location=='local' or location=='<%=ENV['USERNAME']%>' #if head is local 
+      if location=='local' or location=='<%=Conf.peer['peer']['username']%>' #if head is local 
         true
       else
         false
