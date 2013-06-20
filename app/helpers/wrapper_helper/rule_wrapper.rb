@@ -27,7 +27,6 @@ module WrapperHelper::RuleWrapper
     # Override save method of previous wrapper usually active_record_wrapper to
     # add rule into the wdl engine before chaining to active_record_wrapper save
     self.send :define_method, :save do |*args|
-      puts "!!!In rule wrapper save!!"
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         super(:skip_ar_wrapper)
       else

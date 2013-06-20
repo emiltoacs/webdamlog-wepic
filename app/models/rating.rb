@@ -41,5 +41,7 @@ class Rating < AbstractDatabase
      }
   end
   
-  setup  
+  setup
+  include WrapperHelper::ActiveRecordWrapper
+  bind_wdl_relation
 end
