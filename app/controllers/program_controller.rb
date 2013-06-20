@@ -15,7 +15,7 @@ class ProgramController < ApplicationController
   
   def delegations
     @delegations = {}
-    Delegation.where(:accepted=>false).all.each {|delegation| @delegations[delegation.wdlrule_id]=delegation.wdlrule}
+    Delegation.where(:accepted=>false).all.each {|delegation| @delegations[delegation.id]=delegation.wdlrule}
     respond_to do |format|
       format.json{render :json => {:has_new => true, :content => @delegations}}
     end
@@ -23,7 +23,7 @@ class ProgramController < ApplicationController
   
   #Delegation tuple is removed if the rule was rejected.
   def reject
-    tuple = Delegation.find(:first, :wdlrule_id => params[:id])
+    tuple = Delegation.find(params[:id])
     if tuple.nil?
       respond_to do |format|
         format.json {render :json => {:success => false, :errors => {"tuple" => "no tuple for wdlrule_id : #{params[:id]}"}}}
@@ -39,7 +39,7 @@ class ProgramController < ApplicationController
   
   #Delegation is tagged as accepted if it is accepted.
   def accept
-    tuple = Delegation.find(:first, :wdlrule_id => params[:id])
+    tuple = Delegation.find(params[:id])
     if tuple.nil?
       respond_to do |format|
         format.json {render :json => {:success => false, :errors => {"tuple" => "no tuple for wdlrule_id : #{params[:id]}"}}}
