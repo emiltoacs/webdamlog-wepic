@@ -7,7 +7,6 @@ class Picture < AbstractDatabase
       attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url
       validates :title, :presence => true
       validates :owner, :presence => true
-      after_save :create_defaults
       before_validation :default_values
       before_validation :download_image, :if => :image_url_provided?
       connection.create_table 'pictures', :force => true do |t|
@@ -74,9 +73,7 @@ class Picture < AbstractDatabase
     :styles => {
     :thumb => "206x206#",
     :small => "500x500>"
-  },#, :conver_options => {
-   # :thumb => "-gravity Center -crop 206x206"
-  #},
+  },
    :url => '/:class/:id/:attachment.:extension?style=:style'
   
   if @storage==:database
@@ -84,17 +81,9 @@ class Picture < AbstractDatabase
   end
   
   def default_values
-    # puts caller.join("\n")[0..20]
     self._id = rand(0xFFFFFF) unless self._id
     self.date = DateTime.now unless self.date
-  end
-  
-  def create_defaults
-    unless self.image_url
-      config = Conf.peer['peer']
-      url = "#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{image.url}"
-      update_attribute(:image_url,url) #Warning! bypasses validations.
-    end  
+    return true
   end
   
   # private
