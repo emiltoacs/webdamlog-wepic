@@ -74,27 +74,7 @@ class WepicController < ApplicationController
       end
     end
   end
-  
-  #Updates the rating value when modified by the user
-  #FIXME : DEPRECATED
-  def updateRating
-    ratingTuple = Picture.where(:_id => params[:_id]).first
-    if ratingTuple
-      ratingTuple.rated = params[:rating]
-    else
-      ratingTuple = Rating.new(:_id => params[:_id], :rating=>params[:rating])
-    end
-    if ratingTuple.save
-    respond_to do |format|
-      format.json {render :json => {:saved => true}.to_json }
-    end      
-    else
-    respond_to do |format|
-      format.json {render :json => {:saved => false, :errors => ratingTuple.errors}.to_json }
-    end
-    end
-  end
-  
+   
   #Get all comments after specified date (if no date specified load all comments for picture)
   def getLatestComments(args=nil)
     arguments = if args then args else params end

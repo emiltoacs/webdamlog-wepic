@@ -37,10 +37,6 @@ class Delegation < AbstractDatabase
     self.accepted = false unless self.accepted
   end
   
-  setup  
-  
-  
-  
+  setup
   before_validation :default_values
-  
 end
