@@ -9,10 +9,12 @@ class QueryController < ApplicationController
   def index
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
-    # @described_queries = DescribedRule.where(:role=>'query')
-    # @described_query = DescribedRule.new
-    @described_updates = DescribedRule.all
-    @described_udpate = DescribedRule.new
+    @described_rules = DescribedRule.where(:role => 'rule')
+    @described_rule = DescribedRule.new
+    respond_to do |format|
+      format.json {render :json => @described_rules}
+      format.html
+    end
   end
   
   #Insert a tuple in the instance database
@@ -25,19 +27,6 @@ class QueryController < ApplicationController
     else
       @relation_classes = database(Conf.env['USERNAME']).relation_classes
       rel_name = params[:relation][:name] #All relation names in the relation classes should be capitalized
-      # values = params[:values].split(";").map! { |i| WLTool::sanitize!(i) }
-      # values_hash = Hash.new
-    
-      # FIXME This temporary code takes the values inserted and matches them in
-      # order with the corresponding class schema. Ideally we would want to use
-      # the params variable to match the items directly.This requires calls to
-      # jquery to dynamically send the corresponding rows once a relation is
-      # selected.
-      # @relation_classes[rel_name].schema.keys.each_index do |i|
-        # values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
-      # end
-    
-      # WLBUDinsert
       tuple = @relation_classes[rel_name].new(params[:values])
       respond_to do |format|
         if tuple.save
@@ -66,68 +55,54 @@ class QueryController < ApplicationController
       format.html { redirect_to '/query', :notice => "Relation classes: #{@relation_classes.inspect}" }
       format.json { head :no_content }
     end    
-
-    # # field must be a valid type: http://api.rubyonrails.org/classes/ActiveRecord/ConnectionAdapters/TableDefinition.html#method-i-column
-    # type = ['string', 'text', 'integer', 'float', 'decimal', 'datetime', 'timestamp', 'time', 'date', 'binary', 'boolean']
-    # err_message = ""
-    # if col_names.size == col_types.size
-      # col_names.each_index do |i|
-        # if type.include? col_types[i]
-          # schema[col_names[i]] = col_types[i]
-        # else
-          # err_message = "type not conform, found #{col_names[i]} but expected one of #{type.inspect}"
-        # end
-      # end
-    # else
-      # err_message = "number of type and columns should be the same"
-    # end
-    # begin
-      # if err_message.empty?
-# 
-      # else
-        # raise err_message
-      # end
-    # rescue => error
-      # respond_to do |format|
-        # format.html { redirect_to '/query', :notice => "Error: #{error.to_s} : #{error.message}" }
-        # format.json { head :no_content }
-      # end
-    # else
-# 
-    # end
   end # create
   
   def add_described_rule
-    described_rule = DescribedRule.new(:wdlrule=>params[:rule],:description=>params[:description],:role=>params[:role])
-    if described_rule.save 
+    rule = params[:rule]
+    drule = DescribedRule.new(:wdlrule =>rule,:description => params[:description], :role=> params[:role])
+    saved = drule.save
+    err = drule.errors.messages
+    id = drule.id
+    if saved
+      #id = response
+      ContentHelper.describedRules << rule
       respond_to do |format|
-        format.json {render :json => {:saved => true, :id => described_rule.id}.to_json }
+        format.json {render :json => {:saved => true, :id => id}.to_json }
         format.html {redirect_to :query }
       end
     else
+      logger.debug "Unable to save to describe rule : #{err}"
       respond_to do |format|
-        format.json {render :json => {:saved => false, :errors => described_rule.errors.messages}.to_json }
-        format.html {redirect_to :query, :alert => picture.errors.messages.inspect }
+        format.json {render :json => {:saved => false, :errors => err}.to_json }
+        format.html {redirect_to :query, :alert => err }
       end
     end
   end
   
+  #Do not allow removing rules for now.
   def remove_described_rule
-    described_rule = DescribedRule.find(params[:id])
-    described_rule.destroy
-    respond_to do |format|
-      format.json {render :json => {:saved => true}.to_json }
-    end    
+    # described_rule = DescribedRule.find(params[:id])
+    # described_rule.destroy
+    # respond_to do |format|
+      # format.json {render :json => {:saved => true}.to_json }
+    # end
   end
   
   def relation
     @relation_classes = database(Conf.env['USERNAME']).relation_classes unless @relation_classes
     relation_name = params[:relation]
+    @relation_classes.keys.each {|rel| if rel.downcase==relation_name.downcase then relation_name = rel end} unless @relation_classes.include?(relation_name)
     columns = @relation_classes[relation_name].column_names.select{|col| !['id','created_at','updated_at','picture_id','image_file_name','image_file_size','image_content_type','image_updated_at','image_file','image_small_file','image_thumb_file'].include?(col)}
     content = @relation_classes[relation_name].all.map {|record| record.attributes.except('id','created_at','updated_at','picture_id','image_file_name','image_file_size','image_content_type','image_updated_at')}
     #We remove the id, created_at and updated_at fields which are not part of webdamlog, if they are present. 
     respond_to do |format|
-      format.json {render :json => [:columns=>columns,:content=>content].to_json}
+      format.json {render :json => [:sucess => true, :columns=>columns,:content=>content].to_json}
+    end
+  end
+  
+  def username
+    respond_to do |format|
+      format.json {render :json => {:username => Conf.env['USERNAME']}}
     end
   end
 

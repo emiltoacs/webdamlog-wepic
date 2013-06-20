@@ -7,7 +7,7 @@ class DescribedRule < AbstractDatabase
     unless @setup_done
       validates :wdlrule, :presence => true, :wl => true
       validates :role, :presence => true
-      validates_inclusion_of :role, :in => ['extensional','intensional','rule']
+      validates_inclusion_of :role, :in => ['extensional','intentional','rule', 'unknown']
             
       self.table_name = "describedRule"
       connection.create_table 'describedRule', :force => true do |t|
@@ -28,6 +28,7 @@ class DescribedRule < AbstractDatabase
   
   def default_values
     self.description = "No description" unless self.description
+    return true
   end
 
   # schema used by wdl
@@ -43,4 +44,9 @@ class DescribedRule < AbstractDatabase
   
   before_validation :default_values
   
+  unless Conf.env['USERNAME'].downcase=='manager'
+    include WrapperHelper::ActiveRecordWrapper
+    include WrapperHelper::RuleWrapper
+    bind_wdl_relation
+  end
 end

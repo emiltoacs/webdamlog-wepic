@@ -1,8 +1,8 @@
 <div id="extensional">
-	<h3 class="query_title">Extensional : </h3>
+	<h3 class="query_title">Relations : </h3>
 	<div class="query_view">
-		<div id="select_relation_extensional"><!-- v.is_a?(ActiveRecord::Base) -->
-			<%=select_tag 'relation_extensional' , options_for_select(@relation_classes.select{|k,v| v <= ActiveRecord::Base}.keys.each_with_index {|o,i| [o,i]}) %>
+		<div id="select_relation_extensional">
+			<%=select_tag 'relation_extensional' , options_for_select(@relation_classes.select{|k,v| v <= ActiveRecord::Base}.keys.map {|k| k.capitalize})%>
 			<input type="submit" id="refresh" value="refresh" onclick="window.relation_refresh('extensional');">
 		</div>
 		<div id="display_relation_extensional">

@@ -3,21 +3,23 @@ ENV["RAILS_ENV"] = "test"
 ENV["USERNAME"] = "test_username"
 ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
+
 require './lib/wl_setup'
 WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
-Conf.peer['peer']['program']['file_path'] = 'test/config/custom_bootstrap_program.wl'
+Conf.peer['peer']['program']['file_path'] = 'test/config/bootstrap_for_loading_delay_fact.wl'
 require './test/test_helper'
 
 class UserControllersTestDelayFactLoading < ActionController::TestCase
   tests UsersController
 
   test "2create" do
-    
+    check_webdamlog = false
     db = WLDatabase.setup_database_server
     assert_not_nil db
     engine = EngineHelper::WLENGINE
     assert_not_nil engine
-
+    
+    if check_webdamlog
     # check everything is loaded but the facts
     assert_equal({"test_username"=>"127.0.0.1:#{engine.port}", "sigmod_peer"=>"localhost:4100"}, engine.wl_program.wlpeers)
     assert_equal(["picture_at_test_username",
@@ -25,9 +27,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         "rating_at_test_username",
         "comment_at_test_username",
         "contact_at_test_username",
-        "describedrule_at_test_username",
-        "person_example_at_test_username",
-        "friend_example_at_test_username"],
+        "describedrule_at_test_username"],
       engine.wl_program.wlcollections.keys)
     assert_equal [:localtick,
       :stdio,
@@ -49,9 +49,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
       :rating_at_test_username,
       :comment_at_test_username,
       :contact_at_test_username,
-      :describedrule_at_test_username,
-      :person_example_at_test_username,
-      :friend_example_at_test_username], engine.tables.values.map { |coll| coll.tabname }
+      :describedrule_at_test_username], engine.tables.values.map { |coll| coll.tabname }
     assert_equal [], engine.tables[:picture_at_test_username].to_a.sort
     assert_equal [], engine.tables[:picturelocation_at_test_username].to_a.sort
     assert_equal [], engine.tables[:comment_at_test_username].to_a.sort
@@ -59,11 +57,10 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     assert_equal [], engine.tables[:describedrule_at_test_username].to_a.sort
     assert_equal [], engine.tables[:person_at_test_username].to_a.sort
     assert_equal [], engine.tables[:friend_at_test_username].to_a.sort
-    assert_equal ["rule contact_at_test_username($username, $peerlocation, $online, $email) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email);",
-      "rule person_example_at_test_username($id, $name) :- friend_example_at_test_username($id, $name);",
-      "rule contact@local($username, $peerlocation, $online, $email):-contact@sigmod_peer($username, $peerlocation, $online, $email);"],
+    assert_equal ["rule contact_at_test_username($username, $ip, $port, $online, $email) :- contact_at_sigmod_peer($username, $ip, $port, $online, $email);",
+      "rule contact_at_test_username($username, $ip, $port, $online, $email) :- contact_at_sigmod_peer($username, $ip, $port, $online, $email);"],
       engine.wl_program.rule_mapping.values.map{ |rules| rules.first.is_a?(WLBud::WLRule) ? rules.first.show_wdl_format : rules.first }
-
+    end
     # start engine
     post(:create,
       :user=>{
@@ -71,10 +68,14 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         :email => "test_user_email@emailprovider.dom",
         :password => "test_user_password",
         :password_confirmation => "test_user_password"
-      })
-    assert_not_nil assigns(:user)        
+      })  
+    if check_webdamlog
+    assert_not_nil assigns(:user)
     assert engine.running_async
     assert_kind_of WLRunner, engine
+    assert_equal(DescribedRule.all.empty?,false)
+    assert_equal(Picture.all.empty?,false)
+    assert_equal(PictureLocation.all.empty?,false)
 
     # check facts has been loaded in wdl
     assert_equal [:localtick,
@@ -98,70 +99,135 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
       :comment_at_test_username,
       :contact_at_test_username,
       :describedrule_at_test_username,
-      :person_example_at_test_username,
-      :friend_example_at_test_username,
       :query1_at_test_username,
       :query2_at_test_username,
       :query3_at_test_username,
-      :deleg_from_test_username_5_1_at_sigmod_peer,
+      :deleg_from_test_username_4_1_at_sigmod_peer,
       :friend_at_test_username], engine.tables.values.map { |coll| coll.tabname }
-    # FIXME remove field such as wdl_rule_id that changes at each exec
-    # assert_equal [["collection ext per friend@test_username(name*);",
-        # "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
-        # "collection",
-        # 95631990],
-      # ["collection ext per query1@test_username(title*);",
-        # "Get all the titles for my pictures",
-        # "collection",
-        # 94619500],
-      # ["collection ext per query2@test_username(title*);",
-        # "Get all pictures from all my friends",
-        # "collection",
-        # 96505140],
-      # ["collection ext per query3@test_username(title*);",
-        # "Get all my pictures with rating of 5",
-        # "collection",
-        # 98370180],
-      # ["rule deleg_from_test_username_5_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@test_username($title, $contact, $id, $image_url);",
-        # "Get all my pictures with rating of 5",
-        # "collection",
-        # 6],
-      # ["rule query1@test_username($title) :- picture@test_username($title, $_, $_, $_);",
-        # "Get all the titles for my pictures",
-        # "collection",
-        # 3]], engine.tables[:picture_at_test_username].to_a.sort.map { |t| t.to_a }
-    # assert_equal [], engine.tables[:picturelocation_at_test_username].to_a.sort.map { |t| t.to_a }
-    # assert_equal [], engine.tables[:comment_at_test_username].to_a.sort.map { |t| t.to_a }
-    # assert_equal [["Jules",
-        # "localhost:4100",
-        # "false",
-        # "jules.testard@mail.mcgill.ca",
-        # "Jules Testard"],
-      # ["Julia", "localhost:4100", "false", "stoyanovich@drexel.edu", "jstoy"]],
-      # engine.tables[:contact_at_test_username].to_a.sort.map { |t| t.to_a }
-    # assert_equal [["collection ext persistent friends@local(name*,group*);\nrule friends@local($name,commenters):- pictures@local($_,$_,$id,$_),comments@local($id,$name,$_,$_);\n",
-        # "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself."],
-      # ["collection int query1@local(title*);\nrule query1@local($title):-pictures@local($title,$_,$_,$_);\n",
-        # "Get all the titles for my pictures"],
-      # ["collection int query2@local(title*,contact*,id*,image_url*);\nrule query2@local($title, $contact, $id, $image_url):- contact@local($contact, $_, $_, $_, $_),pictures@$contact($title, $contact, $id, $image_url);\n",
-        # "Get all pictures from all my friends"],
-      # ["collection int query3@local(title*,contact*,id*,image_url*);\nrule query3@local($title,$contact,$id,$image_url):- pictures@local($title,$contact,$id,$image_url),rating@sigmod_peer($id,5);\n",
-        # "Get all my pictures with rating of 5"],
-      # ["rule pictures@contact($title, $contact, $id, $image_url):- friends@local(contact,$group),friends@local($peer,$group),pictures@$peer($title,$contact,$id,$image_url),picturelocation@$peer($id,\"given location\");    \n",
-        # "Send to contact all pictures taken last week by our common friends and me at a given location"]],
-      # engine.tables[:describedrule_at_test_username].to_a.sort.map { |t| t.to_a }
-    # assert_equal [["12345", "12346"],
-      # ["12345", "oscar"],
-      # ["12346", "12347"],
-      # ["12346", "hugo"],
-      # ["12347", "kendrick"]], engine.tables[:person_at_test_username].to_a.sort.map { |t| t.to_a }
-    # assert_equal [["12345", "12346"], ["12346", "12347"]],
-      # engine.tables[:friend_at_test_username].to_a.sort.map { |t| t.to_a }
-# 
-    # # check facts has been loaded in wepic models
-    # assert_equal ["rule contact_at_test_username($username, $peerlocation, $online, $email, $facebook) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email, $facebook);",
-      # "rule person_example_at_test_username($id, $name) :- friend_example_at_test_username($id, $name);",
-      # "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);"],
-      # Contact.all.map { |ar| [ ar[:username], ar[:peerlocation], ar[:online], ar[:email], ar[:facebook] ] }
+    # tables
+    array = engine.tables[:picture_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
+    assert_equal [{:title=>"sigmod", :owner=>"local", :_id=>"12347", :image_url=> "http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif"},
+      {:title=>"webdam", :owner=>"local", :_id=>"12348", :image_url=>"http://www.cs.tau.ac.il/workshop/modas/webdam3.png"}], array
+    array = engine.tables[:picturelocation_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
+    assert_equal [{:_id=>"12347", :location=>"Columbia"},
+      {:_id=>"12348", :location=>"Tau workshop"}], array
+    array = engine.tables[:comment_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
+    array.each{ |h| h.delete :date }
+    assert_equal [], array
+    array = engine.tables[:describedrule_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
+    array.each { |t| assert_not_nil t[:wdl_rule_id] }
+    array.each { |h| h.delete :wdl_rule_id }
+    assert_equal [{:wdlrule=>"collection ext per query1@test_username(title*);",
+        :description=>"Get all the titles for my pictures",
+        :role=>"extensional"},
+      {:wdlrule=>
+          "rule query1@test_username($title) :- picture@test_username($title, $_, $_, $_);",
+        :description=>"Get all the titles for my pictures",
+        :role=>"rule"},
+      {:wdlrule=>"collection ext per query2@test_username(title*);",
+        :description=>"Get all pictures from all my friend",
+        :role=>"extensional"},
+      {:wdlrule=>"collection ext per query3@test_username(title*);",
+        :description=>"Get all my pictures with rating of 5",
+        :role=>"extensional"},
+      {:wdlrule=>
+          "rule deleg_from_test_username_4_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@test_username($title, $contact, $id, $image_url);",
+        :description=>"Get all my pictures with rating of 5",
+        :role=>"rule"},
+      {:wdlrule=>"collection ext per friend@test_username(name*);",
+        :description=>
+          "Create a friend relations and insert all contacts who commented on one of my pictures. Finally include myself.",
+        :role=>"extensional"},
+      {:wdlrule=>
+          "rule friend@test_username($name, commenters) :- picture@test_username($_, $_, $id, $_), comment@test_username($id, $name, $_, $_);",
+        :description=>
+          "Create a friend relations and insert all contacts who commented on one of my pictures. Finally include myself.",
+        :role=>"rule"}], array
+    array = engine.tables[:contact_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
+    array.each { |t| assert_not_nil t[:port] }
+    array.each { |h| h.delete :port }    
+    assert_equal [{:username=>"test_username",
+        :ip=>"127.0.0.1",
+        :online=>"true",
+        :email=>"none"}], array
+
+    # check facts has been loaded in wepic models
+    assert_equal [["test_username", "127.0.0.1", true, "none"]],
+      Contact.all.map { |ar| [ ar[:username], ar[:ip], ar[:online], ar[:email] ] }
+    assert_equal [["\ncollection ext persistent picture@local(title*, owner*, _id*, image_url*);",
+        "bootstrap",
+        "unknown"],
+      ["\ncollection ext persistent rating@local(_id*, rating*, owner*);",
+        "bootstrap",
+        "unknown"],
+      ["\ncollection ext persistent comment@local(_id*,author*,text*,date*);",
+        "bootstrap",
+        "unknown"],
+      ["\ncollection ext persistent contact@local(username*, ip*, port*, online*, email*);",
+        "bootstrap",
+        "unknown"],
+      ["\ncollection ext persistent describedrule@local(wdlrule*, description*, role*, wdl_rule_id*);",
+        "bootstrap",
+        "unknown"],
+      ["\nrule contact@local($username, $ip, $port, $online, $email):-contact@sigmod_peer($username, $ip, $port, $online, $email);",
+        "bootstrap",
+        "rule"],
+      ["collection ext per query1@test_username(title*);",
+        "Get all the titles for my pictures",
+        "extensional"],
+      ["rule query1@test_username($title) :- picture@test_username($title, $_, $_, $_);",
+        "Get all the titles for my pictures",
+        "rule"],
+      ["collection ext per query2@test_username(title*);",
+        "Get all pictures from all my friend",
+        "extensional"],
+      ["collection ext per query3@test_username(title*);",
+        "Get all my pictures with rating of 5",
+        "extensional"],
+      ["rule deleg_from_test_username_4_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@test_username($title, $contact, $id, $image_url);",
+        "Get all my pictures with rating of 5",
+        "rule"],
+      ["collection ext per friend@test_username(name*);",
+        "Create a friend relations and insert all contacts who commented on one of my pictures. Finally include myself.",
+        "extensional"],
+      ["rule friend@test_username($name, commenters) :- picture@test_username($_, $_, $id, $_), comment@test_username($id, $name, $_, $_);",
+        "Create a friend relations and insert all contacts who commented on one of my pictures. Finally include myself.",
+        "rule"]],
+      DescribedRule.all.map { |ar| [ ar[:wdlrule], ar[:description], ar[:role] ] }
+    assert_equal [["sigmod",
+        "local",
+        12347,
+        "http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif"],
+      ["webdam",
+        "local",
+        12348,
+        "http://www.cs.tau.ac.il/workshop/modas/webdam3.png"]],
+      Picture.all.map { |ar| [ ar[:title], ar[:owner], ar[:_id], ar[:image_url] ] }
+    end
+    
+    # jules
+    rule_a = "rule contact@local($username,$ip,$port, $online, $email):-contact@sigmod_peer($username,$ip,$port, $online, $email);"
+    rule_b = "rule   contact@local($username,$ip,$port,$online,$email):-  contact@sigmod_peer($username,$ip  ,$port ,  $online,$email)\n;\n"
+    assert_a = engine.parse(rule_a).first.show_wdl_format
+    assert_b = engine.parse(rule_b).first.show_wdl_format
+    assert_equal(assert_a,assert_b)
+    # #The rule b is the same as one added to the program by default. This rule,
+    # although syntactically correct, #should not pass.
+    saved, err = ContentHelper::add_to_described_rules(rule_b,'should not work','rule')
+    assert_equal(false,saved)
+    # assert_not_nil(err[:exists])
+
+    # FIXME : Should work but need bug fix in Webdamlog parser. rule_c = "rule contact@local(newcontact,localhost,10023,false,\"newcontact@gmail.com\"):-;"
+    # saved, err = ContentHelper::add_to_described_rules(rule_c,'should
+    # work','rule') assert_equal(true,saved) puts err
+    
+    # Should be working but does not
+    rule_d = "rule rating@local($id, 3, $owner):-picture@local(title, $owner, $id, url2);"
+    saved, err = ContentHelper::add_to_described_rules(rule_d,'should work','rule')
+    assert_equal(true,saved)
+    saved, err = ContentHelper::add_to_described_rules(rule_d,'should not work','rule')
+    assert_equal(false,saved)
+    # assert_not_nil(err[:exists])
+
   end
 end

@@ -264,6 +264,16 @@ module WLDatabase
       # Create the meta data for the current database, useful on reload
       @wlmeta, relname, sch, instruction = create_model(DATABASE_META,DATABASE_META_SCHEMA)
       
+      # bind to webdamlog but not created in the bootstrap program
+      classname = "DescribedRule"
+      com = WLTool::class_exists(classname , ActiveRecord::Base)
+      if com.nil?
+        load 'described_rule.rb'
+        @relation_classes[classname] = Object.const_get(classname)
+      else
+        @relation_classes[classname] = com
+      end
+      
       # Init manually the builtins relations created when rails has parsed the
       # models. These are the relation to bind to webdalog relation that have
       # already been created in webdamlog thanks to wdl program file in bootstrap
@@ -275,9 +285,6 @@ module WLDatabase
       else
         @relation_classes[classname] = pict
       end
-      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].send :include, WrapperHelper::PictureWrapper
-      @relation_classes[classname].bind_wdl_relation
       
       classname = "Contact"
       conn = WLTool::class_exists(classname, ActiveRecord::Base)
@@ -288,9 +295,6 @@ module WLDatabase
         @relation_classes[classname] = conn
       end
       # wdl linking
-      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].send :include, WrapperHelper::ContactWrapper
-      @relation_classes[classname].bind_wdl_relation
 
       classname = "PictureLocation"
       iml = WLTool::class_exists(classname , ActiveRecord::Base)
@@ -300,8 +304,6 @@ module WLDatabase
       else
         @relation_classes[classname] = iml
       end
-      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].bind_wdl_relation
 
       classname = "Rating"
       rate = WLTool::class_exists(classname , ActiveRecord::Base)
@@ -311,8 +313,6 @@ module WLDatabase
       else
         @relation_classes[classname] = rate
       end
-      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].bind_wdl_relation
 
       classname = "Comment"
       com = WLTool::class_exists(classname , ActiveRecord::Base)
@@ -322,21 +322,6 @@ module WLDatabase
       else
         @relation_classes[classname] = com
       end
-      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].bind_wdl_relation
-
-      # bind to webdamlog but not created in the bootstrap program
-      classname = "DescribedRule"
-      com = WLTool::class_exists(classname , ActiveRecord::Base)
-      if com.nil?
-        load 'described_rule.rb'
-        @relation_classes[classname] = Object.const_get(classname)
-      else
-        @relation_classes[classname] = com
-      end
-      @relation_classes[classname].send :include, WrapperHelper::ActiveRecordWrapper
-      @relation_classes[classname].send :include, WrapperHelper::RuleWrapper
-      @relation_classes[classname].bind_wdl_relation
 
       # The following relation are not linked to webdamlog
       classname = "User"
@@ -374,7 +359,7 @@ module WLDatabase
       begin
         ContentHelper::query_create
       rescue => error
-        WLLogger.logger.warn "In ContentHelper::query_create an error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")}"
+        WLLogger.logger.warn "In ContentHelper::query_create an error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")[0..20]}"
       end
     end
 

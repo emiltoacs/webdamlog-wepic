@@ -49,10 +49,10 @@ class UsersControllerTest < ActionController::TestCase
       "query2_at_test_username",
       "query3_at_test_username",
       "rating_at_test_username"], engine.wl_program.wlcollections.keys.sort
-    assert_equal 2, engine.tables[:contact_at_test_username].values.size
+    assert_equal 3, engine.tables[:contact_at_test_username].values.size
     assert_equal 9, engine.wl_program.rule_mapping.size
     assert_equal [1,
-      "rule contact@local($username, $peerlocation, $online, $email, $facebook):-contact@sigmod_peer($username, $peerlocation, $online, $email, $facebook);",
+      "rule contact_at_test_username($username, $peerlocation, $online, $email) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email);",
       2,
       3,
       4,
@@ -80,17 +80,22 @@ class UsersControllerTest < ActionController::TestCase
     assert_not_nil engine
     assert engine.running_async
     assert_equal 13, engine.app_tables.size
-    assert_equal 2, engine.tables[:contact_at_test_username].to_a.size
-    assert_equal [:username, :peerlocation, :online, :email, :facebook], engine.tables[:contact_at_test_username].schema
-    array = engine.tables[:contact_at_test_username].to_a.sort.map do |item|
-      item.values
-    end
-    assert_equal [["Jules",
-        "localhost:4100",
-        "false",
-        "jules.testard@mail.mcgill.ca",
-        "Jules Testard"],
-      ["Julia", "localhost:4100", "false", "stoyanovich@drexel.edu", "jstoy"]], array
-    assert_equal 2, Contact.all.size
-  end  
+    assert_equal 3, engine.tables[:contact_at_test_username].to_a.size
+    assert_equal [:username, :ip, :port, :online, :email], engine.tables[:contact_at_test_username].schema
+    array = engine.tables[:contact_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
+    array.each{ |h| h.delete :port }
+    assert_equal [{:username=>"Jules",
+        :ip=>"127.0.0.1",
+        :online=>"false",
+        :email=>"jules.testard@mail.mcgill.ca"},
+      {:username=>"Julia",
+        :ip=>"127.0.0.1",
+        :online=>"false",
+        :email=>"stoyanovich@drexel.edu"},
+      {:username=>"test_username",
+        :ip=>"127.0.0.1",
+        :online=>"true",
+        :email=>"none"}], array
+    assert_equal 3, Contact.all.size
+  end
 end

@@ -7,7 +7,7 @@ module WrapperHelper::ActiveRecordWrapper
   # should extend the chosen ActiveRecord (class level)
   module ClassMethods
 
-    attr_reader :engine, :enginelogger, :wdl_tabname, :bound, :wdl_table
+    attr_reader :engine, :enginelogger, :wdl_table, :wdl_table_name, :bound
 
     # Set a callback in the webdamlog relation to update this ActiveRecord
     #
@@ -19,14 +19,14 @@ module WrapperHelper::ActiveRecordWrapper
       #   previous call to create_wdl_relation. That may happened if relation
       #   has been defined in the bootstrp program. That could also be passed as
       #   an optional parameter if nedded
-      @wdl_tabname ||= "#{WLTools.sanitize!(self.name)}_at_#{EngineHelper::WLENGINE.peername}"
+      @wdl_table_name ||= "#{WLTools.sanitize!(self.name)}_at_#{EngineHelper::WLENGINE.peername}"
       if @engine.nil?
         @enginelogger.fatal("bind_wdl_relation fails @engine not initialized")
         return false
       else
         # PENDING change check already declared by declaration automatic if not
-        if @engine.wl_program.wlcollections.include?(@wdl_tabname)
-          cb_id = @engine.register_callback(@wdl_tabname.to_sym) do |tab|
+        if @engine.wl_program.wlcollections.include?(@wdl_table_name)
+          cb_id = @engine.register_callback(@wdl_table_name.to_sym) do |tab|
             unless tab.delta.empty?              
               # send_deltas tab # Callback sent to wdl
               tab.each_from_sym([:delta]) do |t|
@@ -36,14 +36,14 @@ module WrapperHelper::ActiveRecordWrapper
               tab.flush_deltas
             end
           end
-          @wdl_table = @engine.tables[@wdl_tabname.to_sym]          
-          EngineHelper::WLHELPER.register_new_binding @wdl_tabname, self.name
-          @enginelogger.debug("WrapperHelper::ActiveRecordWrapper: bind_wdl_relation succed to register callback #{cb_id} for #{@wdl_tabname}")
+          @wdl_table = @engine.tables[@wdl_table_name.to_sym]
+          EngineHelper::WLHELPER.register_new_binding @wdl_table_name, self.name
+          @enginelogger.debug("WrapperHelper::ActiveRecordWrapper: bind_wdl_relation succed to register callback #{cb_id} for #{@wdl_table_name}")
           @enginelogger.debug("WrapperHelper::ActiveRecordWrapper: #{self} has now methods from wrappers #{self.ancestors[0..2]}...")
           @bound = true
           return true
         else
-          @enginelogger.fatal("bind_wdl_relation fails to bind #{@wdl_tabname} not found in webdamlog collection")
+          @enginelogger.fatal("bind_wdl_relation fails to bind #{@wdl_table_name} not found in webdamlog collection")
           return false
         end
       end
@@ -70,7 +70,7 @@ module WrapperHelper::ActiveRecordWrapper
       if nm.is_a? WLBud::WLError
         @enginelogger.fatal("fail to create new relation in wdl: #{nm}")
       else
-        @wdl_tabname = nm
+        @wdl_table_name = nm
       end
       return nm, sch, str
     end
@@ -116,7 +116,7 @@ module WrapperHelper::ActiveRecordWrapper
                 errors.add(:invalid, "tuple #{self} impossible to insert in webdalog it lacks attribute #{col}")
                 return false
               end
-              wdlfact = { self.class.wdl_tabname => [tuple] }
+              wdlfact = { self.class.wdl_table_name => [tuple] }
             end
             # insert in database
             if wdlfact

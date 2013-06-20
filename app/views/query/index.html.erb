@@ -2,6 +2,11 @@
 </div>
 <div class="content">
   <%if current_user%>
+  <script type="text/javascript">
+  	  jQuery(document).ready(function(){
+  	  	window.setup_query();
+  	  });  	
+  </script>
   <%if false%><%= render 'query_examples'%><%end%>
   <%= render 'update_examples'%>
   <%= render 'extensional'%>

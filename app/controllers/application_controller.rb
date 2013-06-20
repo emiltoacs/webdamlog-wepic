@@ -1,5 +1,5 @@
 require 'wl_logger'
-require 'wl_database'
+require 'webdamlog_wrapper/wl_database'
 require 'wl_launcher'
 
 class ApplicationController < ActionController::Base

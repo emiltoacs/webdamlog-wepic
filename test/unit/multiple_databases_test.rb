@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'test/unit'
 require 'active_record'
-require 'wl_database'
+require 'webdamlog_wrapper/wl_database'
 
 class MultipleDatabasesTest < Test::Unit::TestCase
   include WLDatabase

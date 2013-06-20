@@ -9,7 +9,15 @@ class PicturesController < WepicController
     @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
     @picture = Picture.new if @picture.nil?
     saved = @picture.save
-    location = if params[:location] 
+    # unless @picture.image_url
+      # picture = Picture.find(@picture.id)
+      # config = Conf.peer['peer']
+      # url = "#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{@picture.image.url}"
+      # picture.image_url = url
+      # require 'debugger';debugger
+      # picture.save
+    # end
+    location = if params[:location] and !params[:location].empty?
       tuple = PictureLocation.new(:_id => @picture._id,:location => params[:location])
       tuple.save
       tuple
@@ -23,7 +31,7 @@ class PicturesController < WepicController
     no_errors = errors[:picture].empty?
     no_errors &&= errors[:location].empty? if location
     if no_errors and saved
-      config.logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} successfully saved a new picture"
+      logger.debug "#in PicturesController, user #{Conf.env['USERNAME']} successfully saved a new picture"
       respond_to do |format|
         format.html { redirect_to :wepic, :notice => "Picture was successfully created." }
         format.json { render :json => @picture, :status => :created, :location => :wepic }

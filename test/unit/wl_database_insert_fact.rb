@@ -12,7 +12,7 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
   include WLDatabase
 
   # test creation of new tuple in ActiveRecord and propagation in wdl relations
-  def test_10_add_model
+  def test_10_add_fact
     WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
     require 'test_helper'
     db = WLDatabase.setup_database_server
@@ -23,30 +23,49 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
     engine.load_bootstrap_fact
     db.save_facts_for_meta_data
 
+    assert_equal 3, engine.tables[:contact_at_databasemodeltest].to_a.size
+    assert_equal 3, Contact.all.size
     db.relation_classes['Contact'].new(:username=>'name',:ip=>'127.0.0.1', :port=>'port', :online=>false,:email=>'email').save
-
     assert_equal 4, engine.tables[:contact_at_databasemodeltest].to_a.size
 
+    array = engine.tables[:contact_at_databasemodeltest].map { |t| Hash[t.each_pair.to_a] }
+    array.each { |h| h.delete :port }
     assert_equal [{:username=>"Jules",
         :ip=>"127.0.0.1",
-        :port=>"4100",
         :online=>"false",
         :email=>"jules.testard@mail.mcgill.ca"},
       {:username=>"Julia",
         :ip=>"127.0.0.1",
-        :port=>"4150",
         :online=>"false",
         :email=>"stoyanovich@drexel.edu"},
       {:username=>"databasemodeltest",
         :ip=>"127.0.0.1",
-        :port=>"50979",
         :online=>"true",
         :email=>"none"},
-      {:username=>"name",
-        :ip=>"127.0.0.1",
-        :port=>0,
-        :online=>false,
-        :email=>"email"}], engine.tables[:contact_at_databasemodeltest].map { |t| Hash[t.each_pair.to_a] }
+      {:username=>"name", :ip=>"127.0.0.1", :online=>false, :email=>"email"}], array
+
+    assert_equal [["Jules", "127.0.0.1", false, "jules.testard@mail.mcgill.ca"],
+      ["Julia", "127.0.0.1", false, "stoyanovich@drexel.edu"],
+      ["databasemodeltest", "127.0.0.1", true, "none"],
+      ["name", "127.0.0.1", false, "email"]],
+      Contact.all.map { |ar| [ ar[:username], ar[:ip], ar[:online], ar[:email] ] }
+
+    db.relation_classes['Contact'].new(:username=>'name1',:ip=>'127.0.0.1', :port=>'port', :online=>false,:email=>'email').save
+    db.relation_classes['Contact'].new(:username=>'name2',:ip=>'127.0.0.1', :port=>'port', :online=>false,:email=>'email').save
+    db.relation_classes['Contact'].new(:username=>'name3',:ip=>'127.0.0.1', :port=>'port', :online=>false,:email=>'email').save
+    db.relation_classes['Contact'].new(:username=>'name4',:ip=>'127.0.0.1', :port=>'port', :online=>false,:email=>'email').save
+
+    assert_equal 8, engine.tables[:contact_at_databasemodeltest].to_a.size
+
+    assert_equal [["Jules", "127.0.0.1", false, "jules.testard@mail.mcgill.ca"],
+      ["Julia", "127.0.0.1", false, "stoyanovich@drexel.edu"],
+      ["databasemodeltest", "127.0.0.1", true, "none"],
+      ["name", "127.0.0.1", false, "email"],
+      ["name1", "127.0.0.1", false, "email"],
+      ["name2", "127.0.0.1", false, "email"],
+      ["name3", "127.0.0.1", false, "email"],
+      ["name4", "127.0.0.1", false, "email"]],
+      Contact.all.map { |ar| [ ar[:username], ar[:ip], ar[:online], ar[:email] ] }
   end
   
 end
