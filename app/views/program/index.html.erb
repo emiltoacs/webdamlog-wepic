@@ -5,8 +5,12 @@
   <%if current_user%>
   <script type="text/javascript">
   	  jQuery(document).ready(function(){
-  	  	window.delegations();
-  	  	window.program_refresh();
+		function refresh_windows() {
+			window.delegations();
+		  	window.program_refresh();
+		  	setTimeout(refresh_windows, 10000);
+		}
+		refresh_windows();
   	  });
   </script>
   	<%= render 'program' %>

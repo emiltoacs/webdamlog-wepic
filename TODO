@@ -5,6 +5,8 @@ TODOs:
     scenario admin
     think about other role for rule
     
+    described : only one description
+    
     17/06/13 : 
     when logout link to home
     
@@ -16,3 +18,13 @@ TODOs:
 	data in relations
 	callbacks exist
 	but save on active record not called
+	
+    change + to options
+    
+    19/06:
+    check internal 'undefined error column names' ==> click on drule
+    check adding new drule => reason : module unloads itself
+    check error in assets in production.
+    exchange images.
+    include wrappers in models
+    

@@ -4,7 +4,7 @@ require "#{root}/lib/wl_logger"
 require "#{root}/lib/wl_tool"
 require "#{root}/lib/monkey_patch"
 require "#{root}/app/helpers/wl_launcher"
-require "#{root}/app/helpers/wl_database"
+require "#{root}/lib/webdamlog_wrapper/wl_database"
 require 'sqlite3'
 require 'pg'
 require 'optparse'

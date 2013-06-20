@@ -6,9 +6,9 @@ regexWS = new RegExp(' ', 'g')
 menu_open = false
 current_url = location.protocol + '//' + location.host + location.pathname
 
-capitalizeFirstLetter = (string) ->
+window.capitalizeFirstLetter = (string) ->
   if (typeof string)=='string'
-    string = String.trim(string)
+    string = jQuery.trim(string)
     string.charAt(0).toUpperCase()+string.slice(1)
   else
     string
@@ -279,19 +279,7 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
         console.log('removestar')
         removeStar()
       jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
-      '<textarea id="add-comment-box" placeholder="Type a comment here"></textarea></div>') #TODO show greetings content when empty
-      
-      #Edit picture interaction
-      jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
-      
-      jQuery('#edit_picture').click ->
-        console.log('edit')
-        hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
-        jQuery('.edit-form').prepend(hidden)
-        jQuery('.box_wrapper').css 
-          'display' : 'block'
-        jQuery('#edit_picture_form').css
-          'display' : 'block'        
+      '<textarea id="add-comment-box" placeholder="Type a comment here"></textarea></div>') #TODO show greetings content when empty    
       
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
@@ -409,12 +397,11 @@ jQuery(document).ready ->
     else
       html = '+<div id="my_pictures_menu" class="popUpMenu">'
       html += '<a type="submit" id="my_pictures_menu_close" class="button-close"></a><ul>'
-      html += '<li><a type="submit" id="upload_new_picture">Upload New Picture...</a></li><ul>'
+      html += '<li><div style="color : #666;cursor : text;">Upload New Picture...</li><ul>'
       html += '<li><a type="submit" id="upload_from_file" class="active_action">from file</a></li>'
       html += '<li><a type="submit" id="upload_from_url" class="active_action" >from URL</a></li>'
       html += '</ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      html += '<li><a type="submit" id="send-mine-to-contact">Send To...</a></li>'
       html += '</ul></div>'
       jQuery('#my_pictures_button').html(html)
       menu_open = true
@@ -461,7 +448,6 @@ jQuery(document).ready ->
       html = '+<div id="contact_pictures_menu" class="popUpMenu">'
       html += '<a type="submit" id="contact_pictures_menu_close" class="button-close"></a><ul>'
       html += '<li><a type="submit" id="sort_by">Sort By...</a></li>'
-      html += '<li><a type="submit" id="send-contact-to-contact">Send To...</a></li>'
       html += '</ul></div>'
       jQuery('#contact_pictures_button').html(html)
       menu_open = true

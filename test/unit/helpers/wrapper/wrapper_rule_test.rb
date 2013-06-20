@@ -4,7 +4,9 @@ ENV["USERNAME"] = "wrapperruletest"
 ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
 require 'wl_tool'
-Conf.db['database']="wp_wrapperruletest"
+Conf.db['database'] = "wp_wrapperruletest"
+Conf.peer['peer']['program']['query_sample'] = 'test/config/sample_wtho_var.yml'
+Conf.peer['peer']['program']['file_path'] = 'test/config/bootstrap_for_wrapper_rule_test.wl'
 require 'test/unit'
 require './lib/wl_setup'
 
@@ -27,44 +29,73 @@ class WrapperRuleTest < Test::Unit::TestCase
     # test
     klassperson, relname, sch, instruction = db.create_model("persontest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassperson
-    assert_equal "persontest_at_wrapperruletest", klassperson.wdl_tabname
+    assert_equal "persontest_at_wrapperruletest", klassperson.wdl_table_name
     klassfriend, relname, sch, instruction = db.create_model("familytest", {"id"=> "string", "name"=>"string"}, {wdl: true})
     assert_not_nil klassfriend
-    assert_equal "familytest_at_wrapperruletest", klassfriend.wdl_tabname
+    assert_equal "familytest_at_wrapperruletest", klassfriend.wdl_table_name
     DescribedRule.new(
       description: "first rule",
       wdlrule: "rule persontest@local($id,$name) :- familytest@local($id,$name);",
-      role: "update" ).save
-    
+      role: "rule" ).save
+    # check wrappers binding
+    assert_equal [["comment_at_wrapperruletest", "Comment"],
+      ["contact_at_wrapperruletest", "Contact"],
+      ["describedrule_at_wrapperruletest", "DescribedRule"],
+      ["familytest_at_wrapperruletest", "Familytest"],
+      ["friend_at_wrapperruletest", "Friend"],
+      ["persontest_at_wrapperruletest", "Persontest"],
+      ["picture_at_wrapperruletest", "Picture"],
+      ["picturelocation_at_wrapperruletest", "PictureLocation"],
+      ["query1_at_wrapperruletest", "Query1"],
+      ["query3_at_wrapperruletest", "Query3"],
+      ["rating_at_wrapperruletest", "Rating"]], helper.wdl_tables_binding.sort    
+
+    # Engine should have the right list of rules
+    assert_equal({1=>
+        "rule contact_at_wrapperruletest($username, $ip, $port, $online, $email) :- contact_at_sigmod_peer($username, $ip, $port, $online, $email);",
+      2=>
+        "rule comment_at_wrapperruletest(\" \", $ip, $port, \" \") :- contact_at_wrapperruletest($username, $ip, $port, $online, $email);",
+      3=>
+        "rule query1_at_wrapperruletest($title) :- picture_at_wrapperruletest($title, $_, $_, $_);",
+      4=>
+        "rule query3_at_wrapperruletest($title, $contact, $id, $image_url) :- picture_at_wrapperruletest($title, $contact, $id, $image_url), rating_at_sigmod_peer($id, 5);",
+      5=>
+        "rule deleg_from_wrapperruletest_4_1_at_sigmod_peer($title, $contact, $id, $image_url) :- picture_at_wrapperruletest($title, $contact, $id, $image_url);",
+      6=>
+        "rule friend_at_wrapperruletest($name, commenters) :- picture_at_wrapperruletest($_, $_, $id, $_), comment_at_wrapperruletest($id, $name, $_, $_);",
+      7=>
+        "rule persontest_at_wrapperruletest($id, $name) :- familytest_at_wrapperruletest($id, $name);"}, engine.snapshot_rules)
+
+    # DescribedRule should contains collections and facts
+    # FIXME comment :- contact ie. rule 2 is not in dexcribed rule
     assert_equal([[1,
           "Get all the titles for my pictures",
           "collection ext per query1@wrapperruletest(title*);",
-          "collection"],
+          "extensional"],
         [2,
           "Get all the titles for my pictures",
           "rule query1@wrapperruletest($title) :- picture@wrapperruletest($title, $_, $_, $_);",
-          "collection"],
+          "rule"],
         [3,
-          "Get all pictures from all my friends",
-          "collection ext per query2@wrapperruletest(title*);",
-          "collection"],
-        [4,
           "Get all my pictures with rating of 5",
           "collection ext per query3@wrapperruletest(title*);",
-          "collection"],
-        [5,
+          "extensional"],
+        [4,
           "Get all my pictures with rating of 5",
           "rule deleg_from_wrapperruletest_4_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@wrapperruletest($title, $contact, $id, $image_url);",
-          "collection"],
-        [6,
+          "rule"],
+        [5,
           "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
           "collection ext per friend@wrapperruletest(name*);",
-          "collection"],
+          "extensional"],
+        [6,
+          "Create a friends relations and insert all contacts who commented on one of my pictures. Finally include myself.",
+          "rule friend@wrapperruletest($name, commenters) :- picture@wrapperruletest($_, $_, $id, $_), comment@wrapperruletest($id, $name, $_, $_);",
+          "rule"],
         [7,
           "first rule",
           "rule persontest@wrapperruletest($id, $name) :- familytest@wrapperruletest($id, $name);",
-          "update"]],
+          "rule"]],
       DescribedRule.all.map { |tup| [tup[:id], tup[:description], tup[:wdlrule], tup[:role] ] })
   end
-  
 end

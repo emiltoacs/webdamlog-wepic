@@ -7,6 +7,7 @@ require 'wl_tool'
 Conf.db['database']="wp_wrapperruletest"
 require 'test/unit'
 require './lib/wl_setup'
+Conf.peer['peer']['program']['query_sample'] = 'test/config/sample_wto_friend.yml'
 Conf.peer['peer']['program']['file_path'] = 'test/config/bootstrap_for_test_model_helper.wl'
 
 # load bootstrap_for_test.wl as specified in the conf file peer.yml
@@ -35,7 +36,7 @@ class ActiveModelHelperTest < Test::Unit::TestCase
     am.bind_wdl_relation
     assert am.bound
     assert_not_nil am.engine
-    assert_equal 'friend_at_wrapperruletest', am.wdl_tabname
+    assert_equal 'friend_at_wrapperruletest', am.wdl_table_name
     assert_not_nil am.engine.tables[:friend_at_wrapperruletest]
     assert_equal 3, am.all.size
     assert_equal am.engine.tables[:friend_at_wrapperruletest].map{ |t| t.values },

@@ -13,7 +13,7 @@ class WepicController < ApplicationController
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
       @pictures = Picture.where(:owner => Conf.env['USERNAME'])
-      Picture.where(:owner => 'local').each {|pic| @pictures << pic}
+      # Picture.where(:owner => 'local').each {|pic| @pictures << pic}
       if sorting_order=='desc'
         @pictures.sort! {|a,b| b.send(order_criteria.to_sym) <=> a.send(order_criteria.to_sym)}
       else
@@ -25,6 +25,7 @@ class WepicController < ApplicationController
       # end
     end
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
+    @contacts.select! {|contact| !['sigmod_peer',Conf.env['USERNAME']].include?(contact) } #Do not show self or sigmod_peer
   end
 
   #Updates all fields deriving from a picture
@@ -41,7 +42,7 @@ class WepicController < ApplicationController
         picture.title = params[:title]
         picture.save
       end
-      rating = if params[:rating]
+      rating = if params[:rating] and !params[:rating].empty?
         tuple = Rating.where(:owner => Conf.env['USERNAME'],:_id => picture._id)
         tuple = unless tuple.nil? or tuple.empty?  then tuple.first else Rating.new(:_id => picture._id, :owner => Conf.env['USERNAME']) end
         tuple.rating = params[:rating].to_i
@@ -50,7 +51,7 @@ class WepicController < ApplicationController
       else
         Rating.new
       end
-      location = if params[:location]
+      location = if params[:location] and !params[:location].empty?
         tuple = PictureLocation.where(:_id => picture._id)
         tuple = unless tuple.nil? or tuple.empty? then tuple.first else PictureLocation.new(:_id => picture._id) end
         tuple.location = params[:location]
@@ -73,27 +74,7 @@ class WepicController < ApplicationController
       end
     end
   end
-  
-  #Updates the rating value when modified by the user
-  #FIXME : DEPRECATED
-  def updateRating
-    ratingTuple = Picture.where(:_id => params[:_id]).first
-    if ratingTuple
-      ratingTuple.rated = params[:rating]
-    else
-      ratingTuple = Rating.new(:_id => params[:_id], :rating=>params[:rating])
-    end
-    if ratingTuple.save
-    respond_to do |format|
-      format.json {render :json => {:saved => true}.to_json }
-    end      
-    else
-    respond_to do |format|
-      format.json {render :json => {:saved => false, :errors => ratingTuple.errors}.to_json }
-    end
-    end
-  end
-  
+   
   #Get all comments after specified date (if no date specified load all comments for picture)
   def getLatestComments(args=nil)
     arguments = if args then args else params end

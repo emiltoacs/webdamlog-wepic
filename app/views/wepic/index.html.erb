@@ -45,7 +45,10 @@
     <%else%>
       <div class="opacity"></div>
       <div class="content"></div>
-      You are not logged in! <%= link_to "Log in",:login%>
+      <form>
+      You are not logged in!<br>
+      <%= render '/user_sessions/form' %>
+      </form>
     </div>
   <%end%>
   <%if current_user%>

@@ -9,7 +9,7 @@ common: &common
 #  database: db/database_manager
 #  pool: 5
 #  timeout: 5000
-development:
+development: &base
   <<: *common
   encoding: unicode
   pool: 5
@@ -41,5 +41,5 @@ production:
   encoding: unicode
   pool: 5
   database: wp_manager
-  sample_content: no
+  sample_content: yes
   

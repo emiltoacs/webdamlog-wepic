@@ -7,6 +7,15 @@
 
 jQuery.noConflict()
 current_url = location.protocol + '//' + location.host + location.pathname
+username = null
+
+print_hash = (data) ->
+  str = ""
+  for key,val of data
+    if typeof(value)=='object'
+      str += key + ' => ' + "\n\t" + print_hash(val) + "\n"
+    else
+      str += key + ' => ' + val + "\n"
 
 Object.size = (obj) ->
     size = 0
@@ -62,10 +71,8 @@ getRelationContents = (relation,type)->
         jQuery('#display_relation_'+type).append('<table>'+html+'</table>')
         true
 
-add_described_rule = (rule,description,role) ->
-  # jQuery('#notice').html('rule:' + rule + ",description: " + description + ",role: " + role)
-  # jQuery('#notice').css
-    # 'display' : 'block'
+add_described_rule = (rule,description,type) ->
+  role = rule.split(' ')[0] 
   jQuery.ajax
     'url' : current_url + '/described_rule/add'
     'data' :
@@ -76,23 +83,26 @@ add_described_rule = (rule,description,role) ->
     'success' : (data) ->
       if data.saved
         html = '<div class="drule">'
-        html += '<a class="close" onclick="window.close_rule('+data.id+');">x</a>'
+        relation = rule.split(" ")[1].split("(")[0]
+        if local(relation)
+          html += '<div class="local">local</div>'
+        else
+          html += '<div class="non-local">non local</div>'
         html += '<div class="description">' + description+ '</div>'
         html += '<div class="id">'+data.id+'</div>'
         html += '<div class="rule">' + rule + '</div>'
         html += '</div>'
-        jQuery('.'+role+'_examples').append(html)
+        jQuery('.'+type+'_examples').append(html)
         jQuery('.id:contains("'+String(data.id)+'")').parent().focus()
-        jQuery('#description_edit_'+role).val('')
-        jQuery('#rule_edit_'+role).val('')
+        jQuery('#description_edit_'+type).val('')
+        jQuery('#rule_edit_'+type).val('')
       else
-        alert(display_error(data.errors.wdlrule[0]))
+        alert(display_error(print_hash(data.errors)))
+     'error' : (error,why) ->
+        alert(String(error.statusText))
 
 
 remove_described_rule = (id) ->
-  # jQuery('#notice').html('rule:' + rule + ",description: " + description + ",role: " + role)
-  # jQuery('#notice').css
-    # 'display' : 'block'
   jQuery.ajax
     'url' : current_url + '/described_rule/remove'
     'data' :
@@ -101,6 +111,42 @@ remove_described_rule = (id) ->
     'success' : (data) ->
       if data.saved
         jQuery('.id:contains("'+String(id)+'")').parent().remove()
+
+local = (relation,username) ->
+    if relation
+      name = window.capitalizeFirstLetter(relation.split('@')[0])
+      location = relation.split('@')[1]
+      if location=='local' or location==username #if head is local 
+        true
+      else
+        false
+
+
+  #Manage local non local determination
+  window.setup_query = ->
+    jQuery.ajax
+      'url' : current_url + '/username'
+      'data' : null
+      'datatype' : 'json'
+      'success' : (data) ->
+        username = data.username
+        jQuery('.drule').each ->
+          relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+          if local(relation,username)
+            html = '<div class="local">local</div>'
+            jQuery(this).append(html)
+          else
+            html = '<div class="non-local">non local</div>'
+            jQuery(this).append(html)
+      
+        jQuery('.drule').click ->
+          relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+          name = window.capitalizeFirstLetter(relation.split('@')[0])
+          if local(relation,username)
+            jQuery('#relation_extensional').val(name).attr('selected',true).change()
+          else
+            alert(display_error('You should only click on local rules'))
+
 
 window.relation_refresh = (type)->
   relation = jQuery('#relation_'+type+' option:selected').html()
@@ -124,11 +170,12 @@ jQuery(document).ready ->
     add_described_rule(rule,desc,'query')
   window.custom_update = ->
     rule = jQuery('#rule_edit_update').val()
+    rule = jQuery.trim(rule)
     desc = jQuery('#description_edit_update').val()
     add_described_rule(rule,desc,'update')
   window.close_rule = (id) ->
     remove_described_rule(id)
-
+      
   jQuery('#update_examples_button').click ->
     if menu_open
       menu_open = false

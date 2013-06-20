@@ -1,18 +1,20 @@
 require 'wl_tool'
 
 class Delegation < AbstractDatabase
-  attr_accessible :wdlrule, :wdl_rule_id,:accepted
+  attr_accessible :peername, :timestamp, :accepted, :wdlrule
   
   def self.setup
     unless @setup_done
-      validates :wdlrule, :presence => true, :wl => true
+      validates :peername, :presence => true
+      validates :timestamp, :presence => true
       validates :wdlrule, :presence => true
             
       self.table_name = "Delegation"
       connection.create_table 'Delegation', :force => true do |t|
-        t.text :wdlrule
+        t.text :peername
+        t.integer :timestamp
         t.boolean :accepted
-        t.integer :wdl_rule_id, :limit => 8
+        t.text :wdlrule
         t.timestamps
       end if !connection.table_exists?('Delegation')
       
@@ -35,12 +37,18 @@ class Delegation < AbstractDatabase
   
   def default_values
     self.accepted = false unless self.accepted
+    return true
   end
   
   setup  
   
-  
-  
   before_validation :default_values
   
+
+  # wedamlog link
+  def self.refresh_delegations
+    new_delegations = EngineHelper::WLENGINE.flush_delegations
+    new_delegations.each { |peer, value| value.each { |tmst, value| value.each { |rules| rules.each { |rule|
+          self.new(:peername => peer.to_s, :timestamp => tmst, :wdlrule => rule).save }}}}
+  end
 end

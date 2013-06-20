@@ -34,5 +34,10 @@ class Contact < AbstractDatabase
       'email' => 'string'}
   end
   
-  setup    
+  setup
+  unless Conf.env['USERNAME'].downcase == 'manager'
+    include WrapperHelper::ActiveRecordWrapper
+    include WrapperHelper::ContactWrapper
+    bind_wdl_relation
+  end
 end

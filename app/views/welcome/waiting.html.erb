@@ -8,7 +8,7 @@ function executeQuery() {
 		dataType : 'json',
 		success: function(data) {
 			if (data) {
-				window.location = "http://<%= @account.ip%>:<%= @account.port%>"
+				window.location = "http://<%= @account.ip%>:<%= @account.port%>";
 				}
 			}
   	});

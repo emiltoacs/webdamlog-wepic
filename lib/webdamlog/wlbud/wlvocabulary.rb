@@ -31,12 +31,16 @@ module WLBud
 
     # the peer name of this sentence
     def peername
-      raise MethodNotImplementedError, "a WLSentence subclass must implement the method peername"
+      raise MethodNotImplementedError, "a WLBud::NamedSentence subclass must implement the method peername"
     end
 
     # Assign value returned by block on each peername
     def map_peername! &block
-      raise MethodNotImplementedError, "a WLSentence subclass must implement the method map_peername!"
+      raise MethodNotImplementedError, "a WLBud::NamedSentence subclass must implement the method map_peername!"
+    end
+
+    def show_wdl_format
+      raise MethodNotImplementedError, "a WLBud::NamedSentence subclass must implement the method show_wdl_format"
     end
   end
 
@@ -45,29 +49,8 @@ module WLBud
     include WLBud::NamedSentence
 
     attr_accessor :has_self_join
-    attr_reader :index, :dic_made
-    # The budvar dictionary is a hash defines variables included in the
-    # conversion from webdamlog-formatted rule to bud-formatted rule. Its key is
-    # the name of the relation of which the variable is bound to. Its value
-    # correspond to the local variable position where this relation appear.
-    #
-    attr_reader :dic_relation_name
-    # Inverted dictionary corresponding to dic_relation_name ie. it maps body
-    # atom position to string name of the relation
-    #
-    attr_reader :dic_invert_relation_name
-    # The wlvar dictionary is a hash that contains the position of the variables
-    # of each atom of the body. It takes as key the field value of the variable,
-    # e.g. '$x' and as value it's location in the following format :
-    # 'relation_position.field_position' Remark: position always start from 0
-    #
-    attr_reader :dic_wlvar
-    # The var dictionary is a hash that contains the name of the constants of
-    # each atom of the body. It takes as key the field value of the constant,
-    # e.g. 'a' and as value it's location in the following format :
-    # 'relation_position.field_position' Remark: position always start from 0
-    #
-    attr_reader :dic_wlconst
+    attr_reader :dic_made, :dic_relation_name, :dic_invert_relation_name, :dic_wlvar, :dic_wlconst
+    attr_accessor :split, :bound, :unbound
 
     # Creates a new WLRule and instantiate empty dictionaries for that rule.
     #
@@ -84,10 +67,33 @@ module WLBud
       # perspective. See function make_combos in wlprogram @has_self_join=false
       @rule_id = nil
       @body = nil
+      # The dic_relation_name is a hash defines variables included in the
+      # conversion from webdamlog-formatted rule to bud-formatted rule. Its key
+      # is the name of the relation of which the variable is bound to. Its value
+      # correspond to the local variable position where this relation appear.
       @dic_relation_name = {}
+      # Inverted dictionary corresponding to dic_relation_name ie. it maps body
+      # atom position to string name of the relation
       @dic_invert_relation_name = {}
+      # The wlvar dictionary is a hash that contains the position of the
+      # variables of each atom of the body. It takes as key the field value of
+      # the variable, e.g. '$x' and as value it's location in the following
+      # format : 'relation_position.field_position' Remark: position always
+      # start from 0 !@attribute [Hash] list of variables "name of variable" =>
+      # ["relpos.atompos", ... ] eg. {"$_"=>["0.0", "0.1"], "$id"=>["0.2"]}
       @dic_wlvar = {}
+      # The const dictionary is a hash that contains the value of the constants
+      # of each atom of the body. It takes as key the field value of the
+      # constant, e.g. 'a' and as value it's location in the following format :
+      # 'relation_position.field_position' Remark: position always start from 0
+      # !@attribute [Hash] list of constants name of variable =>
+      # ["relpos.atompos", ... ]
       @dic_wlconst = {}
+      # false until WLProgram.split_rule has been called which populate @bound,
+      # @unbound
+      @split = false
+      @bound = []
+      @unbound = []
       super(a1,a2,a3)
     end
 
@@ -101,7 +107,7 @@ module WLBud
       puts "--------------------------------------------------------"
     end
 
-    # return the head atom of the rule
+    # @return [WLAtom] the head atom of the rule
     def head
       unless @head
         @head = self.atom
@@ -125,15 +131,25 @@ module WLBud
       return @body
     end
 
-    # returns all atoms of the rule in an array (head + body).
-    #    def atoms
-    #      [self.head,self.body].flatten
-    #    end
+    def seed?
+      if @seed.nil?
+        if head.variable?
+          @seed = true
+        else
+          body.each do |atom|
+            if atom.variable?
+              return @seed = true
+            end            
+          end
+          @seed = false
+        end
+      end
+      @seed
+    end
 
-    # Return the list of name of peers appearing in atoms, it could be different
-    # from self.peer_name.text_value when called by {WLProgram} since
+    # @return [Array] the list of name of peers appearing in atoms, it could be
+    # different from self.peer_name.text_value when called by {WLProgram} since
     # disambiguation could have modified this field.
-    #
     def peername
       arr = [head.peername]
       atoms.get_atoms.each { |atom| arr << atom.peername }
@@ -146,7 +162,7 @@ module WLBud
     end
 
     # Make dictionary : creates hash dictionaries for WLvariables and constants.
-    # These dictionaries take as key the field value as it appears in the .wl
+    # These dictionaries takes as key the field value as it appears in the .wl
     # file along with their position in the rule to disambiguate in case of self
     # joins. As value it's location in the following format :
     # 'relation_pos.field_pos'
@@ -158,13 +174,7 @@ module WLBud
         # field variable goes to dic_wlvar and constant to dic_wlconst
         atom.fields.each_with_index do |f,i|
           str = "#{n}.#{i}"
-          # if the rule is not a temporary variable
-          #          unless is_tmp
-          #            str = "#{atom.name}.#{@wlcollections["#{atom.rrelation.text_value}_at_#{atom.rpeer.text_value}"].fields.fetch(i)}"
-          #          else
-          #            str = "#{atom.name}.pos#{i}"
-          #          end
-          if f.variable? #f.=~ /'^$*'/.nil?
+          if f.variable?
             var = f.text_value
             if self.dic_wlvar.has_key?(var)
               self.dic_wlvar[var] << str
@@ -321,13 +331,15 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
       end
       return ''
     end
-
     def variable?
       false
     end
   end
 
   class WLWord < WLVocabulary
+    def variable?
+      false
+    end
   end
 
   class WLComplexString < WLVocabulary
@@ -419,7 +431,11 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
     # Number of fields for this relation
     def arity
       if @arity.nil?
-        @arity = self.col_fields.keys.elements.size + self.col_fields.values.elements.size
+        if self.col_fields.empty?
+          @arity = 0
+        else
+          @arity = self.col_fields.keys.elements.size + self.col_fields.values.elements.size
+        end
       end
       return @arity
     end
@@ -514,7 +530,7 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
     end
   end
 
-  class WLFields < WLVocabulary
+  module WLFields
   end
 
   # This is the text part of fields in relation, it could be a constant or a
@@ -529,12 +545,25 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
         false
       end
     end
+
+    # @return [String] the content as text of the token which could be a
+    # variable or a constant
+    def token_text_value
+      if self.is_a? WLItem
+        item_text_value
+      else
+        text_value
+      end
+    end
   end
 
-  class WLVar < WLVocabulary
+  module WLVar
     # variable? is override here against previous mixins of modules
     def variable?
       true
+    end
+    def anonymous?
+      self.terminal? and self == '$_' ? true : false
     end
   end
 
@@ -573,26 +602,27 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
       @peername = yield peername if block_given?
     end
 
-    # return the variables included in the atom in an array format e.g. :
-    # [relation_var,peer_var,[field_var1,field_var2,...]]
-    #
+    # @return [Array] the variables included in the atom in an array format e.g.
+    # : [relation_var,peer_var,[field_var1,field_var2,...]]
     def variables
       if @variables.nil?
         vars = []
-        relation=self.rrelation.text_value
-        peer=self.rpeer.text_value
         # Check if relation and/or peer are variables.
-        if relation.include?('$') then vars << relation else vars << nil end
-        if peer.include?('$') then vars << peer else vars << nil end
+        if self.rrelation.variable? then vars << self.rrelation.text_value else vars << nil end
+        if self.rpeer.variable? then vars << self.rpeer.text_value else vars << nil end
         vars << self.rfields.variables
         @variables=vars
       end
       return @variables
     end
 
-    # returns the fields of the atom (variables and constants) in an array
-    # format
-    #
+    # return [Boolean] true if relation or peername is a variable
+    def variable?
+      rrelation.variable? or rpeer.variable? ? true : false
+    end
+
+    # @return [Array] list of WLRToken as the fields of the atom (variables and
+    # constants) in an array format
     def fields
       self.rfields.fields
     end
@@ -633,6 +663,18 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
     end
   end
 
+  module WLRRelation
+    def variables?
+      self.variable ? true : false
+    end
+  end
+
+  module WLRPeer
+    def variables?
+      self.variable ? true : false
+    end
+  end
+
   # The Rfields class corresponds contains the fields of atoms in rules.
   class WLRfields < WLVocabulary
     def initialize(a1,a2,a3)
@@ -665,13 +707,10 @@ this rule has been parsed but no valid id has been assigned for unknown reasons
       end
       return @variables
     end
-    # this methods hands in all fields as WLRToken
+    # @return [Array] list of WLRToken
     def fields
       if @fields.nil?
         f = []
-        # self.rtokens.elements.each {|t| f <<
-        # t.elements.first.text_value.split(',').first}# unless
-        # t.text_value.include?(',')} f << self.rtoken.text_value
         get_rtokens.each { |t| f << t }
         @fields=f
       end

@@ -10,7 +10,7 @@ if Conf.manager?
   require 'wl_launcher'
 else  
   require 'wl_peer'
-  require 'engine_helper'
+  require 'webdamlog_wrapper/engine_helper'
 
   if Conf.standalone?
     WLLogger.logger.info "Wepic peer of #{Conf.env['USERNAME']},#{Conf.env['PORT']} has finished standalone initialization"
