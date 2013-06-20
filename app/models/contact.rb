@@ -34,5 +34,8 @@ class Contact < AbstractDatabase
       'email' => 'string'}
   end
   
-  setup    
+  setup
+  include WrapperHelper::ActiveRecordWrapper
+  include WrapperHelper::ContactWrapper
+  bind_wdl_relation
 end

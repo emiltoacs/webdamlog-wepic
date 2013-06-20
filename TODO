@@ -23,7 +23,8 @@ TODOs:
     
     19/06:
     check internal 'undefined error column names' ==> click on drule
-    check adding new drule 
+    check adding new drule => reason : module unloads itself
     check error in assets in production.
     exchange images.
+    include wrappers in models
     

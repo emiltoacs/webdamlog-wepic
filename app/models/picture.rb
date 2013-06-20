@@ -132,4 +132,8 @@ class Picture < AbstractDatabase
     io.original_filename.blank? ? nil : io
   rescue # catch url errors with validations instead of exceptions (Errno::ENOENT, OpenURI::HTTPError, etc...)
   end
+  
+  include WrapperHelper::ActiveRecordWrapper
+  include WrapperHelper::PictureWrapper
+  bind_wdl_relation  
 end
