@@ -99,5 +99,11 @@ class QueryController < ApplicationController
       format.json {render :json => [:sucess => true, :columns=>columns,:content=>content].to_json}
     end
   end
+  
+  def username
+    respond_to do |format|
+      format.json {render :json => {:username => Conf.env['USERNAME']}}
+    end
+  end
 
 end # QueryController

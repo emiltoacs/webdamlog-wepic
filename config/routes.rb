@@ -34,6 +34,7 @@ WepimApp::Application.routes.draw do
     match 'query/create' => 'query#create'
     match 'query/insert' => 'query#insert'
     match 'query/relation' => 'query#relation'
+    match 'query/username' => 'query#username'
     match 'query/described_rule/add' => 'query#add_described_rule'
     match 'query/described_rule/remove' => 'query#remove_described_rule'
     match 'wepic/online' => 'wepic#online'
