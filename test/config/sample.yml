@@ -8,14 +8,14 @@ described_rules:
  drule2:
    description: Get all pictures from all my friend
    wdlrule : |
-             collection int query2@local(title*,contact*,id*,image_url*);
-             rule query2@local($title, $contact, $id, $image_url):- contact@local($contact, $_, $_, $_, $_),picture@$contact($title, $contact, $id, $image_url);
+             collection int query2@local(title*,contact*,id*,url*);
+             rule query2@local($title, $contact, $id, $url):- contact@local($contact, $_, $_, $_, $_),picture@$contact($title, $contact, $id, $url);
    role: intentional
  drule3:
    description: Get all my pictures with rating of 5
    wdlrule : |
-             collection int query3@local(title*,contact*,id*,image_url*);
-             rule query3@local($title,$contact,$id,$image_url):- picture@local($title,$contact,$id,$image_url),rating@sigmod_peer($id,5);
+             collection int query3@local(title*,contact*,id*,url*);
+             rule query3@local($title,$contact,$id,$url):- picture@local($title,$contact,$id,$url),rating@sigmod_peer($id,5);
    role: intentional
  drule4:
    description: Create a friend relations and insert all contacts who commented on one of my pictures. Finally include myself.
@@ -26,5 +26,5 @@ described_rules:
  drule5:
    description: Send to contact all pictures taken last week by our common friend and me at a given location
    wdlrule : |
-             rule picture@contact($title, $contact, $id, $image_url):- friend@local(contact,$group),friend@local($peer,$group),picture@$peer($title,$contact,$id,$image_url),picturelocation@$peer($id,"given location");
+             rule picture@contact($title, $contact, $id, $url):- friend@local(contact,$group),friend@local($peer,$group),picture@$peer($title,$contact,$id,$url),picturelocation@$peer($id,"given location");
    role: extensional
