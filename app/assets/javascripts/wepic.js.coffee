@@ -279,19 +279,7 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
         console.log('removestar')
         removeStar()
       jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
-      '<textarea id="add-comment-box" placeholder="Type a comment here"></textarea></div>') #TODO show greetings content when empty
-      
-      #Edit picture interaction
-      jQuery('#fancybox-outer').not(':has(#edit_picture)').append('<a id="edit_picture">edit</a>')
-      
-      jQuery('#edit_picture').click ->
-        console.log('edit')
-        hidden = '<input id="_id" name="_id" type="hidden" value="'+String(pictureId)+'"></input>'
-        jQuery('.edit-form').prepend(hidden)
-        jQuery('.box_wrapper').css 
-          'display' : 'block'
-        jQuery('#edit_picture_form').css
-          'display' : 'block'        
+      '<textarea id="add-comment-box" placeholder="Type a comment here"></textarea></div>') #TODO show greetings content when empty    
       
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
