@@ -10,3 +10,4 @@ Unit
     wl_database_*
     models_test*
     helpers/*
+    delegation_test
