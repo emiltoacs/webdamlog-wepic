@@ -4,7 +4,13 @@ module ContentHelper
   include EngineHelper
   mattr_accessor :describedRules
   
-  self.describedRules = DescribedRule.all.map{|drule| drule.wdlrule}
+  def self.init_bootstrap
+    if Conf.env['USERNAME'].downcase!='manager'
+      self.describedRules = DescribedRule.all.map{|drule| drule.wdlrule}
+    end
+  end
+  
+  init_bootstrap
   
   def self.query_create
     if defined?(Conf)
@@ -33,7 +39,7 @@ module ContentHelper
   end
   
   def self.add_to_described_rules(rule,description,role,skip=nil)
-      drule = DescribedRule.new(:wdlrule => rule,:description => description, :role=> role)
+      drule = DescribedRule.new(:wdlrule =>rule,:description => description, :role=> role)
       if drule.save(skip)
         WLLogger.logger.debug "Rule : #{drule.description.inspect[0..19]}...[#{drule.wdlrule.inspect[0..40]}] successfully added!"
         self.describedRules << drule.wdlrule

@@ -34,9 +34,8 @@ class UsersController < ApplicationController
   # GET /users/new GET /users/new.json
   def new
     @user = User.new
-
     respond_to do |format|
-      format.html # new.html.erb
+      format.html
       format.json { render :json => @user }
     end
   end
@@ -90,7 +89,7 @@ class UsersController < ApplicationController
         else
           logger.debug "fail to start running webdamlog engine"
           respond_to do |format|
-            format.html { render :action => "new" , :alert => @user.errors.messages.inspect}
+            format.html { render :action => "new" , :alert => "#{@user.errors.messages.inspect}@\n\t#{backtrace[0..20].join("\n")}"}
             format.xml { render :xml => @user.errors, :status => :unprocessable_entity }            
           end
         end
@@ -102,7 +101,8 @@ class UsersController < ApplicationController
         end
       end
     rescue => error
-      flash[:alert] = error.message
+      require 'debugger';debugger
+      flash[:alert] ="#{error.message}"
       respond_to do |format|
         format.html { render :action => "new" }
         format.xml { render :xml => {setup: error.message}, :status => :unprocessable_entity}
