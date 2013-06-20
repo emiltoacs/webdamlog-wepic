@@ -35,7 +35,7 @@ module EngineHelper
       # Special logger for webdamlog engine
       @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       username = Conf.peer['peer']['username']
-      # #web_port = Integer(Conf.peer['peer']['web_port'])
+      # web_port = Integer(Conf.peer['peer']['web_port'])
       port = Network.find_port Conf.peer['peer']['ip'], :UDP
       unless port
         @enginelogger.fatal("unable to find a UDP port for the webdamlog engine")
@@ -47,7 +47,7 @@ module EngineHelper
       # the engine itself is WLRunner object with :delay_fact_loading to wait
       # until wrappers has been bound to add facts
       begin
-        @engine = ::WLRunner.create(username, program_file, port, {:rule_dir => rule_dir, :delay_fact_loading => true})
+        @engine = ::WLRunner.create(username, program_file, port, {rule_dir: rule_dir, delay_fact_loading: true, filter_delegations: true})
       rescue => error
         WLLogger.logger.warn "Error occured while initializing WebdamLog runner : #{error.message}\nat\t#{error.backtrace[0..10].join("\n")}"
       end
@@ -83,13 +83,6 @@ module EngineHelper
       @engine.run_bg
       @enginelogger.info("internal webdamlog engine start running listening on port #{@port}")
       @engine
-    end
-
-    # TODO initialize here all the variables needed to push wdl facts into
-    # models
-    def bind_to_wrappers
-      # TODO write block for each collection that should send there content to
-      # wepic #@engine
     end
 
     # setter for wdl_tables_binding
