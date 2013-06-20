@@ -52,7 +52,11 @@ class DelegationTest < Test::Unit::TestCase
               "declarations"=>[]
             }]]]}
     Delegation.refresh_delegations
-    p Delegation.all
-    assert_equal [], Delegation.all
+    assert_equal [["p0",
+        0,
+        false,
+        "rule local2@test_pending_delegation_content('14') :- local@test_pending_delegation_content('4');"]],
+      Delegation.all.map{ |ar| [ ar[:peername], ar[:timestamp], ar[:accepted], ar[:wdlrule] ] }
+    
   end # def test_delegation
-end # class
+end # class DelegationTest
