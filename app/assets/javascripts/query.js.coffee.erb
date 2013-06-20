@@ -111,9 +111,6 @@ remove_described_rule = (id) ->
       if data.saved
         jQuery('.id:contains("'+String(id)+'")').parent().remove()
 
-change_to_relation = (name) ->
-  jQuery()
-
 local = (relation) ->
     if relation
       name = window.capitalizeFirstLetter(relation.split('@')[0])
@@ -163,6 +160,7 @@ jQuery(document).ready ->
 
   jQuery('.drule').click ->
     relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+    name = window.capitalizeFirstLetter(relation.split('@')[0])
     if local(relation)
       jQuery('#relation_extensional').val(name).attr('selected',true).change()
     else
