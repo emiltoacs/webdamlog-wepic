@@ -17,12 +17,10 @@ require 'fileutils'
 # * start engine
 # * add peer, collection, fact, rule
 # * play
-#
 module EngineHelper
   
   # TODO add action on shutdown for the wlengine such as erase program file if
   # saved in db and clean rule dir if needed
-  #
   class EngineHelper
     include Singleton
     include WLTool
