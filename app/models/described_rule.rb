@@ -42,5 +42,7 @@ class DescribedRule < AbstractDatabase
   setup  
   
   before_validation :default_values
-  
+  include WrapperHelper::ActiveRecordWrapper
+  include WrapperHelper::RuleWrapper
+  bind_wdl_relation
 end

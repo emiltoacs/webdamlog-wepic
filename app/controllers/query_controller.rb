@@ -27,19 +27,6 @@ class QueryController < ApplicationController
     else
       @relation_classes = database(Conf.env['USERNAME']).relation_classes
       rel_name = params[:relation][:name] #All relation names in the relation classes should be capitalized
-      # values = params[:values].split(";").map! { |i| WLTool::sanitize!(i) }
-      # values_hash = Hash.new
-    
-      # FIXME This temporary code takes the values inserted and matches them in
-      # order with the corresponding class schema. Ideally we would want to use
-      # the params variable to match the items directly.This requires calls to
-      # jquery to dynamically send the corresponding rows once a relation is
-      # selected.
-      # @relation_classes[rel_name].schema.keys.each_index do |i|
-        # values_hash[@relation_classes[rel_name].schema.keys[i]]=values[i] 
-      # end
-    
-      # WLBUDinsert
       tuple = @relation_classes[rel_name].new(params[:values])
       respond_to do |format|
         if tuple.save
@@ -71,7 +58,6 @@ class QueryController < ApplicationController
   end # create
   
   def add_described_rule
-    # saved , response = ContentHelper::add_to_described_rules(params[:rule],params[:description],params[:role],:skip_ar_wrapper)
     rule = params[:rule]
     drule = DescribedRule.new(:wdlrule =>rule,:description => params[:description], :role=> params[:role])
     saved = drule.save

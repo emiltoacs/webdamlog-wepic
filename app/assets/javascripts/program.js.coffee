@@ -97,7 +97,6 @@ jQuery(document).ready ->
       html = '+<div id="program_menu" class="popUpMenu">'
       html += '<a type="submit" id="program_menu_close" class="button-close"></a><ul>'
       html += '<li><a type="submit" id="refresh_button" class="active_action">Refresh</a></li>'
-      html += '<li><a type="submit" id="add_rule_button" class="active_action">Add Rule...</a></li>'
       html += '</ul></div>'
       jQuery('#program_button').html(html)
       menu_open = true
@@ -108,11 +107,4 @@ jQuery(document).ready ->
         jQuery('#program_button').html('+')
         window.program_refresh()
         menu_open = false
-      # jQuery('#add_rule_button').click ->
-        # jQuery('#program_button').html('+')
-        # menu_open = false
-        # jQuery('.box_wrapper').css 
-          # 'display' : 'block'
-        # jQuery('#add_rule').css
-          # 'display' : 'block'
         
