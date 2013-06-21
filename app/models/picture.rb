@@ -1,14 +1,16 @@
 require 'open-uri'
 class Picture < AbstractDatabase  
   @storage = :database
+  attr_accessor :created
   
   def self.setup
     unless @setup_done
       attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url, :url
       validates :title, :presence => true
       validates :owner, :presence => true
-      before_validation :default_values
-      before_validation :download_image, :if => :image_url_provided?
+      after_save :define_url, :on => :create
+      before_validation :default_values, :on => :create
+      before_validation :download_image, :if => :should_download?, :on => :create
       connection.create_table 'pictures', :force => true do |t|
         t.integer :_id
         t.string :title
@@ -84,7 +86,29 @@ class Picture < AbstractDatabase
   def default_values
     self._id = rand(0xFFFFFF) unless self._id
     self.date = DateTime.now unless self.date
+    #You shoul have only one of these three fields not nil on create.
+    if self.url
+      #Image was created at bootstrap or comes from a foreign peer through webdamlog
+    elsif self.image_url
+      #Image was uploaded from url
+    elsif self.image
+      #Image was uploaded from file
+    else
+      WLLogger.logger.error "One of [url,image_url,image] should not be nil on create!"
+    end
+    WLLogger.logger.debug "Default values for picture #{self._id} added!"
     return true
+  end
+  
+  def define_url
+    unless self.created
+      config = Conf.peer['peer']
+      self.update_column(:url,"#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{self.image.url}")
+      self.created = true
+      if Conf.env['USERNAME']!='manager'
+        save(:no_skip) #This will add the record to webdamlog
+      end
+    end
   end
   
   # private
@@ -98,7 +122,7 @@ class Picture < AbstractDatabase
     URI.parse(self.image_url).instance_of?(URI::Generic) 
   end
   
-  def image_url_provided?
+  def should_download?
     !self.image_url.blank?
   end
   
