@@ -67,11 +67,9 @@ module WrapperHelper::PictureWrapper
     self.send :define_method, :save do |*args|
       #Integrate with webdamlog
       require 'debugger';debugger
-      image = self.image
-      image_url = self.image_url
       super(:skip_ar_wrapper)
       config = Conf.peer['peer']
-      self.update_attribute(url,"#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{self.image.url}")
+      self.update_column(:url,"#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{self.image.url}")
       super()
       # super() # ARWrapper invoke
       # self.class.enginelogger.debug("WrapperHelper::PictureWrapper has created a new picture in webdamlog #{self} to be linked with record in #{self.class}")
@@ -87,7 +85,7 @@ module WrapperHelper::PictureWrapper
   #XXX Changed here
   def save_in_ar
     if self.valid?
-      self.image_url = self.url unless self.image_url
+      self.image_url = self.url unless self.image_url and !self.image_url.blank?
       self.class.superclass.instance_method(:save).bind(self).call
     else
       self.enginelogger.fatal("wdl derived an invalid tuple for AR: #{self}")
