@@ -154,5 +154,5 @@ module WrapperHelper::ActiveRecordWrapper
       self.enginelogger.fatal("wdl derived an invalid tuple for AR: #{self}")
       raise Exceptions::WrapperError, "wdl derived an invalid tuple for AR: #{self}"
     end
-  end 
+  end
 end
