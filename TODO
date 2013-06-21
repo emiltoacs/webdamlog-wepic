@@ -29,3 +29,7 @@ TODOs:
     include wrappers in models
     move wl_launcher and wl_peer
     
+   20/06 :
+   fix the comment bug
+   move the helpers
+   orphaned tuples error

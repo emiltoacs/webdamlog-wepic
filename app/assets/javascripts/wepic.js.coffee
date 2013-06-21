@@ -1,6 +1,6 @@
 jQuery.noConflict()
 starNumber = 0
-pictureId = 0
+window.pictureId = 0
 contact_id = undefined
 regexWS = new RegExp(' ', 'g')
 menu_open = false
@@ -97,23 +97,9 @@ getLatestComments = (idPicture)->
 
 #This function has to be rechecked
 chronJobComment = (idPicture) ->
-	date = getCurrentTime()
-	jQuery.ajax
-	  'url' : current_url + '/comments/latest'
-	  'data' :
-	    '_id' : idPicture
-	    'date' : date
-	  'datatype' : 'json'
-	  'success' : (data) ->
-        if data?
-          for key in data
-            console.log(key)
-            html += '<div class="fancybox-comment"><div class="comment-text">' + key['owner'] + " : "
-            html += key['text'] 
-            html += '</div><div class="small-date">'+key['date']+'</div>' + "</div>"
-            console.log(html)
-        jQuery('#fancybox-comment-wrapper').append(html)	  	
-	    
+	 getLatestComments(idPicture)
+	 if idPicture==window.pictureId
+	   setTimeout ( -> chronJobComment idPicture), 5000
 
 getMetaInf = ->
   metainf = {}
@@ -136,13 +122,13 @@ addStar = ->
     jQuery.ajax
       'url' : current_url + '/update'
       'data' :
-        '_id' : pictureId
+        '_id' : window.pictureId
         'rating' : starNumber
       'datatype' : 'json'
       'success' : (data) ->
         if data.saved
           jQuery('#star-'+String(starNumber)).addClass('star-rating-on')
-          jQuery('#metainf-'+String(pictureId)+' #rating').html(String(starNumber))
+          jQuery('#metainf-'+String(window.pictureId)+' #rating').html(String(starNumber))
           jQuery('#fancybox-errors').css
             'display' : 'none'
         else
@@ -202,13 +188,13 @@ removeStar = ->
     jQuery.ajax
       'url' : current_url + '/update'
       'data' :
-        '_id' : pictureId
+        '_id' : window.pictureId
         'rating' : starNumber
       'datatype' : 'json'
       'success' : (data) ->
         if data.saved
           jQuery('#star-'+String(starNumber+1)).removeClass('star-rating-on')
-          jQuery('#metainf-'+String(pictureId)+' #rating').html(String(starNumber))
+          jQuery('#metainf-'+String(window.pictureId)+' #rating').html(String(starNumber))
           jQuery('#fancybox-errors').css
             'display' : 'none'          
         else
@@ -241,7 +227,7 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
         metainf[span.id] = span.innerHTML
           
       starNumber = parseInt(metainf['rating'])
-      pictureId = parseInt(metainf['_id'])
+      window.pictureId = parseInt(metainf['_id'])
       list = [0,1,2,3,4]
       star_array = new Array(5)
       for i in list
@@ -285,26 +271,27 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       jQuery('#add-comment-box').keypress ( (keypressed) ->
       	if keypressed.keyCode == 13
       	  text = jQuery('#add-comment-box').val()
-      	  addComment(pictureId,text) #Add a comment with text entered up to now.
+      	  addComment(window.pictureId,text) #Add a comment with text entered up to now.
       	  jQuery('#add-comment-box').val('') #Clear the comment line
       )
+      #Setup the chron job
+      #chronJobComment(window.pictureId)
 
       #image change forms
       jQuery('#image-title').keypress ( (keypressed) ->
         if keypressed.keyCode == 13
           keypressed.preventDefault()
           text = jQuery.trim(jQuery('#image-title').val())
-          changeTitle(pictureId,text)
+          changeTitle(window.pictureId,text)
       )
       
       jQuery('#image-location').keypress ( (keypressed) ->
         if keypressed.keyCode == 13
           keypressed.preventDefault()
           text = jQuery.trim(jQuery('#image-location').val())
-          changeLocation(pictureId,text)
-      )      
-      #Setup the chron job
-      getLatestComments(pictureId)
+          changeLocation(window.pictureId,text)
+      )
+      
       jQuery('#fancybox-wrap').unbind("keydown")
     'onCleanup' : ->
       #Clear the entire comment section when leaving fancybox.
@@ -330,7 +317,7 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
         metainf[element.id] = element.innerHTML
       
       starNumber = parseInt(metainf['rating'])
-      pictureId = parseInt(metainf['_id'])
+      window.pictureId = parseInt(metainf['_id'])
       list = [0,1,2,3,4]
       star_array = new Array(5)
       for i in list
@@ -371,16 +358,17 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
       '<div id="add-comment-box" contenteditable="true"></div></div>') #TODO show greetings content when empty
       
       #Setup comment listener
+      
       jQuery('#add-comment-box').keypress ( (keypressed) ->
         if keypressed.keyCode == 13
           text = jQuery('#add-comment-box').val()
-          addComment(pictureId,text) #Add a comment with text entered up to now.
+          addComment(window.pictureId,text) #Add a comment with text entered up to now.
           jQuery('#add-comment-box').val('') #Clear the comment line
       )
       
       #Setup the chron job
+      chronJobComment(window.pictureId)
       
-      getLatestComments(pictureId)
     'onCleanup' : ->
       #Clear the entire comment section when leaving fancybox.
       jQuery('#fancybox-comments').remove()

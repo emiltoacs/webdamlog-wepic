@@ -109,26 +109,50 @@ module WrapperHelper::ActiveRecordWrapper
             # format for insert into webdamlog
             tuple = []
             wdlfact = nil
-            self.class.wdl_table.cols.each_with_index do |col, i|
+            columns = self.class.wdl_table.cols 
+            columns.each_with_index do |col, i|
               if self.class.column_names.include?(col.to_s)
                 tuple[i] = self.send(col)
               else
                 errors.add(:invalid, "tuple #{self} impossible to insert in webdalog it lacks attribute #{col}")
                 return false
               end
-              wdlfact = { self.class.wdl_table_name => [tuple] }
             end
+            wdlfact = { self.class.wdl_table_name => [tuple] }
             # insert in database
+            if (self.class==Picture) then require 'debugger';debugger end
             if wdlfact
-              val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
+              begin
+                val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)
+              rescue => error
+                WLLogger.logger.warn "Error while adding facts to WebdamLog : #{error.message} at #{error.backtrace[0..20].join("\n")}"
+              end
+              #If val not added properly, add anyway              
+              values = {} 
+              if err and err.empty?
+                columns.each_with_index do |col,i|
+                  values[col] = val.values.first.first[i]
+                end
+                unless self.class.where(values).first #If not added, force add
+                  WLLogger.logger.warn "Fact had to be forcefully inserted, although it is in webdamlog, it wasn't put into the database properly!"
+                  self.save(:skip_ar_wrapper)
+                end
+              elsif val.nil?
+                #Force the fact to be inserted. This will create 
+                WLLogger.logger.warn "Fact had to be forcefully inserted because update_add_fact did not return a value!"
+                self.save(:skip_ar_wrapper)
+              end
+              
               # useless to call super here since callback in table will do the
               # job just check return value val to see if fact has be added in
               # wdl
-              if err.empty? and not val.empty?
+              if err and val and err.empty? and not val.empty?
                 return true
-              else
+              elsif err and val
                 errors.add(:database, "fail to save the record #{self} in the database for wdl_table: #{self.class.wdl_tabname} with error #{err} but the following have succed #{val}")
                 return false
+              else
+                return false #error message already shown
               end
             else
               errors.add(:database, "error: empty fact disallowed from record #{self} for wdl_table: #{self.class.wdl_tabname}")
