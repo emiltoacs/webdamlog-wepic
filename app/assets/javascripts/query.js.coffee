@@ -7,7 +7,7 @@
 
 jQuery.noConflict()
 current_url = location.protocol + '//' + location.host + location.pathname
-username = null
+window.username = null
 
 print_hash = (data) ->
   str = ""
@@ -93,7 +93,8 @@ add_described_rule = (rule,description,type) ->
         html += '<div class="rule">' + rule + '</div>'
         html += '</div>'
         jQuery('.'+type+'_examples').append(html)
-        jQuery('.id:contains("'+String(data.id)+'")').parent().focus()
+        elem = jQuery('.id:contains("'+String(data.id)+'")').parent()
+        window.drule_click(elem)
         jQuery('#description_edit_'+type).val('')
         jQuery('#rule_edit_'+type).val('')
       else
@@ -116,36 +117,38 @@ local = (relation,username) ->
     if relation
       name = window.capitalizeFirstLetter(relation.split('@')[0])
       location = relation.split('@')[1]
-      if location=='local' or location==username #if head is local 
+      if location=='local' or location==username or location==window.username #if head is local 
         true
       else
         false
 
+window.drule_click = (elem) ->
+  jQuery(elem).click ->
+    relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+    name = window.capitalizeFirstLetter(relation.split('@')[0])
+    if local(relation,window.username)
+      jQuery('#relation_extensional').val(name).attr('selected',true).change()
+    else
+      alert(display_error('You should only click on local rules'))
 
-  #Manage local non local determination
-  window.setup_query = ->
-    jQuery.ajax
-      'url' : current_url + '/username'
-      'data' : null
-      'datatype' : 'json'
-      'success' : (data) ->
-        username = data.username
-        jQuery('.drule').each ->
-          relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
-          if local(relation,username)
-            html = '<div class="local">local</div>'
-            jQuery(this).append(html)
-          else
-            html = '<div class="non-local">non local</div>'
-            jQuery(this).append(html)
-      
-        jQuery('.drule').click ->
-          relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
-          name = window.capitalizeFirstLetter(relation.split('@')[0])
-          if local(relation,username)
-            jQuery('#relation_extensional').val(name).attr('selected',true).change()
-          else
-            alert(display_error('You should only click on local rules'))
+#Manage local non local determination
+window.setup_query = ->
+  jQuery.ajax
+    'url' : current_url + '/username'
+    'data' : null
+    'datatype' : 'json'
+    'success' : (data) ->
+      username = data.username
+      window.username = data.username
+      jQuery('.drule').each ->
+        relation = jQuery.trim(jQuery(this).find('div.rule').html()).split(" ")[1].split("(")[0]
+        if local(relation,username)
+          html = '<div class="local">local</div>'
+          jQuery(this).append(html)
+        else
+          html = '<div class="non-local">non local</div>'
+          jQuery(this).append(html)
+        window.drule_click(this)
 
 
 window.relation_refresh = (type)->

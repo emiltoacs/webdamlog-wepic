@@ -89,6 +89,7 @@ class Picture < AbstractDatabase
     #You shoul have only one of these three fields not nil on create.
     if self.url
       #Image was created at bootstrap or comes from a foreign peer through webdamlog
+      self.image_url = self.url
     elsif self.image_url
       #Image was uploaded from url
     elsif self.image
@@ -101,7 +102,7 @@ class Picture < AbstractDatabase
   end
   
   def define_url
-    unless self.created
+    if !self.created and self.url.blank?
       config = Conf.peer['peer']
       self.update_column(:url,"#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{self.image.url}")
       self.created = true

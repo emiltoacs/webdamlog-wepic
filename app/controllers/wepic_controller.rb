@@ -38,6 +38,7 @@ class WepicController < ApplicationController
         format.html {redirect_to :wepic, :notice => "No pictures for #{params[:_id]}"} 
       end
     else
+      require 'debugger';debugger
       if params[:title] and !params[:title].empty?
         picture.title = params[:title]
         picture.save
