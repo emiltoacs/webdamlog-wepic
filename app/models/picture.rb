@@ -4,7 +4,7 @@ class Picture < AbstractDatabase
   
   def self.setup
     unless @setup_done
-      attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url
+      attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url, :url
       validates :title, :presence => true
       validates :owner, :presence => true
       before_validation :default_values
@@ -12,6 +12,7 @@ class Picture < AbstractDatabase
       connection.create_table 'pictures', :force => true do |t|
         t.integer :_id
         t.string :title
+        t.string :url
         t.string :owner
         t.datetime :date
         t.string :image_file_name
@@ -107,8 +108,7 @@ class Picture < AbstractDatabase
     elsif url_provided_local?
       self.image = get_local_image
     else
-      # #Do nothing or 
-      self.image = do_download_remote_image
+      # #Do nothing
     end
   end
   
@@ -123,6 +123,7 @@ class Picture < AbstractDatabase
     io.original_filename.blank? ? nil : io
   rescue # catch url errors with validations instead of exceptions (Errno::ENOENT, OpenURI::HTTPError, etc...)
   end
+  
   unless Conf.env['USERNAME'].downcase == 'manager'
     include WrapperHelper::ActiveRecordWrapper
     include WrapperHelper::PictureWrapper

@@ -9,14 +9,6 @@ class PicturesController < WepicController
     @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
     @picture = Picture.new if @picture.nil?
     saved = @picture.save
-    # unless @picture.image_url
-      # picture = Picture.find(@picture.id)
-      # config = Conf.peer['peer']
-      # url = "#{config['protocol']}://#{config['ip']}:#{config['web_port']}#{@picture.image.url}"
-      # picture.image_url = url
-      # require 'debugger';debugger
-      # picture.save
-    # end
     location = if params[:location] and !params[:location].empty?
       tuple = PictureLocation.new(:_id => @picture._id,:location => params[:location])
       tuple.save
