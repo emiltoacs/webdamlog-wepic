@@ -120,7 +120,6 @@ module WrapperHelper::ActiveRecordWrapper
             end
             wdlfact = { self.class.wdl_table_name => [tuple] }
             # insert in database
-            if (self.class==Picture) then require 'debugger';debugger end
             if wdlfact
               begin
                 val, err = EngineHelper::WLENGINE.update_add_fact(wdlfact)

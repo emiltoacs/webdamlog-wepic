@@ -33,3 +33,8 @@ TODOs:
    fix the comment bug
    move the helpers
    orphaned tuples error
+   
+   -----=-----------=-----------=------ Tell emilien
+   nature of webdamlog makes system complicated ; indeed webdamlog, an update on a fact is translated into a new fact which in turn 
+   creates new tuples in AR==> how do we "edit" a fact in webdamlog?
+   ==> same problem with updating other fields ==> this creates extra tuples in Webdamlog
