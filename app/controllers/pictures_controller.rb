@@ -4,9 +4,14 @@ class PicturesController < WepicController
   # form in wepic/_upload_from_[file/url].html.erb is pressed. This convention is enforced
   # because the form is sent with an http POST requests.
   def create
-    config.logger.info "Picture Parameters : #{params[:picture].inspect}" 
-    @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image_url=>params[:picture][:image_url]) if params[:picture][:image_url]
-    @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
+    config.logger.info "Picture Parameters : #{params[:picture].inspect}"
+    errors = {}
+    begin 
+      @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image_url=>params[:picture][:image_url]) if params[:picture][:image_url]
+      @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
+    rescue error
+      errors[:run_time] = error.message
+    end
     @picture = Picture.new if @picture.nil?
     saved = @picture.save
     location = if params[:location] and !params[:location].empty?
@@ -17,7 +22,7 @@ class PicturesController < WepicController
       nil
     end
     @pictures = Picture.all
-    errors = {:picture => @picture.errors.messages}
+    errors[:picture] = picture.errors.messages
     errors[:location] = location.errors.messages if location
     logger.debug "Errors if any? : #{errors.inspect}"
     no_errors = errors[:picture].empty?
