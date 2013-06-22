@@ -22,7 +22,7 @@ class PicturesController < WepicController
       nil
     end
     @pictures = Picture.all
-    errors[:picture] = picture.errors.messages
+    errors[:picture] = @picture.errors.messages
     errors[:location] = location.errors.messages if location
     logger.debug "Errors if any? : #{errors.inspect}"
     no_errors = errors[:picture].empty?
