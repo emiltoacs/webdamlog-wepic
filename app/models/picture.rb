@@ -145,8 +145,8 @@ class Picture < AbstractDatabase
   
   def get_local_image
     io = open(image_url)
-  rescue error
-    WLLogger.logger.error "Could not download file : #{error.message}"
+  rescue => import_error
+    WLLogger.logger.error "Could not download file : #{import_error.message}"
   end
   
   def do_download_remote_image
