@@ -2,10 +2,11 @@ require 'open-uri'
 class Picture < AbstractDatabase  
   @storage = :database
   attr_accessor :created
+  attr_accessor :downloaded
   
   def self.setup
     unless @setup_done
-      attr_accessible :title, :image, :owner, :image, :_id, :date, :image_url, :url
+      attr_accessible :title, :owner, :image, :_id, :date, :image_url, :url
       validates :title, :presence => true
       validates :owner, :presence => true
       after_save :define_url, :on => :create
@@ -116,11 +117,12 @@ class Picture < AbstractDatabase
   
   def url_provided_remote?
     uri = URI.parse(self.image_url)
-    return uri.is_a?(URI::HTTP) || uri.is_a?(URI::FTP) || uri.is_a?(URI::HTTPS)
+    return ((uri.is_a?(URI::HTTP) || uri.is_a?(URI::FTP) || uri.is_a?(URI::HTTPS)) and uri.host!='localhost')
   end
   
   def url_provided_local?
-    URI.parse(self.image_url).instance_of?(URI::Generic) 
+    uri = URI.parse(self.image_url)
+    uri.host=='localhost'
   end
   
   def should_download?
@@ -128,18 +130,23 @@ class Picture < AbstractDatabase
   end
   
   def download_image
-    if url_provided_remote?
-      self.image = do_download_remote_image
-    elsif url_provided_local?
-      self.image = get_local_image
-    else
-      # #Do nothing
+    unless self.downloaded #Don't want to download more than once!
+      require 'debugger';debugger
+      if url_provided_remote?
+        self.image = do_download_remote_image
+      elsif url_provided_local?
+        self.image = get_local_image
+      else
+        # #Do nothing
+      end
+      self.downloaded=true
     end
   end
   
   def get_local_image
-    io = File.new(URI.parse(image_url).path)
-  rescue
+    io = open(image_url)
+  rescue error
+    WLLogger.logger.error "Could not download file : #{error.message}"
   end
   
   def do_download_remote_image
