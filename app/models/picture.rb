@@ -131,14 +131,13 @@ class Picture < AbstractDatabase
   
   def download_image
     unless self.downloaded #Don't want to download more than once!
-      require 'debugger';debugger
-      if url_provided_remote?
-        self.image = do_download_remote_image
-      elsif url_provided_local?
-        self.image = get_local_image
-      else
-        # #Do nothing
-      end
+        if url_provided_remote?
+          self.image = do_download_remote_image
+        elsif url_provided_local?
+          self.image = get_local_image
+        else
+          # #Do nothing
+        end
       self.downloaded=true
     end
   end
@@ -153,7 +152,8 @@ class Picture < AbstractDatabase
     io = open(URI.parse(image_url))
     def io.original_filename; base_uri.path.split('/').last; end
     io.original_filename.blank? ? nil : io
-  rescue # catch url errors with validations instead of exceptions (Errno::ENOENT, OpenURI::HTTPError, etc...)
+  rescue => import_error
+    WLLogger.logger.error "Could not download file : #{import_error.message}" # catch url errors with validations instead of exceptions (Errno::ENOENT, OpenURI::HTTPError, etc...)
   end
   
   unless Conf.env['USERNAME'].downcase == 'manager'

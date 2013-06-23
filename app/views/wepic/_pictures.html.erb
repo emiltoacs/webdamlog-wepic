@@ -19,8 +19,9 @@
 				<span id="title"><%= picture.title%></span>
 				<span id="owner"><%= picture.owner%></span>
 				<span id="date"><%= picture.created_at.strftime("%m/%d/%y")%></span>
-				<span id="rating"> <% ratingTuple = Rating.where(:_id=>picture._id).first%>
-					<%= if ratingTuple then ratingTuple.rating else 0 end%> </span>
+				<span id="rating"> <%= ratingTuple = picture.rated%> </span>
+				<span id="my_rating"> <% ratingTuple = Rating.where(:_id=>picture._id).first%>
+					<%= if ratingTuple then ratingTuple.rating else -1 end%> </span>
 				<span id="_id"><%= picture._id%></span>
 				<span id="id"><%= picture.id%></span>
 			</div>
