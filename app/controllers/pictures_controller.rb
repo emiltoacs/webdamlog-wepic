@@ -13,7 +13,9 @@ class PicturesController < WepicController
       errors[:run_time] = error.message
     end
     @picture = Picture.new if @picture.nil?
-    saved = @picture.save
+    #Thread.new do
+      saved = @picture.save
+    #end
     location = if params[:location] and !params[:location].empty?
       tuple = PictureLocation.new(:_id => @picture._id,:location => params[:location])
       tuple.save

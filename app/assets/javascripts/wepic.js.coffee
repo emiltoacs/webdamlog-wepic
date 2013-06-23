@@ -17,6 +17,41 @@ sanitize = (string) ->
   string = string.trim()
   string.replace(regexWS,'') #removes all whitespace on keys
 
+rating_string = (value) ->
+  star_array = new Array(5)
+  for i in [0..4]
+    if i <= value
+      star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
+    else
+      star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
+  star_s = '<div class="star-wrapper">'
+  for star in star_array
+    star_s += star
+  star_s += '</div>'
+  return star_s
+
+changeRating = (idPicture,rating) ->
+    jQuery.ajax
+      'url' : current_url + '/update'
+      'data' :
+        '_id' : idPicture
+        'rating' : rating
+      'datatype' : 'json'
+      'success' : (data) -> 
+        if data.saved
+          jQuery('#metainf-'+String(idPicture)+' #my_rating').html(String(data.my_rating))
+          jQuery('#metainf-'+String(idPicture)+' #rating').html(String(data.rating))
+          html = 'My rating : '
+          html += rating_string(data.my_rating)
+          jQuery('#rate_select').unbind("change") #Close the callback       
+          jQuery('#my_rating_box').html(html)
+          html = 'Average Rating : ' + rating_string(data.rating)          
+          jQuery('#avg_rating_box').html(html)
+        else
+          jQuery('#fancybox-errors').html(display_error(data.errors))
+          jQuery('#fancybox-errors').css
+            'display' : 'block'
+
 changeTitle = (idPicture,title) ->
     html = title
     jQuery.ajax
@@ -225,28 +260,17 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       metainf={}
       for span in currentOpts.orig.context.parentElement.childNodes[3].children
         metainf[span.id] = span.innerHTML
-          
       starNumber = parseInt(metainf['rating'])
       window.pictureId = parseInt(metainf['_id'])
-      list = [0,1,2,3,4]
-      star_array = new Array(5)
-      for i in list
-        if i <= parseInt(metainf['rating'])
-          star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
-        else
-          star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
-      star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #333;width:15px;\" class=\"nice-button\">+</a>"
-      star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #333;width:15px;\" class=\"nice-button\">-</a>"
-      star_s += '<div class="star-wrapper">'
-      for star in star_array
-        star_s += star
-      star_s += '</div>'      
+      star_s = rating('rating',parseInt(metainf['rating']))
+      my_star_s = rating('my_rating',parseInt(metainf['my_rating']))      
       return '<div id="fancybox-title-inside" class="fancybox-title"><table><tr>'+
       '<td style=""><input id="image-title" style="font-style:italic" title="Click to edit" value="'+capitalizeFirstLetter(metainf['title'])+'"></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
       '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <input title="Click to edit" id="image-location" value="'+capitalizeFirstLetter(String(metainf['location']))+'"></td>'+
-      '<td style="text-align:right">'+star_s+'</td></tr>'+
-      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK" style="text-align:left"><input type="submit" value="Download image" class="download"></form></td></tr>'+
+      '<td style="text-align:right"><span id="my_rating_box">'+my_star_s+'</span></td></tr>'+
+      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK" style="text-align:left"><input type="submit" value="Download image" class="download"></form>'+
+      '</td><td style="text-align:right"><span id="avg_rating_box">'+star_s+'</span></td></tr>'+
       '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
       jQuery('#fancybox-wrap').css
@@ -257,15 +281,13 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       jQuery('#fancybox-wrap').draggable
         'handle' : '#fancybox-content' 
       
-      #Setup star interaction
-      jQuery('#plus').click ->
-        console.log('addstar')
-        addStar()
-      jQuery('#minus').click ->
-        console.log('removestar')
-        removeStar()
       jQuery('#fancybox-outer').after('<div id="fancybox-comments"><div id="fancybox-comment-wrapper"></div>'+
       '<textarea id="add-comment-box" placeholder="Type a comment here"></textarea></div>') #TODO show greetings content when empty    
+      
+      #Setup rating interaction
+      jQuery('#rate_select').change ->
+        value = parseInt(jQuery('#rate_select option:selected').html())
+        changeRating(window.pictureId,value)      
       
       #Setup comment listener
       jQuery('#add-comment-box').keypress ( (keypressed) ->
@@ -297,6 +319,23 @@ fancybox_func = -> jQuery('a.fancybox').fancybox
       #Clear the entire comment section when leaving fancybox.
       jQuery('#fancybox-comments').remove()
       
+rating = (attribute,value) ->
+  star_s = ''
+  if attribute=='my_rating'
+    if value==-1
+      star_s += 'Rate this image :'
+      star_s += '<select id="rate_select" name="relation[name]">'
+      star_s += '<option value=""> Rate... </option>'
+      for i in [0..4]
+        star_s += '<option value="'+i+'">'+i+'</option>'
+      star_s += '</select>'
+    else
+      star_s += 'My Rating : '
+      star_s += rating_string(value)
+  else if attribute=='rating'
+      star_s += 'Average Rating : '
+      star_s += rating_string(value)
+  return star_s
 
 
 fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
@@ -315,28 +354,16 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
         element = jQuery(this).context
         console.log(String(element.id) + ":" + element.innerHTML)
         metainf[element.id] = element.innerHTML
-      
-      starNumber = parseInt(metainf['rating'])
       window.pictureId = parseInt(metainf['_id'])
-      list = [0,1,2,3,4]
-      star_array = new Array(5)
-      for i in list
-        if i <= parseInt(metainf['rating'])
-          star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly star-rating-on" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
-        else
-          star_array[i] = '<div class="star-rating rater-0 star star-rating-applied star-rating-readonly" id="star-'+String(i)+'" aria-label="" role="text"><a title="on"></a></div>'
-      star_s = "<a id=\"plus\" type=\"submit\" style=\"background-color: #333;width:15px;\" class=\"nice-button\">+</a>"
-      star_s += "<a id=\"minus\" type=\"submit\" style=\"background-color: #333;width:15px;\" class=\"nice-button\">-</a>"
-      star_s = '<div class="star-wrapper">'
-      for star in star_array
-        star_s += star
-      star_s += '</div>'      
+      star_s = rating('rating',metainf['rating'])
+      my_star_s = rating('my_rating',metainf['my_rating'])
       return '<div id="fancybox-title-inside" class="fancybox-title"><table><tr>'+
       '<td style=""><strong id="image-title" style="font-style:italic">'+capitalizeFirstLetter(metainf['title'])+'</strong></td>'+
       '<td style="text-align:right">On '+metainf['date']+'</td></tr>'+
       '<tr><td style="">By <strong>'+metainf['owner']+'</strong>, in <strong id="image-location">'+String(metainf['location'])+'</strong></td>'+
-      '<td style="text-align:right">'+star_s+'</td></tr>'+
-      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK" style="text-align:left"><input type="submit" value="Download image" class="download"></form></td></tr>'+
+      '<td style="text-align:right"><span id="my_rating_box">'+my_star_s+'</span></td></tr>'+
+      '<tr><td><form action="/pictures/'+metainf['id']+'/images" method="LINK" style="text-align:left"><input type="submit" value="Download image" class="download"></form>'+
+      '</td><td style="text-align:right"><span id="avg_rating_box">'+star_s+'</span></td></tr>'+
       '</table><div id="fancybox-errors" class="box-errors error"></div></div>'
     'onComplete' : ->
       jQuery('#fancybox-wrap').css
@@ -346,6 +373,10 @@ fancybox_func_contact = -> jQuery('a.contact_fancybox').fancybox
         
       jQuery('#fancybox-wrap').draggable
         'handle' : '#fancybox-content' 
+      
+      #Setup rating interaction
+      jQuery('#rate_select').change ->
+        changeRating(idPicture,value)      
       
       #Setup star interaction
       jQuery('#plus').click ->
