@@ -14,7 +14,7 @@ class UrlValidator < ActiveModel::EachValidator
       url = URI.parse(url) rescue false
       url.kind_of?(URI::HTTP) || url.kind_of?(URI::HTTPS)
       if url!='localhost' #url is from the outside
-        file = open(url)
+        true
       else #url must be intra webdamlog don't check
         true
       end
