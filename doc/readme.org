@@ -106,29 +106,39 @@ communication:
 
 * Amazon
 
+
 ** Install rvm
 : \curl -L https://get.rvm.io | bash -s stable --rails
 
-restart or
+Restart or
 : `source /home/ubuntu/.rvm/scripts/rvm`
 
+Install 1.9.3
+: rvm install 1.9.3
+And use it by default
 : rvm --default use 1.9.3
 
-** Set up connexion
-Set up your ssh key with inria gforge if needed git repo:
-+ https://gforge.inria.fr/account/ in account maintenance I used
-  the key "id_rsa_amaz"
 
+** Set environment
+To set the language environment:
++ locale :: list your current locales
++ sudo locale-gen en_US.UTF-8 :: reconfigure locale to use en_US
++ sudo dpkg-reconfigure locales :: reconfigure the package
+Ref: http://askubuntu.com/questions/162391/how-do-i-fix-my-locale-issue
+
+
+** Set up package required
 Set language environment to avoid warning (in your bashrc) for
 the following
 : export LANG=en_US
 : sudo apt-get install language-pack-en
+: sudo apt-get install git
 : sudo apt-get install build-essential imagemagick libmagickcore-dev libmagickwand-dev
 : sudo apt-get install postgresql postgresql-server-dev-9.1
 
-*** postgres setup
+*** Postgres setup
 
-setup your databases
+Setup your databases via ./postgres_init_script.sh
 #+begin_src
     Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
 ------------+----------+----------+-------------+-------------+-----------------------
@@ -160,10 +170,36 @@ host    all             all             ::1/128                 md5
 #host    replication     postgres        127.0.0.1/32            md5
 #host    replication     postgres        ::1/128                 md5
 #+end_src
+restart postgres: sudo /etc/init.d/postgresql restart
 
-*** finshing
+
+** Set up connection
+Set up your ssh key with inria gforge if needed git repo:
++ https://gforge.inria.fr/account/ in account maintenance I used
+  the key "id_rsa_amaz"
++ or use the github repository:
+  git@github.com:Emilien-Antoine/webdamlog-wepic.git
+
+
+** finishing to install wepic dependance
 
 launch bundle in your rails root (everything should succed)
 
+
+** Additional package
+
+*** Add ac2-api-tools from multiverse
+
+https://help.ubuntu.com/community/Repositories/CommandLine#Adding_the_Universe_and_Multiverse_Repositories
+
++ edit /etc/apt/source.list
++ uncomment:
+  #+begin_src
+  deb http://us.archive.ubuntu.com/ubuntu/ hardy multiverse
+  deb-src http://us.archive.ubuntu.com/ubuntu/ hardy multiverse
+  deb http://us.archive.ubuntu.com/ubuntu/ hardy-updates multiverse
+  deb-src http://us.archive.ubuntu.com/ubuntu/ hardy-updates multiverse
+  #+end_src
++ install: ec2-api-tool package
 
 
