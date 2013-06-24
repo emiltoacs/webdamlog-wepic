@@ -2,7 +2,7 @@
 <table>
   <%@contacts.each do |contact| %>
     <tr>
-      <td class="<%if contact.online%>online<%else%>offline<%end%>"></td>
+      <td class="offline"></td>
       <td>
         <a name="contact" value="<%=contact.id%>" onclick="window.select(this);" class="contact"><%= contact.username%></a>
       </td>
