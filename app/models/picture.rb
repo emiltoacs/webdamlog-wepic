@@ -11,7 +11,7 @@ class Picture < AbstractDatabase
       validates :owner, :presence => true
       after_save :define_url, :on => :create
       before_validation :default_values, :on => :create
-      before_validation :download_image, :if => :should_download?, :on => :create
+      after_commit :download_image, :if => :should_download?, :on => :create
       connection.create_table 'pictures', :force => true do |t|
         t.integer :_id
         t.string :title
@@ -61,7 +61,7 @@ class Picture < AbstractDatabase
 
   def located
     picture = PictureLocation.where(:_id => self._id)
-    if picture then picture.first else "unknown" end
+    if picture and picture.first then picture.first.location else "unknown" end
   end
 
   def dated
@@ -87,7 +87,7 @@ class Picture < AbstractDatabase
   def default_values
     self._id = rand(0xFFFFFF) unless self._id
     self.date = DateTime.now unless self.date
-    #You shoul have only one of these three fields not nil on create.
+    #You should have only one of these three fields not nil on create.
     if self.url
       #Image was created at bootstrap or comes from a foreign peer through webdamlog
       self.image_url = self.url
@@ -117,12 +117,12 @@ class Picture < AbstractDatabase
   
   def url_provided_remote?
     uri = URI.parse(self.image_url)
-    return ((uri.is_a?(URI::HTTP) || uri.is_a?(URI::FTP) || uri.is_a?(URI::HTTPS)) and uri.host!='localhost')
+    return ((uri.is_a?(URI::HTTP) || uri.is_a?(URI::FTP) || uri.is_a?(URI::HTTPS)))
   end
   
   def url_provided_local?
     uri = URI.parse(self.image_url)
-    uri.host=='localhost'
+    uri.is_a?(URI::Generic)
   end
   
   def should_download?
@@ -131,6 +131,7 @@ class Picture < AbstractDatabase
   
   def download_image
     unless self.downloaded #Don't want to download more than once!
+      Thread.new do
         if url_provided_remote?
           self.image = do_download_remote_image
         elsif url_provided_local?
@@ -138,6 +139,8 @@ class Picture < AbstractDatabase
         else
           # #Do nothing
         end
+        self.save(:skip_ar_wrapper)
+      end
       self.downloaded=true
     end
   end

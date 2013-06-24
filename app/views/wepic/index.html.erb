@@ -1,4 +1,16 @@
 <%if current_user%>
+<script text="text/javascript">
+jQuery(document).ready(function(){
+	window.chronJobComment = function(){
+	  console.log('Comments on : ' + window.pictureId);
+	  if(window.active_window){
+	    window.getLatestComments(window.pictureId)
+	  }
+	  setTimeout (function(){return window.chronJobComment();},2000);
+	}
+	window.chronJobComment();
+});
+</script>
   <div id="pictures">
     <div class="opacity"></div>
     <div class="content">
