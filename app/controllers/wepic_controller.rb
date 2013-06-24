@@ -13,16 +13,12 @@ class WepicController < ApplicationController
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     unless @relation_classes['Picture'].nil?
       @pictures = Picture.where(:owner => Conf.env['USERNAME'])
-      # Picture.where(:owner => 'local').each {|pic| @pictures << pic}
+      @pictures.select! {|picture| !picture.image_file_name.nil?}
       if sorting_order=='desc'
         @pictures.sort! {|a,b| b.send(order_criteria.to_sym) <=> a.send(order_criteria.to_sym)}
       else
         @pictures.sort! {|a,b| a.send(order_criteria.to_sym) <=> b.send(order_criteria.to_sym)}
       end
-      #useful when sorting
-      # if owner
-        # @contact_pictures = Picture.where(:owner => owner)
-      # end
     end
     @contacts = @relation_classes['Contact'].all unless @relation_classes['Contact'].nil?
     @contacts.select! {|contact| !['sigmod_peer',Conf.env['USERNAME']].include?(contact) } #Do not show self or sigmod_peer
@@ -81,7 +77,7 @@ class WepicController < ApplicationController
     logger.debug("Dump receiving info for getLatestComments : #{params.inspect}")
     @beforeAll = DateTime.new(2012) unless @beforeAll
     date = if arguments[:date] then arguments[:date] else @beforeAll end
-    @comments = Comment.where(:_id => arguments[:_id]).where("created_at > ?", date).order('created_at ASC')
+    @comments = Comment.where("created_at > ? AND _id = ?", date, arguments[:_id]).order('created_at ASC')
     @comments = [] unless @comments #In case there are no comments
     returnval = []
     @comments.each do |comment|

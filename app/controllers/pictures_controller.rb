@@ -6,16 +6,18 @@ class PicturesController < WepicController
   def create
     config.logger.info "Picture Parameters : #{params[:picture].inspect}"
     errors = {}
-    begin 
-      @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image_url=>params[:picture][:image_url]) if params[:picture][:image_url]
-      @picture = Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
+    begin
+      @picture = if params[:picture][:image_url]
+        Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image_url=>params[:picture][:image_url])
+      elsif params[:picture][:image]
+        Picture.new(:title => params[:picture][:title],:owner=>Conf.env['USERNAME'],:image=>params[:picture][:image]) if params[:picture][:image]
+      else
+        Picture.new if @picture.nil?
+      end
     rescue error
       errors[:run_time] = error.message
     end
-    @picture = Picture.new if @picture.nil?
-    #Thread.new do
-      saved = @picture.save
-    #end
+    saved = @picture.save
     location = if params[:location] and !params[:location].empty?
       tuple = PictureLocation.new(:_id => @picture._id,:location => params[:location])
       tuple.save
@@ -26,7 +28,6 @@ class PicturesController < WepicController
     @pictures = Picture.all
     errors[:picture] = @picture.errors.messages
     errors[:location] = location.errors.messages if location
-    logger.debug "Errors if any? : #{errors.inspect}"
     no_errors = errors[:picture].empty?
     no_errors &&= errors[:location].empty? if location
     if no_errors and saved
@@ -70,6 +71,7 @@ class PicturesController < WepicController
     #Render the json data we need to send to the contact javascript/
     return_hash = {}
     @contact_pictures.each do |picture|
+      rating = Rating.where(:_id=>picture._id).first
       key = picture.title
       value = {}
       value['title']=picture.title
@@ -83,6 +85,7 @@ class PicturesController < WepicController
       value['location']=picture.located
       value['date']=picture.dated
       value['rating']=picture.rated
+      value['my_rating']=if rating then rating.rating else -1 end
       value['owner']=picture.owner
       return_hash[key]=value
     end  
