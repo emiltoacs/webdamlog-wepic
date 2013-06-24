@@ -1,4 +1,4 @@
-require 'open-uri'
+require 'net/http'
 
 class UrlValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)

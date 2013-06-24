@@ -132,17 +132,34 @@ class Picture < AbstractDatabase
   
   def download_image
     unless self.downloaded #Don't want to download more than once!
-      Thread.new do
-        if url_provided_remote?
-          self.image = do_download_remote_image
-        elsif url_provided_local?
-          self.image = get_local_image
-        else
-          # #Do nothing
-        end
-        self.save(:skip_ar_wrapper)
-      end
       self.downloaded=true
+      if image_url_local?
+        Thread.new do
+          do_download_image
+        end
+      else
+        do_download_image
+      end
+    end
+  end
+  
+  def do_download_image
+    if url_provided_remote?
+      self.image = do_download_remote_image
+    elsif url_provided_local?
+      self.image = get_local_image
+    else
+      # #Do nothing
+    end
+    self.save(:skip_ar_wrapper)
+  end
+  
+  def image_url_local?
+    uri = URI.parse(self.image_url)
+    if uri.host=='localhost'
+      true
+    else
+      false
     end
   end
   
