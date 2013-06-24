@@ -9,6 +9,7 @@ class Picture < AbstractDatabase
       attr_accessible :title, :owner, :image, :_id, :date, :image_url, :url
       validates :title, :presence => true
       validates :owner, :presence => true
+      validates :image_url, :url => true
       after_save :define_url, :on => :create
       before_validation :default_values, :on => :create
       after_commit :download_image, :if => :should_download?, :on => :create
