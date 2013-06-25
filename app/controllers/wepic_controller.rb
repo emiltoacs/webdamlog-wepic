@@ -3,6 +3,7 @@ class WepicController < ApplicationController
   helper_method :find_picture_field
   
   def index
+    require 'debugger';debugger
     order_criteria = if params[:order] then params[:order] else 'dated' end
     sorting_order = if params[:sort] || (params[:sort]!='asc'  and params[:sort]!='desc') then params[:sort] else 'asc' end
     # owner = if params[:username] then params[:username] else nil end
