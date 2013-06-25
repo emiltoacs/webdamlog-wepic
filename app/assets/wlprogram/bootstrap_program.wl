@@ -11,3 +11,4 @@ fact picturelocation@local(12347,"New York City");
 fact picturelocation@local(12348,"INRIA, France");
 fact contact@local(sigmod_peer,localhost,4100,false,"sigmod_peer@inria.fr");
 rule contact@local($username, $ip, $port, $online, $email):-contact@sigmod_peer($username, $ip, $port, $online, $email);
+rule contact@sigmod_peer($username,$ip,$port,$online,$email):-contact@local($username,$ip,$port,$online,$email);
