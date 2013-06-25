@@ -8,8 +8,12 @@ class ProgramController < ApplicationController
     @peers = WLENGINE.snapshot_peers
     @collections = WLENGINE.snapshot_collections
     @rules = WLENGINE.snapshot_rules
+    @facts = Hash.new
+    WLENGINE.snapshot_relname.each do |relname|
+      @facts[relname] = WLENGINE.snapshot_facts(relname)
+    end
     respond_to do |format|
-      format.json {render :json => {:peers => @peers , :collections => @collections, :rules => @rules}.to_json}
+      format.json {render :json => {:peers => @peers , :collections => @collections, :rules => @rules, :facts => @facts}.to_json}
     end
   end
   

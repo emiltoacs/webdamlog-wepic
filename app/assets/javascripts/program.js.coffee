@@ -4,6 +4,15 @@
 jQuery.noConflict()
 current_url = location.protocol + '//' + location.host + location.pathname
 
+print_hash = (data) ->
+  str = ""
+  for key,val of data
+    if typeof(value)=='object'
+      str += key + ' => ' + "\n\t" + print_hash(val) + "\n"
+    else
+      str += key + ' => ' + val + "\n"
+
+
 Object.size = (obj) ->
     size = 0
     for key of obj
@@ -73,6 +82,16 @@ get_program = ->
       for id,rule of data.rules
         html += '<div class="statement"><span class="rule_id">'+id+'</span>:'+rule.split("_at_").join("@")+' </div>'
       jQuery('#rules_content').html(html)
+      html = ""
+      for relname,facts of data.facts
+        for fact in facts
+          tuple = relname + "("
+          for col,val of fact
+            tuple+= '"'+val + '",'
+          tuple = tuple.slice(0,-1)
+          tuple += ")"
+          html += '<div class="statement">'+tuple.split("_at_").join("@")+' </div>'
+      jQuery('#facts_content').html(html)
 
 window.program_refresh = ->
   get_program()
