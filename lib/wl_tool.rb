@@ -13,6 +13,7 @@ module Conf
   database.yml
   peer.yml  
   )
+  
   # Store in one object all the configuration related to this peer
   # * :force=> true in options to force reloading of conf
   # * :rails_env => [test,development,production] to change environment of configuration files

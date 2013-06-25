@@ -215,7 +215,8 @@ class UsersControllersTestComplexProgram < ActionController::TestCase
     # REMARK if you use do end with map it returns a enumerator rather than { }
     # return an array as expected
       
-    assert_equal ["rule contact_at_test_username($username, $peerlocation, $online, $email) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email);",
+    assert_equal [
+      "rule contact_at_test_username($username, $peerlocation, $online, $email) :- contact_at_sigmod_peer($username, $peerlocation, $online, $email);",
       "rule person_example_at_test_username($id, $name) :- friend_example_at_test_username($id, $name);",
       nil,
       "rule query1_at_test_username($title) :- picture_at_test_username($title, $_, $_, $_);",

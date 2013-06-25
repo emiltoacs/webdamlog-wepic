@@ -20,7 +20,7 @@ described_rules:
  drule4:
    description: Create a friend relations and insert all contacts who commented on one of my pictures. Finally include myself.
    wdlrule : |
-             collection ext persistent friend@local(name*,group*);
+             collection ext persistent friend@local(name*,usergroup*);
              rule friend@local($name,commenters):- picture@local($_,$_,$id,$_),comment@local($id,$name,$_,$_);
    role: extensional
  drule5:
