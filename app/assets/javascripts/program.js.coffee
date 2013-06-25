@@ -57,12 +57,19 @@ get_delegations = ->
         html=''
         for id,rule of data.content
             html += '<div class="delegation">'
-            html += '<a class="accept" onclick="window.accept('+id+');">&#10003;</a>'
-            html += '<a class="refuse" onclick="window.refuse('+id+');">x</a>'
+            html += '<a id="accept-'+id+'" class="accept">&#10003;</a>'
+            html += '<a id="refuse-'+id+'" class="refuse">x</a>'
             html += '<div class="id">'+id+'</div>'
             html += '<div class="rule">'+rule.split("\n").join('<br/>')+'</div>'
             html += '</div></div>'
         jQuery('#display_delegations').append(html)
+        #Delegation interaction callbacks
+        jQuery('#refuse-'+id).click ->
+          console.log('Delegation ' + String(id) + ' refused...')
+          reject_delegation(id)
+        jQuery('#accept-'+id).click ->
+          console.log('Delegation ' + String(id) + ' accepted...')
+          accept_delegation(id)
 
 get_program = ->
   jQuery.ajax
@@ -99,11 +106,6 @@ window.program_refresh = ->
 window.delegations = ->
   get_delegations()
 
-window.refuse = (id) ->
-  reject_delegation(id)
-
-window.accept = (id) ->
-  accept_delegation(id)
 
 jQuery(document).ready ->
   jQuery('#program_button').click ->
