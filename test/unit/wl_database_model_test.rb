@@ -44,7 +44,7 @@ class WLDatabaseModelTest < Test::Unit::TestCase
         "describedrule_at_databasemodeltest"=>"DescribedRule",
         "testmodelcreated_at_databasemodeltest"=>"TestModelCreated"},
       helper.wdl_tables_binding)
-    assert_equal 3, engine.tables[:testmodelcreated_at_databasemodeltest].to_a.size    
+    assert_equal 3, engine.tables[:testmodelcreated_at_databasemodeltest].to_a.size
   end
 end
 
