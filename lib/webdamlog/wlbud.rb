@@ -291,9 +291,6 @@ module WLBud
         @relation_to_declare.clear
         @rules_to_delegate.clear
       end
-      unless @inbound.empty?
-        require 'debugger' ; debugger
-      end
       # already in bud but I moved receive_inbound before all the stuff about
       # app_tables, push_sorted_elements, ...
       receive_inbound
@@ -956,8 +953,7 @@ module WLBud
           end
         end
       end
-      packets_to_send.each do |packet|
-        require 'debugger' ; debugger
+      packets_to_send.each do |packet|        
         chan <~ [packet]
       end
       if @options[:debug]
