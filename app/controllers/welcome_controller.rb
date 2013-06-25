@@ -1,5 +1,7 @@
 # The controller of the manager Wepic Peers do not use this controller.
 #
+require "#{Rails.root}/lib/webdamlog_wrapper/wl_launcher"
+
 class WelcomeController < ApplicationController
   
   def index

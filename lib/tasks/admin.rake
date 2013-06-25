@@ -3,7 +3,7 @@ require 'yaml'
 namespace :admin do
   desc "Create administrator profiles according to config/admin.yml"
   task :create => [:environment, :clear] do
-    sample_content_file_name = "config/admin.yml"
+    sample_content_file_name = "#{Rails.root}/config/peer/localhost/admin.yml"
     begin
       content = YAML.load(File.open(sample_content_file_name))
       content.values.each do |admin|

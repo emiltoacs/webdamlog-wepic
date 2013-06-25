@@ -7,9 +7,9 @@ WepimApp::Application.initialize!
 # Once the application is initialized, if the application is a peer (and not a
 # manager), it signals to its manager that it is ready to receive requests).
 if Conf.manager?
-  require 'wl_launcher'
+  require 'webdamlog_wrapper/wl_launcher'
 else  
-  require 'wl_peer'
+  require 'webdamlog_wrapper/wl_peer'
   require 'webdamlog_wrapper/engine_helper'
 
   if Conf.standalone?
@@ -18,6 +18,6 @@ else
     WLLogger.logger.info "Wepic peer of #{Conf.env['USERNAME']},#{Conf.env['PORT']} has finished initialization and is ready to send acknowedgement to manager"
     WepicPeer.send_acknowledgment(Conf.env['USERNAME'],Conf.env['MANAGER_PORT'],Conf.env['PORT'])
   end
-  
+  #require 'debugger';debugger
 end # if Conf.manager?
 

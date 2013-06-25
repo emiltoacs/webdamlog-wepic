@@ -1,8 +1,9 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
+root = File.expand_path('../../../../',  __FILE__) 
 require 'test/unit'
-require 'wl_launcher'
-require 'wl_peer'
+require "#{root}/lib/webdamlog_wrapper/wl_launcher"
+require "#{root}/lib/webdamlog_wrapper/wl_peer"
 require 'yaml'
 
 class AcknowledgmentTest < Test::Unit::TestCase
