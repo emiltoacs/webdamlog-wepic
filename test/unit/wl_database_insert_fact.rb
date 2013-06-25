@@ -67,5 +67,5 @@ class WLDatabaseInsertViaActiveRecord < Test::Unit::TestCase
       ["name4", "127.0.0.1", false, "email"]],
       Contact.all.map { |ar| [ ar[:username], ar[:ip], ar[:online], ar[:email] ] }
   end
-  
+
 end
