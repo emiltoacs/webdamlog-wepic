@@ -37,17 +37,16 @@ module WrapperHelper::ContactWrapper
       error.add(:wrapper, "base class should have an enginelogger linked before inclusion of WrapperHelper::ContactWrapper")
     end
 
-    # Override save method of previous wrapper usually active_record_wrapper to
+    # Override save_in_ar method of previous wrapper usually active_record_wrapper to
     # add rule into the wdl engine before chaining to active_record_wrapper save
-    self.send :define_method, :save do |*args|
-
+    self.send :define_method, :save_in_ar do |*args|
+      
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         super()
       else
         engine = self.class.engine
 
-        # PENDING add some guards here to check if a peer is overriden
-
+        # PENDING add some guards here to check if a peer is overridden
         if(self.username and self.ip and self.port)
           if engine.update_add_peer(self.username, self.ip, self.port)
             if super()
@@ -64,7 +63,6 @@ module WrapperHelper::ContactWrapper
           errors.add(:contactwrapper, "some required fact to declare a new peer are missing peername#{self.username} ip#{self.ip} #{self.port}")
           return false
         end
-
       end # if args.first == :skip_ar_wrapper
     end # base.send :define_method, :save    
   end # self.included(base)

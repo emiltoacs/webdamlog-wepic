@@ -114,7 +114,7 @@ module WrapperHelper::ActiveRecordWrapper
             # format for insert into webdamlog
             tuple = []
             wdlfact = nil
-            columns = self.class.wdl_table.cols 
+            columns = self.class.wdl_table.cols
             columns.each_with_index do |col, i|
               if self.class.column_names.include?(col.to_s)
                 tuple[i] = self.send(col)
