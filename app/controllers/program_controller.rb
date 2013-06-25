@@ -28,13 +28,12 @@ class ProgramController < ApplicationController
   
   #Delegation tuple is removed if the rule was rejected.
   def reject
-    tuple = Delegation.find(params[:id])
-    if tuple.nil?
+    delegation = Delegation.find(params[:id])
+    if delegation.nil?
       respond_to do |format|
         format.json {render :json => {:success => false, :errors => {"tuple" => "no tuple for wdlrule_id : #{params[:id]}"}}}
       end      
     else
-      delegation = tuple.first
       delegation.destroy
       respond_to do |format|
         format.json {render :json => {:success => true, :errors => {}}}
@@ -44,21 +43,28 @@ class ProgramController < ApplicationController
   
   #Delegation is tagged as accepted if it is accepted.
   def accept
-    tuple = Delegation.find(params[:id])
-    if tuple.nil?
+    delegation = Delegation.find(params[:id])
+    if delegation.nil?
       respond_to do |format|
         format.json {render :json => {:success => false, :errors => {"tuple" => "no tuple for wdlrule_id : #{params[:id]}"}}}
       end
     else
-      delegation = tuple.first
       delegation.accepted = true
-      if delegation.save
-        respond_to do |format|
-          format.json {render :json => {:success => true, :errors => {}}}
+      drule = DescribedRule.new(:wdlrule=>delegation.wdlrule,:description=>"Delegation from #{delegation.peername}",:role=>'unknown')
+      if drule.save
+        delegation.accepted = true
+        if delegation.save
+          respond_to do |format|
+            format.json {render :json => {:success => true, :errors => {}}}
+          end
+        else
+          respond_to do |format|
+            format.json {render :json => {:success => false, :errors => delegation.errors.messages.merge(drule.errors.messages)}}
+          end          
         end
       else
         respond_to do |format|
-          format.json {render :json => {:success => false, :errors => delegation.errors.messages }}
+          format.json {render :json => {:success => false, :errors => drule.errors.messages}}
         end
       end
     end
