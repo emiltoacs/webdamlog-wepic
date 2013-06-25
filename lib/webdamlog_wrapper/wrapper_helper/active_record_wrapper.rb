@@ -179,8 +179,8 @@ module WrapperHelper::ActiveRecordWrapper
     if self.valid?
       self.class.superclass.instance_method(:save).bind(self).call
     else
-      WLLogger.logger.fatal("wdl derived an invalid tuple for AR: #{self}")
-      raise Exceptions::WrapperError, "wdl derived an invalid tuple for AR: #{self}"
+      WLLogger.logger.warn("wdl derived an invalid tuple for AR: #{self}")
+      # raise StandardError, "wdl derived an invalid tuple for AR: #{self}"
     end
   end
 end
