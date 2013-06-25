@@ -127,7 +127,7 @@ module WLRunner
   def snapshot_facts relname
     coll = []
     sync_do do
-      coll self.tables[relname].map{ |t| Hash[t.each_pair.to_a] }
+      coll = self.tables[relname].map{ |t| Hash[t.each_pair.to_a] }
     end
     return coll
   end
