@@ -134,6 +134,7 @@ class Picture < AbstractDatabase
     unless self.downloaded #Don't want to download more than once!
       self.downloaded=true
       if image_url_local?
+        require 'debugger' ; debugger
         Thread.new do
           do_download_image
         end
@@ -163,7 +164,7 @@ class Picture < AbstractDatabase
     end
   end
   
-  def get_local_image
+  def get_local_image    
     io = open(image_url)
   rescue => import_error
     WLLogger.logger.error "Could not download file : #{import_error.message}"
