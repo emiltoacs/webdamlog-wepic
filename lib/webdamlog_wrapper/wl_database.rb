@@ -26,8 +26,8 @@ module WLDatabase
   end
   
   # This setup the database server (currently postgresql or sqlite3 (nothing to
-  # do since their are just files))
-  # @return [WLInstanceDatabase] the object mapper for the new database created
+  # do since their are just files)) @return [WLInstanceDatabase] the object
+  # mapper for the new database created
   def self.setup_database_server
     unless @@databases[Conf.env['USERNAME']]
       db_name = Conf.db['database']
@@ -276,7 +276,8 @@ module WLDatabase
       
       # Init manually the builtins relations created when rails has parsed the
       # models. These are the relation to bind to webdalog relation that have
-      # already been created in webdamlog thanks to wdl program file in bootstrap
+      # already been created in webdamlog thanks to wdl program file in
+      # bootstrap
       classname = "Picture"
       pict = WLTool::class_exists(classname , ActiveRecord::Base)
       if pict.nil?
@@ -343,7 +344,8 @@ module WLDatabase
       end
     end
 
-    # Some facts needed to store meta data saved in their respective ActiveRecord
+    # Some facts needed to store meta data saved in their respective
+    # ActiveRecord
     def save_facts_for_meta_data
       @wlmeta.new(:id=>@id, :dbname=>@db_name, :configuration=>@configuration, :init=>true).save
 
@@ -357,7 +359,10 @@ module WLDatabase
       @wlschema.new(:name=>DescribedRule.table_name, :schema=>DescribedRule.schema.to_json).save
       
       begin
-        ContentHelper::query_create
+        # FIXME
+        unless Conf.peer['peer']['username'] == 'sigmod_peer'
+          ContentHelper::query_create
+        end
       rescue => error
         WLLogger.logger.warn "In ContentHelper::query_create an error occured : #{error.message}\nat\t:\t#{error.backtrace.join("\n")[0..20]}"
       end
@@ -370,7 +375,8 @@ module WLDatabase
     # @options createwdl [boolean] :wdl set to true to create the binding with
     # webdamlog
     #
-    # @return [Class, String, Hash, String] class created, name of relation, Hash of the schema, webamlog instruction
+    # @return [Class, String, Hash, String] class created, name of relation,
+    # Hash of the schema, webamlog instruction
     #
     def create_model(name,schema,options={})
       model_klass = create_AR_model_class(name, schema)
