@@ -2,6 +2,9 @@
 # protocol between the manager and the peer it manages. This protocol will be
 # simpler to understand and less error-prone than the previous one.
 #
+require "./lib/wl_logger"
+
+
 module WepicPeer
   # Send a acknowledgment to the manager who launched the peer. It does nothing
   # if the peer launched is a standalone (ie. launched directly on the machine

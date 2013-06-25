@@ -1,3 +1,4 @@
+require "./lib/wl_logger"
 require 'socket'
 require 'timeout'
 require 'set'
