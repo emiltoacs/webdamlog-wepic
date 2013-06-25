@@ -291,6 +291,9 @@ module WLBud
         @relation_to_declare.clear
         @rules_to_delegate.clear
       end
+      unless @inbound.empty?
+        require 'debugger' ; debugger
+      end
       # already in bud but I moved receive_inbound before all the stuff about
       # app_tables, push_sorted_elements, ...
       receive_inbound
@@ -335,7 +338,9 @@ module WLBud
             puts "---------"
           end
           if @options[:filter_delegations]
+            packet_value.declarations.each { |dec| add_collection(dec) } unless packet_value.declarations.nil?
             @pending_delegations[packet_value.peer_name.to_sym][packet_value.src_time_stamp] << packet_value.rules
+            add_facts(packet_value.facts) unless packet_value.facts.nil?
           else
             # Declare all the new relations and insert the rules
             packet_value.declarations.each { |dec| add_collection(dec) } unless packet_value.declarations.nil?
@@ -429,7 +434,7 @@ module WLBud
               fixpoint = false if t.tick_deltas
             end
           end
-          
+
           # push end-of-fixpoint
           @push_sorted_elems[stratum].each do |p|
             p.stratum_end
@@ -952,6 +957,7 @@ module WLBud
         end
       end
       packets_to_send.each do |packet|
+        require 'debugger' ; debugger
         chan <~ [packet]
       end
       if @options[:debug]
