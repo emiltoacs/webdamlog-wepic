@@ -21,7 +21,7 @@ development: &base
     # store the port on which the web server listen for requests, you can give a
     # default value to this otherwise find_port if not available or by the manager
     # default_spawn_port if this peer has been launched by a manager
-    web_port: 5000
+    web_port: 4000
     # default value for the port on which the webdamlog engine listen although it
     # will be defined by find_port if not available or by the manager
     # default_spawn_port if this peer has been launched by a manager
@@ -29,8 +29,9 @@ development: &base
     #Which program is loaded by default by the peer.
     #app/assets/wlprogram/bootstrap_program.wl
     program:
-      file_path: app/assets/wlprogram/bootstrap_program.wl
+      file_path: config/peer/serge/bootstrap_program.wl
       query_sample: config/scenario/samples/query/sample.yml
+      sigmod_peer: config/peer/serge
       
 test:
   communication:
