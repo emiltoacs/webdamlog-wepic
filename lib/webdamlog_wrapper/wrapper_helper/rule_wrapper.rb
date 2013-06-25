@@ -69,7 +69,6 @@ module WrapperHelper::RuleWrapper
                 # TODO add collection into the right model for wepic to see them
                 # FIXME should be only one database but still
                 schema = {}
-                require 'debugger' ; debugger
                 budschema = inst.schema
                 list = budschema.keys.first.map { |it| it.to_s } + budschema.values.first.map { |it| it.to_s }
                 list.reject! { |item| item.empty? }
