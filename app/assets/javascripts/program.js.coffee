@@ -11,6 +11,9 @@ print_hash = (data) ->
       str += key + ' => ' + "\n\t" + print_hash(val) + "\n"
     else
       str += key + ' => ' + val + "\n"
+      
+display_error = (error_msg) ->
+  "The following error has been encountered :\n" + print_hash(error_msg)
 
 
 Object.size = (obj) ->
@@ -20,30 +23,27 @@ Object.size = (obj) ->
           size++
     size
 
-display_error = (error_msg) ->
-  "The following error has been encountered :\n" + error_msg
-
 reject_delegation = (id) ->
   jQuery.ajax
-    'url' : current_url + '/delegation/reject'
+    'url' : current_url + '/delegations/reject'
     'data' :
       'id' : id
     'datatype' : 'json'
     'success' : (data) ->
       if data.success
-        #window.program_refresh()
+        jQuery('.id:contains("'+String(id)+'")').parent().remove()
       else
         alert(display_error(data.errors))
   
 accept_delegation = (id) ->
   jQuery.ajax
-    'url' : current_url + '/delegation/accept'
+    'url' : current_url + '/delegations/accept'
     'data' :
       'id' : id
     'datatype' : 'json'
     'success' : (data) ->
       if data.success
-        #window.program_refresh()
+        jQuery('.id:contains("'+String(id)+'")').parent().remove()
       else
         alert(display_error(data.errors))
 
@@ -100,11 +100,9 @@ window.delegations = ->
   get_delegations()
 
 window.refuse = (id) ->
-  jQuery('.id:contains("'+String(id)+'")').parent().remove()
   reject_delegation(id)
 
 window.accept = (id) ->
-  jQuery('.id:contains("'+String(id)+'")').parent().remove()
   accept_delegation(id)
 
 jQuery(document).ready ->
