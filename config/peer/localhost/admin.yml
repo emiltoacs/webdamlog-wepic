@@ -7,3 +7,6 @@ admin2:
 admin3:
   login: serge
   password: 1234
+admin4:
+  login: admin
+  password: admin
