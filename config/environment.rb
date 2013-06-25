@@ -18,6 +18,5 @@ else
     WLLogger.logger.info "Wepic peer of #{Conf.env['USERNAME']},#{Conf.env['PORT']} has finished initialization and is ready to send acknowedgement to manager"
     WepicPeer.send_acknowledgment(Conf.env['USERNAME'],Conf.env['MANAGER_PORT'],Conf.env['PORT'])
   end
-  #require 'debugger';debugger
 end # if Conf.manager?
 
