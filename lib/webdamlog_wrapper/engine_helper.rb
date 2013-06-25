@@ -34,7 +34,8 @@ module EngineHelper
       @enginelogger = WLLogger::WLEngineLogger.new(STDOUT)
       username = Conf.peer['peer']['username']
       # web_port = Integer(Conf.peer['peer']['web_port'])
-      port = Network.find_port Conf.peer['peer']['ip'], :UDP
+      port = Conf.peer['peer']['wdl_engine_port'] #If port specified in config file
+      port = Network.find_port Conf.peer['peer']['ip'], :UDP unless port #otherwise find a port on the system
       unless port
         @enginelogger.fatal("unable to find a UDP port for the webdamlog engine")
         raise StandardError, "unable to find a UDP port for the webdamlog engine"
