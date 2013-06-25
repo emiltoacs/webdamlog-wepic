@@ -11,15 +11,15 @@ require 'test_helper'
 class UsersControllersTestComplexProgram < ActionController::TestCase
   tests UsersController
 
-  test "1index" do
-    get(:index)
-    assert_response :success
-    assert_not_nil assigns(:user)
-    assert_not_nil assigns(:users)
-    assert_not_nil assigns(:user_session)
-  end
+#  test "1index" do
+#    get(:index)
+#    assert_response :success
+#    assert_not_nil assigns(:user)
+#    assert_not_nil assigns(:users)
+#    assert_not_nil assigns(:user_session)
+#  end
 
-  test "2create" do
+  test "2create" do    
     post(:create,
       :user=>{
         :username => "test_username",
