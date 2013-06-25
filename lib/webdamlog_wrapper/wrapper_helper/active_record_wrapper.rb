@@ -53,7 +53,7 @@ module WrapperHelper::ActiveRecordWrapper
         end
       end
     end
-
+    
     # Create the wdl relation @param name [String] wdl relation name
     #
     # @param schema [Hash] keys are fields name and values are their type

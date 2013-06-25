@@ -429,6 +429,7 @@ module WLBud
               fixpoint = false if t.tick_deltas
             end
           end
+          
           # push end-of-fixpoint
           @push_sorted_elems[stratum].each do |p|
             p.stratum_end
@@ -438,7 +439,6 @@ module WLBud
           end
         end
         @viz.do_cards(true) if @options[:trace]
-
 
         # part 3: transition
         #
