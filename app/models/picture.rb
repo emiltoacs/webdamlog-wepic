@@ -14,10 +14,10 @@ class Picture < AbstractDatabase
       before_validation :default_values, :on => :create
       after_commit :download_image, :if => :should_download?, :on => :create
       connection.create_table 'pictures', :force => true do |t|
-        t.integer :_id
         t.string :title
-        t.string :url
         t.string :owner
+        t.integer :_id
+        t.string :url
         t.datetime :date
         t.string :image_file_name
         t.string :image_content_type

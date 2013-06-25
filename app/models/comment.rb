@@ -10,9 +10,9 @@ class Comment < AbstractDatabase
       self.table_name = "comments"
       connection.create_table 'comments', :force => true do |t|
         t.integer :_id
-        t.datetime :date
         t.string :author
         t.text :text
+        t.datetime :date
         t.timestamps
       end if !connection.table_exists?('comments')
       

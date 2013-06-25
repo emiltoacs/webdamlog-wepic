@@ -20,7 +20,7 @@ class ProgramController < ApplicationController
   def delegations
     @delegations = {}
     Delegation.refresh_delegations
-    Delegation.where(:accepted=>false).all.each {|delegation| @delegations[delegation.id]=delegation.wdlrule}
+    Delegation.where(:accepted=>false).all.each {|delegation| @delegations[delegation.id]=delegation.wdlrule.gsub(/_at_/,'@')}
     respond_to do |format|
       format.json{render :json => {:has_new => true, :content => @delegations}}
     end
@@ -50,7 +50,7 @@ class ProgramController < ApplicationController
       end
     else
       delegation.accepted = true
-      drule = DescribedRule.new(:wdlrule=>delegation.wdlrule,:description=>"Delegation from #{delegation.peername}",:role=>'unknown')
+      drule = DescribedRule.new(:wdlrule=>delegation.wdlrule.gsub(/_at_/,'@'),:description=>"Delegation from #{delegation.peername}",:role=>'unknown')
       if drule.save
         delegation.accepted = true
         if delegation.save
