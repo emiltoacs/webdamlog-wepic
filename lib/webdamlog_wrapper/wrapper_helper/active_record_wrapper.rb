@@ -11,7 +11,8 @@ module WrapperHelper::ActiveRecordWrapper
 
     # Set a callback in the webdamlog relation to update this ActiveRecord
     #
-    # The webdamlog relation is supposed to be the same as the name of the class to bind
+    # The webdamlog relation is supposed to be the same as the name of the class
+    # to bind
     def bind_wdl_relation
       @engine = EngineHelper::WLENGINE
       @enginelogger = EngineHelper::WLLOGGER
@@ -29,13 +30,16 @@ module WrapperHelper::ActiveRecordWrapper
           cb_id = @engine.register_callback(@wdl_table_name.to_sym) do |tab|
             unless tab.delta.empty?
               # send_deltas tab # Callback sent to wdl
-              # tab.each_from_sym([:delta]) do |t|
-              tab.each_tick_delta do |t|
+              tab.each_from_sym([:delta]) do |t|
                 tuple = Hash[t.each_pair.to_a]
                 self.new(tuple).save_in_ar
               end
-              tab.flush_deltas
             end
+            tab.each_tick_delta do |t|
+              tuple = Hash[t.each_pair.to_a]
+              self.new(tuple).save_in_ar
+            end
+            tab.flush_deltas
           end
           @wdl_table = @engine.tables[@wdl_table_name.to_sym]
           EngineHelper::WLHELPER.register_new_binding @wdl_table_name, self.name
@@ -127,7 +131,7 @@ module WrapperHelper::ActiveRecordWrapper
               rescue => error
                 WLLogger.logger.warn "Error while adding facts to WebdamLog : #{error.message} at #{error.backtrace[0..20].join("\n")}"
               end
-              #If val not added properly, add anyway              
+              # #If val not added properly, add anyway
               values = {} 
               if err and err.empty?
                 columns.each_with_index do |col,i|
@@ -138,7 +142,7 @@ module WrapperHelper::ActiveRecordWrapper
                   self.save(:skip_ar_wrapper)
                 end
               elsif val.nil?
-                #Force the fact to be inserted. This will create 
+                # #Force the fact to be inserted. This will create
                 WLLogger.logger.warn "Fact had to be forcefully inserted because update_add_fact did not return a value!"
                 self.save(:skip_ar_wrapper)
               end
