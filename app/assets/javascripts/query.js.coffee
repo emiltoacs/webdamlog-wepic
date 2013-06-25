@@ -25,7 +25,7 @@ Object.size = (obj) ->
     size
 
 display_error = (error_msg) ->
-  "The following error has been encountered :\n" + print_hash(error_msg)
+  ("The following error has been encountered :\n" + print_hash(error_msg)).substring(0,200)
 
 
 getRelationFields = (relation) ->
