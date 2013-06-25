@@ -43,6 +43,7 @@ module WrapperHelper::PictureWrapper
   #XXX Changed here
   def save_in_ar
     if self.valid?
+      self.image_url = self.url if self.url and !self.url.blank? #only if url is set but not image_url
       self.class.superclass.instance_method(:save).bind(self).call
     else
       self.enginelogger.fatal("wdl derived an invalid tuple for AR: #{self}")
