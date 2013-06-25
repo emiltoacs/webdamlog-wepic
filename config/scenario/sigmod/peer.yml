@@ -8,7 +8,7 @@ development: &base
     ip: localhost
     # default value in WLSetup is 4000 if no flag given
     manager_port:
-    manager_waiting_port:
+    manager_waiting_port: 
     # Choose a prefered port to spawn peer if not available, find_port will look for others
     default_spawn_port : 10000
 
@@ -22,11 +22,11 @@ development: &base
     # store the port on which the web server listen for requests, you can give a
     # default value to this otherwise it call find_port if not available or the manager
     # default_spawn_port if this peer has been launched by a manager
-    web_port: 4100
+    web_port: 5000
     # default value for the port on which the webdamlog engine listen although it
     # will be defined by find_port if not available or by the manager
     # default_spawn_port if this peer has been launched by a manager
-    wdl_engine_port:
+    wdl_engine_port: 4100 
     #Which program is loaded by default by the peer.
     program:
       file_path: app/assets/wlprogram/bootstrap_sigmod.wl
