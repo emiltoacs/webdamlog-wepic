@@ -11,7 +11,7 @@ class Scenario
   SCENARIO = ['sigmod']
 
   attr_reader :name
-  attr_reader   :errors
+  attr_reader :errors
 
   def initialize(name)
     @errors = ActiveModel::Errors.new(self)
