@@ -123,17 +123,19 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
           "rule query1@test_username($title) :- picture@test_username($title, $_, $_, $_);",
         :description=>"Get all the titles for my pictures",
         :role=>"rule"},
-      {:wdlrule=>"collection ext per query2@test_username(title*);",
+      {:wdlrule=>
+          "collection ext per query2@test_username(title*,contact*,id*,url*);",
         :description=>"Get all pictures from all my friend",
         :role=>"extensional"},
-      {:wdlrule=>"collection ext per query3@test_username(title*);",
+      {:wdlrule=>
+          "collection ext per query3@test_username(title*,contact*,id*,url*);",
         :description=>"Get all my pictures with rating of 5",
         :role=>"extensional"},
       {:wdlrule=>
           "rule deleg_from_test_username_4_1@sigmod_peer($title, $contact, $id, $url) :- picture@test_username($title, $contact, $id, $url);",
         :description=>"Get all my pictures with rating of 5",
         :role=>"rule"},
-      {:wdlrule=>"collection ext per friend@test_username(name*);",
+      {:wdlrule=>"collection ext per friend@test_username(name*,usergroup*);",
         :description=>
           "Create a friend relations and insert all contacts who commented on one of my pictures. Finally include myself.",
         :role=>"extensional"},
