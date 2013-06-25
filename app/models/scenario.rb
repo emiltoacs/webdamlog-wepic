@@ -77,9 +77,9 @@ end
 
 
 module SigmodScenario
+  
 
-  PEERNAME = 'sigmod_peer'
-  require 'debugger' ; debugger 
+  PEERNAME = 'sigmod_peer' 
   #CONF_DIR = File.expand_path('config/scenario/sigmod')
   CONF_DIR = Conf.peer['peer']['program']['sigmod_peer']
   YML_CONF = YAML.load(File.open("#{CONF_DIR}/sigmod_peer.yml"))
