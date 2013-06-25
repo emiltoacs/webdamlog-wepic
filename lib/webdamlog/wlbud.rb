@@ -105,9 +105,9 @@ module WLBud
     #   can run the peer you shall call the load_program method. Used with
     #   wrapper that required to be bind before we have started to add facts
     #   into them
-    # * +:filter_delegations+ if true all the delegation will be put in a waiting
-    #   queue  instead of being added to the program. Some external intervention
-    #   will be required to validate them.
+    # * +:filter_delegations+ if true all the delegation will be put in a
+    #   waiting queue  instead of being added to the program. Some external
+    #   intervention will be required to validate them.
     def initialize (peername, pgfilename, options={})
       # ### WLBud:Begin adding to Bud special bud parameter initialization
       if options[:mesure]
@@ -146,7 +146,8 @@ module WLBud
       # New relations to declare on remote peers, these are the intermediary
       # ones appearing in one of the delegations in rules_to_delegate.
       @relation_to_declare = Hash.new{ |h,k| h[k]=Array.new }
-      # if true rule received will be placed into pending_delegations instead of being added
+      # if true rule received will be placed into pending_delegations instead of
+      # being added
       @filter_delegations = options[:filter_delegations] ||= false
       
       if options[:wl_test]
@@ -214,11 +215,8 @@ module WLBud
       @need_rewrite_strata=false
       @done_rewrite={}
       @collection_added=false
-      # @!attributes [Hash] if filter_delegations is true, delegations received from other peers are put in this hash
-      # peername:
-      #   timestamp:
-      #     rule1
-      #     rule2
+      # @!attributes [Hash] if filter_delegations is true, delegations received
+      #   from other peers are put in this hash peername: timestamp: rule1 rule2
       @pending_delegations = Hash.new{ |h,k| h[k]=Hash.new{ |h2,k2| h2[k2]=Array.new } }
 
       # XXX : added comments on budlib (unofficial):
@@ -602,6 +600,17 @@ module WLBud
         @app_tables.merge(mts)
       end
       @app_tables = @app_tables.to_a
+    end
+
+    # override do_wiring to force all merge target to accumulate tick delta for
+    # callbacks in applications
+    def do_wiring
+      super
+      @merge_targets.each_with_index do |stratum_targets, stratum|
+        stratum_targets.each {|tab|
+          tab.accumulate_tick_deltas = true # if stratum_accessed[tab] and stratum_accessed[tab] > stratum # no condition
+        }
+      end
     end
 
     # This method will translate one wlrule in parameter into Bud rule format
