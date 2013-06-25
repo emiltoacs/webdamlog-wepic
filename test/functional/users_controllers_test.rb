@@ -57,7 +57,7 @@ class UsersControllerTest < ActionController::TestCase
       3,
       4,
       5,
-      "rule query3@test_username($title, $contact, $id, $image_url):-deleg_from_test_username_4_1@sigmod_peer($title,$contact,$id,$image_url),rating@sigmod_peer($id, 5);",
+      "rule query3@test_username($title, $contact, $id, $url):-deleg_from_test_username_4_1@sigmod_peer($title,$contact,$id,$url),rating@sigmod_peer($id, 5);",
       6,
       7],
       engine.wl_program.rule_mapping.keys
