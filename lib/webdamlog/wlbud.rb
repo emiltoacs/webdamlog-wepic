@@ -281,7 +281,6 @@ module WLBud
         timetick[@budtime] = []
         beginning_time = Time.now
       end
-      require 'debugger' ; debugger
       # TODO: improvement relation_to_declare and rules_to_delegate could be
       # emptied only when a ack message is received from remote peers to be sure
       # that rules and relations have been correctly installed.
