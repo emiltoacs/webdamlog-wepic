@@ -29,9 +29,9 @@ development: &base
     #Which program is loaded by default by the peer.
     #app/assets/wlprogram/bootstrap_program.wl
     program:
-      file_path: config/peer/serge/bootstrap_program.wl
+      file_path: config/peer/amazon/serge/bootstrap_program.wl
       query_sample: config/scenario/samples/query/sample.yml
-      sigmod_peer: config/peer/serge
+      sigmod_peer: config/peer/amazon/serge
       
 test:
   communication:
