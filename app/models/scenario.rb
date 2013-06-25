@@ -78,7 +78,6 @@ end
 
 module SigmodScenario
   
-
   PEERNAME = 'sigmod_peer' 
   #CONF_DIR = File.expand_path('config/scenario/sigmod')
   CONF_DIR = Conf.peer['peer']['program']['sigmod_peer']
