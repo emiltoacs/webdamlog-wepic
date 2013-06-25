@@ -7,6 +7,7 @@ class QueryController < ApplicationController
   include WLDatabase
   
   def index
+    #require 'debugger';debugger
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
     @described_rules = DescribedRule.where(:role => 'rule')
