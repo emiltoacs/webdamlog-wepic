@@ -1,5 +1,7 @@
 # These model implements the basic scaffold needed to start a scenario which
 # usually is a list of peer to launch to start a ready-to-play environment
+require "#{Rails.root}/lib/webdamlog_wrapper/wl_launcher"
+
 class Scenario
   include ActiveModel::Validations
   include ActiveModel::Conversion
