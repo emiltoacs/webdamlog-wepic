@@ -27,9 +27,10 @@ module WrapperHelper::ActiveRecordWrapper
         # PENDING change check already declared by declaration automatic if not
         if @engine.wl_program.wlcollections.include?(@wdl_table_name)
           cb_id = @engine.register_callback(@wdl_table_name.to_sym) do |tab|
-            unless tab.delta.empty?              
+            unless tab.delta.empty?
               # send_deltas tab # Callback sent to wdl
-              tab.each_from_sym([:delta]) do |t|
+              # tab.each_from_sym([:delta]) do |t|
+              tab.each_tick_delta do |t|
                 tuple = Hash[t.each_pair.to_a]
                 self.new(tuple).save_in_ar
               end
