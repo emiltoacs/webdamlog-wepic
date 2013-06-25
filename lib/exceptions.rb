@@ -4,5 +4,4 @@ module Exceptions
   class HelperError < StandardError; end
   # raised by wrapper
   class WrappperError < HelperError; end  
-  
 end
