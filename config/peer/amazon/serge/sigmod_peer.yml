@@ -1,14 +1,14 @@
-# Gather here most of the useful parameter for a given peer
+# The parameter to initialize the peer needed for the sigmod scenario.
+# It is the same as the generic peer.yml except the bootstrap program and the name of the peer
 development: &base
   # Manager settings:
   # the manager who launched the peer,
   # or the manager itself if the current peer is a manager
   manager:
-    ip: localhost
-    protocol : http
+    ip: ec2-54-224-165-123.compute-1.amazonaws.com
     # default value in WLSetup is 4000 if no flag given
-    manager_port: 4000
-    manager_waiting_port:
+    manager_port:
+    manager_waiting_port: 
     # Choose a prefered port to spawn peer if not available, find_port will look for others
     default_spawn_port : 10000
 
@@ -16,24 +16,21 @@ development: &base
   # A special name is manager to spawn a lightweight server used to launch other peers
   peer:
     # name for the current peer, could be overrride by the ENV['USERNAME'] variable
-    username: manager
+    username: sigmod_peer
     protocol: http
-    ip: localhost
+    ip: ec2-54-224-165-123.compute-1.amazonaws.com
     # store the port on which the web server listen for requests, you can give a
-    # default value to this otherwise find_port if not available or by the manager
+    # default value to this otherwise it call find_port if not available or the manager
     # default_spawn_port if this peer has been launched by a manager
-    web_port: 4000
+    web_port: 5000
     # default value for the port on which the webdamlog engine listen although it
     # will be defined by find_port if not available or by the manager
     # default_spawn_port if this peer has been launched by a manager
-    wdl_engine_port:
+    wdl_engine_port: 4100
     #Which program is loaded by default by the peer.
-    #app/assets/wlprogram/bootstrap_program.wl
     program:
-      file_path: app/assets/wlprogram/bootstrap_program.wl
-      query_sample: config/scenario/samples/query/sample.yml
-      sigmod_peer: config/peer/localhost
-      
+      file_path: app/assets/wlprogram/bootstrap_sigmod.wl      
+
 test:
   communication:
     manager_port : 4100
@@ -45,13 +42,7 @@ test:
     web_port : 10000
     wdl_engine_port : 20000
     program:
-      file_path: test/config/bootstrap_for_test.wl
-      query_sample: test/config/sample.yml
-  manager:
-    ip: localhost  
-    manager_port:
-    manager_waiting_port:
-    default_spawn_port : 10000
+      file_path: app/assets/wlprogram/bootstrap_program.wl
 
 production:
   <<: *base
