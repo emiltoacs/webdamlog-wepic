@@ -31,3 +31,4 @@ described_rules:
     wdlrule : |
               rule picture@contact($title, $contact, $id, $image_url):- friends@local(contact,$group),friends@local($peer,$group),picture@$peer($title,$contact,$id,$image_url),picturelocation@$peer($id,"given location");
     role: extensional
+    
