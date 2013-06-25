@@ -131,7 +131,7 @@ module WrapperHelper::ActiveRecordWrapper
               rescue => error
                 WLLogger.logger.warn "Error while adding facts to WebdamLog : #{error.message} at #{error.backtrace[0..20].join("\n")}"
               end
-              # #If val not added properly, add anyway
+              # If val not added properly, add anyway
               values = {} 
               if err and err.empty?
                 columns.each_with_index do |col,i|
