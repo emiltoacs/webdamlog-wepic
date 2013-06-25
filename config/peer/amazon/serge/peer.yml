@@ -31,7 +31,7 @@ development: &base
     program:
       file_path: config/peer/serge/bootstrap_program.wl
       query_sample: config/scenario/samples/query/sample.yml
-      sigmod_peer: config/peer/serge
+      sigmod_peer: config/peer/amazon/serge/sigmod
       
 test:
   communication:

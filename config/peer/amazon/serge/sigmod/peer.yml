@@ -29,7 +29,7 @@ development: &base
     wdl_engine_port: 4100
     #Which program is loaded by default by the peer.
     program:
-      file_path: app/assets/wlprogram/bootstrap_sigmod.wl      
+      file_path: app/assets/wlprogram/bootstrap_sigmod.wl
 
 test:
   communication:
