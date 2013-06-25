@@ -84,5 +84,5 @@ module SigmodScenario
   # the contacts
   def start
     return WLLauncher.create_peer(PEERNAME,YML_CONF,"#{CONF_DIR}")
-  end  
+  end
 end
