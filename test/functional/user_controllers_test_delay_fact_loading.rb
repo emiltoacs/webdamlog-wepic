@@ -3,7 +3,6 @@ ENV["RAILS_ENV"] = "test"
 ENV["USERNAME"] = "test_username"
 ENV["PORT"] = "10000"
 ENV["MANAGER_PORT"] = nil
-
 require './lib/wl_setup'
 WLSetup.reset_peer_databases Conf.db['database'], Conf.db['username'], Conf.db['adapter']
 Conf.peer['peer']['program']['file_path'] = 'test/config/bootstrap_for_loading_delay_fact.wl'
@@ -12,14 +11,10 @@ require './test/test_helper'
 class UserControllersTestDelayFactLoading < ActionController::TestCase
   tests UsersController
 
-  test "2create" do
-    check_webdamlog = false
-    db = WLDatabase.setup_database_server
-    assert_not_nil db
+  test "2create" do    
     engine = EngineHelper::WLENGINE
     assert_not_nil engine
     
-    if check_webdamlog
     # check everything is loaded but the facts
     assert_equal({"test_username"=>"127.0.0.1:#{engine.port}", "sigmod_peer"=>"localhost:4100"}, engine.wl_program.wlpeers)
     assert_equal(["picture_at_test_username",
@@ -60,7 +55,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     assert_equal ["rule contact_at_test_username($username, $ip, $port, $online, $email) :- contact_at_sigmod_peer($username, $ip, $port, $online, $email);",
       "rule contact_at_test_username($username, $ip, $port, $online, $email) :- contact_at_sigmod_peer($username, $ip, $port, $online, $email);"],
       engine.wl_program.rule_mapping.values.map{ |rules| rules.first.is_a?(WLBud::WLRule) ? rules.first.show_wdl_format : rules.first }
-    end
+    
     # start engine
     post(:create,
       :user=>{
@@ -68,14 +63,10 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         :email => "test_user_email@emailprovider.dom",
         :password => "test_user_password",
         :password_confirmation => "test_user_password"
-      })  
-    if check_webdamlog
+      })
     assert_not_nil assigns(:user)
     assert engine.running_async
     assert_kind_of WLRunner, engine
-    assert_equal(DescribedRule.all.empty?,false)
-    assert_equal(Picture.all.empty?,false)
-    assert_equal(PictureLocation.all.empty?,false)
 
     # check facts has been loaded in wdl
     assert_equal [:localtick,
@@ -104,10 +95,18 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
       :query3_at_test_username,
       :deleg_from_test_username_4_1_at_sigmod_peer,
       :friend_at_test_username], engine.tables.values.map { |coll| coll.tabname }
+    
     # tables
     array = engine.tables[:picture_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
-    assert_equal [{:title=>"sigmod", :owner=>"local", :_id=>"12347", :image_url=> "http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif"},
-      {:title=>"webdam", :owner=>"local", :_id=>"12348", :image_url=>"http://www.cs.tau.ac.il/workshop/modas/webdam3.png"}], array
+    assert_equal [{:title=>"sigmod",
+        :owner=>"test_username",
+        :_id=>"12347",
+        :url=>
+          "http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif"},
+      {:title=>"webdam",
+        :owner=>"test_username",
+        :_id=>"12348",
+        :url=>"http://www.cs.tau.ac.il/workshop/modas/webdam3.png"}], array
     array = engine.tables[:picturelocation_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
     assert_equal [{:_id=>"12347", :location=>"Columbia"},
       {:_id=>"12348", :location=>"Tau workshop"}], array
@@ -131,7 +130,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         :description=>"Get all my pictures with rating of 5",
         :role=>"extensional"},
       {:wdlrule=>
-          "rule deleg_from_test_username_4_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@test_username($title, $contact, $id, $image_url);",
+          "rule deleg_from_test_username_4_1@sigmod_peer($title, $contact, $id, $url) :- picture@test_username($title, $contact, $id, $url);",
         :description=>"Get all my pictures with rating of 5",
         :role=>"rule"},
       {:wdlrule=>"collection ext per friend@test_username(name*);",
@@ -145,7 +144,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         :role=>"rule"}], array
     array = engine.tables[:contact_at_test_username].map{ |t| Hash[t.each_pair.to_a] }
     array.each { |t| assert_not_nil t[:port] }
-    array.each { |h| h.delete :port }    
+    array.each { |h| h.delete :port }
     assert_equal [{:username=>"test_username",
         :ip=>"127.0.0.1",
         :online=>"true",
@@ -154,7 +153,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     # check facts has been loaded in wepic models
     assert_equal [["test_username", "127.0.0.1", true, "none"]],
       Contact.all.map { |ar| [ ar[:username], ar[:ip], ar[:online], ar[:email] ] }
-    assert_equal [["\ncollection ext persistent picture@local(title*, owner*, _id*, image_url*);",
+    assert_equal [["\ncollection ext persistent picture@local(title*, owner*, _id*, url*);",
         "bootstrap",
         "unknown"],
       ["\ncollection ext persistent rating@local(_id*, rating*, owner*);",
@@ -184,7 +183,7 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
       ["collection ext per query3@test_username(title*);",
         "Get all my pictures with rating of 5",
         "extensional"],
-      ["rule deleg_from_test_username_4_1@sigmod_peer($title, $contact, $id, $image_url) :- picture@test_username($title, $contact, $id, $image_url);",
+      ["rule deleg_from_test_username_4_1@sigmod_peer($title, $contact, $id, $url) :- picture@test_username($title, $contact, $id, $url);",
         "Get all my pictures with rating of 5",
         "rule"],
       ["collection ext per friend@test_username(name*);",
@@ -195,15 +194,14 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
         "rule"]],
       DescribedRule.all.map { |ar| [ ar[:wdlrule], ar[:description], ar[:role] ] }
     assert_equal [["sigmod",
-        "local",
+        "test_username",
         12347,
         "http://www.sigmod.org/about-sigmod/sigmod-logo/archive/800x256/sigmod.gif"],
       ["webdam",
-        "local",
+        "test_username",
         12348,
         "http://www.cs.tau.ac.il/workshop/modas/webdam3.png"]],
       Picture.all.map { |ar| [ ar[:title], ar[:owner], ar[:_id], ar[:image_url] ] }
-    end
     
     # jules
     rule_a = "rule contact@local($username,$ip,$port, $online, $email):-contact@sigmod_peer($username,$ip,$port, $online, $email);"
@@ -228,6 +226,6 @@ class UserControllersTestDelayFactLoading < ActionController::TestCase
     saved, err = ContentHelper::add_to_described_rules(rule_d,'should not work','rule')
     assert_equal(false,saved)
     # assert_not_nil(err[:exists])
-
   end
+    
 end

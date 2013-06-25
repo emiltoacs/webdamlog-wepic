@@ -72,7 +72,6 @@ class UsersController < ApplicationController
         end
         if engine.running_async
           engine.load_bootstrap_fact
-          @db = WLDatabase.databases.values.first unless @db
           @db.save_facts_for_meta_data
           # TODO check if two previous are ok
           if @rule_load_error
