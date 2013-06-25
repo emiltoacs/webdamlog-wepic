@@ -10,6 +10,7 @@ class QueryController < ApplicationController
     #require 'debugger';debugger
     #Fetches relation from schema
     @relation_classes = database(Conf.env['USERNAME']).relation_classes
+    @relation_classes['Delegation'] = Delegation
     @described_rules = DescribedRule.where(:role => 'rule')
     @described_rule = DescribedRule.new
     respond_to do |format|
