@@ -957,7 +957,7 @@ module WLBud
           end
         end
       end
-      packets_to_send.each do |packet|        
+      packets_to_send.each do |packet|
         chan <~ [packet]
       end
       if @options[:debug]
