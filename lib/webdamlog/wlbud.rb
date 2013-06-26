@@ -750,8 +750,8 @@ module WLBud
     # Takes in a string representing a WLRule, parses it and adds it directly
     # into the WLBud instance.
     #
-    # @raise [WLError] if something goes wrong @return [Array] rule_id, rule
-    # string to display
+    # @raise [WLError] if something goes wrong
+    # @return [Array] rule_id, rule string of the local rule installed or nil if the rule is fully delegated.
     def add_rule(wlpg_rule)
       rule = @wl_program.parse(wlpg_rule, true)
       raise WLErrorProgram, "parse rule and get #{rule.class}" unless rule.is_a?(WLBud::WLRule)
