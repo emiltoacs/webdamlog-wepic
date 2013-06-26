@@ -30,7 +30,7 @@ module WrapperHelper::RuleWrapper
       if args.first == :skip_ar_wrapper # skip when you want to call the original save of ActiveRecord in ClassMethods::send_deltas
         super(:skip_ar_wrapper)
       else
-        #check if the rule is valid before adding into Webdamlog
+        # check if the rule is valid before adding into Webdamlog
         unless  ContentHelper::already_exists?(self.wdlrule)
           errors.add(:exists,"Statement already exists!")
           return false
@@ -48,13 +48,19 @@ module WrapperHelper::RuleWrapper
                 begin
                   wdl_string = inst.show_wdl_format
                   # FIXME HACKY replace of _at_by @ because of internal
-                  # webdamlog format return _at_ and wdl program expect @                
+                  # webdamlog format return _at_ and wdl program expect @
                   wdl_string.gsub!("_at_", "@")
-                  rule_id, rule_string = engine.update_add_rule(wdl_string) #Update add rule
-                  rule_string.gsub!("_at_", "@")
-                  self.wdl_rule_id = rule_id
-                  self.wdlrule = rule_string
-                  self.role = 'rule'
+                  rule_id, rule_string = engine.update_add_rule(wdl_string) # Update add rule
+                  unless rule_id.nil? # if rule is fully non-local hence local rule resulting will be empty
+                    rule_string.gsub!("_at_", "@")
+                    self.wdl_rule_id = rule_id
+                    self.wdlrule = rule_string
+                    self.role = 'rule'
+                  else
+                    self.wdl_rule_id = 'delegated'
+                    self.wdlrule = 'delegated: wdl_string'
+                    self.role = 'rule'
+                  end
                   super()
                 rescue WLBud::WLError => err
                   WLLogger.logger.error "wrapper fail to insert the rule #{rule_string} in the webdamlog engine: #{err}"

@@ -291,8 +291,7 @@ In the string: #{line}
     # when splitting the rule has been necessary. That is the relation
     # declaration that should be created into bud to store intermediary local
     # results of non-local rules rewritten
-    #
-    def rewrite_non_local(wlrule)      
+    def rewrite_non_local(wlrule)
       raise WLErrorProgram, "local peername:#{@peername} is not defined yet while rewrite rule:#{wlrule}" if @peername.nil?
       raise WLErrorProgram, "trying to rewrite a seed instead of a static rule" if wlrule.seed?
 
