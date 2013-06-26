@@ -11,6 +11,8 @@ window.username = null
 
 print_hash = (data) ->
   str = ""
+  if typeof(data)=='string'
+    return data
   for key,val of data
     if typeof(value)=='object'
       str += key + ' => ' + "\n\t" + print_hash(val) + "\n"

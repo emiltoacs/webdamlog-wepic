@@ -62,14 +62,14 @@ get_delegations = ->
             html += '<div class="id">'+id+'</div>'
             html += '<div class="rule">'+rule.split("\n").join('<br/>')+'</div>'
             html += '</div></div>'
-        jQuery('#display_delegations').append(html)
-        #Delegation interaction callbacks
-        jQuery('#refuse-'+id).click ->
-          console.log('Delegation ' + String(id) + ' refused...')
-          reject_delegation(id)
-        jQuery('#accept-'+id).click ->
-          console.log('Delegation ' + String(id) + ' accepted...')
-          accept_delegation(id)
+            jQuery('#display_delegations').append(html)
+            #Delegation interaction callbacks
+            jQuery('#refuse-'+id).click ->
+              console.log('Delegation ' + String(id) + ' refused...')
+              reject_delegation(id)
+            jQuery('#accept-'+id).click ->
+              console.log('Delegation ' + String(id) + ' accepted...')
+              accept_delegation(id)
 
 get_program = ->
   jQuery.ajax
