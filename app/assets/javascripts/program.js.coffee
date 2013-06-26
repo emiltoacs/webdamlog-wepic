@@ -62,8 +62,9 @@ get_delegations = ->
             html += '<div class="id">'+id+'</div>'
             html += '<div class="rule">'+rule.split("\n").join('<br/>')+'</div>'
             html += '</div></div>'
-            jQuery('#display_delegations').append(html)
-            #Delegation interaction callbacks
+        jQuery('#display_delegations').append(html)    
+        #Delegation interaction callbacks
+        for id,rule of data.content
             jQuery('#refuse-'+id).click ->
               console.log('Delegation ' + String(id) + ' refused...')
               reject_delegation(id)
