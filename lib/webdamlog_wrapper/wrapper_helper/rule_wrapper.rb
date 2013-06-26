@@ -50,7 +50,7 @@ module WrapperHelper::RuleWrapper
                   # FIXME HACKY replace of _at_by @ because of internal
                   # webdamlog format return _at_ and wdl program expect @                
                   wdl_string.gsub!("_at_", "@")
-                  rule_id, rule_string = engine.update_add_rule(wdl_string)
+                  rule_id, rule_string = engine.update_add_rule(wdl_string) #Update add rule
                   rule_string.gsub!("_at_", "@")
                   self.wdl_rule_id = rule_id
                   self.wdlrule = rule_string
