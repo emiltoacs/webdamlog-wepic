@@ -758,19 +758,23 @@ module WLBud
       unless @wl_program.local?(rule)
         @wl_program.rewrite_non_local(rule)
         localcolls = @wl_program.flush_new_local_declaration
-        raise WLError, "one intermediary collection should have been generated while splitting a non-local rule an nt #{localcolls.length}" if localcolls.length > 1
+        # FIXME in case of full delegation zero is allowed
+        raise WLError, "one intermediary collection should have been generated while splitting a non-local rule instead of #{localcolls.length}" if localcolls.length > 1
         intercoll = localcolls.first
         add_collection(intercoll)
         localrules = @wl_program.flush_new_rewritten_local_rule_to_install
-        raise WLError, "one local rule should have been generated while splitting a non-local rule an nt #{localrules.length}" if localrules.length > 1
+        raise WLError, "one local rule should have been generated while splitting a non-local rule instead of #{localrules.length}" if localrules.length > 1
         rule = localrules.first
         @relation_to_declare.merge!(@wl_program.flush_new_relations_to_declare_on_remote_peer){|key,oldv,newv| oldv<<newv}
         @rules_to_delegate.merge!(@wl_program.flush_new_delegations_to_send){|key,oldv,newv| oldv<<newv}
       end
-      puts "Adding a rule: #{wlpg_rule}" if @options[:debug]
-      translate_rule(rule)
-      @need_rewrite_strata = true
-      return rule.rule_id, rule.show_wdl_format
+      # if a fully non-local rule is parsed a empty local rule is the result
+      unless rule.nil?
+        puts "Adding a rule: #{wlpg_rule}" if @options[:debug]
+        translate_rule(rule)
+        @need_rewrite_strata = true
+        return rule.rule_id, rule.show_wdl_format
+      end
     end
 
     # Make program is called in the initializer of the WL instance. Its role is
