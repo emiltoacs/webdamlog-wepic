@@ -211,5 +211,10 @@ https://help.ubuntu.com/community/Repositories/CommandLine#Adding_the_Universe_a
 WePiM needs Webdamlog to work, could be imported under lib/
 thanks to the script =import_wlbud_source.sh=
 
+** Warning upgrade to rails 4.0 and ruby 2.0
+
+Demo version of WePim were running with rails 3.2.x and ruby
+1.9.3 check compatibility issues if running with updated engine.
+
 
 
