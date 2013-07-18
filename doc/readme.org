@@ -9,7 +9,9 @@
 *** Get a copy of the project
 #+begin_src sh
 git clone git+ssh://emilien@scm.gforge.inria.fr//gitroot/webdamsystem/webdamsystem.git
+git clone git@github.com:Emilien-Antoine/webdamlog-engine.git
 #+end_src
+
 
 * Some instruction to install wepic
 
@@ -201,5 +203,13 @@ https://help.ubuntu.com/community/Repositories/CommandLine#Adding_the_Universe_a
   deb-src http://us.archive.ubuntu.com/ubuntu/ hardy-updates multiverse
   #+end_src
 + install: ec2-api-tool package
+
+
+
+* Developers instructions
+
+WePiM needs Webdamlog to work, could be imported under lib/
+thanks to the script =import_wlbud_source.sh=
+
 
 
