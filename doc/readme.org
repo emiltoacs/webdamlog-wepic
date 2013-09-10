@@ -124,6 +124,7 @@ And use it by default
 ** Set environment
 To set the language environment:
 + locale :: list your current locales
++ locale -a :: list all availaible locales for your system
 + sudo locale-gen en_US.UTF-8 :: reconfigure locale to use en_US
 + sudo dpkg-reconfigure locales :: reconfigure the package
 Ref: http://askubuntu.com/questions/162391/how-do-i-fix-my-locale-issue
@@ -132,8 +133,8 @@ Ref: http://askubuntu.com/questions/162391/how-do-i-fix-my-locale-issue
 ** Set up package required
 Set language environment to avoid warning (in your bashrc) for
 the following
-: export LANG=en_US
 : sudo apt-get install language-pack-en
+: export LANG=en_US
 : sudo apt-get install git
 : sudo apt-get install build-essential imagemagick libmagickcore-dev libmagickwand-dev
 : sudo apt-get install postgresql postgresql-server-dev-9.1
@@ -215,6 +216,3 @@ thanks to the script =import_wlbud_source.sh=
 
 Demo version of WePim were running with rails 3.2.x and ruby
 1.9.3 check compatibility issues if running with updated engine.
-
-
-
