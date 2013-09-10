@@ -205,13 +205,13 @@ class UsersControllersTestComplexProgram < ActionController::TestCase
             "12351",
             "http://www.cs.tau.ac.il/workshop/modas/julia.png"]}]],
       engine.app_tables.map { |item| item.tabname }.sort.map { |at|
-      engine.tables[at].map { |t|
-        h = Hash[t.each_pair.to_a]
-        h.delete(:wdl_rule_id)
-        h.delete(:port)
-        h
+        engine.tables[at].map { |t|
+          h = Hash[t.each_pair.to_a]
+          h.delete(:wdl_rule_id)
+          h.delete(:port)
+          h
+        }
       }
-    }
     # REMARK if you use do end with map it returns a enumerator rather than { }
     # return an array as expected
       
