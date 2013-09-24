@@ -46,8 +46,8 @@ module WrapperHelper::PictureWrapper
       self.image_url = self.url if self.url and !self.url.blank? #only if url is set but not image_url
       self.class.superclass.instance_method(:save).bind(self).call
     else
-      self.enginelogger.fatal("wdl derived an invalid tuple for AR: #{self}")
-      raise Exceptions::WrapperError, "wdl derived an invalid tuple for AR: #{self}"
+      self.class.enginelogger.fatal("wdl derived an invalid tuple for AR: #{self}")
+      errors.add(:wrapper,"wdl derived an invalid tuple for AR: #{self}")
     end
-  end 
+  end
 end # module WrapperHelper::PictureWrapper
