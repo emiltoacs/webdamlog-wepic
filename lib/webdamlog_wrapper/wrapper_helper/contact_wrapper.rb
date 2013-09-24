@@ -28,13 +28,13 @@ module WrapperHelper::ContactWrapper
     # Check that WrapperHelper::ContactWrapper has been added before inclusion
     # of this module
     unless base.ancestors.include? WrapperHelper::ActiveRecordWrapper
-      error.add(:wrapper, "wrong inclusion of WrapperHelper::ContactWrapper it should have been inserted after inclusion of WrapperHelper::ActiveRecordWrapper")
+      errors.add(:wrapper, "wrong inclusion of WrapperHelper::ContactWrapper it should have been inserted after inclusion of WrapperHelper::ActiveRecordWrapper")
     end
     unless base.respond_to? :engine
-      error.add(:wrapper, "base class should have an engine linked before inclusion of WrapperHelper::ContactWrapper")
+      errors.add(:wrapper, "base class should have an engine linked before inclusion of WrapperHelper::ContactWrapper")
     end
     unless base.respond_to? :enginelogger
-      error.add(:wrapper, "base class should have an enginelogger linked before inclusion of WrapperHelper::ContactWrapper")
+      errors.add(:wrapper, "base class should have an enginelogger linked before inclusion of WrapperHelper::ContactWrapper")
     end
 
     # Override save_in_ar method of previous wrapper usually active_record_wrapper to
