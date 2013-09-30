@@ -278,18 +278,12 @@ module WLBud
         timetick = {}
         timetick[@budtime] = []
         beginning_time = Time.now
-      end
-      # TODO: improvement relation_to_declare and rules_to_delegate could be
-      # emptied only when a ack message is received from remote peers to be sure
-      # that rules and relations have been correctly installed.
+      end      
       if @fist_tick_after_make_program
         @relation_to_declare.merge!(@wl_program.flush_new_relations_to_declare_on_remote_peer){|key,oldv,newv| oldv<<newv}
         @rules_to_delegate.merge!(@wl_program.flush_new_delegations_to_send){|key,oldv,newv| oldv<<newv}
         @fist_tick_after_make_program=false
         @fist_tick_after_make_program.freeze
-      else
-        @relation_to_declare.clear
-        @rules_to_delegate.clear
       end
       # already in bud but I moved receive_inbound before all the stuff about
       # app_tables, push_sorted_elements, ...
@@ -750,32 +744,35 @@ module WLBud
     # Takes in a string representing a WLRule, parses it and adds it directly
     # into the WLBud instance.
     #
-    # @raise [WLError] if something goes wrong
-    # @return [Array] rule_id, rule string of the local rule installed or nil if the rule is fully delegated.
+    # @raise [WLError] if something goes wrong @return [Array] rule_id, rule
+    # string of the local rule installed or nil if the rule is fully delegated.
     def add_rule(wlpg_rule)
       rule = @wl_program.parse(wlpg_rule, true)
       raise WLErrorProgram, "parse rule and get #{rule.class}" unless rule.is_a?(WLBud::WLRule)
-      unless @wl_program.local?(rule)
+      unless @wl_program.local?(rule) # skip this if the rule is fully local
         @wl_program.rewrite_non_local(rule)
         localcolls = @wl_program.flush_new_local_declaration
-        unless localcolls.empty?
-          return nil, nil # fully non-local rules
+        if localcolls.empty? # if a fully non-local rule has been parsed
+          rule = nil
+        else
+          raise WLError, "one intermediary collection should have been generated while splitting a non-local rule instead of #{localcolls.length}" unless localcolls.length == 1
+          intercoll = localcolls.first
+          add_collection(intercoll)
+          localrules = @wl_program.flush_new_rewritten_local_rule_to_install
+          raise WLError, "one local rule should have been generated while splitting a non-local rule instead of #{localrules.length}" unless localrules.length == 1
+          rule = localrules.first
+          @relation_to_declare.merge!(@wl_program.flush_new_relations_to_declare_on_remote_peer){|key,oldv,newv| oldv<<newv}          
         end
-        raise WLError, "one intermediary collection should have been generated while splitting a non-local rule instead of #{localcolls.length}" if localcolls.length > 1
-        intercoll = localcolls.first
-        add_collection(intercoll)
-        localrules = @wl_program.flush_new_rewritten_local_rule_to_install
-        raise WLError, "one local rule should have been generated while splitting a non-local rule instead of #{localrules.length}" if localrules.length > 1
-        rule = localrules.first
-        @relation_to_declare.merge!(@wl_program.flush_new_relations_to_declare_on_remote_peer){|key,oldv,newv| oldv<<newv}
         @rules_to_delegate.merge!(@wl_program.flush_new_delegations_to_send){|key,oldv,newv| oldv<<newv}
       end
-      # if a fully non-local rule is parsed a empty local rule is the result
-      unless rule.nil?
+      
+      if rule.nil? # if a fully non-local rule is parsed a empty local rule is the result
+        return nil, nil # nothing has been install return nil
+      else
         puts "Adding a rule: #{wlpg_rule}" if @options[:debug]
         translate_rule(rule)
         @need_rewrite_strata = true
-        return rule.rule_id, rule.show_wdl_format
+        return rule.rule_id, rule.show_wdl_format # return id and rule installed
       end
     end
 
@@ -962,6 +959,14 @@ module WLBud
       packets_to_send.each do |packet|
         chan <~ [packet]
       end
+      # TODO: improvement relation_to_declare and rules_to_delegate could be
+      # emptied only when a ack message is received from remote peers to be sure
+      # that rules and relations have been correctly installed.
+      # 
+      # job done clean the list of pending delegations and relations to send
+      @relation_to_declare.clear
+      @rules_to_delegate.clear
+      
       if @options[:debug]
         puts "BEGIN display what I wrote in chan to be send"
         # #puts chan.pending.inspect

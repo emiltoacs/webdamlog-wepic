@@ -58,13 +58,13 @@ module WrapperHelper::RuleWrapper
                     self.role = 'rule'
                   else
                     self.wdl_rule_id = 'delegated'
-                    self.wdlrule = 'delegated: wdl_string'
+                    self.wdlrule = wdl_string
                     self.role = 'rule'
                   end
                   super()
                 rescue WLBud::WLError => err
-                  WLLogger.logger.error "wrapper fail to insert the rule #{rule_string} in the webdamlog engine: #{err}"
-                  errors.add(:wdlengine, "wrapper fail to insert the rule #{rule_string} in the webdamlog engine: #{err}")
+                  WLLogger.logger.error "wrapper fail to insert the rule: #{wdl_string}  in the webdamlog engine reason: #{err}"
+                  errors.add(:wdlengine, "wrapper fail to insert the rule: #{wdl_string}  in the webdamlog engine reason:: #{err}")
                   return false
                 end
                 # FIXME some temporary code to makes rules with relation works
