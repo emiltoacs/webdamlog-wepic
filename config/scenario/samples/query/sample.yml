@@ -11,12 +11,12 @@ described_rules:
 #              collection int query2@local(title*,contact*,id*,image_url*);
 #              rule query2@local($title, $contact, $id, $image_url):- contact@local($contact, $_, $_, $_, $_),picture@$contact($title, $contact, $id, $image_url);
 #    role: intentional
-  drule3:
-    description: Get all my pictures with the best rating on sigmod_peer
-    wdlrule : |
-              collection int query3@local(title*,owner*,id*,image_url*);
-              rule query3@local($title,$owner,$id,$image_url):- picture@local($title,$owner,$id,$image_url),rating@sigmod_peer($id,4,$owner);
-    role: intentional
+#  drule3:
+#    description: Get all my pictures with the best rating on sigmod_peer
+#    wdlrule : |
+#              collection int query3@local(title*,owner*,id*,image_url*);
+#              rule query3@local($title,$owner,$id,$image_url):- picture@local($title,$owner,$id,$image_url),rating@sigmod_peer($id,4,$owner);
+#    role: intentional
   # drule4:
     # description ; Get the ten best rated pictures #Find how to pick limited number of results syntax
     # wdlrule :
