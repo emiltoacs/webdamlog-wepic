@@ -64,7 +64,11 @@ class QueryController < ApplicationController
     saved = drule.save
     err = drule.errors.messages
     id = drule.id
+<<<<<<< HEAD
     if saved and err.empty?
+=======
+    if saved
+>>>>>>> 904bed5eca740584b2042a2ba177440f46ddf979
       #id = response
       ContentHelper.describedRules << rule
       respond_to do |format|
