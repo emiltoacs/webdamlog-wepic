@@ -50,11 +50,7 @@ module WrapperHelper::ContactWrapper
         if(self.username and self.ip and self.port)
           if engine.update_add_peer(self.username, self.ip, self.port)
             if super()
-<<<<<<< HEAD
               self.class.enginelogger.debug("WrapperHelper::ContactWrapper has created a new contact in webdamlog #{self.username} #{self.ip} #{self.port} linked to #{self}")
-=======
-              self.class.enginelogger.debug("WrapperHelper::ContactWrapper has created a new contect in webdamlog #{self.username} #{self.ip} #{self.port} linked to #{self}")
->>>>>>> 904bed5eca740584b2042a2ba177440f46ddf979
             else
               errors.add(:contactwrapper, "update_add_peer failed to save new contact peername#{self.username} ip#{self.ip} #{self.port} in the db")
             return false
