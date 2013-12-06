@@ -17,9 +17,9 @@ described_rules:
 #              collection int query3@local(title*,owner*,id*,image_url*);
 #              rule query3@local($title,$owner,$id,$image_url):- picture@local($title,$owner,$id,$image_url),rating@sigmod_peer($id,4,$owner);
 #    role: intentional
-  # drule4:
-    # description ; Get the ten best rated pictures #Find how to pick limited number of results syntax
-    # wdlrule :
+#  drule4:
+#    description ; Get the ten best rated pictures #Find how to pick limited number of results syntax
+#    wdlrule :
 #  drule5:
 #    description: Create a friend relation and insert all contacts who commented on one of my pictures.
 #    wdlrule : |
