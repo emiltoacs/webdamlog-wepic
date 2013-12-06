@@ -1,10 +1,10 @@
 described_rules:
-  drule1:
-    description: Get all the titles for my pictures
-    wdlrule : |
-              collection int query1@local(title*);
-              rule query1@local($title):-picture@local($title,$_,$_,$_);
-    role: intentional
+#  drule1:
+#    description: Get all the titles for my pictures
+#    wdlrule : |
+#              collection int query1@local(title*);
+#              rule query1@local($title):-picture@local($title,$_,$_,$_);
+#    role: intentional
 #  drule2:
 #    description: Get all pictures from all my friends
 #    wdlrule : |
@@ -20,12 +20,12 @@ described_rules:
   # drule4:
     # description ; Get the ten best rated pictures #Find how to pick limited number of results syntax
     # wdlrule :
-  drule5:
-    description: Create a friend relation and insert all contacts who commented on one of my pictures.
-    wdlrule : |
-              collection ext persistent friend@local(name*,usergroup*);
-              rule friend@local($name,commenters):- picture@local($_,$_,$id,$_),comment@local($id,$name,$_,$_);
-    role: extensional
+#  drule5:
+#    description: Create a friend relation and insert all contacts who commented on one of my pictures.
+#    wdlrule : |
+#              collection ext persistent friend@local(name*,usergroup*);
+#              rule friend@local($name,commenters):- picture@local($_,$_,$id,$_),comment@local($id,$name,$_,$_);
+#    role: extensional
 #  drule6:
 #    description: Send to contact all pictures taken last week by our common friends and me at a given location
 #    wdlrule : |
